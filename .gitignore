@@ -1,0 +1,37 @@
+# Python
+  .venv/
+  .venv_kokoro/
+  **/__pycache__/
+  *.pyc
+
+  # Flutter / Dart
+  app/.dart_tool/
+  app/build/
+  app/.flutter-plugins
+  app/.flutter-plugins-dependencies
+  app/.packages
+
+  # Flutter generated Windows files
+  app/windows/flutter/ephemeral/
+
+  # IDE
+  app/.idea/
+  .vscode/
+
+  # Local data
+  data/lexo.db
+  data/tts/
+  data/logs/
+  data/current_book/
+  logs/
+  *.log
+
+  # Large local models
+  data/models/
+
+  # Optional local books
+  Books/
+
+  # OS
+  .DS_Store
+  Thumbs.db

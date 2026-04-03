@@ -1,0 +1,8 @@
+ctranslate2>=4.6.0
+torch
+transformers>=4.21.0
+huggingface_hub>=0.30.0
+sentencepiece>=0.2.0
+sacremoses>=0.1.1
+fastapi>=0.115.0
+uvicorn>=0.30.0

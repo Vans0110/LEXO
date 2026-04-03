@@ -1,0 +1,419 @@
+1. Цель этапа
+
+На выходе этого этапа приложение должно работать так:
+
+Пользователь выбирает .txt
+Текст один раз импортируется локально
+Текст разбивается на абзацы и предложения
+Предложения переводятся локальной моделью
+Результат сохраняется в SQLite
+Reader открывает книгу и показывает:
+исходный английский абзац
+соответствующий русский абзац
+При повторном открытии книги перевод повторно не запускается
+
+Это не словарь, не карточка слова и не TTS. Это именно локальный pipeline двуязычной книги. Модель NLLB по своей карточке рассчитана прежде всего на single sentence translation, поэтому технически правильный режим здесь — перевод по предложениям, а не по целой книге одним куском.
+
+2. Что использовать
+2.1. Translation backend
+Рекомендованный вариант для первого сильного локального теста
+
+facebook/nllb-200-distilled-600M
+
+Причина простая: это более сильная мультиязычная MT-модель, чем узкий базовый Marian-вариант, и CTranslate2 прямо документирует пример её конвертации и запуска. Но этот вариант надо воспринимать как движок для тестов качества и разработки, а не как финальный коммерческий backend, из-за лицензии cc-by-nc-4.0
+
+2.2. Runtime
+Python 3.10 или 3.11
+ctranslate2
+transformers
+sentencepiece
+sacremoses
+fastapi
+uvicorn
+
+CTranslate2 использует отдельный конвертированный формат модели и поддерживает запуск NLLB и MarianMT после конвертации. Для NLLB в документации отдельно указано, что конвертация требует transformers>=4.21.0.
+
+3. Физическая структура решения
+
+Нормальная структура MVP2 должна быть такой:
+
+LEXO/
+  app/                 # Flutter UI
+  engine/              # Python local service
+    api.py
+    text_loader.py
+    segmenter.py
+    translator.py
+    assembler.py
+    storage.py
+    models/
+  data/
+    lexo.db
+
+Смысл разделения такой:
+
+app/ ничего не знает о модели
+engine/ ничего не знает о визуальном дереве Flutter
+storage.py отвечает только за базу
+translator.py отвечает только за перевод сегментов
+segmenter.py отвечает только за разбиение текста
+assembler.py собирает переведённые сегменты обратно в абзацы
+
+Это делает backend сменным: сегодня NLLB, завтра OPUS, а UI не трогаешь.
+
+4. Модель данных
+
+SQLite на этом этапе должна хранить не “книгу одним blob”, а структурированную bilingual-модель.
+
+4.1. Таблица books
+CREATE TABLE books (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  source_lang TEXT NOT NULL,
+  target_lang TEXT NOT NULL,
+  status TEXT NOT NULL,
+  model_name TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+Назначение:
+
+хранить сам факт книги
+хранить язык
+хранить статус обработки
+хранить, какой моделью сделан перевод
+4.2. Таблица paragraphs
+CREATE TABLE paragraphs (
+  id TEXT PRIMARY KEY,
+  book_id TEXT NOT NULL,
+  order_index INTEGER NOT NULL,
+  source_text TEXT NOT NULL,
+  target_text TEXT NOT NULL,
+  FOREIGN KEY(book_id) REFERENCES books(id)
+);
+
+Назначение:
+
+UI читает абзацами
+на уровне reader отображение должно быть именно paragraph-based
+4.3. Таблица segments
+CREATE TABLE segments (
+  id TEXT PRIMARY KEY,
+  book_id TEXT NOT NULL,
+  paragraph_id TEXT NOT NULL,
+  order_index INTEGER NOT NULL,
+  source_text TEXT NOT NULL,
+  target_text TEXT NOT NULL,
+  FOREIGN KEY(book_id) REFERENCES books(id),
+  FOREIGN KEY(paragraph_id) REFERENCES paragraphs(id)
+);
+
+Назначение:
+
+переводить нужно предложениями
+хранить нужно предложениями
+потом это станет базой для клика по слову и segment-level highlight
+4.4. Почему не нужен пока tokens
+
+На этом этапе tokens можно не вводить.
+Потому что цель этапа — получить готовую двуязычную книгу, а не строить word alignment.
+Подготовка под токены пойдёт следующим этапом.
+
+5. Контракт обработки книги
+
+Здесь уже не идеи, а точная логика выполнения.
+
+5.1. Вход
+
+В backend поступает:
+
+{
+  "title": "Forest Gump",
+  "source_lang": "en",
+  "target_lang": "ru",
+  "text": "raw txt content..."
+}
+5.2. Этапы обработки
+Этап A. Очистка текста
+
+text_loader.py
+
+Что делает:
+
+нормализует переносы строк
+убирает лишние пустые строки
+убирает лишние пробелы внутри строк
+возвращает один нормализованный raw_text
+
+Это нужно, чтобы сегментация не плыла от мусора.
+
+Этап B. Разбиение на абзацы
+
+segmenter.py
+
+Логика:
+
+абзац = блок текста между пустыми строками
+пустые или мусорные блоки отбрасываются
+
+Результат:
+
+paragraphs: list[str]
+Этап C. Разбиение абзаца на предложения
+
+segmenter.py
+
+Логика:
+
+каждый paragraph разбивается на sentence segments
+именно sentence segments идут в переводчик
+один paragraph содержит N segments
+
+Результат:
+
+[
+  {
+    "paragraph_index": 0,
+    "segments": ["Hello world.", "My name is Forrest."]
+  }
+]
+
+Это ключевой момент: переводить надо по sentence segments, потому что NLLB по своей модели рассчитана именно на перевод отдельных предложений, а CTranslate2 показывает для NLLB и MarianMT именно такую типовую схему работы.
+
+Этап D. Batch translation
+
+translator.py
+
+Нужен интерфейс:
+
+class TranslationProvider:
+    def translate_segments(self, segments: list[str], source_lang: str, target_lang: str) -> list[str]:
+        ...
+
+Внутри должно быть две реализации.
+
+Реализация 1: NllbProvider
+загружает ctranslate2.Translator
+загружает transformers.AutoTokenizer
+использует NLLB language codes
+переводит батчами
+
+Документация CTranslate2 показывает для NLLB схему:
+
+конвертация через ct2-transformers-converter
+AutoTokenizer.from_pretrained(..., src_lang=...)
+translate_batch(..., target_prefix=[...])
+Реализация 2: OpusMarianProvider
+загружает ctranslate2.Translator
+загружает AutoTokenizer
+переводит батчами без NLLB language prefix
+
+Документация CTranslate2 отдельно показывает пример для MarianMT, где используется OPUS-MT модель Helsinki-NLP.
+
+Этап E. Сборка paragraph target text
+
+assembler.py
+
+Логика:
+
+все target_text сегментов одного абзаца склеиваются обратно в один paragraph.target_text
+
+То есть paragraph в базе — это производное от segment translations, а не отдельный независимый перевод.
+
+Этап F. Сохранение в SQLite
+
+storage.py
+
+Порядок:
+
+вставить запись в books
+вставить записи в paragraphs
+вставить записи в segments
+обновить books.status = done
+6. API backend
+6.1. POST /translate-book
+
+Вход:
+
+{
+  "title": "Book title",
+  "source_lang": "en",
+  "target_lang": "ru",
+  "text": "raw text"
+}
+
+Что делает:
+
+запускает полный pipeline
+сохраняет книгу
+возвращает:
+{
+  "book_id": "book_001",
+  "status": "done",
+  "paragraph_count": 120,
+  "segment_count": 843
+}
+6.2. GET /books/{book_id}
+
+Возвращает метаданные книги:
+
+title
+langs
+status
+model_name
+6.3. GET /books/{book_id}/paragraphs
+
+Возвращает reader-ready структуру:
+
+{
+  "book_id": "book_001",
+  "paragraphs": [
+    {
+      "id": "p1",
+      "order_index": 0,
+      "source_text": "Hello world. My name is Forrest.",
+      "target_text": "Привет, мир. Меня зовут Форрест."
+    }
+  ]
+}
+
+Этого достаточно, чтобы Flutter уже отрисовал двуязычный reader.
+
+7. Конкретная работа с моделью
+7.1. Установка зависимостей
+pip install ctranslate2 transformers sentencepiece sacremoses fastapi uvicorn
+7.2. Конвертация модели в CTranslate2
+Для NLLB
+ct2-transformers-converter --model facebook/nllb-200-distilled-600M --output_dir ./engine/models/nllb-ct2
+
+Это официальный путь из документации CTranslate2 для NLLB.
+
+Для OPUS
+ct2-transformers-converter --model Helsinki-NLP/opus-mt-en-ru --output_dir ./engine/models/opus-en-ru-ct2
+
+Для MarianMT CTranslate2 показывает точно такой же формат конвертации через ct2-transformers-converter на примере OPUS-MT модели Helsinki-NLP.
+
+7.3. Базовая реализация translator.py
+Для NLLB
+
+Логика работы:
+
+загрузить tokenizer:
+tokenizer = transformers.AutoTokenizer.from_pretrained(
+    "facebook/nllb-200-distilled-600M",
+    src_lang="eng_Latn"
+)
+загрузить translator:
+translator = ctranslate2.Translator("./engine/models/nllb-ct2")
+для каждого батча:
+encode
+convert_ids_to_tokens
+target_prefix = [["rus_Cyrl"], ...]
+translate_batch
+взять hypotheses[0][1:]
+decode
+
+Эта схема прямо соответствует примеру CTranslate2 для NLLB.
+
+Для Marian / OPUS
+
+Логика проще:
+
+tokenizer:
+tokenizer = transformers.AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-en-ru")
+translator:
+translator = ctranslate2.Translator("./engine/models/opus-en-ru-ct2")
+батч:
+encode
+convert_ids_to_tokens
+translate_batch
+decode
+
+Эта схема соответствует примеру CTranslate2 для MarianMT.
+
+8. Взаимодействие Flutter и engine
+
+Здесь тоже должно быть однозначно.
+
+8.1. Импорт
+
+Flutter при выборе файла:
+
+читает .txt
+отправляет POST /translate-book
+ждёт book_id
+после ответа делает GET /books/{book_id}/paragraphs
+открывает reader screen
+8.2. Reader
+
+Reader получает список paragraphs и рисует каждый элемент как:
+
+[EN paragraph]
+[RU paragraph]
+
+Пока без хитрого UX, просто чистый vertical pair.
+
+8.3. Повторное открытие
+
+Если книга уже существует в базе:
+
+Flutter не отправляет повторный перевод
+Flutter делает только чтение из backend / storage
+9. Какие модули должны существовать физически
+text_loader.py
+
+Функции:
+
+normalize_text(raw_text: str) -> str
+segmenter.py
+
+Функции:
+
+split_paragraphs(text: str) -> list[str]
+split_sentences(paragraph_text: str) -> list[str]
+translator.py
+
+Классы:
+
+TranslationProvider
+NllbProvider
+OpusMarianProvider
+
+Функция верхнего уровня:
+
+translate_segments(...)
+assembler.py
+
+Функции:
+
+build_paragraph_target_text(segment_targets: list[str]) -> str
+storage.py
+
+Функции:
+
+create_schema_if_needed()
+insert_book(...)
+insert_paragraph(...)
+insert_segment(...)
+get_book(...)
+get_book_paragraphs(...)
+api.py
+
+Endpoints:
+
+GET /health
+POST /translate-book
+GET /books/{book_id}
+GET /books/{book_id}/paragraphs
+10. Что считать полностью завершённым этапом
+
+Этап считается пройденным, если выполняются все условия:
+
+.txt импортируется без ручной подготовки
+текст сохраняется как books + paragraphs + segments
+перевод выполняется локальной моделью через CTranslate2
+перевод идёт по sentence segments
+paragraph target text собирается из translated segments
+reader открывает EN + RU
+книга повторно открывается без нового перевода
+архитектура позволяет переключить backend между NLLB и OPUS без переписывания UI

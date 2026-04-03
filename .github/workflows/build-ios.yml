@@ -31,14 +31,16 @@ jobs:
       - name: Build iOS app without codesign
         run: flutter build ios --release --no-codesign
 
-      - name: Archive Runner.app
+      - name: Package unsigned IPA
         run: |
           cd build/ios/iphoneos
-          ditto -c -k --sequesterRsrc --keepParent Runner.app Runner.app.zip
+          mkdir -p Payload
+          cp -R Runner.app Payload/Runner.app
+          ditto -c -k --sequesterRsrc --keepParent Payload LEXO.ipa
 
       - name: Upload iOS artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-runner-app
-          path: app/build/ios/iphoneos/Runner.app.zip
+          name: ios-ipa
+          path: app/build/ios/iphoneos/LEXO.ipa
           if-no-files-found: error

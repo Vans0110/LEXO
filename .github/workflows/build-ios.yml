@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-ios:
-    runs-on: macos-latest
+    runs-on: macos-14
     defaults:
       run:
         working-directory: app
@@ -23,7 +23,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: 3.32.8
 
       - name: Install dependencies
         run: flutter pub get

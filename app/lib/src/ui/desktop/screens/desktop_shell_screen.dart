@@ -1,0 +1,190 @@
+import 'dart:developer' as developer;
+
+import 'package:file_selector/file_selector.dart';
+import 'package:flutter/material.dart';
+
+import '../../../api/api_client.dart';
+import '../../../models.dart';
+import '../../../screens/cards_list_screen.dart';
+import '../../../screens/home_screen.dart';
+import '../../../screens/reader_screen.dart';
+import 'desktop_settings_screen.dart';
+
+class DesktopShellScreen extends StatefulWidget {
+  const DesktopShellScreen({super.key, required this.api});
+
+  final LexoApiClient api;
+
+  @override
+  State<DesktopShellScreen> createState() => _DesktopShellScreenState();
+}
+
+class _DesktopShellScreenState extends State<DesktopShellScreen> {
+  int _selectedIndex = 0;
+  int _libraryReloadTick = 0;
+  int _cardsReloadTick = 0;
+  bool _settingsBusy = false;
+  String? _settingsError;
+  String? _activeBookId;
+  String? _activeBookTitle;
+
+  void _handleLibraryLoaded(LibraryPayload payload) {
+    final activeBookId = payload.activeBookId;
+    if (activeBookId == null || activeBookId.isEmpty) {
+      return;
+    }
+    LibraryBookItem? activeItem;
+    for (final item in payload.items) {
+      if (item.id == activeBookId) {
+        activeItem = item;
+        break;
+      }
+    }
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _activeBookId = activeBookId;
+      _activeBookTitle = activeItem?.title ?? _activeBookTitle;
+    });
+  }
+
+  void _handleBookOpened(LibraryBookItem item) {
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _activeBookId = item.id;
+      _activeBookTitle = item.title;
+      _selectedIndex = 1;
+      _settingsError = null;
+    });
+  }
+
+  Future<void> _pickAndImport() async {
+    const typeGroup = XTypeGroup(label: 'text', extensions: ['txt']);
+    final file = await openFile(acceptedTypeGroups: [typeGroup]);
+    if (file == null) {
+      return;
+    }
+    setState(() {
+      _settingsBusy = true;
+      _settingsError = null;
+    });
+    try {
+      developer.log('Desktop shell import: ${file.path}', name: 'LEXO_UI');
+      await widget.api.importBook(file.path);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _libraryReloadTick += 1;
+        _selectedIndex = 0;
+      });
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _settingsError = error.toString());
+    } finally {
+      if (mounted) {
+        setState(() => _settingsBusy = false);
+      }
+    }
+  }
+
+  void _refreshLibrary() {
+    setState(() {
+      _libraryReloadTick += 1;
+      _settingsError = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screens = [
+      HomeScreen(
+        api: widget.api,
+        onBookOpened: _handleBookOpened,
+        onLibraryLoaded: _handleLibraryLoaded,
+        reloadTick: _libraryReloadTick,
+      ),
+      _activeBookId == null
+          ? const _DesktopReaderPlaceholder()
+          : ReaderScreen(
+              key: ValueKey(_activeBookId),
+              api: widget.api,
+              bookId: _activeBookId!,
+            ),
+      CardsListScreen(
+        api: widget.api,
+        reloadTick: _cardsReloadTick,
+      ),
+      DesktopSettingsScreen(
+        currentBookTitle: _activeBookTitle,
+        busy: _settingsBusy,
+        errorText: _settingsError,
+        onImportBook: _pickAndImport,
+        onRefreshLibrary: _refreshLibrary,
+      ),
+    ];
+
+    return Scaffold(
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: screens,
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) => setState(() {
+          _selectedIndex = index;
+          if (index == 2) {
+            _cardsReloadTick += 1;
+          }
+        }),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.library_books_outlined),
+            selectedIcon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.menu_book_outlined),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'Reader',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.style_outlined),
+            selectedIcon: Icon(Icons.style),
+            label: 'Cards',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DesktopReaderPlaceholder extends StatelessWidget {
+  const _DesktopReaderPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Reader')),
+      body: const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'Откройте книгу во вкладке Library, чтобы перейти к чтению.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+}

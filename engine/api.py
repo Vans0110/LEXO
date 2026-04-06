@@ -176,6 +176,10 @@ class LexoHandler(BaseHTTPRequestHandler):
                 )
                 self._send_json(HTTPStatus.OK, result)
                 return
+            if path == "/cards/delete":
+                result = STORAGE.delete_saved_card(payload["card_id"])
+                self._send_json(HTTPStatus.OK, result)
+                return
             if path == "/saved-words/raw":
                 result = STORAGE.save_raw_word(payload["word"])
                 self._send_json(HTTPStatus.OK, result)

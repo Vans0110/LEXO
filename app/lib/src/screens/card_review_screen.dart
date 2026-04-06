@@ -19,7 +19,6 @@ class CardReviewScreen extends StatefulWidget {
 
 class _CardReviewScreenState extends State<CardReviewScreen> {
   late final List<SavedCardItem> _queue;
-  bool _revealed = false;
   bool _busy = false;
   int _completed = 0;
   int _advanced = 0;
@@ -57,7 +56,6 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
         } else {
           _difficult += 1;
         }
-        _revealed = false;
       });
     } catch (error) {
       if (!mounted) {
@@ -103,10 +101,8 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
                     const SizedBox(height: 24),
                     Expanded(
                       child: Dismissible(
-                        key: ValueKey('${current.id}-${_revealed ? 'open' : 'closed'}'),
-                        direction: _revealed
-                            ? DismissDirection.horizontal
-                            : DismissDirection.none,
+                        key: ValueKey(current.id),
+                        direction: DismissDirection.horizontal,
                         confirmDismiss: (direction) async {
                           await _applySwipe(
                             direction == DismissDirection.endToStart ? 'left' : 'right',
@@ -125,40 +121,29 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
                           label: 'Сложно',
                           icon: Icons.arrow_back,
                         ),
-                        child: _ReviewCard(
-                          item: current,
-                          revealed: _revealed,
-                          busy: _busy,
-                          onReveal: () => setState(() => _revealed = true),
-                        ),
+                        child: _ReviewCard(item: current),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    if (_revealed)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: _busy ? null : () => _applySwipe('left'),
-                              icon: const Icon(Icons.swipe_left),
-                              label: const Text('Не знаю'),
-                            ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: _busy ? null : () => _applySwipe('left'),
+                            icon: const Icon(Icons.swipe_left),
+                            label: const Text('Не знаю'),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: FilledButton.icon(
-                              onPressed: _busy ? null : () => _applySwipe('right'),
-                              icon: const Icon(Icons.swipe_right),
-                              label: const Text('Знаю'),
-                            ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: _busy ? null : () => _applySwipe('right'),
+                            icon: const Icon(Icons.swipe_right),
+                            label: const Text('Знаю'),
                           ),
-                        ],
-                      )
-                    else
-                      FilledButton(
-                        onPressed: _busy ? null : () => setState(() => _revealed = true),
-                        child: const Text('Показать ответ'),
-                      ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -168,121 +153,56 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
 }
 
 class _ReviewCard extends StatelessWidget {
-  const _ReviewCard({
-    required this.item,
-    required this.revealed,
-    required this.busy,
-    required this.onReveal,
-  });
+  const _ReviewCard({required this.item});
 
   final SavedCardItem item;
-  final bool revealed;
-  final bool busy;
-  final VoidCallback onReveal;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(28),
-        onTap: busy ? null : onReveal,
+    return SizedBox.expand(
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        color: colorScheme.surfaceContainerLow,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _TypeChip(type: item.cardType),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  item.progressLabel,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
               const Spacer(),
               Text(
                 item.headText,
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
               ),
-              if (!revealed && item.exampleText.trim().isNotEmpty) ...[
-                const SizedBox(height: 14),
-                Text(
-                  item.exampleText,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                ),
-              ],
-              if (revealed) ...[
-                const SizedBox(height: 18),
-                Text(
-                  item.translation,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-                if (item.morphLabel.trim().isNotEmpty && item.surfaceText != item.headText) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    '${item.surfaceText} -> ${item.morphLabel}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ],
-                if (item.grammarLabel.trim().isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    item.grammarLabel,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ],
-                if (item.exampleText.trim().isNotEmpty) ...[
-                  const SizedBox(height: 18),
-                  Text(
-                    item.exampleText,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                  if (item.exampleTranslation.trim().isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      item.exampleTranslation,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+              const SizedBox(height: 18),
+              Text(
+                item.translation,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w700,
                     ),
-                  ],
-                ],
-              ],
+              ),
               const Spacer(),
             ],
           ),
         ),
       ),
     );
-  }
-}
-
-class _TypeChip extends StatelessWidget {
-  const _TypeChip({required this.type});
-
-  final String type;
-
-  @override
-  Widget build(BuildContext context) {
-    String label;
-    if (type == 'phrase') {
-      label = 'Фраза';
-    } else if (type == 'grammar') {
-      label = 'Грамматика';
-    } else {
-      label = 'Слово';
-    }
-    return Chip(label: Text(label));
   }
 }
 

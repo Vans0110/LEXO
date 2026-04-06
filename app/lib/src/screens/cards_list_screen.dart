@@ -19,19 +19,9 @@ class CardsListScreen extends StatefulWidget {
 }
 
 class _CardsListScreenState extends State<CardsListScreen> {
-  static const List<_CardsFilter> _filters = [
-    _CardsFilter('all', 'Все'),
-    _CardsFilter('new', 'Новые'),
-    _CardsFilter('learning', 'Учу'),
-    _CardsFilter('known', 'Знаю'),
-    _CardsFilter('mastered', 'Закрепил'),
-  ];
-
   SavedCardsPayload? _payload;
   bool _busy = true;
   String? _error;
-  String _filter = 'all';
-  String _query = '';
 
   @override
   void initState() {
@@ -53,9 +43,7 @@ class _CardsListScreenState extends State<CardsListScreen> {
       _error = null;
     });
     try {
-      final payload = await widget.api.getSavedCards(
-        status: _filter == 'all' ? null : _filter,
-      );
+      final payload = await widget.api.getSavedCards();
       if (!mounted) {
         return;
       }
@@ -100,17 +88,51 @@ class _CardsListScreenState extends State<CardsListScreen> {
     }
   }
 
+  Future<void> _deleteCard(SavedCardItem item) async {
+    try {
+      await widget.api.deleteSavedCard(cardId: item.id);
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Удалено: ${item.headText}')),
+      );
+      await _load();
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не удалось удалить: $error')),
+      );
+    }
+  }
+
+  Future<bool> _confirmDelete(SavedCardItem item) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Удалить карточку?'),
+        content: Text('Карточка "${item.headText}" будет удалена из списка.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Отмена'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Удалить'),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final payload = _payload;
     final items = payload?.items ?? const <SavedCardItem>[];
-    final visible = items.where((item) {
-      if (_query.isEmpty) {
-        return true;
-      }
-      final haystack = '${item.headText} ${item.translation} ${item.lemma}'.toLowerCase();
-      return haystack.contains(_query);
-    }).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -127,46 +149,13 @@ class _CardsListScreenState extends State<CardsListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (payload != null) _SummaryStrip(summary: payload.summary),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Поиск карточек',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.search),
-                    ),
-                    onChanged: (value) => setState(() => _query = value.trim().toLowerCase()),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                FilledButton.icon(
-                  onPressed: _busy ? null : _startReview,
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('Review'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final filter in _filters)
-                  ChoiceChip(
-                    label: Text(filter.label),
-                    selected: _filter == filter.value,
-                    onSelected: (selected) async {
-                      if (!selected || _filter == filter.value) {
-                        return;
-                      }
-                      setState(() => _filter = filter.value);
-                      await _load();
-                    },
-                  ),
-              ],
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.icon(
+                onPressed: _busy ? null : _startReview,
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('Review'),
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -174,16 +163,37 @@ class _CardsListScreenState extends State<CardsListScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : _error != null
                       ? Center(child: Text(_error!))
-                      : visible.isEmpty
+                      : items.isEmpty
                           ? const Center(
                               child: Text('Карточек пока нет. Добавьте их из reader через long press.'),
                             )
                           : RefreshIndicator(
                               onRefresh: _load,
                               child: ListView.separated(
-                                itemCount: visible.length,
+                                itemCount: items.length,
                                 separatorBuilder: (_, __) => const SizedBox(height: 10),
-                                itemBuilder: (context, index) => _CardListTile(item: visible[index]),
+                                itemBuilder: (context, index) {
+                                  final item = items[index];
+                                  return Dismissible(
+                                    key: ValueKey(item.id),
+                                    direction: DismissDirection.startToEnd,
+                                    confirmDismiss: (_) async {
+                                      await _deleteCard(item);
+                                      return true;
+                                    },
+                                    background: const _DeleteBackground(),
+                                    child: _CardListTile(
+                                      item: item,
+                                      onLongPress: () async {
+                                        final confirmed = await _confirmDelete(item);
+                                        if (!confirmed) {
+                                          return;
+                                        }
+                                        await _deleteCard(item);
+                                      },
+                                    ),
+                                  );
+                                },
                               ),
                             ),
             ),
@@ -194,90 +204,99 @@ class _CardsListScreenState extends State<CardsListScreen> {
   }
 }
 
-class _SummaryStrip extends StatelessWidget {
-  const _SummaryStrip({required this.summary});
-
-  final CardsSummary summary;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: [
-        _SummaryChip(label: 'Всего', value: summary.total),
-        _SummaryChip(label: 'Новые', value: summary.fresh),
-        _SummaryChip(label: 'Учу', value: summary.learning),
-        _SummaryChip(label: 'Знаю', value: summary.known),
-        _SummaryChip(label: 'Закрепил', value: summary.mastered),
-      ],
-    );
-  }
-}
-
-class _SummaryChip extends StatelessWidget {
-  const _SummaryChip({required this.label, required this.value});
-
-  final String label;
-  final int value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Chip(label: Text('$label: $value'));
-  }
-}
-
 class _CardListTile extends StatelessWidget {
-  const _CardListTile({required this.item});
+  const _CardListTile({
+    required this.item,
+    this.onLongPress,
+  });
 
   final SavedCardItem item;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
-    String typeLabel;
-    if (item.cardType == 'phrase') {
-      typeLabel = 'phrase';
-    } else if (item.cardType == 'grammar') {
-      typeLabel = 'grammar';
-    } else {
-      typeLabel = 'lexical';
-    }
     return Card(
       margin: EdgeInsets.zero,
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        title: Text(item.headText),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(item.translation),
-            if (item.morphLabel.trim().isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                '${item.surfaceText} -> ${item.morphLabel}',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(typeLabel, style: Theme.of(context).textTheme.labelMedium),
-            const SizedBox(height: 4),
-            Text(item.progressLabel, style: Theme.of(context).textTheme.titleSmall),
-          ],
+      child: InkWell(
+        onLongPress: onLongPress,
+        borderRadius: BorderRadius.circular(12),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          title: Text(
+            item.headText,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.translation,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 10),
+                _ProgressStrip(score: item.progressScore),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class _CardsFilter {
-  const _CardsFilter(this.value, this.label);
+class _ProgressStrip extends StatelessWidget {
+  const _ProgressStrip({required this.score});
 
-  final String value;
-  final String label;
+  final int score;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        for (var index = 0; index < 7; index++) ...[
+          Expanded(
+            child: Container(
+              height: 6,
+              decoration: BoxDecoration(
+                color: index < score
+                    ? colorScheme.primary
+                    : colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          if (index < 6) const SizedBox(width: 4),
+        ],
+      ],
+    );
+  }
+}
+
+class _DeleteBackground extends StatelessWidget {
+  const _DeleteBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      alignment: Alignment.centerLeft,
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.delete_outline, color: Colors.red),
+          SizedBox(width: 8),
+          Text('Удалить', style: TextStyle(color: Colors.red)),
+        ],
+      ),
+    );
+  }
 }

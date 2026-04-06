@@ -518,7 +518,6 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   Future<void> _openSettings() async {
-    final hasRemoteTts = (_desktopBookId?.isNotEmpty ?? false);
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => MobileSettingsScreen(
@@ -526,25 +525,6 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
           currentBookTitle: _state.payload?.title,
           busy: _state.actionBusy,
           errorText: _state.error,
-          profiles: _state.ttsProfiles,
-          levels: _state.ttsLevels,
-          selectedVoiceId: _state.selectedVoiceId,
-          selectedLevelIds: _state.selectedLevelIds,
-          state: _state.ttsState,
-          onVoiceChanged: hasRemoteTts
-              ? (value) => setState(() => _state = _state.copyWith(selectedVoiceId: value))
-              : null,
-          onLevelToggle: hasRemoteTts
-              ? (levelId, selected) {
-                  if (!selected) {
-                    return;
-                  }
-                  setState(() => _state = _state.copyWith(selectedLevelIds: {levelId}));
-                  _applyPlaybackSpeed();
-                }
-              : null,
-          onGenerate: hasRemoteTts ? _generateVoice : null,
-          onOverwriteGenerate: hasRemoteTts ? _overwriteVoice : null,
         ),
       ),
     );

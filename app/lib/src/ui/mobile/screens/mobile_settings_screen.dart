@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../models.dart';
-import '../../../widgets/tts_panel.dart';
 
 class MobileSettingsScreen extends StatelessWidget {
   const MobileSettingsScreen({
@@ -15,15 +14,6 @@ class MobileSettingsScreen extends StatelessWidget {
     this.hostUrl,
     this.onEditHostUrl,
     this.onUpdateCurrentBook,
-    this.profiles = const [],
-    this.levels = const [],
-    this.selectedVoiceId,
-    this.selectedLevelIds = const {},
-    this.state,
-    this.onVoiceChanged,
-    this.onLevelToggle,
-    this.onGenerate,
-    this.onOverwriteGenerate,
   });
 
   final String title;
@@ -35,26 +25,9 @@ class MobileSettingsScreen extends StatelessWidget {
   final String? hostUrl;
   final VoidCallback? onEditHostUrl;
   final VoidCallback? onUpdateCurrentBook;
-  final List<TtsProfile> profiles;
-  final List<TtsLevel> levels;
-  final String? selectedVoiceId;
-  final Set<int> selectedLevelIds;
-  final TtsState? state;
-  final ValueChanged<String?>? onVoiceChanged;
-  final void Function(int levelId, bool selected)? onLevelToggle;
-  final VoidCallback? onGenerate;
-  final VoidCallback? onOverwriteGenerate;
 
   @override
   Widget build(BuildContext context) {
-    final hasTtsControls =
-        profiles.isNotEmpty &&
-        levels.isNotEmpty &&
-        onVoiceChanged != null &&
-        onLevelToggle != null &&
-        onGenerate != null &&
-        onOverwriteGenerate != null;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -71,7 +44,7 @@ class MobileSettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              const Text('Текущая книга для чтения и озвучки'),
+              const Text('Текущая книга'),
               const SizedBox(height: 20),
             ],
             if (onImportBook != null)
@@ -156,48 +129,6 @@ class MobileSettingsScreen extends StatelessWidget {
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
-            const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(Icons.graphic_eq),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'Озвучка',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    if (!hasTtsControls)
-                      const Text('Откройте книгу, чтобы управлять генерацией и скоростью.')
-                    else
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: TtsPanel(
-                          profiles: profiles,
-                          levels: levels,
-                          selectedVoiceId: selectedVoiceId,
-                          selectedLevelIds: selectedLevelIds,
-                          state: state,
-                          busy: busy,
-                          onVoiceChanged: onVoiceChanged!,
-                          onLevelToggle: onLevelToggle!,
-                          onGenerate: onGenerate!,
-                          onOverwriteGenerate: onOverwriteGenerate!,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
       ),

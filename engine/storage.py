@@ -962,7 +962,7 @@ class LexoStorage:
                 raise ValueError(f"Card not found: {card_id}")
             current_score = int(row["progress_score"] or 0)
             if normalized_direction == "right":
-                next_score = min(3, current_score + 1)
+                next_score = min(7, current_score + 1)
             else:
                 next_score = max(0, current_score - 1) if current_score > 1 else current_score
             next_status = self._status_for_score(next_score)
@@ -980,6 +980,26 @@ class LexoStorage:
         return {
             "ok": True,
             "item": self._saved_card_to_payload(updated),
+        }
+
+    def delete_saved_card(self, card_id: str) -> dict:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT *
+                FROM saved_cards
+                WHERE id = ?
+                LIMIT 1
+                """,
+                (card_id,),
+            ).fetchone()
+            if row is None:
+                raise ValueError(f"Card not found: {card_id}")
+            conn.execute("DELETE FROM saved_cards WHERE id = ?", (card_id,))
+        return {
+            "ok": True,
+            "deleted": True,
+            "item": self._saved_card_to_payload(row),
         }
 
     def list_saved_words(self) -> dict:
@@ -1103,9 +1123,9 @@ class LexoStorage:
     def _status_for_score(self, score: int) -> str:
         if score <= 0:
             return "new"
-        if score == 1:
+        if score <= 3:
             return "learning"
-        if score == 2:
+        if score <= 5:
             return "known"
         return "mastered"
 

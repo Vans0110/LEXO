@@ -135,6 +135,17 @@ class LexoApiClient {
     return SavedCardItem.fromJson(data['item'] as Map<String, dynamic>? ?? const {});
   }
 
+  Future<Map<String, dynamic>> deleteSavedCard({
+    required String cardId,
+  }) {
+    return _post(
+      '/cards/delete',
+      {
+        'card_id': cardId,
+      },
+    );
+  }
+
   Future<Map<String, dynamic>> saveWord(String word) {
     return _post('/saved-words/raw', {'word': word});
   }

@@ -270,8 +270,6 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
                       itemBuilder: (context, index) {
                         final item = library.items[index];
                         final opening = _openingBookId == item.id;
-                        final updating = _updatingBookId == item.id;
-                        final canUpdate = item.desktopBookId != null && item.desktopBookId!.isNotEmpty;
                         return DecoratedBox(
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
@@ -305,29 +303,9 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-                                Text('${item.sourceLang} -> ${item.targetLang} • ${item.modelName}'),
-                                const SizedBox(height: 4),
+                                Text('${item.sourceLang} -> ${item.targetLang}'),
+                                const SizedBox(height: 6),
                                 Text('Позиция ${item.currentParagraphIndex + 1}'),
-                                const SizedBox(height: 8),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.secondaryContainer,
-                                        borderRadius: BorderRadius.circular(999),
-                                      ),
-                                      child: Text(canUpdate ? 'Synced from Desktop' : 'Local Only'),
-                                    ),
-                                    if (canUpdate)
-                                      OutlinedButton(
-                                        onPressed: _busy || updating ? null : () => _updateBook(item),
-                                        child: Text(updating ? 'Updating...' : 'Update'),
-                                      ),
-                                  ],
-                                ),
                                 const SizedBox(height: 16),
                                 Row(
                                   children: [

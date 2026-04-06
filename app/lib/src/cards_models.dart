@@ -88,7 +88,7 @@ class SavedCardItem {
   bool get isPhrase => cardType == 'phrase';
   bool get isGrammar => cardType == 'grammar';
 
-  String get progressLabel => '$progressScore/3';
+  String get progressLabel => '$progressScore/7';
 
   factory SavedCardItem.fromJson(Map<String, dynamic> json) {
     return SavedCardItem(

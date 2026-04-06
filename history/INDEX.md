@@ -25,5 +25,9 @@
 - Файл: [2026-04-02.md](/mnt/d/Programs/LEXO/history/2026-04-02.md)
 
 ### 2026-04-03
-- Сессия: План MVP9 для mobile book package и локальной mobile library
+- Сессия: План MVP9 для mobile book package, локальной mobile library, разделения LAN host / Windows UI launcher, новый MVP11 для single-base TTS, MVP12 для bottom reader player и MVP13 для stable source render
 - Файл: [2026-04-03.md](/mnt/d/Programs/LEXO/history/2026-04-03.md)
+
+### 2026-04-06
+- Сессия: Формализация и реализация MVP14 detail sheet, desktop shell унификация и реализация основы MVP15 для cards list / swipe review
+- Файл: [2026-04-06.md](/mnt/d/Programs/LEXO/history/2026-04-06.md)

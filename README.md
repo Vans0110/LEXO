@@ -44,6 +44,14 @@ flutter run -d windows
 
 ## Запуск одним кликом
 
-Для запуска через Windows `.bat` используйте:
+Для mobile/shared LAN host:
 
-- `run_lexo_mvp.bat`
+- `run_lexo_engine_lan.bat`
+
+Для Windows UI с подключением к уже запущенному host:
+
+- `run_lexo_windows_ui_lan.bat`
+
+Старый combined desktop launcher сохранён как legacy-вариант:
+
+- `scripts/run_lexo_mvp.bat`

@@ -6,6 +6,38 @@ import re
 WORD_PATTERN = re.compile(r"[A-Za-zА-Яа-яЁё0-9]+(?:[-'][A-Za-zА-Яа-яЁё0-9]+)*")
 ARTICLE_WORDS = {"the", "a", "an"}
 COPULA_WORDS = {"is", "am", "are", "was", "were"}
+TARGET_FUNCTION_WORDS = {
+    "в",
+    "во",
+    "на",
+    "к",
+    "ко",
+    "с",
+    "со",
+    "из",
+    "от",
+    "до",
+    "у",
+    "по",
+    "под",
+    "над",
+    "при",
+    "для",
+    "без",
+    "через",
+    "после",
+    "перед",
+    "и",
+    "а",
+    "но",
+    "или",
+    "не",
+    "же",
+    "ли",
+    "о",
+    "об",
+    "обо",
+}
 PRONOUN_WORDS = {"i", "you", "he", "she", "it", "we", "they"}
 PREPOSITION_WORDS = {
     "at",
@@ -114,16 +146,26 @@ COMMON_VERB_WORDS = {
 PHRASAL_VERB_PAIRS = {
     ("wake", "up"),
     ("wakes", "up"),
+    ("woke", "up"),
     ("get", "up"),
     ("gets", "up"),
+    ("got", "up"),
     ("sit", "down"),
     ("sits", "down"),
+    ("sat", "down"),
     ("come", "back"),
     ("comes", "back"),
+    ("came", "back"),
     ("go", "out"),
     ("goes", "out"),
+    ("went", "out"),
     ("look", "out"),
     ("looks", "out"),
+    ("looked", "out"),
+    ("take", "off"),
+    ("takes", "off"),
+    ("took", "off"),
+    ("taken", "off"),
 }
 ANCHOR_TRANSLATIONS = {
     "chapter": {"глава"},
@@ -178,6 +220,7 @@ def build_word_mappings(
                 source_tokens=source_tokens,
                 source_index=source_index,
                 content_indices=content_indices,
+                target_tokens=target_tokens,
                 target_by_source_index=target_by_source_index,
             )
 
@@ -261,7 +304,7 @@ def build_tap_word_payloads(
         )
         effective_span_text = focus_text or unit["translation_span_text"]
         for word in unit["words"]:
-            payload_by_word_id[word["id"]] = {
+            payload = {
                 "id": word["id"],
                 "text": word["text"],
                 "order_index": word["order_index"],
@@ -273,6 +316,22 @@ def build_tap_word_payloads(
                 "translation_focus_text": effective_span_text,
                 "translation_right_text": right_text,
             }
+            for optional_key in (
+                "normalized_text",
+                "segment_id",
+                "segment_source_text",
+                "segment_target_text",
+                "lemma",
+                "pos",
+                "morph",
+                "lexical_unit_id",
+                "lexical_unit_type",
+                "grammar_hint",
+                "morph_label",
+            ):
+                if optional_key in word:
+                    payload[optional_key] = word[optional_key]
+            payload_by_word_id[word["id"]] = payload
     return [payload_by_word_id[word["id"]] for word in words]
 
 
@@ -290,6 +349,7 @@ def _resolve_function_target(
     source_tokens: list[dict],
     source_index: int,
     content_indices: list[int],
+    target_tokens: list[dict],
     target_by_source_index: dict[int, int | None],
 ) -> int | None:
     anchor_index = _resolve_anchor_source_index(
@@ -297,7 +357,16 @@ def _resolve_function_target(
         source_index=source_index,
         content_indices=content_indices,
     )
-    return target_by_source_index.get(anchor_index)
+    anchor_target_index = target_by_source_index.get(anchor_index)
+    if anchor_target_index is None:
+        return None
+
+    token = source_tokens[source_index]
+    if token["normalized"] in ARTICLE_WORDS and source_index < anchor_index and anchor_target_index > 0:
+        previous_target_index = anchor_target_index - 1
+        if _is_target_function_word(target_tokens[previous_target_index]):
+            return previous_target_index
+    return anchor_target_index
 
 
 def _resolve_anchor_source_index(
@@ -377,12 +446,29 @@ def _assign_window_range(
             target_by_source_index[source_index] = None
         return
 
-    target_count = target_end - target_start + 1
-    relative_targets = _assign_content_targets(len(source_content_indices), target_count)
+    target_indices = list(range(target_start, target_end + 1))
+    if _should_skip_leading_target_function_tokens(
+        source_tokens=source_tokens,
+        source_start=source_start,
+        source_content_indices=source_content_indices,
+        target_tokens=target_tokens,
+        target_indices=target_indices,
+    ):
+        trimmed_target_indices = list(target_indices)
+        while (
+            len(trimmed_target_indices) > len(source_content_indices)
+            and trimmed_target_indices
+            and _is_target_function_word(target_tokens[trimmed_target_indices[0]])
+        ):
+            trimmed_target_indices.pop(0)
+        if len(trimmed_target_indices) >= len(source_content_indices):
+            target_indices = trimmed_target_indices
+
+    relative_targets = _assign_content_targets(len(source_content_indices), len(target_indices))
     for position, source_index in enumerate(source_content_indices):
         relative_index = relative_targets[position]
         target_by_source_index[source_index] = (
-            None if relative_index is None else target_start + relative_index
+            None if relative_index is None else target_indices[relative_index]
         )
 
 
@@ -437,6 +523,29 @@ def _find_target_anchor_index(
         if target_tokens[index]["normalized"] in candidates:
             return index
     return None
+
+
+def _is_target_function_word(token: dict) -> bool:
+    return token["normalized"] in TARGET_FUNCTION_WORDS
+
+
+def _should_skip_leading_target_function_tokens(
+    source_tokens: list[dict],
+    source_start: int,
+    source_content_indices: list[int],
+    target_tokens: list[dict],
+    target_indices: list[int],
+) -> bool:
+    if not target_indices or not source_content_indices:
+        return False
+    if _word_normalized(source_tokens[source_start]) not in ARTICLE_WORDS:
+        return False
+    if len(source_content_indices) < 2:
+        return False
+    first_target_index = target_indices[0]
+    if not _is_target_function_word(target_tokens[first_target_index]):
+        return False
+    return True
 
 
 def _is_inheriting_function_word(token: dict) -> bool:
@@ -520,6 +629,23 @@ def _match_article_noun_phrase_unit(words: list[dict], index: int) -> dict | Non
     return _build_unit(words, index, scan_index, "article_noun_phrase")
 
 
+def _match_article_adjective_unit(words: list[dict], index: int) -> dict | None:
+    if _word_normalized(words[index]) not in ARTICLE_WORDS or index + 2 >= len(words):
+        return None
+    adjective_word = words[index + 1]
+    noun_word = words[index + 2]
+    if not _is_adjective_like(adjective_word):
+        return None
+    if not _is_noun_like(noun_word):
+        return None
+    next_index = index + 3
+    if next_index >= len(words):
+        return None
+    if _is_phrase_boundary(words[next_index]):
+        return None
+    return _build_unit(words, index, index + 1, "article_adjective")
+
+
 def _match_article_noun_unit(words: list[dict], index: int) -> dict | None:
     if _word_normalized(words[index]) not in ARTICLE_WORDS or index + 1 >= len(words):
         return None
@@ -582,6 +708,8 @@ def _resolve_unit_target(unit_words: list[dict], unit_type: str) -> tuple[int, i
         return _single_word_target(unit_words[0])
     if unit_type == "article_noun":
         return _single_word_target(unit_words[-1])
+    if unit_type == "article_adjective":
+        return _aggregate_target(unit_words)
     if unit_type == "article_noun_phrase":
         return _aggregate_target(unit_words[1:])
     return _aggregate_target(unit_words)

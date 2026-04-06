@@ -14,6 +14,7 @@ class ReaderTextFlow extends StatelessWidget {
     required this.selectedParagraphIndex,
     required this.selectedTapUnitId,
     required this.onWordTap,
+    required this.onWordLongPress,
   });
 
   final ReaderPayload payload;
@@ -23,6 +24,7 @@ class ReaderTextFlow extends StatelessWidget {
   final int? selectedParagraphIndex;
   final String? selectedTapUnitId;
   final void Function(ParagraphItem item, ParagraphWordItem word) onWordTap;
+  final void Function(ParagraphItem item, ParagraphWordItem word) onWordLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +47,13 @@ class ReaderTextFlow extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: InteractiveParagraphText(
-                    sourceText: item.sourceText,
+                    tokens: item.tokens,
                     words: item.words,
                     selectedTapUnitId: selectedParagraphIndex == item.index
                         ? selectedTapUnitId
                         : null,
                     onWordTap: (word) => onWordTap(item, word),
+                    onWordLongPress: (word) => onWordLongPress(item, word),
                   ),
                 );
               },

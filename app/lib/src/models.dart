@@ -115,24 +115,75 @@ class ParagraphItem {
     required this.index,
     required this.sourceText,
     required this.targetText,
+    required this.tokens,
     required this.words,
   });
 
   final int index;
   final String sourceText;
   final String targetText;
+  final List<ParagraphTokenItem> tokens;
   final List<ParagraphWordItem> words;
 
   factory ParagraphItem.fromJson(Map<String, dynamic> json) {
+    var tokens = (json['tokens'] as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>()
+        .map(ParagraphTokenItem.fromJson)
+        .toList();
     final words = (json['words'] as List<dynamic>? ?? const [])
         .cast<Map<String, dynamic>>()
         .map(ParagraphWordItem.fromJson)
         .toList();
+    final sourceText = json['source_text'] as String? ?? '';
+    if (tokens.isEmpty && sourceText.isNotEmpty) {
+      tokens = [
+        ParagraphTokenItem(
+          id: 'legacy_text',
+          text: sourceText,
+          kind: 'punctuation',
+          orderIndex: 0,
+          tapUnitId: null,
+          wordId: null,
+        ),
+      ];
+    }
     return ParagraphItem(
       index: json['index'] as int,
-      sourceText: json['source_text'] as String? ?? '',
+      sourceText: sourceText,
       targetText: json['target_text'] as String? ?? '',
+      tokens: tokens,
       words: words,
+    );
+  }
+}
+
+class ParagraphTokenItem {
+  const ParagraphTokenItem({
+    required this.id,
+    required this.text,
+    required this.kind,
+    required this.orderIndex,
+    required this.tapUnitId,
+    required this.wordId,
+  });
+
+  final String id;
+  final String text;
+  final String kind;
+  final int orderIndex;
+  final String? tapUnitId;
+  final String? wordId;
+
+  bool get isWord => kind == 'word';
+
+  factory ParagraphTokenItem.fromJson(Map<String, dynamic> json) {
+    return ParagraphTokenItem(
+      id: json['id'] as String? ?? '',
+      text: json['text'] as String? ?? '',
+      kind: json['kind'] as String? ?? 'punctuation',
+      orderIndex: json['order_index'] as int? ?? 0,
+      tapUnitId: json['tap_unit_id'] as String?,
+      wordId: json['word_id'] as String?,
     );
   }
 }
@@ -149,6 +200,15 @@ class ParagraphWordItem {
     required this.translationLeftText,
     required this.translationFocusText,
     required this.translationRightText,
+    this.segmentSourceText,
+    this.segmentTargetText,
+    this.lemma,
+    this.pos,
+    this.morph,
+    this.lexicalUnitId,
+    this.lexicalUnitType,
+    this.grammarHint,
+    this.morphLabel,
   });
 
   final String id;
@@ -161,6 +221,15 @@ class ParagraphWordItem {
   final String translationLeftText;
   final String translationFocusText;
   final String translationRightText;
+  final String? segmentSourceText;
+  final String? segmentTargetText;
+  final String? lemma;
+  final String? pos;
+  final String? morph;
+  final String? lexicalUnitId;
+  final String? lexicalUnitType;
+  final String? grammarHint;
+  final String? morphLabel;
 
   factory ParagraphWordItem.fromJson(Map<String, dynamic> json) {
     return ParagraphWordItem(
@@ -174,6 +243,15 @@ class ParagraphWordItem {
       translationLeftText: json['translation_left_text'] as String? ?? '',
       translationFocusText: json['translation_focus_text'] as String? ?? '',
       translationRightText: json['translation_right_text'] as String? ?? '',
+      segmentSourceText: json['segment_source_text'] as String?,
+      segmentTargetText: json['segment_target_text'] as String?,
+      lemma: json['lemma'] as String?,
+      pos: json['pos'] as String?,
+      morph: json['morph'] as String?,
+      lexicalUnitId: json['lexical_unit_id'] as String?,
+      lexicalUnitType: json['lexical_unit_type'] as String?,
+      grammarHint: json['grammar_hint'] as String?,
+      morphLabel: json['morph_label'] as String?,
     );
   }
 }
@@ -276,18 +354,18 @@ class TtsLevel {
   const TtsLevel({
     required this.id,
     required this.name,
-    required this.targetWpm,
+    required this.playbackSpeed,
   });
 
   final int id;
   final String name;
-  final int targetWpm;
+  final double playbackSpeed;
 
   factory TtsLevel.fromJson(Map<String, dynamic> json) {
     return TtsLevel(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
-      targetWpm: json['target_wpm'] as int? ?? 0,
+      playbackSpeed: (json['playback_speed'] as num?)?.toDouble() ?? 1.0,
     );
   }
 }

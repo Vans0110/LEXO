@@ -23,12 +23,7 @@ class MobileSettingsScreen extends StatelessWidget {
     this.onVoiceChanged,
     this.onLevelToggle,
     this.onGenerate,
-    this.onPause,
-    this.onResume,
-    this.onPrev,
-    this.onNext,
-    this.onStartJob,
-    this.onStopJob,
+    this.onOverwriteGenerate,
   });
 
   final String title;
@@ -48,12 +43,7 @@ class MobileSettingsScreen extends StatelessWidget {
   final ValueChanged<String?>? onVoiceChanged;
   final void Function(int levelId, bool selected)? onLevelToggle;
   final VoidCallback? onGenerate;
-  final VoidCallback? onPause;
-  final VoidCallback? onResume;
-  final VoidCallback? onPrev;
-  final VoidCallback? onNext;
-  final void Function(String jobId)? onStartJob;
-  final void Function(String jobId)? onStopJob;
+  final VoidCallback? onOverwriteGenerate;
 
   @override
   Widget build(BuildContext context) {
@@ -63,12 +53,7 @@ class MobileSettingsScreen extends StatelessWidget {
         onVoiceChanged != null &&
         onLevelToggle != null &&
         onGenerate != null &&
-        onPause != null &&
-        onResume != null &&
-        onPrev != null &&
-        onNext != null &&
-        onStartJob != null &&
-        onStopJob != null;
+        onOverwriteGenerate != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -192,7 +177,7 @@ class MobileSettingsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     if (!hasTtsControls)
-                      const Text('Откройте книгу, чтобы управлять озвучкой.')
+                      const Text('Откройте книгу, чтобы управлять генерацией и скоростью.')
                     else
                       Align(
                         alignment: Alignment.centerLeft,
@@ -206,12 +191,7 @@ class MobileSettingsScreen extends StatelessWidget {
                           onVoiceChanged: onVoiceChanged!,
                           onLevelToggle: onLevelToggle!,
                           onGenerate: onGenerate!,
-                          onPause: onPause!,
-                          onResume: onResume!,
-                          onPrev: onPrev!,
-                          onNext: onNext!,
-                          onStartJob: onStartJob!,
-                          onStopJob: onStopJob!,
+                          onOverwriteGenerate: onOverwriteGenerate!,
                         ),
                       ),
                   ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'api/api_client.dart';
-import 'screens/home_screen.dart';
+import 'ui/desktop/screens/desktop_shell_screen.dart';
 import 'ui/mobile/screens/mobile_shell_screen.dart';
 
 void runLexoApp() {
@@ -27,7 +27,7 @@ class LexoApp extends StatelessWidget {
           if (constraints.maxWidth < 760) {
             return MobileShellScreen(api: _api);
           }
-          return HomeScreen(api: _api);
+          return DesktopShellScreen(api: _api);
         },
       ),
     );

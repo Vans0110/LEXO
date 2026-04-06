@@ -124,6 +124,17 @@ class MobileBookPackageRepository {
     return audioFile.path;
   }
 
+  Future<void> deleteJobAudio({
+    required String localBookId,
+    required String jobId,
+  }) async {
+    final bookDir = await _bookDir(localBookId);
+    final audioDir = Directory('${bookDir.path}/audio/$jobId');
+    if (audioDir.existsSync()) {
+      await audioDir.delete(recursive: true);
+    }
+  }
+
   Future<Directory> _bookDir(String localBookId) async {
     final dir = await _libraryDir();
     return Directory('${dir.path}/$localBookId');

@@ -68,6 +68,7 @@ class LexoTtsService:
         voice_id: str,
         level_ids: list[int],
         mode: str = "play_from_current",
+        overwrite: bool = False,
     ) -> dict:
         status = self._book_status(book_id)
         if status is None:
@@ -77,17 +78,29 @@ class LexoTtsService:
             raise ValueError(
                 f"Voice '{voice_id}' is not available for provider '{self.provider.engine_id}'"
             )
-        if not level_ids:
-            raise ValueError("No TTS levels selected")
-
         paragraphs = self._paragraphs(book_id)
         start_index = int(status["current_paragraph_index"]) if mode == "play_from_current" else 0
-        profiles = [build_profile(int(level_id)) for level_id in level_ids]
+        profiles = [build_profile()]
         jobs_to_start: list[str] = []
         timestamp = datetime.now(timezone.utc).isoformat()
 
         with self._connect() as conn:
             for profile in profiles:
+                existing = conn.execute(
+                    """
+                    SELECT id, status, playback_state
+                    FROM tts_jobs
+                    WHERE book_id = ? AND voice_id = ?
+                    """,
+                    (book_id, voice_id),
+                ).fetchall()
+                if overwrite:
+                    self._delete_existing_job_artifacts(
+                        conn=conn,
+                        book_id=book_id,
+                        voice_id=voice_id,
+                        existing_rows=existing,
+                    )
                 chunks = build_tts_chunks(
                     paragraphs,
                     start_paragraph_index=start_index,
@@ -95,18 +108,14 @@ class LexoTtsService:
                 )
                 if not chunks:
                     raise ValueError("No text available for TTS")
-                existing = conn.execute(
-                    "SELECT id FROM tts_jobs WHERE book_id = ? AND voice_id = ? AND level_id = ?",
-                    (book_id, voice_id, profile.level_id),
-                ).fetchall()
                 for row in existing:
                     conn.execute("DELETE FROM tts_segments WHERE job_id = ?", (row["id"],))
                 conn.execute(
-                    "DELETE FROM tts_jobs WHERE book_id = ? AND voice_id = ? AND level_id = ?",
-                    (book_id, voice_id, profile.level_id),
+                    "DELETE FROM tts_jobs WHERE book_id = ? AND voice_id = ?",
+                    (book_id, voice_id),
                 )
                 job_id = str(uuid.uuid4())
-                audio_dir = self.tts_dir / book_id / self.provider.engine_id / voice_id / f"level_{profile.level_id}"
+                audio_dir = self.tts_dir / book_id / self.provider.engine_id / voice_id / "base"
                 audio_dir.mkdir(parents=True, exist_ok=True)
                 conn.execute(
                     """
@@ -172,6 +181,44 @@ class LexoTtsService:
         for job_id in jobs_to_start:
             self._start_worker(job_id)
         return self.get_state(book_id)
+
+    def _delete_existing_job_artifacts(
+        self,
+        *,
+        conn: sqlite3.Connection,
+        book_id: str,
+        voice_id: str,
+        existing_rows: list[sqlite3.Row],
+    ) -> None:
+        for row in existing_rows:
+            if row["status"] in {"queued", "generating"}:
+                raise ValueError("Cannot overwrite TTS while generation is in progress")
+
+        audio_rows = conn.execute(
+            """
+            SELECT audio_path
+            FROM tts_segments
+            WHERE book_id = ? AND voice_id = ? AND job_id IN (
+                SELECT id
+                FROM tts_jobs
+                WHERE book_id = ? AND voice_id = ?
+            )
+            """,
+            (book_id, voice_id, book_id, voice_id),
+        ).fetchall()
+        for audio_row in audio_rows:
+            audio_path_raw = str(audio_row["audio_path"] or "")
+            if not audio_path_raw:
+                continue
+            audio_path = Path(audio_path_raw)
+            if audio_path.exists() and audio_path.is_file():
+                audio_path.unlink(missing_ok=True)
+
+        audio_dir = self.tts_dir / book_id / self.provider.engine_id / voice_id / "base"
+        if audio_dir.exists() and audio_dir.is_dir():
+            for child in audio_dir.iterdir():
+                if child.is_file():
+                    child.unlink(missing_ok=True)
 
     def start_playback(self, *, book_id: str, job_id: str) -> dict:
         with self._connect() as conn:
@@ -321,7 +368,7 @@ class LexoTtsService:
                 rate=float(job["rate"]),
                 pause_scale=float(job["pause_scale"]),
             )
-            cache_dir = self.tts_dir / job["book_id"] / self.provider.engine_id / job["voice_id"] / f"level_{profile.level_id}"
+            cache_dir = self.tts_dir / job["book_id"] / self.provider.engine_id / job["voice_id"] / "base"
             cache_dir.mkdir(parents=True, exist_ok=True)
 
             for row in rows:

@@ -5,6 +5,7 @@ import re
 from ..segmenter import split_sentences
 from .tts_models import SpeechProfile
 from .tts_models import TtsChunk
+from .tts_text_normalizer import normalize_text_for_tts
 
 
 MIN_SPLIT_WORDS = 6
@@ -49,7 +50,7 @@ def build_tts_chunks(
     start_paragraph_index: int = 0,
     profile: SpeechProfile | None = None,
 ) -> list[TtsChunk]:
-    policy = _resolve_policy(profile.target_wpm if profile is not None else 145)
+    policy = _resolve_policy()
     pause_scale = profile.pause_scale if profile is not None else 1.0
     chunks: list[TtsChunk] = []
     order_index = 0
@@ -77,7 +78,7 @@ def build_tts_chunks(
                         order_index=order_index,
                         paragraph_index=paragraph_index,
                         source_text=_join_parts(current_parts),
-                        synthesis_text=_join_parts(current_parts),
+                        synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
                         pause_after_ms=pause_after_ms,
                     )
                 )
@@ -94,7 +95,7 @@ def build_tts_chunks(
                             order_index=order_index,
                             paragraph_index=paragraph_index,
                             source_text=_join_parts(current_parts),
-                            synthesis_text=_join_parts(current_parts),
+                            synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
                             pause_after_ms=pause_after_ms,
                         )
                     )
@@ -111,7 +112,7 @@ def build_tts_chunks(
                             order_index=order_index,
                             paragraph_index=paragraph_index,
                             source_text=_join_parts(current_parts),
-                            synthesis_text=_join_parts(current_parts),
+                            synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
                             pause_after_ms=pause_after_ms,
                         )
                     )
@@ -129,7 +130,7 @@ def build_tts_chunks(
                             order_index=order_index,
                             paragraph_index=paragraph_index,
                             source_text=_join_parts(current_parts),
-                            synthesis_text=_join_parts(current_parts),
+                            synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
                             pause_after_ms=pause_after_ms,
                         )
                     )
@@ -160,7 +161,7 @@ def build_tts_chunks(
                     order_index=order_index,
                     paragraph_index=paragraph_index,
                     source_text=_join_parts(current_parts),
-                    synthesis_text=_join_parts(current_parts),
+                    synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
                     pause_after_ms=pause_after_ms,
                 )
             )
@@ -175,7 +176,7 @@ def build_tts_chunks(
                     order_index=order_index,
                     paragraph_index=paragraph_index,
                     source_text=_join_parts(current_parts),
-                    synthesis_text=_join_parts(current_parts),
+                    synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
                     pause_after_ms=pause_after_ms,
                 )
             )
@@ -394,32 +395,10 @@ def _first_word(text: str) -> str:
     return _normalize_word(parts[0]) if parts else ""
 
 
-def _resolve_policy(target_wpm: int) -> dict[str, int | str]:
-    if target_wpm <= 90:
-        return {
-            "target_chunk_chars": 90,
-            "soft_max_chunk_chars": 120,
-            "hard_max_chunk_chars": 150,
-            "boundary_strictness": "max",
-        }
-    if target_wpm <= 120:
-        return {
-            "target_chunk_chars": 125,
-            "soft_max_chunk_chars": 160,
-            "hard_max_chunk_chars": 210,
-            "boundary_strictness": "high",
-        }
-    if target_wpm <= 145:
-        return {
-            "target_chunk_chars": 160,
-            "soft_max_chunk_chars": 220,
-            "hard_max_chunk_chars": 280,
-            "boundary_strictness": "medium",
-        }
+def _resolve_policy() -> dict[str, int | str]:
     return {
         "target_chunk_chars": 200,
         "soft_max_chunk_chars": 280,
         "hard_max_chunk_chars": 360,
         "boundary_strictness": "moderate",
     }
-

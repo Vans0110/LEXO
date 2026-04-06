@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
 import '../api/api_client.dart';
+import '../detail_sheet_models.dart';
 import '../features/reader/reader_feature.dart';
 import '../models.dart';
+import '../widgets/reader_detail_sheet.dart';
 import '../widgets/reader_text_flow.dart';
+import '../widgets/reader_playback_bar.dart';
 import '../widgets/tts_panel.dart';
 
 class ReaderScreen extends StatefulWidget {
@@ -29,6 +32,54 @@ class _ReaderScreenState extends State<ReaderScreen> {
   ReaderFeatureState _state = const ReaderFeatureState();
   late final Player _audioPlayer;
   Timer? _pollTimer;
+  bool _playerExpanded = true;
+
+  double _selectedPlaybackSpeed() {
+    final selectedId = _state.selectedLevelIds.isEmpty ? null : _state.selectedLevelIds.first;
+    if (selectedId == null) {
+      return 1.0;
+    }
+    for (final level in _state.ttsLevels) {
+      if (level.id == selectedId) {
+        return level.playbackSpeed;
+      }
+    }
+    return 1.0;
+  }
+
+  Future<void> _applyPlaybackSpeed() async {
+    await _audioPlayer.setRate(_selectedPlaybackSpeed());
+  }
+
+  TtsJobItem? _selectedJob() {
+    final voiceId = _state.selectedVoiceId;
+    if (voiceId == null) {
+      return null;
+    }
+    for (final job in _state.ttsState?.jobs ?? const <TtsJobItem>[]) {
+      if (job.voiceId == voiceId) {
+        return job;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _togglePlayPause() async {
+    final activeJob = _state.ttsState?.activeJob;
+    if (activeJob != null && activeJob.isActive) {
+      if (activeJob.playbackState == 'playing') {
+        await _controlPlayback('pause');
+      } else if (activeJob.playbackState == 'paused') {
+        await _controlPlayback('resume');
+      }
+      return;
+    }
+    final selectedJob = _selectedJob();
+    if (selectedJob == null || !selectedJob.isReady) {
+      return;
+    }
+    await _startPlayback(selectedJob.jobId);
+  }
 
   @override
   void initState() {
@@ -88,6 +139,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
           loading: false,
         );
       });
+      await _applyPlaybackSpeed();
       _syncPolling(result.ttsState);
     } catch (error) {
       if (!mounted) {
@@ -124,16 +176,26 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   Future<void> _generateVoice() async {
+    await _runGenerateVoice(overwrite: false);
+  }
+
+  Future<void> _overwriteVoice() async {
+    await _runGenerateVoice(overwrite: true);
+  }
+
+  Future<void> _runGenerateVoice({required bool overwrite}) async {
     final voiceId = _state.selectedVoiceId;
     if (voiceId == null || _state.selectedLevelIds.isEmpty) {
       return;
     }
     setState(() => _state = _state.copyWith(actionBusy: true, clearError: true));
     try {
+      await _audioPlayer.stop();
       final state = await _controller.generateTts(
         bookId: widget.bookId,
         voiceId: voiceId,
         levelIds: [_state.selectedLevelIds.first],
+        overwrite: overwrite,
       );
       if (!mounted) {
         return;
@@ -164,6 +226,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
         return;
       }
       setState(() => _state = _state.copyWith(ttsState: state));
+      await _applyPlaybackSpeed();
       await _playCurrentSegment();
     } catch (error) {
       if (!mounted) {
@@ -197,6 +260,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
       }
       setState(() => _state = _state.copyWith(ttsState: state));
       if (action == 'resume') {
+        await _applyPlaybackSpeed();
         await _audioPlayer.play();
       } else if (action == 'next' || action == 'prev') {
         await _playCurrentSegment();
@@ -255,6 +319,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     }
     await _audioPlayer.stop();
     await _audioPlayer.open(Media(segment.audioPath), play: true);
+    await _applyPlaybackSpeed();
   }
 
   Future<void> _handleTrackCompleted() async {
@@ -307,11 +372,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
     final focusText = word.translationFocusText.trim().isNotEmpty
         ? word.translationFocusText
         : word.translationSpanText;
-    debugPrint(
-      'WORD_TAP paragraph=${item.index} word="${word.text}" unit="${word.sourceUnitText}" ru="${focusText.isNotEmpty ? focusText : word.text}" '
-      'span="${word.translationSpanText}" anchor="${word.anchorWordId ?? ''}" '
-      'left="${word.translationLeftText}" right="${word.translationRightText}"',
-    );
     setState(() {
       _state = _state.copyWith(
         selectedParagraphIndex: item.index,
@@ -322,6 +382,63 @@ class _ReaderScreenState extends State<ReaderScreen> {
       );
     });
     _savePosition(item.index);
+  }
+
+  Future<void> _handleWordLongPress(ParagraphItem item, ParagraphWordItem word) async {
+    _handleWordTap(item, word);
+    DetailSheetPayload payload;
+    try {
+      payload = await _controller.getDetailSheet(
+        bookId: widget.bookId,
+        wordId: word.id,
+      );
+    } catch (_) {
+      payload = DetailSheetPayload.fromSelection(item: item, word: word);
+    }
+    _logDetailSheet(item.index, word, payload);
+    if (!mounted) {
+      return;
+    }
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: false,
+      builder: (_) => FractionallySizedBox(
+        heightFactor: 0.72,
+        child: ReaderDetailSheet(
+          payload: payload,
+          onSaveUnit: (unit) => _saveDetailUnit(word.id, unit),
+        ),
+      ),
+    );
+  }
+
+  Future<String?> _saveDetailUnit(String wordId, DetailSheetUnitItem unit) async {
+    try {
+      final result = await _controller.saveDetailUnit(
+        bookId: widget.bookId,
+        wordId: wordId,
+        unitId: unit.id,
+      );
+      final saved = result['saved'] as bool? ?? false;
+      return saved ? 'Добавлено в Cards' : 'Карточка уже есть';
+    } catch (error) {
+      return 'Не удалось добавить: $error';
+    }
+  }
+
+  void _logDetailSheet(int paragraphIndex, ParagraphWordItem word, DetailSheetPayload payload) {
+    final unitsText = payload.units
+        .map(
+          (unit) => '[${unit.type}] text="${unit.text}" surface="${unit.surfaceText}" '
+              'translation="${unit.translation}" hint="${unit.grammarHint}" morph="${unit.morphLabel}"',
+        )
+        .join(' | ');
+    debugPrint(
+      'DETAIL_SHEET_OPEN paragraph=$paragraphIndex word="${word.text}" '
+      'selected_block="${payload.sheetSourceText}" block_translation="${payload.sheetTranslationText}" '
+      'units=${payload.units.length} $unitsText',
+    );
   }
 
   @override
@@ -364,25 +481,51 @@ class _ReaderScreenState extends State<ReaderScreen> {
                                 return;
                               }
                               setState(() => _state = _state.copyWith(selectedLevelIds: {levelId}));
+                              _applyPlaybackSpeed();
                             },
                             onGenerate: _generateVoice,
-                            onPause: () => _controlPlayback('pause'),
-                            onResume: () => _controlPlayback('resume'),
-                            onPrev: () => _controlPlayback('prev'),
-                            onNext: () => _controlPlayback('next'),
-                            onStartJob: _startPlayback,
-                            onStopJob: _stopJob,
+                            onOverwriteGenerate: _overwriteVoice,
                           ),
                         ),
                         Expanded(
-                          child: ReaderTextFlow(
-                            payload: payload,
-                            translationLeftText: _state.translationLeftText,
-                            translationFocusText: _state.translationFocusText,
-                            translationRightText: _state.translationRightText,
-                            selectedParagraphIndex: _state.selectedParagraphIndex,
-                            selectedTapUnitId: _state.selectedTapUnitId,
-                            onWordTap: _handleWordTap,
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: ReaderTextFlow(
+                                  payload: payload,
+                                  translationLeftText: _state.translationLeftText,
+                                  translationFocusText: _state.translationFocusText,
+                                  translationRightText: _state.translationRightText,
+                                  selectedParagraphIndex: _state.selectedParagraphIndex,
+                                  selectedTapUnitId: _state.selectedTapUnitId,
+                                  onWordTap: _handleWordTap,
+                                  onWordLongPress: _handleWordLongPress,
+                                ),
+                              ),
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                child: ReaderPlaybackBar(
+                                  expanded: _playerExpanded,
+                                  hasPlayableJob: _selectedJob()?.isReady ?? false,
+                                  isPlaying: ttsState?.activeJob?.playbackState == 'playing',
+                                  isPaused: ttsState?.activeJob?.playbackState == 'paused',
+                                  busy: _state.actionBusy,
+                                  onToggleExpand: () =>
+                                      setState(() => _playerExpanded = !_playerExpanded),
+                                  onPlayPause: _togglePlayPause,
+                                  onStop: () {
+                                    final activeJob = _state.ttsState?.activeJob;
+                                    if (activeJob != null) {
+                                      _stopJob(activeJob.jobId);
+                                    }
+                                  },
+                                  onPrev: () => _controlPlayback('prev'),
+                                  onNext: () => _controlPlayback('next'),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 import shutil
 import sqlite3
 import uuid
@@ -8,12 +9,20 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .assembler import assemble_paragraph
+from .lexical_enrichment import (
+    build_unit_lemma_text,
+    build_unit_surface_text,
+    direct_meaning_for_word,
+    enrich_words,
+    grammar_hint_for_word,
+    morph_label_for_word,
+)
 from .segmenter import split_paragraphs, split_sentences
 from .text_loader import normalize_text
 from .translator import TranslationProvider, create_default_provider
 from .tts.tts_provider import TtsProvider, create_default_tts_provider
 from .tts.tts_service import LexoTtsService
-from .word_alignment import build_tap_word_payloads, build_word_mappings
+from .word_alignment import build_context_window, build_tap_word_payloads, build_word_mappings
 
 
 ACTIVE_BOOK_STATE_KEY = "active_book_id"
@@ -112,6 +121,38 @@ class LexoStorage:
                     confidence REAL NOT NULL DEFAULT 0.0,
                     FOREIGN KEY(source_word_id) REFERENCES source_words(id)
                 );
+                CREATE TABLE IF NOT EXISTS saved_words (
+                    id TEXT PRIMARY KEY,
+                    book_id TEXT,
+                    word TEXT NOT NULL,
+                    lemma TEXT NOT NULL,
+                    translation TEXT NOT NULL,
+                    unit_type TEXT NOT NULL DEFAULT 'LEXICAL',
+                    added_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS saved_cards (
+                    id TEXT PRIMARY KEY,
+                    card_type TEXT NOT NULL,
+                    head_text TEXT NOT NULL,
+                    surface_text TEXT NOT NULL,
+                    lemma TEXT NOT NULL,
+                    translation TEXT NOT NULL,
+                    example_text TEXT NOT NULL,
+                    example_translation TEXT NOT NULL,
+                    pos TEXT NOT NULL DEFAULT '',
+                    grammar_label TEXT NOT NULL DEFAULT '',
+                    morph_label TEXT NOT NULL DEFAULT '',
+                    source_book_id TEXT,
+                    source_paragraph_id TEXT,
+                    source_segment_id TEXT,
+                    source_word_id TEXT,
+                    source_unit_id TEXT,
+                    created_at TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'new',
+                    progress_score INTEGER NOT NULL DEFAULT 0,
+                    review_count INTEGER NOT NULL DEFAULT 0,
+                    last_reviewed_at TEXT
+                );
                 CREATE TABLE IF NOT EXISTS tts_profiles (
                     id TEXT PRIMARY KEY,
                     engine_id TEXT NOT NULL,
@@ -155,11 +196,21 @@ class LexoStorage:
                 ON source_words(segment_id, order_index_in_segment);
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_source_words_paragraph_order
                 ON source_words(paragraph_id, order_index_in_paragraph);
+                CREATE UNIQUE INDEX IF NOT EXISTS idx_saved_words_unique
+                ON saved_words(COALESCE(book_id, ''), lemma, translation, unit_type);
+                CREATE UNIQUE INDEX IF NOT EXISTS idx_saved_cards_unique
+                ON saved_cards(
+                    COALESCE(source_book_id, ''),
+                    card_type,
+                    lemma,
+                    translation
+                );
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_tts_segments_job_order
                 ON tts_segments(job_id, segment_index);
                 """
             )
             self._ensure_book_columns(conn)
+            self._ensure_source_word_columns(conn)
             self._ensure_tts_columns(conn)
 
     def _ensure_book_columns(self, conn: sqlite3.Connection) -> None:
@@ -168,6 +219,19 @@ class LexoStorage:
             conn.execute("ALTER TABLE books ADD COLUMN source_path TEXT")
         if "last_opened_at" not in columns:
             conn.execute("ALTER TABLE books ADD COLUMN last_opened_at TEXT")
+
+    def _ensure_source_word_columns(self, conn: sqlite3.Connection) -> None:
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(source_words)").fetchall()}
+        additions = {
+            "lemma": "TEXT",
+            "pos": "TEXT",
+            "morph": "TEXT",
+            "lexical_unit_id": "TEXT",
+            "lexical_unit_type": "TEXT",
+        }
+        for name, definition in additions.items():
+            if name not in columns:
+                conn.execute(f"ALTER TABLE source_words ADD COLUMN {name} {definition}")
 
     def _ensure_tts_columns(self, conn: sqlite3.Connection) -> None:
         job_columns = {row["name"] for row in conn.execute("PRAGMA table_info(tts_jobs)").fetchall()}
@@ -475,7 +539,8 @@ class LexoStorage:
             word_rows = conn.execute(
                 """
                 SELECT sw.id, sw.paragraph_id, sw.order_index_in_paragraph, sw.surface_text, sw.normalized_text, sw.anchor_source_word_id,
-                       sw.segment_id, segments.target_text AS segment_target_text,
+                       sw.lemma, sw.pos, sw.morph, sw.lexical_unit_id, sw.lexical_unit_type,
+                       sw.segment_id, segments.source_text AS segment_source_text, segments.target_text AS segment_target_text,
                        wa.target_start_index, wa.target_end_index, wa.target_text
                 FROM source_words sw
                 JOIN segments ON segments.id = sw.segment_id
@@ -501,7 +566,15 @@ class LexoStorage:
                     "target_start_index": int(word_row["target_start_index"]) if word_row["target_start_index"] is not None else -1,
                     "target_end_index": int(word_row["target_end_index"]) if word_row["target_end_index"] is not None else -1,
                     "translation_span_text": word_row["target_text"] or "",
+                    "segment_source_text": str(word_row["segment_source_text"] or ""),
                     "segment_target_text": str(word_row["segment_target_text"] or ""),
+                    "lemma": str(word_row["lemma"] or ""),
+                    "pos": str(word_row["pos"] or ""),
+                    "morph": str(word_row["morph"] or ""),
+                    "lexical_unit_id": str(word_row["lexical_unit_id"] or ""),
+                    "lexical_unit_type": str(word_row["lexical_unit_type"] or ""),
+                    "grammar_hint": grammar_hint_for_word(word_row),
+                    "morph_label": morph_label_for_word(word_row),
                 }
             )
         for (paragraph_id, _segment_id), segment_words in words_by_segment.items():
@@ -526,15 +599,98 @@ class LexoStorage:
                     "index": item["order_index"],
                     "source_text": item["source_text"],
                     "target_text": item["target_text"],
-                    "words": words_by_paragraph.get(str(item["id"]))
-                    or self._build_runtime_word_payload(
+                    "words": paragraph_words,
+                    "tokens": self._build_reader_tokens(
                         source_text=item["source_text"],
-                        target_text=item["target_text"],
+                        words=paragraph_words,
                     ),
                 }
                 for item in paragraph_rows
+                for paragraph_words in [
+                    words_by_paragraph.get(str(item["id"]))
+                    or self._build_runtime_word_payload(
+                        source_text=item["source_text"],
+                        target_text=item["target_text"],
+                    )
+                ]
             ],
         }
+
+    def _build_reader_tokens(self, source_text: str, words: list[dict]) -> list[dict]:
+        if not source_text:
+            return []
+
+        tokens: list[dict] = []
+        cursor = 0
+        previous_word: dict | None = None
+
+        for word in words:
+            word_text = str(word.get("text") or "")
+            if not word_text:
+                continue
+
+            match_index = source_text.find(word_text, cursor)
+            if match_index < 0:
+                match_index = cursor
+
+            if match_index > cursor:
+                self._append_gap_tokens(
+                    tokens=tokens,
+                    gap_text=source_text[cursor:match_index],
+                    tap_unit_id=self._resolve_gap_tap_unit_id(previous_word, word),
+                )
+
+            tokens.append(
+                {
+                    "id": f"t_{len(tokens)}",
+                    "text": word_text,
+                    "kind": "word",
+                    "order_index": len(tokens),
+                    "tap_unit_id": word.get("tap_unit_id"),
+                    "word_id": word.get("id"),
+                }
+            )
+            cursor = match_index + len(word_text)
+            previous_word = word
+
+        if cursor < len(source_text):
+            self._append_gap_tokens(
+                tokens=tokens,
+                gap_text=source_text[cursor:],
+                tap_unit_id=None,
+            )
+
+        return tokens
+
+    def _append_gap_tokens(
+        self,
+        tokens: list[dict],
+        gap_text: str,
+        tap_unit_id: str | None,
+    ) -> None:
+        if not gap_text:
+            return
+
+        for piece in re.findall(r"\s+|[^\s]+", gap_text):
+            tokens.append(
+                {
+                    "id": f"t_{len(tokens)}",
+                    "text": piece,
+                    "kind": "whitespace" if piece.isspace() else "punctuation",
+                    "order_index": len(tokens),
+                    "tap_unit_id": tap_unit_id,
+                    "word_id": None,
+                }
+            )
+
+    def _resolve_gap_tap_unit_id(self, previous_word: dict | None, next_word: dict | None) -> str | None:
+        if previous_word is None or next_word is None:
+            return None
+        previous_unit_id = previous_word.get("tap_unit_id")
+        next_unit_id = next_word.get("tap_unit_id")
+        if previous_unit_id and previous_unit_id == next_unit_id:
+            return str(previous_unit_id)
+        return None
 
     def save_reader_position(self, book_id: str, paragraph_index: int) -> dict:
         with self._connect() as conn:
@@ -549,6 +705,410 @@ class LexoStorage:
     def get_tts_profiles(self) -> dict:
         return self.tts_service.get_profiles()
 
+    def get_detail_sheet(self, book_id: str, word_id: str) -> dict:
+        with self._connect() as conn:
+            resolved_book_id = self._resolve_book_id(conn, book_id)
+            if resolved_book_id is None:
+                raise ValueError(f"Book not found: {book_id}")
+            selected_row = conn.execute(
+                """
+                SELECT paragraph_id
+                FROM source_words
+                WHERE id = ? AND book_id = ?
+                """,
+                (word_id, resolved_book_id),
+            ).fetchone()
+            if selected_row is None:
+                raise ValueError(f"Word not found: {word_id}")
+            paragraph_id = str(selected_row["paragraph_id"])
+            word_rows = conn.execute(
+                """
+                SELECT sw.id, sw.paragraph_id, sw.segment_id, sw.order_index_in_paragraph, sw.surface_text, sw.normalized_text,
+                       sw.anchor_source_word_id, sw.lemma, sw.pos, sw.morph, sw.lexical_unit_id, sw.lexical_unit_type,
+                       segments.source_text AS segment_source_text, segments.target_text AS segment_target_text,
+                       wa.target_start_index, wa.target_end_index, wa.target_text
+                FROM source_words sw
+                JOIN segments ON segments.id = sw.segment_id
+                LEFT JOIN word_alignments wa ON wa.source_word_id = sw.id
+                WHERE sw.book_id = ? AND sw.paragraph_id = ?
+                ORDER BY sw.segment_id, sw.order_index_in_segment
+                """,
+                (resolved_book_id, paragraph_id),
+            ).fetchall()
+
+        paragraph_words = [
+            {
+                "id": str(word_row["id"]),
+                "segment_id": str(word_row["segment_id"]),
+                "text": str(word_row["surface_text"]),
+                "normalized_text": str(word_row["normalized_text"]),
+                "order_index": int(word_row["order_index_in_paragraph"]),
+                "anchor_word_id": word_row["anchor_source_word_id"],
+                "target_start_index": int(word_row["target_start_index"]) if word_row["target_start_index"] is not None else -1,
+                "target_end_index": int(word_row["target_end_index"]) if word_row["target_end_index"] is not None else -1,
+                "translation_span_text": str(word_row["target_text"] or ""),
+                "segment_source_text": str(word_row["segment_source_text"] or ""),
+                "segment_target_text": str(word_row["segment_target_text"] or ""),
+                "lemma": str(word_row["lemma"] or ""),
+                "pos": str(word_row["pos"] or ""),
+                "morph": str(word_row["morph"] or ""),
+                "lexical_unit_id": str(word_row["lexical_unit_id"] or ""),
+                "lexical_unit_type": str(word_row["lexical_unit_type"] or ""),
+                "grammar_hint": grammar_hint_for_word(word_row),
+                "morph_label": morph_label_for_word(word_row),
+            }
+            for word_row in word_rows
+        ]
+        tap_words = self._build_detail_tap_words(paragraph_words)
+        selected_word = next((item for item in tap_words if item["id"] == word_id), None)
+        if selected_word is None:
+            raise ValueError(f"Word not found in reader payload: {word_id}")
+
+        selected_tap_unit_id = str(selected_word.get("tap_unit_id") or "")
+        selected_unit_words = [
+            item
+            for item in tap_words
+            if str(item.get("tap_unit_id") or "") == selected_tap_unit_id
+        ]
+        selected_unit_words.sort(key=lambda item: int(item["order_index"]))
+        return {
+            "word_id": word_id,
+            "tap_unit_id": selected_tap_unit_id,
+            "sheet_source_text": str(selected_word.get("source_unit_text") or selected_word.get("text") or ""),
+            "sheet_translation_text": str(selected_word.get("translation_focus_text") or selected_word.get("translation_span_text") or ""),
+            "example_source_text": str(selected_word.get("segment_source_text") or ""),
+            "example_translation_text": str(selected_word.get("segment_target_text") or ""),
+            "units": self._build_detail_units(selected_unit_words),
+        }
+
+    def save_detail_unit(self, book_id: str, word_id: str, unit_id: str) -> dict:
+        detail = self.get_detail_sheet(book_id, word_id)
+        unit = next((item for item in detail["units"] if str(item.get("id") or "") == unit_id), None)
+        if unit is None:
+            raise ValueError(f"Detail unit not found: {unit_id}")
+        unit_type = str(unit.get("type") or "LEXICAL")
+        if unit_type == "GRAMMAR":
+            raise ValueError("Grammar rows are not saved by default")
+
+        added_at = datetime.now(timezone.utc).isoformat()
+        word = str(unit.get("surface_text") or unit.get("text") or "").strip()
+        lemma = str(unit.get("lemma") or unit.get("text") or word).strip()
+        translation = str(unit.get("translation") or detail.get("sheet_translation_text") or "").strip()
+        word_row = self._get_source_word_row(word_id)
+        card_type = unit_type.lower()
+        head_text = str(unit.get("text") or lemma or word).strip()
+        example_text = str(unit.get("example_source_text") or detail.get("example_source_text") or "").strip()
+        example_translation = str(
+            unit.get("example_translation_text") or detail.get("example_translation_text") or ""
+        ).strip()
+        pos = str(word_row["pos"] or "")
+        grammar_label = str(unit.get("grammar_hint") or "").strip()
+        morph_label = str(unit.get("morph_label") or "").strip()
+        with self._connect() as conn:
+            existing_card = conn.execute(
+                """
+                SELECT *
+                FROM saved_cards
+                WHERE COALESCE(source_book_id, '') = COALESCE(?, '')
+                  AND card_type = ?
+                  AND lemma = ?
+                  AND translation = ?
+                LIMIT 1
+                """,
+                (book_id, card_type, lemma, translation),
+            ).fetchone()
+            if existing_card is not None:
+                return {
+                    "ok": True,
+                    "saved": False,
+                    "item": self._saved_card_to_payload(existing_card),
+                }
+            existing_word = conn.execute(
+                """
+                SELECT id, word, lemma, translation, unit_type, added_at
+                FROM saved_words
+                WHERE COALESCE(book_id, '') = COALESCE(?, '')
+                  AND lemma = ?
+                  AND translation = ?
+                  AND unit_type = ?
+                LIMIT 1
+                """,
+                (book_id, lemma, translation, unit_type),
+            ).fetchone()
+            card_id = f"card_{uuid.uuid4().hex[:12]}"
+            conn.execute(
+                """
+                INSERT INTO saved_cards(
+                    id,
+                    card_type,
+                    head_text,
+                    surface_text,
+                    lemma,
+                    translation,
+                    example_text,
+                    example_translation,
+                    pos,
+                    grammar_label,
+                    morph_label,
+                    source_book_id,
+                    source_paragraph_id,
+                    source_segment_id,
+                    source_word_id,
+                    source_unit_id,
+                    created_at,
+                    status,
+                    progress_score,
+                    review_count,
+                    last_reviewed_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', 0, 0, NULL)
+                """,
+                (
+                    card_id,
+                    card_type,
+                    head_text,
+                    word,
+                    lemma,
+                    translation,
+                    example_text,
+                    example_translation,
+                    pos,
+                    grammar_label,
+                    morph_label,
+                    book_id,
+                    str(word_row["paragraph_id"] or ""),
+                    str(word_row["segment_id"] or ""),
+                    word_id,
+                    unit_id,
+                    added_at,
+                ),
+            )
+            if existing_word is None:
+                conn.execute(
+                    """
+                    INSERT INTO saved_words(id, book_id, word, lemma, translation, unit_type, added_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (f"saved_{uuid.uuid4().hex[:12]}", book_id, word, lemma, translation, unit_type, added_at),
+                )
+        return {
+            "ok": True,
+            "saved": True,
+            "item": {
+                "id": card_id,
+                "card_type": card_type,
+                "head_text": head_text,
+                "surface_text": word,
+                "lemma": lemma,
+                "translation": translation,
+                "example_text": example_text,
+                "example_translation": example_translation,
+                "pos": pos,
+                "grammar_label": grammar_label,
+                "morph_label": morph_label,
+                "source_book_id": book_id,
+                "created_at": added_at,
+                "status": "new",
+                "progress_score": 0,
+                "review_count": 0,
+                "last_reviewed_at": None,
+            },
+        }
+
+    def list_saved_cards(self, status: str | None = None) -> dict:
+        query = """
+            SELECT *
+            FROM saved_cards
+        """
+        params: tuple[object, ...] = ()
+        normalized_status = (status or "").strip().lower()
+        if normalized_status:
+            query += " WHERE status = ?"
+            params = (normalized_status,)
+        query += " ORDER BY created_at DESC"
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        items = [self._saved_card_to_payload(row) for row in rows]
+        return {
+            "items": items,
+            "summary": self._build_cards_summary(items),
+        }
+
+    def get_review_cards(self) -> dict:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT *
+                FROM saved_cards
+                WHERE card_type IN ('lexical', 'phrase')
+                  AND status IN ('new', 'learning', 'known')
+                ORDER BY progress_score ASC, created_at ASC
+                LIMIT 50
+                """
+            ).fetchall()
+        items = [self._saved_card_to_payload(row) for row in rows]
+        return {
+            "items": items,
+            "summary": self._build_cards_summary(items),
+        }
+
+    def apply_review_result(self, card_id: str, direction: str) -> dict:
+        normalized_direction = (direction or "").strip().lower()
+        if normalized_direction not in {"left", "right"}:
+            raise ValueError("Direction must be left or right")
+        with self._connect() as conn:
+            row = conn.execute("SELECT * FROM saved_cards WHERE id = ?", (card_id,)).fetchone()
+            if row is None:
+                raise ValueError(f"Card not found: {card_id}")
+            current_score = int(row["progress_score"] or 0)
+            if normalized_direction == "right":
+                next_score = min(3, current_score + 1)
+            else:
+                next_score = max(0, current_score - 1) if current_score > 1 else current_score
+            next_status = self._status_for_score(next_score)
+            reviewed_at = datetime.now(timezone.utc).isoformat()
+            review_count = int(row["review_count"] or 0) + 1
+            conn.execute(
+                """
+                UPDATE saved_cards
+                SET progress_score = ?, status = ?, review_count = ?, last_reviewed_at = ?
+                WHERE id = ?
+                """,
+                (next_score, next_status, review_count, reviewed_at, card_id),
+            )
+            updated = conn.execute("SELECT * FROM saved_cards WHERE id = ?", (card_id,)).fetchone()
+        return {
+            "ok": True,
+            "item": self._saved_card_to_payload(updated),
+        }
+
+    def list_saved_words(self) -> dict:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT word, lemma, translation, added_at
+                FROM saved_words
+                ORDER BY added_at DESC
+                """
+            ).fetchall()
+        return {
+            "items": [
+                {
+                    "word": str(row["word"]),
+                    "lemma": str(row["lemma"]),
+                    "translation": str(row["translation"]),
+                    "added_at": str(row["added_at"]),
+                }
+                for row in rows
+            ]
+        }
+
+    def save_raw_word(self, word: str) -> dict:
+        normalized_word = (word or "").strip()
+        if not normalized_word:
+            raise ValueError("Word is empty")
+        added_at = datetime.now(timezone.utc).isoformat()
+        with self._connect() as conn:
+            existing = conn.execute(
+                """
+                SELECT word, lemma, translation, added_at
+                FROM saved_words
+                WHERE COALESCE(book_id, '') = ''
+                  AND lemma = ?
+                  AND translation = ''
+                  AND unit_type = 'LEXICAL'
+                LIMIT 1
+                """,
+                (normalized_word.lower(),),
+            ).fetchone()
+            if existing is not None:
+                return {
+                    "ok": True,
+                    "saved": False,
+                    "item": {
+                        "word": str(existing["word"]),
+                        "lemma": str(existing["lemma"]),
+                        "translation": str(existing["translation"]),
+                        "added_at": str(existing["added_at"]),
+                    },
+                }
+            conn.execute(
+                """
+                INSERT INTO saved_words(id, book_id, word, lemma, translation, unit_type, added_at)
+                VALUES (?, NULL, ?, ?, '', 'LEXICAL', ?)
+                """,
+                (f"saved_{uuid.uuid4().hex[:12]}", normalized_word, normalized_word.lower(), added_at),
+            )
+        return {
+            "ok": True,
+            "saved": True,
+            "item": {
+                "word": normalized_word,
+                "lemma": normalized_word.lower(),
+                "translation": "",
+                "added_at": added_at,
+            },
+        }
+
+    def _get_source_word_row(self, word_id: str) -> sqlite3.Row:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT id, paragraph_id, segment_id, pos
+                FROM source_words
+                WHERE id = ?
+                LIMIT 1
+                """,
+                (word_id,),
+            ).fetchone()
+        if row is None:
+            raise ValueError(f"Word not found: {word_id}")
+        return row
+
+    def _saved_card_to_payload(self, row: sqlite3.Row) -> dict:
+        return {
+            "id": str(row["id"]),
+            "card_type": str(row["card_type"]),
+            "head_text": str(row["head_text"]),
+            "surface_text": str(row["surface_text"]),
+            "lemma": str(row["lemma"]),
+            "translation": str(row["translation"]),
+            "example_text": str(row["example_text"]),
+            "example_translation": str(row["example_translation"]),
+            "pos": str(row["pos"]),
+            "grammar_label": str(row["grammar_label"]),
+            "morph_label": str(row["morph_label"]),
+            "source_book_id": str(row["source_book_id"] or ""),
+            "created_at": str(row["created_at"]),
+            "status": str(row["status"]),
+            "progress_score": int(row["progress_score"] or 0),
+            "review_count": int(row["review_count"] or 0),
+            "last_reviewed_at": str(row["last_reviewed_at"] or ""),
+        }
+
+    def _build_cards_summary(self, items: list[dict]) -> dict:
+        summary = {
+            "total": len(items),
+            "new": 0,
+            "learning": 0,
+            "known": 0,
+            "mastered": 0,
+        }
+        for item in items:
+            status = str(item.get("status") or "new")
+            if status in summary:
+                summary[status] += 1
+        return summary
+
+    def _status_for_score(self, score: int) -> str:
+        if score <= 0:
+            return "new"
+        if score == 1:
+            return "learning"
+        if score == 2:
+            return "known"
+        return "mastered"
+
     def get_tts_levels(self) -> dict:
         return self.tts_service.get_levels()
 
@@ -558,12 +1118,14 @@ class LexoStorage:
         voice_id: str,
         level_ids: list[int],
         mode: str = "play_from_current",
+        overwrite: bool = False,
     ) -> dict:
         return self.tts_service.generate_jobs(
             book_id=book_id,
             voice_id=voice_id,
             level_ids=level_ids,
             mode=mode,
+            overwrite=overwrite,
         )
 
     def start_tts_job(self, book_id: str, job_id: str) -> dict:
@@ -663,8 +1225,9 @@ class LexoStorage:
                 """
                 INSERT INTO source_words(
                     id, book_id, paragraph_id, segment_id, order_index_in_paragraph, order_index_in_segment,
-                    surface_text, normalized_text, is_function_word, anchor_source_word_id
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    surface_text, normalized_text, is_function_word, anchor_source_word_id,
+                    lemma, pos, morph, lexical_unit_id, lexical_unit_type
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 [
                     (
@@ -678,6 +1241,11 @@ class LexoStorage:
                         word["normalized_text"],
                         word["is_function_word"],
                         word["anchor_source_word_id"],
+                        word.get("lemma"),
+                        word.get("pos"),
+                        word.get("morph"),
+                        word.get("lexical_unit_id"),
+                        word.get("lexical_unit_type"),
                     )
                     for paragraph in paragraph_payloads
                     for word in paragraph["words"]
@@ -721,11 +1289,17 @@ class LexoStorage:
                     target_text=target_text,
                     paragraph_start_index=paragraph_word_offset,
                 )
+                enrich_words(words)
                 local_to_global_ids: dict[str, str] = {}
                 for word in words:
                     local_word_id = word["id"]
                     global_word_id = f"{paragraph_id}_{local_word_id}"
                     local_to_global_ids[local_word_id] = global_word_id
+                    lexical_unit_id = str(word.get("lexical_unit_id") or "")
+                    for local_prefix, global_prefix in local_to_global_ids.items():
+                        if lexical_unit_id.startswith(local_prefix):
+                            word["lexical_unit_id"] = lexical_unit_id.replace(local_prefix, global_prefix, 1)
+                            break
                     word["id"] = global_word_id
                     word["segment_id"] = segment_id
                     anchor_index = word.pop("anchor_order_index_in_segment")
@@ -764,6 +1338,7 @@ class LexoStorage:
             target_text=target_text,
             paragraph_start_index=0,
         )
+        enrich_words(words)
         alignment_by_word_id = {item["source_word_id"]: item for item in alignments}
         raw_words: list[dict] = []
         for word in words:
@@ -778,9 +1353,130 @@ class LexoStorage:
                     "target_start_index": alignment["target_start_index"] if alignment is not None else -1,
                     "target_end_index": alignment["target_end_index"] if alignment is not None else -1,
                     "translation_span_text": alignment["target_text"] if alignment is not None else "",
+                    "lemma": word.get("lemma", ""),
+                    "pos": word.get("pos", ""),
+                    "morph": word.get("morph", ""),
+                    "lexical_unit_id": word.get("lexical_unit_id", ""),
+                    "lexical_unit_type": word.get("lexical_unit_type", ""),
+                    "grammar_hint": grammar_hint_for_word(word),
+                    "morph_label": morph_label_for_word(word),
                 }
             )
         return build_tap_word_payloads(segment_target_text=target_text, words=raw_words)
+
+    def _build_detail_tap_words(self, paragraph_words: list[dict]) -> list[dict]:
+        words_by_segment: dict[str, list[dict]] = {}
+        for word in paragraph_words:
+            words_by_segment.setdefault(str(word["segment_id"]), []).append(word)
+        tap_words: list[dict] = []
+        for segment_words in words_by_segment.values():
+            segment_words.sort(key=lambda item: int(item["order_index"]))
+            tap_words.extend(
+                build_tap_word_payloads(
+                    segment_target_text=str(segment_words[0].get("segment_target_text") or ""),
+                    words=segment_words,
+                )
+            )
+        tap_words.sort(key=lambda item: int(item["order_index"]))
+        return tap_words
+
+    def _build_detail_units(self, words: list[dict]) -> list[dict]:
+        if self._is_time_block(words):
+            return [
+                {
+                    "id": str(words[0].get("tap_unit_id") or words[0]["id"]),
+                    "type": "PHRASE",
+                    "text": build_unit_surface_text(words),
+                    "surface_text": build_unit_surface_text(words),
+                    "lemma": build_unit_surface_text(words),
+                    "translation": self._build_detail_unit_translation(words),
+                    "grammar_hint": "",
+                    "morph_label": "",
+                    "is_primary": True,
+                    "example_source_text": str(words[0].get("segment_source_text") or ""),
+                    "example_translation_text": str(words[0].get("segment_target_text") or ""),
+                }
+            ]
+        units: list[dict] = []
+        index = 0
+        while index < len(words):
+            current = words[index]
+            lexical_unit_id = str(current.get("lexical_unit_id") or f"{current['id']}:lex")
+            lexical_unit_type = str(current.get("lexical_unit_type") or "LEXICAL")
+            end_index = index
+            while end_index + 1 < len(words) and str(words[end_index + 1].get("lexical_unit_id") or "") == lexical_unit_id:
+                end_index += 1
+            unit_words = words[index : end_index + 1]
+            surface_text = build_unit_surface_text(unit_words)
+            lemma_text = build_unit_lemma_text(unit_words) or surface_text
+            display_text = lemma_text if lexical_unit_type in {"LEXICAL", "PHRASE"} else surface_text
+            grammar_hint = next((str(item.get("grammar_hint") or "") for item in unit_words if str(item.get("grammar_hint") or "").strip()), "")
+            morph_label = next((str(item.get("morph_label") or "") for item in unit_words if str(item.get("morph_label") or "").strip()), "")
+            direct_meaning = self._build_direct_meaning(unit_words)
+            translation = self._build_detail_unit_translation(unit_words)
+            if lexical_unit_type == "GRAMMAR":
+                translation = direct_meaning
+            elif direct_meaning and not translation:
+                translation = direct_meaning
+            units.append(
+                {
+                    "id": lexical_unit_id,
+                    "type": lexical_unit_type,
+                    "text": display_text,
+                    "surface_text": surface_text,
+                    "lemma": lemma_text,
+                    "translation": translation,
+                    "grammar_hint": grammar_hint,
+                    "morph_label": morph_label,
+                    "is_primary": lexical_unit_type != "GRAMMAR",
+                    "example_source_text": str(unit_words[0].get("segment_source_text") or ""),
+                    "example_translation_text": str(unit_words[0].get("segment_target_text") or ""),
+                }
+            )
+            index = end_index + 1
+        return units
+
+    def _build_detail_unit_translation(self, words: list[dict]) -> str:
+        valid_words = [
+            word
+            for word in words
+            if int(word.get("target_start_index", -1)) >= 0 and int(word.get("target_end_index", -1)) >= 0
+        ]
+        if not valid_words:
+            return str(words[0].get("translation_span_text") or "")
+        segment_target_text = str(valid_words[0].get("segment_target_text") or "")
+        start_index = min(int(word["target_start_index"]) for word in valid_words)
+        end_index = max(int(word["target_end_index"]) for word in valid_words)
+        _, focus_text, _ = build_context_window(
+            target_text=segment_target_text,
+            target_start_index=start_index,
+            target_end_index=end_index,
+        )
+        if focus_text.strip():
+            return focus_text
+        return " ".join(
+            str(word.get("translation_span_text") or "").strip()
+            for word in valid_words
+            if str(word.get("translation_span_text") or "").strip()
+        ).strip()
+
+    def _build_direct_meaning(self, words: list[dict]) -> str:
+        meanings = [
+            str(direct_meaning_for_word(word) or "").strip()
+            for word in words
+            if str(direct_meaning_for_word(word) or "").strip()
+        ]
+        if not meanings:
+            return ""
+        return " ".join(meanings).strip()
+
+    def _is_time_block(self, words: list[dict]) -> bool:
+        if not words:
+            return False
+        texts = [str(word.get("text") or "").upper() for word in words]
+        if texts[-1] not in {"AM", "PM"}:
+            return False
+        return all(text.isdigit() for text in texts[:-1])
 
     def _build_mobile_tts_manifest(self, book_id: str) -> dict:
         with self._connect() as conn:

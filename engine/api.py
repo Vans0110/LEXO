@@ -38,6 +38,27 @@ class LexoHandler(BaseHTTPRequestHandler):
                     STORAGE.get_paragraphs(_query_value(query, "book_id")),
                 )
                 return
+            if path == "/reader/detail-sheet":
+                self._send_json(
+                    HTTPStatus.OK,
+                    STORAGE.get_detail_sheet(
+                        _query_value(query, "book_id") or "",
+                        _query_value(query, "word_id") or "",
+                    ),
+                )
+                return
+            if path == "/saved-words":
+                self._send_json(HTTPStatus.OK, STORAGE.list_saved_words())
+                return
+            if path == "/cards":
+                self._send_json(
+                    HTTPStatus.OK,
+                    STORAGE.list_saved_cards(_query_value(query, "status")),
+                )
+                return
+            if path == "/cards/review":
+                self._send_json(HTTPStatus.OK, STORAGE.get_review_cards())
+                return
             if path == "/tts/profiles":
                 self._send_json(HTTPStatus.OK, STORAGE.get_tts_profiles())
                 return
@@ -110,6 +131,14 @@ class LexoHandler(BaseHTTPRequestHandler):
                 )
                 self._send_json(HTTPStatus.OK, result)
                 return
+            if path == "/reader/detail-sheet/save":
+                result = STORAGE.save_detail_unit(
+                    payload["book_id"],
+                    payload["word_id"],
+                    payload["unit_id"],
+                )
+                self._send_json(HTTPStatus.OK, result)
+                return
             if path == "/tts/generate":
                 level_ids = payload.get("level_ids") or payload.get("levels") or []
                 result = STORAGE.generate_tts_jobs(
@@ -117,6 +146,7 @@ class LexoHandler(BaseHTTPRequestHandler):
                     voice_id=payload["voice_id"],
                     level_ids=[int(item) for item in level_ids],
                     mode=payload.get("mode", "play_from_current"),
+                    overwrite=bool(payload.get("overwrite", False)),
                 )
                 self._send_json(HTTPStatus.OK, result)
                 return
@@ -130,6 +160,28 @@ class LexoHandler(BaseHTTPRequestHandler):
             if path == "/tts/control":
                 result = STORAGE.control_tts(payload["book_id"], payload["job_id"], payload["action"])
                 self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/saved-words":
+                result = STORAGE.save_detail_unit(
+                    payload["book_id"],
+                    payload["word_id"],
+                    payload["unit_id"],
+                )
+                self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/cards/review/result":
+                result = STORAGE.apply_review_result(
+                    payload["card_id"],
+                    payload["direction"],
+                )
+                self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/saved-words/raw":
+                result = STORAGE.save_raw_word(payload["word"])
+                self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/word/audio":
+                self._send_json(HTTPStatus.OK, {"audio_path": "stub://word-audio"})
                 return
             self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
         except KeyError as exc:

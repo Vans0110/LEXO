@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 
+import '../cards_models.dart';
+import '../detail_sheet_models.dart';
 import '../models.dart';
 
 class LexoApiClient {
@@ -18,6 +20,10 @@ class LexoApiClient {
   }
 
   static String _defaultBaseUrl() {
+    const configuredBaseUrl = String.fromEnvironment('LEXO_BASE_URL');
+    if (configuredBaseUrl.isNotEmpty) {
+      return configuredBaseUrl;
+    }
     final host = Platform.isAndroid ? '10.0.2.2' : '127.0.0.1';
     return 'http://$host:8765';
   }
@@ -73,6 +79,70 @@ class LexoApiClient {
     return ReaderPayload.fromJson(data);
   }
 
+  Future<DetailSheetPayload> getDetailSheet({
+    required String bookId,
+    required String wordId,
+  }) async {
+    final data = await _get('/reader/detail-sheet?book_id=$bookId&word_id=$wordId');
+    return DetailSheetPayload.fromJson(data);
+  }
+
+  Future<Map<String, dynamic>> saveDetailUnit({
+    required String bookId,
+    required String wordId,
+    required String unitId,
+  }) {
+    return _post(
+      '/reader/detail-sheet/save',
+      {
+        'book_id': bookId,
+        'word_id': wordId,
+        'unit_id': unitId,
+      },
+    );
+  }
+
+  Future<List<SavedWordItem>> getSavedWords() async {
+    final data = await _get('/saved-words');
+    return (data['items'] as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>()
+        .map(SavedWordItem.fromJson)
+        .toList();
+  }
+
+  Future<SavedCardsPayload> getSavedCards({String? status}) async {
+    final suffix = (status == null || status.isEmpty) ? '' : '?status=$status';
+    final data = await _get('/cards$suffix');
+    return SavedCardsPayload.fromJson(data);
+  }
+
+  Future<SavedCardsPayload> getReviewCards() async {
+    final data = await _get('/cards/review');
+    return SavedCardsPayload.fromJson(data);
+  }
+
+  Future<SavedCardItem> applyReviewResult({
+    required String cardId,
+    required String direction,
+  }) async {
+    final data = await _post(
+      '/cards/review/result',
+      {
+        'card_id': cardId,
+        'direction': direction,
+      },
+    );
+    return SavedCardItem.fromJson(data['item'] as Map<String, dynamic>? ?? const {});
+  }
+
+  Future<Map<String, dynamic>> saveWord(String word) {
+    return _post('/saved-words/raw', {'word': word});
+  }
+
+  Future<Map<String, dynamic>> requestWordAudio(String word) {
+    return _post('/word/audio', {'word': word});
+  }
+
   Future<Map<String, dynamic>> getMobileBookPackage(String bookId) async {
     return _get('/mobile/books/package?book_id=$bookId');
   }
@@ -124,6 +194,7 @@ class LexoApiClient {
     required String voiceId,
     required List<int> levelIds,
     String mode = 'play_from_current',
+    bool overwrite = false,
   }) async {
     final data = await _post(
       '/tts/generate',
@@ -132,6 +203,7 @@ class LexoApiClient {
         'voice_id': voiceId,
         'level_ids': levelIds,
         'mode': mode,
+        'overwrite': overwrite,
       },
     );
     return TtsState.fromJson(data);

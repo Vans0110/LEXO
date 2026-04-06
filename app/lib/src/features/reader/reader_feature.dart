@@ -1,4 +1,5 @@
 import '../../api/api_client.dart';
+import '../../detail_sheet_models.dart';
 import '../../models.dart';
 
 class ReaderFeatureState {
@@ -7,7 +8,7 @@ class ReaderFeatureState {
     this.ttsProfiles = const [],
     this.ttsLevels = const [],
     this.ttsState,
-    this.selectedLevelIds = const {1},
+    this.selectedLevelIds = const {2},
     this.selectedVoiceId,
     this.loading = true,
     this.actionBusy = false,
@@ -133,6 +134,21 @@ class ReaderFeatureController {
     await _api.saveReaderPosition(bookId, paragraphIndex);
   }
 
+  Future<DetailSheetPayload> getDetailSheet({
+    required String bookId,
+    required String wordId,
+  }) {
+    return _api.getDetailSheet(bookId: bookId, wordId: wordId);
+  }
+
+  Future<Map<String, dynamic>> saveDetailUnit({
+    required String bookId,
+    required String wordId,
+    required String unitId,
+  }) {
+    return _api.saveDetailUnit(bookId: bookId, wordId: wordId, unitId: unitId);
+  }
+
   Future<TtsState> refreshTtsState(String bookId) async {
     return _api.getTtsState(bookId);
   }
@@ -142,12 +158,14 @@ class ReaderFeatureController {
     required String voiceId,
     required List<int> levelIds,
     String mode = 'play_from_current',
+    bool overwrite = false,
   }) {
     return _api.generateTts(
       bookId: bookId,
       voiceId: voiceId,
       levelIds: levelIds,
       mode: mode,
+      overwrite: overwrite,
     );
   }
 

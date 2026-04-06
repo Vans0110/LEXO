@@ -23,7 +23,7 @@ echo.
 echo [LEXO] Auto commit message: %COMMIT_MSG%
 echo.
 echo [LEXO] Tracked changes before staging:
-git diff --name-only
+git --no-pager diff --name-only
 echo.
 
 echo [LEXO] Staging tracked changes only...
@@ -50,7 +50,7 @@ exit /b 1
 :has_changes
 echo.
 echo [LEXO] Staged changes:
-git status --short
+git --no-pager status --short
 echo.
 echo [LEXO] Creating commit...
 git commit -m "%COMMIT_MSG%"

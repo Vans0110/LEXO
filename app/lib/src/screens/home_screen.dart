@@ -9,9 +9,18 @@ import '../models.dart';
 import 'reader_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.api});
+  const HomeScreen({
+    super.key,
+    required this.api,
+    this.onBookOpened,
+    this.onLibraryLoaded,
+    this.reloadTick = 0,
+  });
 
   final LexoApiClient api;
+  final ValueChanged<LibraryBookItem>? onBookOpened;
+  final ValueChanged<LibraryPayload>? onLibraryLoaded;
+  final int reloadTick;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -28,6 +37,14 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadStatus();
   }
 
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.reloadTick != widget.reloadTick) {
+      _loadStatus();
+    }
+  }
+
   Future<void> _loadStatus() async {
     developer.log('Loading library', name: 'LEXO_UI');
     setState(() {
@@ -42,6 +59,9 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
       setState(() => _state = nextState);
+      if (nextState.library != null) {
+        widget.onLibraryLoaded?.call(nextState.library!);
+      }
     } catch (error) {
       if (!mounted) {
         return;
@@ -74,6 +94,9 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
       setState(() => _state = nextState);
+      if (nextState.library != null) {
+        widget.onLibraryLoaded?.call(nextState.library!);
+      }
     } catch (error) {
       if (!mounted) {
         return;
@@ -163,6 +186,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 setState(
                                                   () => _state = _state.copyWith(clearOpeningBookId: true),
                                                 );
+                                                widget.onBookOpened?.call(item);
+                                                if (widget.onBookOpened != null) {
+                                                  await _loadStatus();
+                                                  return;
+                                                }
                                                 await Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                     builder: (_) => ReaderScreen(
@@ -213,6 +241,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 final nextState = await _controller.deleteBook(_state, item.id);
                                                 if (!mounted) return;
                                                 setState(() => _state = nextState);
+                                                if (nextState.library != null) {
+                                                  widget.onLibraryLoaded?.call(nextState.library!);
+                                                }
                                               } catch (error) {
                                                 if (!mounted) {
                                                   return;

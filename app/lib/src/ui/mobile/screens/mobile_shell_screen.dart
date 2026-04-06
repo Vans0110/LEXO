@@ -7,6 +7,7 @@ import '../../../api/api_client.dart';
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../mobile/mobile_settings_repository.dart';
 import '../../../models.dart';
+import '../../../screens/cards_list_screen.dart';
 import 'mobile_library_screen.dart';
 import 'mobile_reader_screen.dart';
 import 'mobile_settings_screen.dart';
@@ -26,6 +27,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
 
   int _selectedIndex = 0;
   int _libraryReloadTick = 0;
+  int _cardsReloadTick = 0;
   bool _settingsBusy = false;
   String? _settingsError;
   String? _activeBookId;
@@ -318,6 +320,10 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
               api: widget.api,
               localBookId: _activeBookId!,
             ),
+      CardsListScreen(
+        api: widget.api,
+        reloadTick: _cardsReloadTick,
+      ),
       MobileSettingsScreen(
         title: 'Settings',
         currentBookTitle: _activeBookTitle,
@@ -338,7 +344,12 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+        onDestinationSelected: (index) => setState(() {
+          _selectedIndex = index;
+          if (index == 2) {
+            _cardsReloadTick += 1;
+          }
+        }),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.library_books_outlined),
@@ -349,6 +360,11 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
             icon: Icon(Icons.menu_book_outlined),
             selectedIcon: Icon(Icons.menu_book),
             label: 'Reader',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.style_outlined),
+            selectedIcon: Icon(Icons.style),
+            label: 'Cards',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),

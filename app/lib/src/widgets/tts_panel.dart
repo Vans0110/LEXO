@@ -14,12 +14,7 @@ class TtsPanel extends StatelessWidget {
     required this.onVoiceChanged,
     required this.onLevelToggle,
     required this.onGenerate,
-    required this.onPause,
-    required this.onResume,
-    required this.onPrev,
-    required this.onNext,
-    required this.onStartJob,
-    required this.onStopJob,
+    required this.onOverwriteGenerate,
   });
 
   final List<TtsProfile> profiles;
@@ -31,20 +26,13 @@ class TtsPanel extends StatelessWidget {
   final ValueChanged<String?> onVoiceChanged;
   final void Function(int levelId, bool selected) onLevelToggle;
   final VoidCallback onGenerate;
-  final VoidCallback onPause;
-  final VoidCallback onResume;
-  final VoidCallback onPrev;
-  final VoidCallback onNext;
-  final void Function(String jobId) onStartJob;
-  final void Function(String jobId) onStopJob;
+  final VoidCallback onOverwriteGenerate;
 
   @override
   Widget build(BuildContext context) {
-    final activeJob = state?.activeJob;
     final jobs = state?.jobs ?? const <TtsJobItem>[];
     final selectedLevelId = selectedLevelIds.isEmpty ? null : selectedLevelIds.first;
     TtsLevel? selectedLevel;
-    TtsJobItem? selectedJob;
     if (selectedLevelId != null) {
       for (final level in levels) {
         if (level.id == selectedLevelId) {
@@ -52,21 +40,14 @@ class TtsPanel extends StatelessWidget {
           break;
         }
       }
-      for (final job in jobs) {
-        if (job.levelId == selectedLevelId &&
-            (selectedVoiceId == null || job.voiceId == selectedVoiceId)) {
-          selectedJob = job;
-          break;
-        }
+    }
+    TtsJobItem? selectedJob;
+    for (final job in jobs) {
+      if (selectedVoiceId == null || job.voiceId == selectedVoiceId) {
+        selectedJob = job;
+        break;
       }
     }
-    final selectedJobForStart =
-        selectedJob != null && !busy && selectedJob.isReady
-            ? () => onStartJob(selectedJob!.jobId)
-            : null;
-    final selectedJobForStop =
-        selectedJob != null && !busy ? () => onStopJob(selectedJob!.jobId) : null;
-
     return SizedBox(
       width: 220,
       child: Card(
@@ -95,7 +76,7 @@ class TtsPanel extends StatelessWidget {
                     .map(
                       (level) => DropdownMenuItem<int>(
                         value: level.id,
-                        child: Text('${level.name} ${level.targetWpm}'),
+                        child: Text('${level.name} ${(level.playbackSpeed).toStringAsFixed(2)}x'),
                       ),
                     )
                     .toList(),
@@ -133,7 +114,7 @@ class TtsPanel extends StatelessWidget {
               if (selectedLevel != null) ...[
                 const SizedBox(height: 12),
                 Text(
-                  '${selectedLevel.name} • ${selectedLevel.targetWpm} WPM',
+                  '${selectedLevel.name} • ${selectedLevel.playbackSpeed.toStringAsFixed(2)}x',
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ],
@@ -145,18 +126,13 @@ class TtsPanel extends StatelessWidget {
                 child: const Text('Generate'),
               ),
               const SizedBox(height: 8),
-              FilledButton.tonal(
-                onPressed: selectedJobForStart,
-                child: const Text('Start'),
-              ),
-              const SizedBox(height: 8),
               OutlinedButton(
-                onPressed: selectedJobForStop,
-                child: const Text('Stop'),
+                onPressed: busy || selectedJob == null ? null : onOverwriteGenerate,
+                child: const Text('Overwrite'),
               ),
               const SizedBox(height: 12),
               if (selectedJob == null)
-                const Text('Для этой скорости генерации ещё нет')
+                const Text('Для этого голоса генерации ещё нет')
               else ...[
                 Text(
                   selectedJob.statusLabel,
@@ -168,42 +144,6 @@ class TtsPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text('${selectedJob.readySegments}/${selectedJob.totalSegments}'),
-              ],
-              if (activeJob != null) ...[
-                const SizedBox(height: 12),
-                Text(
-                  'Active: ${activeJob.levelName}',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 6),
-                LinearProgressIndicator(
-                  value: activeJob.playbackProgress.clamp(0.0, 1.0),
-                ),
-                const SizedBox(height: 6),
-                Text('${activeJob.currentSegmentNumber}/${activeJob.totalSegments}'),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    OutlinedButton(
-                      onPressed: busy || !(state?.hasActiveJob ?? false) ? null : onPause,
-                      child: const Text('Pause'),
-                    ),
-                    OutlinedButton(
-                      onPressed: busy || !(state?.hasActiveJob ?? false) ? null : onResume,
-                      child: const Text('Resume'),
-                    ),
-                    OutlinedButton(
-                      onPressed: busy || !(state?.hasActiveJob ?? false) ? null : onPrev,
-                      child: const Text('Prev'),
-                    ),
-                    OutlinedButton(
-                      onPressed: busy || !(state?.hasActiveJob ?? false) ? null : onNext,
-                      child: const Text('Next'),
-                    ),
-                  ],
-                ),
               ],
             ],
           ),

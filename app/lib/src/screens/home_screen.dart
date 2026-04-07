@@ -76,12 +76,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _pickAndImport() async {
     const typeGroup = XTypeGroup(label: 'text', extensions: ['txt']);
+    developer.log('HOME_IMPORT_PICK_START', name: 'LEXO_IMPORT');
     final file = await openFile(acceptedTypeGroups: [typeGroup]);
     if (file == null) {
-      developer.log('Import cancelled by user', name: 'LEXO_UI');
+      developer.log('HOME_IMPORT_PICK_CANCELLED', name: 'LEXO_IMPORT');
       return;
     }
-    developer.log('Importing book from ${file.path}', name: 'LEXO_UI');
+    developer.log(
+      'HOME_IMPORT_FILE name=${file.name} path=${file.path}',
+      name: 'LEXO_IMPORT',
+    );
     setState(() {
       _state = _state.copyWith(
         busy: true,
@@ -89,7 +93,22 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     });
     try {
-      final nextState = await _controller.importBook(_state, file.path);
+      final sourceText = await file.readAsString();
+      developer.log(
+        'HOME_IMPORT_READ_OK chars=${sourceText.length}',
+        name: 'LEXO_IMPORT',
+      );
+      final title = file.name.replaceAll(RegExp(r'\.txt$', caseSensitive: false), '');
+      developer.log(
+        'HOME_IMPORT_API_START title="$title"',
+        name: 'LEXO_IMPORT',
+      );
+      final nextState = await _controller.importBookText(
+        _state,
+        title: title,
+        sourceText: sourceText,
+      );
+      developer.log('HOME_IMPORT_API_OK', name: 'LEXO_IMPORT');
       if (!mounted) {
         return;
       }
@@ -98,6 +117,10 @@ class _HomeScreenState extends State<HomeScreen> {
         widget.onLibraryLoaded?.call(nextState.library!);
       }
     } catch (error) {
+      developer.log(
+        'HOME_IMPORT_ERROR error=$error',
+        name: 'LEXO_IMPORT',
+      );
       if (!mounted) {
         return;
       }

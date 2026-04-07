@@ -49,6 +49,7 @@ class CardsSummary {
 class SavedCardItem {
   const SavedCardItem({
     required this.id,
+    required this.deviceId,
     required this.cardType,
     required this.headText,
     required this.surfaceText,
@@ -60,7 +61,11 @@ class SavedCardItem {
     required this.grammarLabel,
     required this.morphLabel,
     required this.sourceBookId,
+    required this.sourceUnitId,
     required this.createdAt,
+    required this.updatedAt,
+    required this.deletedAt,
+    required this.syncState,
     required this.status,
     required this.progressScore,
     required this.reviewCount,
@@ -68,6 +73,7 @@ class SavedCardItem {
   });
 
   final String id;
+  final String deviceId;
   final String cardType;
   final String headText;
   final String surfaceText;
@@ -79,7 +85,11 @@ class SavedCardItem {
   final String grammarLabel;
   final String morphLabel;
   final String sourceBookId;
+  final String sourceUnitId;
   final String createdAt;
+  final String updatedAt;
+  final String deletedAt;
+  final String syncState;
   final String status;
   final int progressScore;
   final int reviewCount;
@@ -87,12 +97,41 @@ class SavedCardItem {
 
   bool get isPhrase => cardType == 'phrase';
   bool get isGrammar => cardType == 'grammar';
+  bool get isDeleted => deletedAt.isNotEmpty;
 
   String get progressLabel => '$progressScore/7';
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'device_id': deviceId,
+      'card_type': cardType,
+      'head_text': headText,
+      'surface_text': surfaceText,
+      'lemma': lemma,
+      'translation': translation,
+      'example_text': exampleText,
+      'example_translation': exampleTranslation,
+      'pos': pos,
+      'grammar_label': grammarLabel,
+      'morph_label': morphLabel,
+      'source_book_id': sourceBookId,
+      'source_unit_id': sourceUnitId,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'deleted_at': deletedAt,
+      'sync_state': syncState,
+      'status': status,
+      'progress_score': progressScore,
+      'review_count': reviewCount,
+      'last_reviewed_at': lastReviewedAt,
+    };
+  }
 
   factory SavedCardItem.fromJson(Map<String, dynamic> json) {
     return SavedCardItem(
       id: json['id'] as String? ?? '',
+      deviceId: json['device_id'] as String? ?? '',
       cardType: json['card_type'] as String? ?? 'lexical',
       headText: json['head_text'] as String? ?? '',
       surfaceText: json['surface_text'] as String? ?? '',
@@ -104,7 +143,11 @@ class SavedCardItem {
       grammarLabel: json['grammar_label'] as String? ?? '',
       morphLabel: json['morph_label'] as String? ?? '',
       sourceBookId: json['source_book_id'] as String? ?? '',
+      sourceUnitId: json['source_unit_id'] as String? ?? '',
       createdAt: json['created_at'] as String? ?? '',
+      updatedAt: json['updated_at'] as String? ?? (json['created_at'] as String? ?? ''),
+      deletedAt: json['deleted_at'] as String? ?? '',
+      syncState: json['sync_state'] as String? ?? 'synced',
       status: json['status'] as String? ?? 'new',
       progressScore: json['progress_score'] as int? ?? 0,
       reviewCount: json['review_count'] as int? ?? 0,

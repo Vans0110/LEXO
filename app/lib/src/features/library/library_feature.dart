@@ -54,6 +54,18 @@ class LibraryFeatureController {
     return load(current);
   }
 
+  Future<LibraryFeatureState> importBookText(
+    LibraryFeatureState current, {
+    required String title,
+    required String sourceText,
+  }) async {
+    await _api.importDesktopBookText(
+      title: title,
+      sourceText: sourceText,
+    );
+    return load(current);
+  }
+
   Future<void> openBook(String bookId) async {
     await _api.openBook(bookId);
   }

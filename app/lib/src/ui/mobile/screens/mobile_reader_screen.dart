@@ -8,18 +8,28 @@ import 'package:media_kit/media_kit.dart';
 import '../../../api/api_client.dart';
 import '../../../detail_sheet_models.dart';
 import '../../../features/reader/reader_feature.dart';
+import '../../../mobile/mobile_cards_repository.dart';
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../models.dart';
 import '../../../widgets/reader_detail_sheet.dart';
 import '../../../widgets/reader_playback_bar.dart';
 import '../../../widgets/reader_text_flow.dart';
-import 'mobile_settings_screen.dart';
 
 class MobileReaderScreen extends StatefulWidget {
-  const MobileReaderScreen({super.key, required this.api, required this.localBookId});
+  const MobileReaderScreen({
+    super.key,
+    required this.api,
+    required this.localBookId,
+    required this.cardsRepository,
+    required this.deviceId,
+    this.onCardsChanged,
+  });
 
   final LexoApiClient api;
   final String localBookId;
+  final MobileCardsRepository cardsRepository;
+  final String deviceId;
+  final VoidCallback? onCardsChanged;
 
   @override
   State<MobileReaderScreen> createState() => _MobileReaderScreenState();
@@ -36,18 +46,35 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   Timer? _pollTimer;
   String? _desktopBookId;
   bool _playerExpanded = true;
+  bool _useLocalPlayback = false;
+  Map<String, List<TtsSegmentItem>> _localSegmentsByJobId = const {};
 
   double _selectedPlaybackSpeed() {
+    final selectedLevel = _selectedLevel();
+    return selectedLevel?.playbackSpeed ?? 1.0;
+  }
+
+  TtsLevel? _selectedLevel() {
     final selectedId = _state.selectedLevelIds.isEmpty ? null : _state.selectedLevelIds.first;
     if (selectedId == null) {
-      return 1.0;
+      return null;
     }
     for (final level in _state.ttsLevels) {
       if (level.id == selectedId) {
-        return level.playbackSpeed;
+        return level;
       }
     }
-    return 1.0;
+    return null;
+  }
+
+  String _formatSpeed(double speed) {
+    if (speed == speed.roundToDouble()) {
+      return '${speed.toStringAsFixed(0)}x';
+    }
+    if ((speed * 10) % 10 == 0) {
+      return '${speed.toStringAsFixed(1)}x';
+    }
+    return '${speed.toStringAsFixed(2)}x';
   }
 
   Future<void> _applyPlaybackSpeed() async {
@@ -98,10 +125,10 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     try {
       final package = await _packageRepository.readPackage(widget.localBookId);
       final desktopBookId = package.meta.desktopBookId;
-      List<TtsProfile> profiles = const [];
-      List<TtsLevel> levels = const [];
+      List<TtsProfile> profiles = package.profiles;
+      List<TtsLevel> levels = package.levels;
       TtsState? ttsState;
-      String? selectedVoiceId;
+      String? selectedVoiceId = profiles.isNotEmpty ? profiles.first.voiceId : null;
       var selectedLevelIds = _state.selectedLevelIds;
 
       if (desktopBookId.isNotEmpty) {
@@ -120,13 +147,17 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
           } else {
             selectedVoiceId = profiles.isNotEmpty ? profiles.first.voiceId : null;
           }
-          if (levels.isNotEmpty && selectedLevelIds.isEmpty) {
-            final normal = levels.where((item) => item.name == 'Normal');
-            selectedLevelIds = {normal.isNotEmpty ? normal.first.id : levels.first.id};
-          }
         } catch (error) {
           developer.log('Remote TTS unavailable: $error', name: 'LEXO_UI');
         }
+      }
+
+      final hasSelectedLevel = levels.any(
+        (item) => selectedLevelIds.isNotEmpty && item.id == selectedLevelIds.first,
+      );
+      if (levels.isNotEmpty && (!hasSelectedLevel || selectedLevelIds.isEmpty)) {
+        final normal = levels.where((item) => item.name == 'Normal');
+        selectedLevelIds = {normal.isNotEmpty ? normal.first.id : levels.first.id};
       }
 
       if (!mounted) {
@@ -134,11 +165,12 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       }
       setState(() {
         _desktopBookId = desktopBookId;
+        _localSegmentsByJobId = package.segmentsByJobId;
         _state = _state.copyWith(
           payload: package.readerPayload,
           ttsProfiles: profiles,
           ttsLevels: levels,
-          ttsState: ttsState,
+          ttsState: ttsState ?? package.ttsState,
           selectedVoiceId: selectedVoiceId,
           selectedLevelIds: selectedLevelIds,
           loading: false,
@@ -160,6 +192,9 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   Future<void> _refreshTtsState() async {
+    if (_useLocalPlayback) {
+      return;
+    }
     final desktopBookId = _desktopBookId;
     if (desktopBookId == null || desktopBookId.isEmpty) {
       return;
@@ -169,7 +204,15 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _state = _state.copyWith(ttsState: nextState));
+      setState(() {
+        _state = _state.copyWith(ttsState: nextState);
+        _localSegmentsByJobId = {
+          for (final job in nextState.jobs)
+            job.jobId: job.jobId == nextState.activeJob?.jobId
+                ? nextState.activeSegments
+                : (_localSegmentsByJobId[job.jobId] ?? const <TtsSegmentItem>[]),
+        };
+      });
       _syncPolling(nextState);
     } catch (_) {}
   }
@@ -247,8 +290,47 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   Future<void> _startPlayback(String jobId) async {
+    final localSegments = _localSegmentsByJobId[jobId] ?? const <TtsSegmentItem>[];
+    final hasCompleteLocalAudio = await _hasCompleteLocalAudio(jobId, localSegments);
+    if (localSegments.isNotEmpty && hasCompleteLocalAudio) {
+      final selectedJob = _selectedJob();
+      if (selectedJob == null || selectedJob.jobId != jobId) {
+        return;
+      }
+      setState(() {
+        _useLocalPlayback = true;
+        _state = _state.copyWith(
+          ttsState: TtsState(
+            jobs: _state.ttsState?.jobs ?? const <TtsJobItem>[],
+            activeJob: TtsJobItem(
+              jobId: selectedJob.jobId,
+              levelId: selectedJob.levelId,
+              levelName: selectedJob.levelName,
+              targetWpm: selectedJob.targetWpm,
+              rate: selectedJob.rate,
+              pauseScale: selectedJob.pauseScale,
+              voiceId: selectedJob.voiceId,
+              status: selectedJob.status,
+              playbackState: 'playing',
+              currentSegmentIndex: 0,
+              totalSegments: selectedJob.totalSegments,
+              readySegments: selectedJob.readySegments,
+              generationProgress: selectedJob.generationProgress,
+              currentSegmentNumber: 1,
+              playbackProgress: selectedJob.totalSegments > 0 ? 1 / selectedJob.totalSegments : 0,
+              errorMessage: selectedJob.errorMessage,
+            ),
+            activeSegments: localSegments,
+          ),
+        );
+      });
+      await _applyPlaybackSpeed();
+      await _playCurrentSegment();
+      return;
+    }
     final desktopBookId = _desktopBookId;
     if (desktopBookId == null || desktopBookId.isEmpty) {
+      setState(() => _state = _state.copyWith(error: 'Нет локальных TTS-сегментов для offline playback'));
       return;
     }
     setState(() => _state = _state.copyWith(actionBusy: true, clearError: true));
@@ -261,7 +343,10 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _state = _state.copyWith(ttsState: state));
+      setState(() {
+        _useLocalPlayback = false;
+        _state = _state.copyWith(ttsState: state);
+      });
       await _applyPlaybackSpeed();
       await _playCurrentSegment();
     } catch (error) {
@@ -276,10 +361,128 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     }
   }
 
+  Future<bool> _hasCompleteLocalAudio(
+    String jobId,
+    List<TtsSegmentItem> segments,
+  ) async {
+    if (jobId.isEmpty || segments.isEmpty) {
+      return false;
+    }
+    for (final segment in segments) {
+      final cached = await _packageRepository.getCachedAudioPath(
+        localBookId: widget.localBookId,
+        jobId: jobId,
+        segmentIndex: segment.segmentIndex,
+      );
+      if (cached == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> _controlPlayback(String action) async {
-    final desktopBookId = _desktopBookId;
     final activeJob = _state.ttsState?.activeJob;
-    if (desktopBookId == null || desktopBookId.isEmpty || activeJob == null) {
+    if (activeJob == null) {
+      return;
+    }
+    if (_useLocalPlayback) {
+      if (action == 'pause') {
+        await _audioPlayer.pause();
+        setState(() {
+          _state = _state.copyWith(
+            ttsState: TtsState(
+              jobs: _state.ttsState?.jobs ?? const <TtsJobItem>[],
+              activeJob: TtsJobItem(
+                jobId: activeJob.jobId,
+                levelId: activeJob.levelId,
+                levelName: activeJob.levelName,
+                targetWpm: activeJob.targetWpm,
+                rate: activeJob.rate,
+                pauseScale: activeJob.pauseScale,
+                voiceId: activeJob.voiceId,
+                status: activeJob.status,
+                playbackState: 'paused',
+                currentSegmentIndex: activeJob.currentSegmentIndex,
+                totalSegments: activeJob.totalSegments,
+                readySegments: activeJob.readySegments,
+                generationProgress: activeJob.generationProgress,
+                currentSegmentNumber: activeJob.currentSegmentNumber,
+                playbackProgress: activeJob.playbackProgress,
+                errorMessage: activeJob.errorMessage,
+              ),
+              activeSegments: _state.ttsState?.activeSegments ?? const <TtsSegmentItem>[],
+            ),
+          );
+        });
+      } else if (action == 'resume') {
+        await _applyPlaybackSpeed();
+        await _audioPlayer.play();
+        setState(() {
+          _state = _state.copyWith(
+            ttsState: TtsState(
+              jobs: _state.ttsState?.jobs ?? const <TtsJobItem>[],
+              activeJob: TtsJobItem(
+                jobId: activeJob.jobId,
+                levelId: activeJob.levelId,
+                levelName: activeJob.levelName,
+                targetWpm: activeJob.targetWpm,
+                rate: activeJob.rate,
+                pauseScale: activeJob.pauseScale,
+                voiceId: activeJob.voiceId,
+                status: activeJob.status,
+                playbackState: 'playing',
+                currentSegmentIndex: activeJob.currentSegmentIndex,
+                totalSegments: activeJob.totalSegments,
+                readySegments: activeJob.readySegments,
+                generationProgress: activeJob.generationProgress,
+                currentSegmentNumber: activeJob.currentSegmentNumber,
+                playbackProgress: activeJob.playbackProgress,
+                errorMessage: activeJob.errorMessage,
+              ),
+              activeSegments: _state.ttsState?.activeSegments ?? const <TtsSegmentItem>[],
+            ),
+          );
+        });
+      } else if (action == 'next' || action == 'prev') {
+        final segments = _state.ttsState?.activeSegments ?? const <TtsSegmentItem>[];
+        if (segments.isEmpty) {
+          return;
+        }
+        var nextIndex = activeJob.currentSegmentIndex + (action == 'next' ? 1 : -1);
+        nextIndex = math.max(0, math.min(nextIndex, segments.length - 1));
+        setState(() {
+          _state = _state.copyWith(
+            ttsState: TtsState(
+              jobs: _state.ttsState?.jobs ?? const <TtsJobItem>[],
+              activeJob: TtsJobItem(
+                jobId: activeJob.jobId,
+                levelId: activeJob.levelId,
+                levelName: activeJob.levelName,
+                targetWpm: activeJob.targetWpm,
+                rate: activeJob.rate,
+                pauseScale: activeJob.pauseScale,
+                voiceId: activeJob.voiceId,
+                status: activeJob.status,
+                playbackState: 'playing',
+                currentSegmentIndex: nextIndex,
+                totalSegments: activeJob.totalSegments,
+                readySegments: activeJob.readySegments,
+                generationProgress: activeJob.generationProgress,
+                currentSegmentNumber: math.min(nextIndex + 1, activeJob.totalSegments),
+                playbackProgress: activeJob.totalSegments > 0 ? ((nextIndex + 1) / activeJob.totalSegments) : 0,
+                errorMessage: activeJob.errorMessage,
+              ),
+              activeSegments: segments,
+            ),
+          );
+        });
+        await _playCurrentSegment();
+      }
+      return;
+    }
+    final desktopBookId = _desktopBookId;
+    if (desktopBookId == null || desktopBookId.isEmpty) {
       return;
     }
     setState(() => _state = _state.copyWith(actionBusy: true, clearError: true));
@@ -315,6 +518,21 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   Future<void> _stopJob(String jobId) async {
+    if (_useLocalPlayback) {
+      await _audioPlayer.stop();
+      final jobs = _state.ttsState?.jobs ?? const <TtsJobItem>[];
+      setState(() {
+        _useLocalPlayback = false;
+        _state = _state.copyWith(
+          ttsState: TtsState(
+            jobs: jobs,
+            activeJob: null,
+            activeSegments: const <TtsSegmentItem>[],
+          ),
+        );
+      });
+      return;
+    }
     final desktopBookId = _desktopBookId;
     if (desktopBookId == null || desktopBookId.isEmpty) {
       return;
@@ -347,9 +565,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     final desktopBookId = _desktopBookId;
     final state = _state.ttsState;
     final activeJob = state?.activeJob;
-    if (desktopBookId == null ||
-        desktopBookId.isEmpty ||
-        state == null ||
+    if (state == null ||
         activeJob == null ||
         state.activeSegments.isEmpty) {
       return;
@@ -365,6 +581,10 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       segmentIndex: segment.segmentIndex,
     );
     if (localAudioPath == null) {
+      if (desktopBookId == null || desktopBookId.isEmpty) {
+        setState(() => _state = _state.copyWith(error: 'Локальный audio segment не найден для offline playback'));
+        return;
+      }
       final bytes = await widget.api.downloadTtsAudio(
         bookId: desktopBookId,
         jobId: activeJob.jobId,
@@ -391,11 +611,47 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     if (activeJob.currentSegmentIndex >= state.activeSegments.length - 1) {
       return;
     }
-    try {
-      final desktopBookId = _desktopBookId;
-      if (desktopBookId == null || desktopBookId.isEmpty) {
-        return;
+    if (_useLocalPlayback) {
+      final nextIndex = activeJob.currentSegmentIndex + 1;
+      setState(() {
+        _state = _state.copyWith(
+          ttsState: TtsState(
+            jobs: state.jobs,
+            activeJob: TtsJobItem(
+              jobId: activeJob.jobId,
+              levelId: activeJob.levelId,
+              levelName: activeJob.levelName,
+              targetWpm: activeJob.targetWpm,
+              rate: activeJob.rate,
+              pauseScale: activeJob.pauseScale,
+              voiceId: activeJob.voiceId,
+              status: activeJob.status,
+              playbackState: 'playing',
+              currentSegmentIndex: nextIndex,
+              totalSegments: activeJob.totalSegments,
+              readySegments: activeJob.readySegments,
+              generationProgress: activeJob.generationProgress,
+              currentSegmentNumber: math.min(nextIndex + 1, activeJob.totalSegments),
+              playbackProgress: activeJob.totalSegments > 0 ? ((nextIndex + 1) / activeJob.totalSegments) : 0,
+              errorMessage: activeJob.errorMessage,
+            ),
+            activeSegments: state.activeSegments,
+          ),
+        );
+      });
+      final currentSegment = state.activeSegments[activeJob.currentSegmentIndex];
+      final gap = Duration(milliseconds: currentSegment.pauseAfterMs);
+      if (gap > Duration.zero) {
+        await Future<void>.delayed(gap);
       }
+      await _playCurrentSegment();
+      return;
+    }
+    final desktopBookId = _desktopBookId;
+    if (desktopBookId == null || desktopBookId.isEmpty) {
+      return;
+    }
+    try {
       final nextState = await _controller.controlTts(
         bookId: desktopBookId,
         jobId: activeJob.jobId,
@@ -417,6 +673,38 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       }
       setState(() => _state = _state.copyWith(error: error.toString()));
     }
+  }
+
+  String _speedLabel() {
+    return _formatSpeed(_selectedPlaybackSpeed());
+  }
+
+  Future<void> _showSpeedPicker() async {
+    if (_state.ttsLevels.isEmpty) {
+      return;
+    }
+    final selectedId = await showModalBottomSheet<int>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            for (final level in _state.ttsLevels)
+              ListTile(
+                title: Text('${level.name} ${_formatSpeed(level.playbackSpeed)}'),
+                trailing: level.id == _selectedLevel()?.id ? const Icon(Icons.check) : null,
+                onTap: () => Navigator.of(context).pop(level.id),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (selectedId == null) {
+      return;
+    }
+    setState(() => _state = _state.copyWith(selectedLevelIds: {selectedId}));
+    await _applyPlaybackSpeed();
   }
 
   Future<void> _savePosition(int paragraphIndex) async {
@@ -477,25 +765,23 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         heightFactor: 0.78,
         child: ReaderDetailSheet(
           payload: payload,
-          onSaveUnit: (desktopBookId != null && desktopBookId.isNotEmpty)
-              ? (unit) => _saveDetailUnit(desktopBookId, word.id, unit)
-              : null,
+          onSaveUnit: (unit) => _saveDetailUnit(unit),
         ),
       ),
     );
   }
 
-  Future<String?> _saveDetailUnit(
-    String bookId,
-    String wordId,
-    DetailSheetUnitItem unit,
-  ) async {
+  Future<String?> _saveDetailUnit(DetailSheetUnitItem unit) async {
     try {
-      final result = await _controller.saveDetailUnit(
-        bookId: bookId,
-        wordId: wordId,
-        unitId: unit.id,
+      final originBookId = (_desktopBookId != null && _desktopBookId!.isNotEmpty)
+          ? _desktopBookId!
+          : widget.localBookId;
+      final result = await widget.cardsRepository.saveDetailUnit(
+        deviceId: widget.deviceId,
+        originBookId: originBookId,
+        unit: unit,
       );
+      widget.onCardsChanged?.call();
       final saved = result['saved'] as bool? ?? false;
       return saved ? 'Добавлено в Cards' : 'Карточка уже есть';
     } catch (error) {
@@ -517,19 +803,6 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     );
   }
 
-  Future<void> _openSettings() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => MobileSettingsScreen(
-          title: 'Reader settings',
-          currentBookTitle: _state.payload?.title,
-          busy: _state.actionBusy,
-          errorText: _state.error,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final payload = _state.payload;
@@ -537,10 +810,6 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       appBar: AppBar(
         title: Text(payload?.title ?? 'Reader'),
         actions: [
-          IconButton(
-            onPressed: _state.loading ? null : _openSettings,
-            icon: const Icon(Icons.settings_outlined),
-          ),
           IconButton(
             onPressed: _state.loading || _state.actionBusy ? null : _load,
             icon: const Icon(Icons.refresh),
@@ -599,6 +868,9 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
                         },
                         onPrev: () => _controlPlayback('prev'),
                         onNext: () => _controlPlayback('next'),
+                        onSpeedTap: _showSpeedPicker,
+                        onSpeedLongPress: _showSpeedPicker,
+                        speedLabel: _speedLabel(),
                       ),
                     ),
                   ],

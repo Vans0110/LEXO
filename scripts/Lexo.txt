@@ -1,0 +1,592 @@
+• 1. Общая архитектура
+
+  Дерево проекта, верхний уровень:
+
+  - engine — Python backend: импорт книги, перевод, mapping, storage, API, TTS.
+  - app — Flutter UI для desktop/mobile shell, reader, cards.
+  - MVP — продуктовые и технические планы этапов.
+  - history — журнал изменений по дням.
+  - Books — входные .txt книги.
+  - scripts — bat/cmd-скрипты запуска и setup.
+  - ISO%20pack — iOS/IPA-артефакты.
+  - logs — runtime-логи.
+  - Other — внешние артефакты, не часть исходного LEXO.
+
+  Ключевые backend-модули:
+
+  - engine/main.py:8-10 — точка входа backend.
+  - engine/api.py:17-269 — HTTP API на BaseHTTPRequestHandler.
+  - engine/storage.py:31-1607 — основной orchestration/storage слой.
+  - engine/text_loader.py:6-22 — нормализация TXT.
+  - engine/segmenter.py:9-20 — разбиение на абзацы и предложения.
+  - engine/translator.py:18-113 — переводчики mock и NLLB.
+  - engine/word_alignment.py:190-744 — tokenization, mapping, tap-units.
+  - engine/lexical_enrichment.py:253-505 — lemma/POS/morph/unit type.
+  - engine/tts — TTS provider, segmentation, queue, profiles.
+
+  Ключевые frontend-модули:
+
+  - app/lib/src/app.dart:11-34 — root app, выбор mobile/desktop shell.
+  - app/lib/src/api/api_client.dart:9-299 — HTTP клиент ко всем backend endpoints.
+  - app/lib/src/models.dart:1-293 — модели library/reader/TTS.
+  - app/lib/src/features/reader/reader_feature.dart:104-185 — reader controller.
+  - app/lib/src/screens/home_screen.dart:11-288 — desktop library/import/open.
+  - app/lib/src/screens/reader_screen.dart:18-535 — desktop reader.
+  - app/lib/src/ui/mobile/screens/mobile_shell_screen.dart:15-252 — mobile shell.
+  - app/lib/src/widgets/reader_text_flow.dart:7-65 — список абзацев + translation bar.
+  - app/lib/src/widgets/interactive_paragraph_text.dart:5-60 — рендер token stream и gesture на словах.
+  - app/lib/src/widgets/reader_detail_sheet.dart:5-205 — long-press detail sheet.
+  - app/lib/src/screens/cards_list_screen.dart:7-302 — список карточек.
+  - app/lib/src/screens/card_review_screen.dart:6-281 — review/swipe flow.
+
+  Технологии, подтверждённые кодом:
+
+  - Python + SQLite — engine/storage.py:57-60, 62-215.
+  - Flutter/Dart — app/lib/src/app.dart:1-34.
+  - HTTP server stdlib — engine/api.py:4-18.
+  - NLLB через ctranslate2 + transformers — engine/translator.py:55-59.
+  - spaCy как optional enrichment — engine/lexical_enrichment.py:239-250.
+  - media_kit для playback в Flutter — app/lib/src/screens/reader_screen.dart:7, 33, 88-93.
+  - file_selector для выбора TXT — app/lib/src/screens/home_screen.dart:3, 77-80.
+  - TTS provider kokoro или mock — engine/tts/tts_provider.py:31-136.
+
+  Как части взаимодействуют:
+
+  - Flutter вызывает HTTP через app/lib/src/api/api_client.dart:250-289.
+  - HTTP handler делегирует в singleton LexoStorage — engine/api.py:13-15, 20-200.
+  - LexoStorage читает TXT, переводит, строит mapping, пишет SQLite и файлы — engine/storage.py:315-365, 1196-1353.
+  - Reader UI загружает payload через ReaderFeatureController.load() — app/lib/src/features/reader/
+    reader_feature.dart:109-120.
+  - Reader рендерит paragraphs/tokens/words из payload — app/lib/src/screens/reader_screen.dart:494-503, app/lib/src/
+    widgets/reader_text_flow.dart:41-60.
+
+  2. Пайплайн обработки текста
+
+  Полный путь TXT -> UI:
+
+  - Загрузка TXT → app/lib/src/screens/home_screen.dart:77-92 → _pickAndImport() → выбирает .txt через file_selector,
+    вызывает backend import.
+  - HTTP import → app/lib/src/api/api_client.dart:46-49 → importBook() → POST /books/import.
+  - API endpoint → engine/api.py:102-109 → STORAGE.import_book(...).
+  - Чтение файла → engine/storage.py:283-298 → import_book() → проверяет .txt, читает read_text().
+  - Нормализация → engine/storage.py:325 → _import_book_text() вызывает split_paragraphs(normalize_text(raw_text)).
+  - Нормализация текста → engine/text_loader.py:6-22 → normalize_text() → CRLF -> LF, чистит пробелы, сжимает пустые
+    строки.
+  - Деление на абзацы → engine/segmenter.py:9-11 → split_paragraphs().
+  - Деление на предложения → engine/storage.py:1295-1297 → _build_paragraph_payloads() вызывает
+    split_sentences(paragraph_text).
+  - Реальное split на предложения → engine/segmenter.py:14-20 → split_sentences().
+  - Перевод сегментов → engine/storage.py:1296-1299 → translated =
+    self.translator.translate_segments(source_segments, ...).
+  - Сборка paragraph translation → engine/storage.py:1342-1348 + engine/assembler.py:9-10 →
+    assemble_paragraph(translated).
+  - Построение word mappings → engine/storage.py:1305-1312 → build_word_mappings(source_text, target_text, ...).
+  - Lexical enrichment → engine/storage.py:1312 → enrich_words(words).
+  - Сохранение в БД → engine/storage.py:1207-1291 → _replace_book_content() → пишет paragraphs, segments, source_words,
+    word_alignments.
+  - Получение reader payload → engine/api.py:35-39 → GET /reader/paragraphs.
+  - Сборка payload для UI → engine/storage.py:524-617 → get_paragraphs().
+  - Сборка tap payload per segment → engine/storage.py:580-587 + engine/word_alignment.py:290-335 →
+    build_tap_word_payloads().
+  - Сборка render tokens → engine/storage.py:603-606, 619-663 → _build_reader_tokens().
+  - Загрузка во Flutter → app/lib/src/features/reader/reader_feature.dart:109-120 → load(bookId).
+  - Привязка к UI → app/lib/src/screens/reader_screen.dart:104-143 → _load().
+  - Рендер reader → app/lib/src/widgets/reader_text_flow.dart:41-60 → ListView по payload.paragraphs.
+  - Рендер параграфа → app/lib/src/widgets/interactive_paragraph_text.dart:28-58 → RichText из tokens.
+
+  3. Перевод (translation)
+
+  Модель:
+
+  - По умолчанию используется mock — engine/config.py:17-22, engine/translator.py:109-113.
+  - Реальная ML-модель: facebook/nllb-200-distilled-600M — engine/translator.py:10-15, 43-106.
+  - NLLB включается только если translator_mode() == "nllb" — engine/translator.py:109-113.
+
+  Где вызывается:
+
+  - engine/storage.py:1296-1299 → _build_paragraph_payloads().
+
+  Единица перевода:
+
+  - Перевод идёт по segments — engine/translator.py:22-27.
+  - segments в текущем pipeline = предложения после split_sentences() — engine/storage.py:1296-1299, engine/
+    segmenter.py:14-20.
+
+  Контекст:
+
+  - В вызов translate_segments() передаётся только список сегментов текущего абзаца — engine/storage.py:1296-1299.
+  - Явная передача контекста соседних абзацев/предложений в translator: не найдено.
+
+  Кеширование:
+
+  - Кеш перевода в translator.py: не найдено.
+  - Отдельный translation cache в storage.py: не найдено.
+
+  Ограничения, видимые из кода:
+
+  - По умолчанию backend работает не на NLLB, а на MockProvider, если env не переключён — engine/config.py:17-22,
+    engine/translator.py:109-113.
+  - NLLB поддерживает только en и ru — engine/translator.py:12-15, 116-123.
+  - Если translator вернёт число сегментов, не равное входу, импорт книги падает с ошибкой — engine/storage.py:1297-
+    1299.
+  - Split предложений основан на одном regex и смотрит на заглавную букву/цифру после .!? — engine/segmenter.py:6, 14-
+    20. Более сложная сегментация: не найдена.
+
+  4. Система word mapping
+
+  Где строится:
+
+  - engine/word_alignment.py:190-268 → build_word_mappings().
+
+  Алгоритм, фактически:
+
+  - Оба текста токенизируются regex WORD_PATTERN — engine/word_alignment.py:6, 180-187, 195-196.
+  - Ищутся hard anchors — engine/word_alignment.py:475-525.
+  - Hard anchors сейчас ограничены:
+      - chapter, am, pm
+      - цифры
+      - tom, luna, anna
+        — engine/word_alignment.py:496-514.
+  - Для anchor слов ищутся target-кандидаты по списку ANCHOR_TRANSLATIONS и по цифровому совпадению — engine/
+    word_alignment.py:170-177, 506-525.
+  - Между anchor-парами target индексы для content-слов распределяются пропорционально по позиции — engine/
+    word_alignment.py:338-345, 389-472.
+  - Function words на этапе mapping — только:
+      - артикли the/a/an
+      - связка is/am/are/was/were
+        — engine/word_alignment.py:551-558.
+  - Для function words target берётся от ближайшего content anchor; у артикля есть отдельная попытка взять предыдущий
+    target function token — engine/word_alignment.py:348-369, 372-386.
+  - На выходе для каждого source token создаётся:
+      - запись source_words
+      - одна alignment-запись с target_start_index, target_end_index, target_text, confidence
+        — engine/word_alignment.py:227-267.
+
+  Структура данных:
+
+  - source_words — source token-level rows — engine/storage.py:100-115, 1244-1273.
+  - word_alignments — одна row на source_word_id — engine/storage.py:116-123, 1274-1291.
+  - Reader word payload содержит:
+      - tap_unit_id
+      - source_unit_text
+      - translation_left_text
+      - translation_focus_text
+      - translation_right_text
+        — engine/word_alignment.py:307-333.
+
+  Как определяется соответствие слов:
+
+  - Через sequential anchors + proportional distribution within windows — engine/word_alignment.py:389-472, 475-525.
+  - Не найдено использование attention, embeddings или bilingual alignment model.
+
+  Tap-unit grouping:
+
+  - Строится отдельно от base word mapping — engine/word_alignment.py:561-578.
+  - Поддержанные unit patterns:
+      - time
+      - chapter
+      - pronoun_be
+      - article_noun_phrase
+      - article_noun
+      - be_predicate
+      - phrasal_verb
+        — engine/word_alignment.py:565-573, 581-688.
+
+  Проблемы/ограничения из кода:
+
+  - В word_alignments одна строка на source word, many-to-many mapping не представлена — engine/storage.py:116-123.
+  - Anchor-словарь ограничен фиксированным списком — engine/word_alignment.py:170-177, 496-514.
+  - Распределение content-слов по target окнам позиционное, а не семантическое — engine/word_alignment.py:338-345, 467-
+    472.
+  - Function-word inheritance покрывает только articles/copula — engine/word_alignment.py:551-558.
+  - Context window для UI ограничен тремя токенами слева и справа — engine/word_alignment.py:282-287.
+
+  5. Хранение данных
+
+  Формат:
+
+  - Основное хранилище — SQLite data/lexo.db — engine/storage.py:39-45, 57-60.
+  - Исходный текст книги — data/books/<book_id>/source.txt — engine/storage.py:331-336, 1576-1577.
+  - TTS audio — data/tts/<book_id>/<engine>/<voice>/base/*.wav — engine/tts/tts_service.py:118-120, 371-372; engine/tts/
+    tts_cache.py:19-20.
+
+  Таблицы:
+
+  - books — метаданные книги, статус, active position, model, path — engine/storage.py:70-81, 216-221.
+  - paragraphs — paragraph-level source/target text — engine/storage.py:82-89.
+  - segments — sentence/segment-level source/target text — engine/storage.py:90-99.
+  - source_words — source tokens + enrichment fields — engine/storage.py:100-115, 223-235.
+  - word_alignments — target span per source word — engine/storage.py:116-123.
+  - saved_words — legacy/simple saved words — engine/storage.py:124-132.
+  - saved_cards — cards для review — engine/storage.py:133-155.
+  - tts_profiles, tts_jobs, tts_segments — TTS subsystem — engine/storage.py:156-190.
+
+  Где хранится перевод:
+
+  - На уровне paragraph — paragraphs.target_text — engine/storage.py:82-89.
+  - На уровне segment — segments.target_text — engine/storage.py:90-99.
+  - На уровне word alignment — word_alignments.target_text — engine/storage.py:116-123.
+
+  6. API
+
+  GET:
+
+  - /health — engine/api.py:26-27
+      - принимает: ничего
+      - возвращает: {"ok": true, "service": "lexo-engine"}
+      - использование во Flutter: не найдено
+  - /books — engine/api.py:29-30
+      - принимает: ничего
+      - возвращает: LibraryPayload
+      - используется: app/lib/src/api/api_client.dart:36-39
+  - /book — engine/api.py:32-34
+      - принимает: book_id query optional
+      - возвращает: BookStatus
+      - используется: app/lib/src/api/api_client.dart:31-34
+  - /reader/paragraphs — engine/api.py:35-39
+      - принимает: book_id
+      - возвращает: ReaderPayload
+      - используется: app/lib/src/api/api_client.dart:77-80
+  - /reader/detail-sheet — engine/api.py:41-48
+      - принимает: book_id, word_id
+      - возвращает: DetailSheetPayload
+      - используется: app/lib/src/api/api_client.dart:82-88
+  - /saved-words — engine/api.py:50-51
+      - принимает: ничего
+      - возвращает: список saved_words
+      - используется: app/lib/src/api/api_client.dart:105-111
+  - /cards — engine/api.py:53-57
+      - принимает: status optional
+      - возвращает: SavedCardsPayload
+      - используется: app/lib/src/api/api_client.dart:113-117
+  - /cards/review — engine/api.py:59-60
+      - принимает: ничего
+      - возвращает: review queue
+      - используется: app/lib/src/api/api_client.dart:119-122
+  - /tts/profiles — engine/api.py:62-63
+      - принимает: ничего
+      - возвращает: список voices
+      - используется: app/lib/src/api/api_client.dart:161-167
+  - /tts/levels — engine/api.py:65-66
+      - принимает: ничего
+      - возвращает: playback levels
+      - используется: app/lib/src/api/api_client.dart:169-175
+  - /tts/state — engine/api.py:68-72
+      - принимает: book_id
+      - возвращает: jobs + active segments
+      - используется: app/lib/src/api/api_client.dart:177-180
+  - /mobile/desktop-books — engine/api.py:74-75
+      - принимает: ничего
+      - возвращает: список desktop books
+      - используется: app/lib/src/api/api_client.dart:41-44
+  - /mobile/books/package — engine/api.py:77-81
+      - принимает: book_id
+      - возвращает: mobile package
+      - используется: app/lib/src/api/api_client.dart:157-159
+  - /mobile/books/audio — engine/api.py:83-90
+      - принимает: book_id, job_id, segment_index
+      - возвращает: audio file
+      - используется: app/lib/src/api/api_client.dart:182-201
+
+  POST:
+
+  - /books/import — engine/api.py:102-109
+      - принимает: source_path, optional source_lang, target_lang
+      - возвращает: BookStatus
+      - используется: app/lib/src/api/api_client.dart:46-49
+  - /mobile/books/import-text — engine/api.py:110-118
+      - принимает: title, source_text, langs
+      - возвращает: mobile package
+      - используется: app/lib/src/api/api_client.dart:51-66
+  - /books/open — engine/api.py:119-122
+      - принимает: book_id
+      - возвращает: BookStatus
+      - используется: app/lib/src/api/api_client.dart:68-71
+  - /books/delete — engine/api.py:123-126
+      - принимает: book_id
+      - возвращает: delete result
+      - используется: app/lib/src/api/api_client.dart:73-75
+  - /reader/position — engine/api.py:127-133
+      - принимает: book_id, paragraph_index
+      - возвращает: save result
+      - используется: app/lib/src/api/api_client.dart:246-248
+  - /reader/detail-sheet/save — engine/api.py:134-141
+      - принимает: book_id, word_id, unit_id
+      - возвращает: save result
+      - используется: app/lib/src/api/api_client.dart:90-103
+  - /tts/generate — engine/api.py:142-152
+      - принимает: book_id, voice_id, level_ids, mode, overwrite
+      - возвращает: TtsState
+      - используется: app/lib/src/api/api_client.dart:203-221
+  - /tts/start — engine/api.py:153-159
+      - принимает: book_id, job_id
+      - возвращает: TtsState
+      - используется: app/lib/src/api/api_client.dart:223-232
+  - /tts/control — engine/api.py:160-163
+      - принимает: book_id, job_id, action
+      - возвращает: TtsState
+      - используется: app/lib/src/api/api_client.dart:234-244
+  - /saved-words — engine/api.py:164-171
+      - принимает: book_id, word_id, unit_id
+      - возвращает: save result
+      - использование во Flutter: не найдено отдельно; логика дублирует detail-sheet/save
+  - /cards/review/result — engine/api.py:172-178
+      - принимает: card_id, direction
+      - возвращает: updated card
+      - используется: app/lib/src/api/api_client.dart:124-136
+  - /cards/delete — engine/api.py:179-182
+      - принимает: card_id
+      - возвращает: delete result
+      - используется: app/lib/src/api/api_client.dart:138-147
+  - /saved-words/raw — engine/api.py:183-186
+      - принимает: word
+      - возвращает: save result
+      - используется: app/lib/src/api/api_client.dart:149-151
+  - /word/audio — engine/api.py:187-189
+      - принимает: word
+      - возвращает: {"audio_path": "stub://word-audio"}
+      - используется: app/lib/src/api/api_client.dart:153-155
+
+  7. Frontend (Flutter)
+
+  Reader screen:
+
+  - Основной экран reader — app/lib/src/screens/reader_screen.dart:18-535.
+  - При initState() вызывает _load() — app/lib/src/screens/reader_screen.dart:84-95.
+  - _load() получает:
+      - ReaderPayload
+      - ttsProfiles
+      - ttsLevels
+      - ttsState
+        через ReaderFeatureController.load() — app/lib/src/screens/reader_screen.dart:104-143, app/lib/src/features/
+        reader/reader_feature.dart:109-120.
+
+  Как рендерится текст:
+
+  - ReaderTextFlow получает весь payload — app/lib/src/screens/reader_screen.dart:494-503.
+  - ReaderTextFlow рендерит ListView.separated по payload.paragraphs — app/lib/src/widgets/reader_text_flow.dart:41-60.
+  - Каждый paragraph рендерится через InteractiveParagraphText — app/lib/src/widgets/reader_text_flow.dart:47-57.
+
+  Как рендерится параграф:
+
+  - InteractiveParagraphText принимает tokens и words — app/lib/src/widgets/interactive_paragraph_text.dart:5-19.
+  - Рендер идёт как RichText(TextSpan(children: ...)) — app/lib/src/widgets/interactive_paragraph_text.dart:28-58.
+  - Для non-word token создаётся обычный TextSpan — app/lib/src/widgets/interactive_paragraph_text.dart:40-41.
+  - Для word token создаётся WidgetSpan c GestureDetector и Text — app/lib/src/widgets/
+    interactive_paragraph_text.dart:43-55.
+
+  Есть ли отдельный виджет на слово:
+
+  - Отдельного standalone word widget file: не найдено.
+  - Фактически каждое слово рендерится как Text внутри GestureDetector внутри WidgetSpan — app/lib/src/widgets/
+    interactive_paragraph_text.dart:43-55.
+
+  8. Механика нажатия на слово
+
+  Где обрабатывается tap:
+
+  - Gesture hook — app/lib/src/widgets/interactive_paragraph_text.dart:46-49.
+  - Callback приходит в ReaderTextFlow — app/lib/src/widgets/reader_text_flow.dart:55-57.
+  - Обработчик state — app/lib/src/screens/reader_screen.dart:371-385 → _handleWordTap().
+
+  Как определяется выбранное слово:
+
+  - ParagraphTokenItem.wordId связывает render token с ParagraphWordItem — app/lib/src/models.dart:160-188, 191-256.
+  - В InteractiveParagraphText создаётся wordById = {for (final word in words) word.id: word} — app/lib/src/widgets/
+    interactive_paragraph_text.dart:26.
+  - При клике выбирается word = wordById[token.wordId] — app/lib/src/widgets/interactive_paragraph_text.dart:31-34.
+
+  Как формируются translationLeft / Focus / Right:
+
+  - Backend вычисляет их в build_tap_word_payloads() — engine/word_alignment.py:297-317.
+  - Внутри используется build_context_window() — engine/word_alignment.py:271-287.
+  - Во Flutter tap просто копирует уже готовые поля из ParagraphWordItem — app/lib/src/screens/reader_screen.dart:371-
+    383.
+
+  Как строится контекст:
+
+  - Контекст строится на target-токенах вокруг target_start_index..target_end_index — engine/word_alignment.py:271-287.
+  - Левый и правый контекст ограничены тремя target tokens — engine/word_alignment.py:284-286.
+
+  Long press:
+
+  - Обработчик — app/lib/src/screens/reader_screen.dart:387-414.
+  - Сначала вызывает обычный tap (_handleWordTap(item, word)) — app/lib/src/screens/reader_screen.dart:388.
+  - Потом запрашивает backend detail sheet — app/lib/src/screens/reader_screen.dart:391-394.
+  - Если backend не ответил, использует frontend fallback DetailSheetPayload.fromSelection(...) — app/lib/src/screens/
+    reader_screen.dart:395-397, app/lib/src/detail_sheet_models.dart:37-102.
+
+  9. UI логика перевода
+
+  Как отображается перевод:
+
+  - В верхней панели TranslationContextBar — app/lib/src/widgets/reader_text_flow.dart:35-39.
+  - Виджет — app/lib/src/widgets/translation_context_bar.dart:3-65.
+
+  Формат:
+
+  - Это один fixed-height блок высотой 72 — app/lib/src/widgets/translation_context_bar.dart:22-24.
+  - Внутри RichText, maxLines: 1, overflow: ellipsis — app/lib/src/widgets/translation_context_bar.dart:33-35.
+  - focusText выделяется жирным — app/lib/src/widgets/translation_context_bar.dart:46-49.
+
+  Обновление при клике:
+
+  - State меняется в _handleWordTap() — app/lib/src/screens/reader_screen.dart:375-382.
+  - Затем ReaderTextFlow получает новые translationLeftText/FocusText/RightText из _state — app/lib/src/screens/
+    reader_screen.dart:494-503.
+
+  Фиксирован ли контекст:
+
+  - Да, UI показывает только left + focus + right из backend payload — app/lib/src/widgets/
+    translation_context_bar.dart:44-52.
+  - Динамического расширения контекста в этом виджете: не найдено.
+
+  10. TTS система
+
+  Где находится:
+
+  - Backend TTS orchestration — engine/tts/tts_service.py:16-476.
+  - Provider selection — engine/tts/tts_provider.py:13-136.
+  - Segmentation — engine/tts/tts_segmenter.py:48-266.
+  - Flutter playback controls — app/lib/src/screens/reader_screen.dart:37-355.
+
+  Какая система используется:
+
+  - По умолчанию mock — engine/config.py:18, 25-26; engine/tts/tts_provider.py:133-136.
+  - Реальный provider: kokoro, если LEXO_TTS_PROVIDER == "kokoro" и есть runtime/runner — engine/tts/tts_provider.py:61-
+    136.
+
+  Как режется текст:
+
+  - generate_jobs() читает paragraphs книги — engine/tts/tts_service.py:81-108, 468-474.
+  - Далее build_tts_chunks():
+      - фильтрует видимые paragraphs
+      - разбивает paragraph на lines
+      - heading lines force-break
+      - обычные lines -> split_sentences()
+      - sentence -> _split_phrases() по , ; :
+      - длинные фразы -> _split_long_phrase()
+        — engine/tts/tts_segmenter.py:48-185, 188-266.
+
+  Как генерируется аудио:
+
+  - Для каждого chunk вызывается generate_tts_segment() — engine/tts/tts_service.py:374-388.
+  - generate_tts_segment() сначала проверяет cache path, иначе вызывает provider.synthesize(...) — engine/tts/
+    tts_queue.py:18-35.
+  - Для Kokoro вызывается отдельный runner script с --speed — engine/tts/tts_provider.py:84-121.
+
+  Скорость:
+
+  - Generation rate задаётся в SpeechProfile.rate — engine/tts/speech_profiles.py:6-17, 24-30.
+  - Этот rate передаётся в provider.synthesize(..., rate=profile.rate) — engine/tts/tts_queue.py:29-34.
+  - На frontend playback speed отдельно меняется через media_kit Player.setRate() — app/lib/src/screens/
+    reader_screen.dart:37-52.
+
+  Time-stretch или генерация под скорость:
+
+  - Генерация под скорость есть: rate передаётся в TTS provider — engine/tts/tts_queue.py:29-34, engine/tts/
+    tts_provider.py:89-104.
+  - Playback time-stretch тоже есть на frontend: _audioPlayer.setRate(...) — app/lib/src/screens/reader_screen.dart:50-
+    52, 229, 263-264, 322.
+  - Отдельный DSP time-stretch backend-layer: не найдено.
+
+  11. Узкие места и проблемы
+
+  Подтверждённые кодом:
+
+  - По умолчанию переводчик — mock, не NLLB — engine/config.py:17-22, engine/translator.py:109-113.
+  - По умолчанию TTS provider — mock, не Kokoro — engine/config.py:18, 25-26, engine/tts/tts_provider.py:133-136.
+  - split_sentences() основан на одном regex и не использует полноценный parser — engine/segmenter.py:6, 14-20.
+  - Translation cache не найден — engine/translator.py:1-126, engine/storage.py:1293-1353.
+  - Mapping хранит только одну alignment row на source word — engine/storage.py:116-123.
+  - Mapping-anchors ограничены фиксированным словарём — engine/word_alignment.py:170-177, 496-514.
+  - _assign_content_targets() распределяет индексы пропорционально, без отдельной семантической модели — engine/
+    word_alignment.py:338-345.
+  - TTS level_ids приходят в API и service, но в generate_jobs() фактически используется только profiles =
+    [build_profile()] — engine/api.py:142-149, engine/tts/tts_service.py:64-84.
+  - word/audio endpoint — stub, не реальная генерация — engine/api.py:187-189.
+  - Верхняя translation bar принудительно maxLines: 1, длинный контекст режется многоточием — app/lib/src/widgets/
+    translation_context_bar.dart:33-35.
+  - Frontend имеет fallback DetailSheetPayload.fromSelection() при ошибке backend detail-sheet — app/lib/src/screens/
+    reader_screen.dart:391-397. Это означает, что detail logic существует в двух местах: backend и fallback frontend.
+
+  12. Что уже работает фактически
+
+  ✔ Реализовано:
+
+  - Импорт .txt книги через UI и backend — app/lib/src/screens/home_screen.dart:77-92, engine/storage.py:283-365.
+  - Нормализация текста, разбиение на абзацы и предложения — engine/text_loader.py:6-22, engine/segmenter.py:9-20.
+  - Сбор paragraph/segment storage и сохранение в SQLite — engine/storage.py:1196-1291.
+  - Reader payload с paragraphs, words, tokens — engine/storage.py:524-617.
+  - Tap по слову и показ translation context bar — app/lib/src/widgets/interactive_paragraph_text.dart:46-49, app/lib/
+    src/screens/reader_screen.dart:371-385.
+  - Long press и opening detail sheet — app/lib/src/screens/reader_screen.dart:387-414.
+  - Сохранение lexical/phrase units в cards — engine/storage.py:784-916.
+  - Экран списка карточек — app/lib/src/screens/cards_list_screen.dart:7-302.
+  - Review экран со swipe/update progress — app/lib/src/screens/card_review_screen.dart:34-152, engine/storage.py:955-
+    983.
+  - TTS jobs, generation queue, playback state, audio segment retrieval — engine/tts/tts_service.py:64-183, 223-330.
+
+  ⚠ Частично:
+
+  - Реальный ML translation — только если включён nllb и модели установлены — engine/translator.py:43-71, 109-113.
+  - spaCy enrichment — только если spacy и en_core_web_sm доступны; иначе heuristic fallback — engine/
+    lexical_enrichment.py:239-250, 253-272, 325-340, 343-404.
+  - Kokoro TTS — только если есть .venv_kokoro и runner — engine/config.py:13-15, engine/tts/tts_provider.py:123-136.
+  - Multi-level TTS generation по выбранным level ids — API и UI есть, но generation profile сейчас один — engine/tts/
+    tts_service.py:64-84.
+
+  ✖ Не реализовано:
+
+  - Реальный /word/audio — engine/api.py:187-189.
+  - Translation cache — не найдено.
+  - Полноценный внешний/offline dictionary subsystem — не найдено в коде LEXO.
+  - Сложный spaced repetition scheduler — не найдено; есть только progress_score/status — engine/storage.py:151-154,
+    955-983.
+
+  13. Что отсутствует
+
+  Не найдено в коде:
+
+  - Кеш перевода на уровне сегментов/книг.
+  - Отдельная словарная база значений слова.
+  - Ручная корректировка mapping/alignment.
+  - API-аутентификация или пользовательские аккаунты.
+  - Синхронизация карточек/книг с сервером.
+  - Многозначные словарные статьи для одного слова.
+  - Реальная генерация word/audio.
+  - Отдельная grammar-review deck.
+  - Реальная параметризация generation profile по level_ids в TTS.
+
+  14. Карта потока данных
+
+  TXT
+  → app/lib/src/screens/home_screen.dart:77-92 _pickAndImport()
+  → app/lib/src/api/api_client.dart:46-49 importBook()
+  → engine/api.py:102-109 POST /books/import
+  → engine/storage.py:283-365 import_book() / _import_book_text()
+  → engine/text_loader.py:6-22 normalize_text()
+  → engine/segmenter.py:9-11 split_paragraphs()
+  → engine/storage.py:1293-1353 _build_paragraph_payloads()
+  → engine/segmenter.py:14-20 split_sentences()
+  → engine/translator.py:22-27, 73-106 translate_segments()
+  → engine/word_alignment.py:190-268 build_word_mappings()
+  → engine/lexical_enrichment.py:253-272 enrich_words()
+  → engine/storage.py:1196-1291 _replace_book_content()
+  → SQLite books/paragraphs/segments/source_words/word_alignments
+  → engine/api.py:35-39 GET /reader/paragraphs
+  → engine/storage.py:524-617 get_paragraphs()
+  → engine/word_alignment.py:290-335 build_tap_word_payloads()
+  → engine/storage.py:619-663 _build_reader_tokens()
+  → app/lib/src/api/api_client.dart:77-80 getReaderPayload()
+  → app/lib/src/features/reader/reader_feature.dart:109-120 load()
+  → app/lib/src/screens/reader_screen.dart:104-143 _load()
+  → app/lib/src/widgets/reader_text_flow.dart:41-60
+  → app/lib/src/widgets/interactive_paragraph_text.dart:28-58
+  → tap
+  → app/lib/src/screens/reader_screen.dart:371-385 _handleWordTap()
+  → translationLeft / translationFocus / translationRight
+  → app/lib/src/widgets/translation_context_bar.dart:31-54
+
+  Если нужен следующий шаг, могу сделать второй проход в формате “таблица файл → риск → что именно ломается” без
+  пересказа архитектуры.

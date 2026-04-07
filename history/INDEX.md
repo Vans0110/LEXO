@@ -31,3 +31,7 @@
 ### 2026-04-06
 - Сессия: Формализация и реализация MVP14 detail sheet, desktop shell унификация и реализация основы MVP15 для cards list / swipe review
 - Файл: [2026-04-06.md](/mnt/d/Programs/LEXO/history/2026-04-06.md)
+
+### 2026-04-07
+- Сессия: Реализация MVP16 для локальных mobile cards, ручного sync с desktop host и переработки mobile Settings под Host + Sync
+- Файл: [2026-04-07.md](/mnt/d/Programs/LEXO/history/2026-04-07.md)

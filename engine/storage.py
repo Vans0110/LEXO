@@ -132,6 +132,7 @@ class LexoStorage:
                 );
                 CREATE TABLE IF NOT EXISTS saved_cards (
                     id TEXT PRIMARY KEY,
+                    device_id TEXT NOT NULL DEFAULT '',
                     card_type TEXT NOT NULL,
                     head_text TEXT NOT NULL,
                     surface_text TEXT NOT NULL,
@@ -148,6 +149,8 @@ class LexoStorage:
                     source_word_id TEXT,
                     source_unit_id TEXT,
                     created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    deleted_at TEXT,
                     status TEXT NOT NULL DEFAULT 'new',
                     progress_score INTEGER NOT NULL DEFAULT 0,
                     review_count INTEGER NOT NULL DEFAULT 0,
@@ -211,6 +214,7 @@ class LexoStorage:
             )
             self._ensure_book_columns(conn)
             self._ensure_source_word_columns(conn)
+            self._ensure_saved_card_columns(conn)
             self._ensure_tts_columns(conn)
 
     def _ensure_book_columns(self, conn: sqlite3.Connection) -> None:
@@ -232,6 +236,24 @@ class LexoStorage:
         for name, definition in additions.items():
             if name not in columns:
                 conn.execute(f"ALTER TABLE source_words ADD COLUMN {name} {definition}")
+
+    def _ensure_saved_card_columns(self, conn: sqlite3.Connection) -> None:
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(saved_cards)").fetchall()}
+        additions = {
+            "device_id": "TEXT NOT NULL DEFAULT ''",
+            "updated_at": "TEXT",
+            "deleted_at": "TEXT",
+        }
+        for name, definition in additions.items():
+            if name not in columns:
+                conn.execute(f"ALTER TABLE saved_cards ADD COLUMN {name} {definition}")
+        conn.execute(
+            """
+            UPDATE saved_cards
+            SET updated_at = COALESCE(updated_at, created_at)
+            WHERE updated_at IS NULL OR updated_at = ''
+            """
+        )
 
     def _ensure_tts_columns(self, conn: sqlite3.Connection) -> None:
         job_columns = {row["name"] for row in conn.execute("PRAGMA table_info(tts_jobs)").fetchall()}
@@ -281,7 +303,7 @@ class LexoStorage:
             )
 
     def import_book(self, source_path: str, source_lang: str = "en", target_lang: str = "ru") -> dict:
-        source = Path(source_path)
+        source = self._normalize_import_source_path(source_path)
         if not source.exists() or not source.is_file():
             raise FileNotFoundError(f"TXT file not found: {source_path}")
         if source.suffix.lower() != ".txt":
@@ -369,9 +391,8 @@ class LexoStorage:
         if not status.get("has_book"):
             raise ValueError(f"Book not found: {book_id}")
         reader_payload = self.get_paragraphs(book_id)
-        source_path = self._book_source_path(book_id)
-        source_text = source_path.read_text(encoding="utf-8", errors="ignore") if source_path.exists() else ""
-        content_hash = hashlib.sha1(source_text.encode("utf-8")).hexdigest()
+        source_text = self._read_book_source_text(book_id)
+        content_hash = self._compute_content_hash(source_text)
         return {
             "meta": {
                 "local_book_id": book_id,
@@ -415,7 +436,7 @@ class LexoStorage:
             rows = conn.execute(
                 """
                 SELECT id, title, source_name, source_lang, target_lang, status, model_name,
-                       error_message, created_at, last_opened_at, current_paragraph_index
+                       error_message, created_at, last_opened_at, current_paragraph_index, source_path
                 FROM books
                 ORDER BY COALESCE(last_opened_at, created_at) DESC, created_at DESC
                 """
@@ -435,6 +456,7 @@ class LexoStorage:
                     "created_at": row["created_at"],
                     "last_opened_at": row["last_opened_at"],
                     "current_paragraph_index": row["current_paragraph_index"],
+                    "content_hash": self._book_content_hash(str(row["id"])),
                     "is_active": row["id"] == active_book_id,
                 }
                 for row in rows
@@ -840,6 +862,7 @@ class LexoStorage:
                 """
                 INSERT INTO saved_cards(
                     id,
+                    device_id,
                     card_type,
                     head_text,
                     surface_text,
@@ -856,12 +879,14 @@ class LexoStorage:
                     source_word_id,
                     source_unit_id,
                     created_at,
+                    updated_at,
+                    deleted_at,
                     status,
                     progress_score,
                     review_count,
                     last_reviewed_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', 0, 0, NULL)
+                VALUES (?, '', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 'new', 0, 0, NULL)
                 """,
                 (
                     card_id,
@@ -881,6 +906,7 @@ class LexoStorage:
                     word_id,
                     unit_id,
                     added_at,
+                    added_at,
                 ),
             )
             if existing_word is None:
@@ -896,6 +922,7 @@ class LexoStorage:
             "saved": True,
             "item": {
                 "id": card_id,
+                "device_id": "",
                 "card_type": card_type,
                 "head_text": head_text,
                 "surface_text": word,
@@ -907,7 +934,11 @@ class LexoStorage:
                 "grammar_label": grammar_label,
                 "morph_label": morph_label,
                 "source_book_id": book_id,
+                "source_unit_id": unit_id,
                 "created_at": added_at,
+                "updated_at": added_at,
+                "deleted_at": "",
+                "sync_state": "synced",
                 "status": "new",
                 "progress_score": 0,
                 "review_count": 0,
@@ -919,15 +950,16 @@ class LexoStorage:
         query = """
             SELECT *
             FROM saved_cards
+            WHERE deleted_at IS NULL OR deleted_at = ''
         """
-        params: tuple[object, ...] = ()
+        params: list[object] = []
         normalized_status = (status or "").strip().lower()
         if normalized_status:
-            query += " WHERE status = ?"
-            params = (normalized_status,)
-        query += " ORDER BY created_at DESC"
+            query += " AND status = ?"
+            params.append(normalized_status)
+        query += " ORDER BY updated_at DESC, created_at DESC"
         with self._connect() as conn:
-            rows = conn.execute(query, params).fetchall()
+            rows = conn.execute(query, tuple(params)).fetchall()
         items = [self._saved_card_to_payload(row) for row in rows]
         return {
             "items": items,
@@ -941,7 +973,7 @@ class LexoStorage:
                 SELECT *
                 FROM saved_cards
                 WHERE card_type IN ('lexical', 'phrase')
-                  AND status IN ('new', 'learning', 'known')
+                  AND (deleted_at IS NULL OR deleted_at = '')
                 ORDER BY progress_score ASC, created_at ASC
                 LIMIT 50
                 """
@@ -957,7 +989,10 @@ class LexoStorage:
         if normalized_direction not in {"left", "right"}:
             raise ValueError("Direction must be left or right")
         with self._connect() as conn:
-            row = conn.execute("SELECT * FROM saved_cards WHERE id = ?", (card_id,)).fetchone()
+            row = conn.execute(
+                "SELECT * FROM saved_cards WHERE id = ? AND (deleted_at IS NULL OR deleted_at = '')",
+                (card_id,),
+            ).fetchone()
             if row is None:
                 raise ValueError(f"Card not found: {card_id}")
             current_score = int(row["progress_score"] or 0)
@@ -971,10 +1006,10 @@ class LexoStorage:
             conn.execute(
                 """
                 UPDATE saved_cards
-                SET progress_score = ?, status = ?, review_count = ?, last_reviewed_at = ?
+                SET progress_score = ?, status = ?, review_count = ?, last_reviewed_at = ?, updated_at = ?
                 WHERE id = ?
                 """,
-                (next_score, next_status, review_count, reviewed_at, card_id),
+                (next_score, next_status, review_count, reviewed_at, reviewed_at, card_id),
             )
             updated = conn.execute("SELECT * FROM saved_cards WHERE id = ?", (card_id,)).fetchone()
         return {
@@ -995,12 +1030,126 @@ class LexoStorage:
             ).fetchone()
             if row is None:
                 raise ValueError(f"Card not found: {card_id}")
-            conn.execute("DELETE FROM saved_cards WHERE id = ?", (card_id,))
+            deleted_at = datetime.now(timezone.utc).isoformat()
+            conn.execute(
+                """
+                UPDATE saved_cards
+                SET deleted_at = ?, updated_at = ?
+                WHERE id = ?
+                """,
+                (deleted_at, deleted_at, card_id),
+            )
         return {
             "ok": True,
             "deleted": True,
             "item": self._saved_card_to_payload(row),
         }
+
+    def sync_mobile_cards_full(
+        self,
+        device_id: str,
+        cards_delta: list[dict],
+        last_sync_at: str | None = None,
+    ) -> dict:
+        del last_sync_at
+        with self._connect() as conn:
+            for payload in cards_delta:
+                self._merge_mobile_card(conn, device_id, payload)
+            rows = conn.execute(
+                """
+                SELECT *
+                FROM saved_cards
+                ORDER BY updated_at DESC, created_at DESC
+                """
+            ).fetchall()
+        return {
+            "merged_cards": [self._saved_card_to_payload(row) for row in rows],
+            "server_sync_time": datetime.now(timezone.utc).isoformat(),
+        }
+
+    def _merge_mobile_card(self, conn: sqlite3.Connection, device_id: str, payload: dict) -> None:
+        card_id = str(payload.get("id") or payload.get("card_uuid") or "").strip()
+        if not card_id:
+            return
+        existing = conn.execute("SELECT * FROM saved_cards WHERE id = ?", (card_id,)).fetchone()
+        incoming_updated_at = self._normalize_sync_timestamp(payload.get("updated_at") or payload.get("created_at"))
+        incoming_deleted_at = self._normalize_optional_sync_timestamp(payload.get("deleted_at"))
+        if existing is not None:
+            existing_updated_at = self._normalize_sync_timestamp(existing["updated_at"] or existing["created_at"])
+            existing_deleted_at = self._normalize_optional_sync_timestamp(existing["deleted_at"])
+            if existing_deleted_at and (not incoming_deleted_at or incoming_updated_at <= existing_updated_at):
+                return
+            if incoming_updated_at < existing_updated_at and not incoming_deleted_at:
+                return
+        values = self._card_payload_to_row_values(device_id, payload, incoming_updated_at, incoming_deleted_at)
+        if existing is None:
+            conn.execute(
+                """
+                INSERT INTO saved_cards(
+                    id, device_id, card_type, head_text, surface_text, lemma, translation,
+                    example_text, example_translation, pos, grammar_label, morph_label,
+                    source_book_id, source_paragraph_id, source_segment_id, source_word_id,
+                    source_unit_id, created_at, updated_at, deleted_at, status, progress_score,
+                    review_count, last_reviewed_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', '', '', ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                values,
+            )
+            return
+        conn.execute(
+            """
+            UPDATE saved_cards
+            SET device_id = ?, card_type = ?, head_text = ?, surface_text = ?, lemma = ?, translation = ?,
+                example_text = ?, example_translation = ?, pos = ?, grammar_label = ?, morph_label = ?,
+                source_book_id = ?, source_unit_id = ?, created_at = ?, updated_at = ?, deleted_at = ?,
+                status = ?, progress_score = ?, review_count = ?, last_reviewed_at = ?
+            WHERE id = ?
+            """,
+            values[1:] + (card_id,),
+        )
+
+    def _card_payload_to_row_values(
+        self,
+        device_id: str,
+        payload: dict,
+        updated_at: str,
+        deleted_at: str | None,
+    ) -> tuple[object, ...]:
+        created_at = self._normalize_sync_timestamp(payload.get("created_at") or updated_at)
+        return (
+            str(payload.get("id") or payload.get("card_uuid") or ""),
+            str(payload.get("device_id") or device_id or ""),
+            str(payload.get("card_type") or "lexical"),
+            str(payload.get("head_text") or ""),
+            str(payload.get("surface_text") or ""),
+            str(payload.get("lemma") or ""),
+            str(payload.get("translation") or ""),
+            str(payload.get("example_text") or payload.get("context_source") or ""),
+            str(payload.get("example_translation") or payload.get("context_target") or ""),
+            str(payload.get("pos") or ""),
+            str(payload.get("grammar_label") or ""),
+            str(payload.get("morph_label") or ""),
+            str(payload.get("source_book_id") or payload.get("origin_book_uuid") or ""),
+            str(payload.get("source_unit_id") or payload.get("origin_unit_id") or ""),
+            created_at,
+            updated_at,
+            deleted_at,
+            str(payload.get("status") or "new"),
+            int(payload.get("progress_score") or 0),
+            int(payload.get("review_count") or 0),
+            str(payload.get("last_reviewed_at") or ""),
+        )
+
+    def _normalize_sync_timestamp(self, value: object | None) -> str:
+        text = str(value or "").strip()
+        if not text:
+            return datetime.now(timezone.utc).isoformat()
+        return text
+
+    def _normalize_optional_sync_timestamp(self, value: object | None) -> str | None:
+        text = str(value or "").strip()
+        return text or None
 
     def list_saved_words(self) -> dict:
         with self._connect() as conn:
@@ -1088,6 +1237,7 @@ class LexoStorage:
     def _saved_card_to_payload(self, row: sqlite3.Row) -> dict:
         return {
             "id": str(row["id"]),
+            "device_id": str(row["device_id"] or ""),
             "card_type": str(row["card_type"]),
             "head_text": str(row["head_text"]),
             "surface_text": str(row["surface_text"]),
@@ -1099,7 +1249,11 @@ class LexoStorage:
             "grammar_label": str(row["grammar_label"]),
             "morph_label": str(row["morph_label"]),
             "source_book_id": str(row["source_book_id"] or ""),
+            "source_unit_id": str(row["source_unit_id"] or ""),
             "created_at": str(row["created_at"]),
+            "updated_at": str(row["updated_at"] or row["created_at"]),
+            "deleted_at": str(row["deleted_at"] or ""),
+            "sync_state": "synced",
             "status": str(row["status"]),
             "progress_score": int(row["progress_score"] or 0),
             "review_count": int(row["review_count"] or 0),
@@ -1575,6 +1729,45 @@ class LexoStorage:
 
     def _book_source_path(self, book_id: str) -> Path:
         return self.books_dir / book_id / "source.txt"
+
+    def _normalize_import_source_path(self, source_path: str) -> Path:
+        raw = (source_path or "").strip()
+        if not raw:
+            return Path(raw)
+        direct = Path(raw)
+        if direct.exists():
+            return direct
+        windows_drive_match = re.match(r"^([A-Za-z]):[\\/](.*)$", raw)
+        if windows_drive_match:
+            drive = windows_drive_match.group(1).lower()
+            tail = windows_drive_match.group(2).replace("\\", "/")
+            fallback = Path(f"/mnt/{drive}/{tail}")
+            return fallback if fallback.exists() else direct
+        if raw.startswith("file:///"):
+            normalized = raw[8:]
+            direct_normalized = Path(normalized)
+            if direct_normalized.exists():
+                return direct_normalized
+            windows_uri_match = re.match(r"^([A-Za-z]):[\\/](.*)$", normalized)
+            if windows_uri_match:
+                drive = windows_uri_match.group(1).lower()
+                tail = windows_uri_match.group(2).replace("\\", "/")
+                fallback = Path(f"/mnt/{drive}/{tail}")
+                return fallback if fallback.exists() else direct_normalized
+            return direct_normalized
+        return direct
+
+    def _read_book_source_text(self, book_id: str) -> str:
+        source_path = self._book_source_path(book_id)
+        if not source_path.exists():
+            return ""
+        return source_path.read_text(encoding="utf-8", errors="ignore")
+
+    def _compute_content_hash(self, source_text: str) -> str:
+        return hashlib.sha1(source_text.encode("utf-8")).hexdigest()
+
+    def _book_content_hash(self, book_id: str) -> str:
+        return self._compute_content_hash(self._read_book_source_text(book_id))
 
     def _normalize_title(self, title: str) -> str:
         normalized = (title or "").strip()

@@ -9,6 +9,8 @@ set "PYTHON_CMD="
 set "FLUTTER_CMD=C:\src\flutter\bin\flutter.bat"
 set "PROJECT_VENV=%ROOT_DIR%\.venv\Scripts\python.exe"
 set "APP_DIR=%ROOT_DIR%\app"
+set "LOG_DIR=%ROOT_DIR%\logs"
+set "ANDROID_LOGCAT_FILE=%LOG_DIR%\android_logcat.txt"
 set "DEFAULT_SDK=%LOCALAPPDATA%\Android\Sdk"
 set "DEFAULT_JAVA_HOME=C:\Program Files\Android\Android Studio\jbr"
 set "ANDROID_SDK_ROOT="
@@ -16,8 +18,12 @@ set "ADB_CMD="
 set "EMULATOR_CMD="
 set "TARGET_DEVICE="
 set "AVD_NAME=LEXO_Pixel_6"
+set "EMULATOR_ARGS=-avd %AVD_NAME% -no-snapshot-load"
+set "LEXO_ANDROID_BASE_URL=http://127.0.0.1:8765"
 set "LEXO_TRANSLATOR_MODE=mock"
 set "LEXO_TTS_PROVIDER_MODE=mock"
+
+if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
 
 if exist "%PROJECT_VENV%" (
   set "PYTHON_CMD=%PROJECT_VENV%"
@@ -137,11 +143,12 @@ for /f "skip=1 tokens=1,2" %%D in ('"%ADB_CMD%" devices') do (
 
 if not defined TARGET_DEVICE (
   echo [LEXO] Starting Android emulator "%AVD_NAME%"...
-  start "LEXO Android Emulator" "%EMULATOR_CMD%" -avd "%AVD_NAME%"
+  echo [LEXO] Emulator args: %EMULATOR_ARGS%
+  start "LEXO Android Emulator" "%EMULATOR_CMD%" %EMULATOR_ARGS%
 )
 
 if not defined TARGET_DEVICE (
-  for /l %%I in (1,1,90) do (
+  for /l %%I in (1,1,150) do (
     set "TARGET_DEVICE="
     for /f "skip=1 tokens=1,2" %%D in ('"%ADB_CMD%" devices') do (
       echo %%D| findstr /B /C:"emulator-" >nul
@@ -160,20 +167,43 @@ if not defined TARGET_DEVICE (
 
 :wait_for_boot
 echo [LEXO] Waiting for Android boot completion...
-for /l %%I in (1,1,120) do (
+for /l %%I in (1,1,180) do (
+  set "BOOT_DONE="
+  set "BOOT_ANIM="
   for /f %%B in ('"%ADB_CMD%" -s %TARGET_DEVICE% shell getprop sys.boot_completed 2^>nul') do (
-    if "%%B"=="1" goto boot_done
+    if "%%B"=="1" set "BOOT_DONE=1"
+  )
+  for /f %%B in ('"%ADB_CMD%" -s %TARGET_DEVICE% shell getprop init.svc.bootanim 2^>nul') do (
+    if /I "%%B"=="stopped" set "BOOT_ANIM=1"
+  )
+  if defined BOOT_DONE if defined BOOT_ANIM goto boot_done
+  if defined BOOT_DONE (
+    echo [LEXO] Boot flag is up, waiting for boot animation to stop...
   )
   timeout /t 2 /nobreak >nul
 )
 
 echo [LEXO] Emulator boot did not complete in time.
+echo [LEXO] This usually means the AVD is stuck during startup or Quick Boot state is bad.
+echo [LEXO] Recommended manual fixes:
+echo [LEXO]   1. Device Manager -^> LEXO_Pixel_6 -^> Cold Boot Now
+echo [LEXO]   2. If needed: Wipe Data
+echo [LEXO]   3. Set RAM to 4096 MB in AVD settings
 pause
 exit /b 1
 
 :boot_done
 echo [LEXO] Emulator boot complete.
 echo [LEXO] Using Android device: %TARGET_DEVICE%
+echo [LEXO] Clearing adb logcat buffer...
+"%ADB_CMD%" -s %TARGET_DEVICE% logcat -c >nul 2>nul
+echo [LEXO] Configuring adb reverse for host access...
+"%ADB_CMD%" -s %TARGET_DEVICE% reverse tcp:8765 tcp:8765 >nul 2>nul
+if errorlevel 1 (
+  echo [LEXO] Warning: adb reverse tcp:8765 failed. App may fall back to emulator host routing.
+) else (
+  echo [LEXO] adb reverse enabled: device 127.0.0.1:8765 -> host 127.0.0.1:8765
+)
 
 echo [LEXO] Starting Python engine...
 if exist "%ROOT_DIR%\data\models\nllb-200-distilled-600m\ct2\model.bin" (
@@ -188,12 +218,16 @@ echo [LEXO] Waiting before starting mobile UI...
 timeout /t 3 /nobreak >nul
 
 echo [LEXO] Starting Flutter Android app...
+echo [LEXO] Flutter base URL: %LEXO_ANDROID_BASE_URL%
 pushd "%APP_DIR%"
-call "%FLUTTER_CMD%" run -d "%TARGET_DEVICE%"
+call "%FLUTTER_CMD%" run -d "%TARGET_DEVICE%" --dart-define=LEXO_BASE_URL=%LEXO_ANDROID_BASE_URL%
 set "FLUTTER_EXIT=%ERRORLEVEL%"
 popd
 if not "%FLUTTER_EXIT%"=="0" (
   echo [LEXO] Flutter Android app exited with an error.
+  echo [LEXO] Saving adb logcat to:
+  echo [LEXO]   %ANDROID_LOGCAT_FILE%
+  "%ADB_CMD%" -s %TARGET_DEVICE% logcat -d > "%ANDROID_LOGCAT_FILE%" 2>&1
   pause
   exit /b 1
 )

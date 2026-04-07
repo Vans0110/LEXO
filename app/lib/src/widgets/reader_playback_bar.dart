@@ -14,6 +14,9 @@ class ReaderPlaybackBar extends StatelessWidget {
     required this.onStop,
     required this.onPrev,
     required this.onNext,
+    required this.onSpeedTap,
+    required this.onSpeedLongPress,
+    required this.speedLabel,
   });
 
   final bool expanded;
@@ -26,6 +29,9 @@ class ReaderPlaybackBar extends StatelessWidget {
   final VoidCallback onStop;
   final VoidCallback onPrev;
   final VoidCallback onNext;
+  final VoidCallback onSpeedTap;
+  final VoidCallback onSpeedLongPress;
+  final String speedLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -119,10 +125,70 @@ class ReaderPlaybackBar extends StatelessWidget {
                             backgroundColor: buttonBackground,
                             iconColor: iconColor,
                           ),
+                          const SizedBox(width: 8),
+                          _RoundTextControlButton(
+                            onPressed: controlsEnabled ? onSpeedTap : null,
+                            onLongPress: controlsEnabled ? onSpeedLongPress : null,
+                            label: speedLabel,
+                            tooltip: 'Speed',
+                            backgroundColor: buttonBackground,
+                            textColor: iconColor,
+                          ),
                         ],
                       ),
                     ],
                   ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RoundTextControlButton extends StatelessWidget {
+  const _RoundTextControlButton({
+    required this.onPressed,
+    required this.onLongPress,
+    required this.label,
+    required this.tooltip,
+    required this.backgroundColor,
+    required this.textColor,
+    this.size = 46,
+  });
+
+  final VoidCallback? onPressed;
+  final VoidCallback? onLongPress;
+  final String label;
+  final String tooltip;
+  final Color backgroundColor;
+  final Color textColor;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: backgroundColor,
+        shape: const StadiumBorder(),
+        child: InkWell(
+          onTap: onPressed,
+          onLongPress: onLongPress,
+          customBorder: const StadiumBorder(),
+          child: SizedBox(
+            height: size,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Center(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: textColor,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),

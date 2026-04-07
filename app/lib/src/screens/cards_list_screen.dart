@@ -7,12 +7,20 @@ import 'card_review_screen.dart';
 class CardsListScreen extends StatefulWidget {
   const CardsListScreen({
     super.key,
-    required this.api,
+    this.api,
     this.reloadTick = 0,
+    this.loadCards,
+    this.loadReviewCards,
+    this.deleteCard,
+    this.applyReviewResult,
   });
 
-  final LexoApiClient api;
+  final LexoApiClient? api;
   final int reloadTick;
+  final Future<SavedCardsPayload> Function()? loadCards;
+  final Future<SavedCardsPayload> Function()? loadReviewCards;
+  final Future<void> Function(SavedCardItem item)? deleteCard;
+  final Future<SavedCardItem> Function(String cardId, String direction)? applyReviewResult;
 
   @override
   State<CardsListScreen> createState() => _CardsListScreenState();
@@ -43,7 +51,8 @@ class _CardsListScreenState extends State<CardsListScreen> {
       _error = null;
     });
     try {
-      final payload = await widget.api.getSavedCards();
+      final loader = widget.loadCards;
+      final payload = loader != null ? await loader() : await widget.api!.getSavedCards();
       if (!mounted) {
         return;
       }
@@ -62,7 +71,8 @@ class _CardsListScreenState extends State<CardsListScreen> {
 
   Future<void> _startReview() async {
     try {
-      final payload = await widget.api.getReviewCards();
+      final reviewLoader = widget.loadReviewCards;
+      final payload = reviewLoader != null ? await reviewLoader() : await widget.api!.getReviewCards();
       if (!mounted) {
         return;
       }
@@ -74,7 +84,11 @@ class _CardsListScreenState extends State<CardsListScreen> {
       }
       await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => CardReviewScreen(api: widget.api, items: payload.items),
+          builder: (_) => CardReviewScreen(
+            api: widget.api,
+            items: payload.items,
+            onApplyReviewResult: widget.applyReviewResult,
+          ),
         ),
       );
       await _load();
@@ -90,7 +104,12 @@ class _CardsListScreenState extends State<CardsListScreen> {
 
   Future<void> _deleteCard(SavedCardItem item) async {
     try {
-      await widget.api.deleteSavedCard(cardId: item.id);
+      final deleter = widget.deleteCard;
+      if (deleter != null) {
+        await deleter(item);
+      } else {
+        await widget.api!.deleteSavedCard(cardId: item.id);
+      }
       if (!mounted) {
         return;
       }
@@ -230,17 +249,7 @@ class _CardListTile extends StatelessWidget {
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 6),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.translation,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 10),
-                _ProgressStrip(score: item.progressScore),
-              ],
-            ),
+            child: _ProgressStrip(score: item.progressScore),
           ),
         ),
       ),

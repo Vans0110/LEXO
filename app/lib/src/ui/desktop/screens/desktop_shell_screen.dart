@@ -63,8 +63,10 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
 
   Future<void> _pickAndImport() async {
     const typeGroup = XTypeGroup(label: 'text', extensions: ['txt']);
+    developer.log('DESKTOP_IMPORT_PICK_START', name: 'LEXO_IMPORT');
     final file = await openFile(acceptedTypeGroups: [typeGroup]);
     if (file == null) {
+      developer.log('DESKTOP_IMPORT_PICK_CANCELLED', name: 'LEXO_IMPORT');
       return;
     }
     setState(() {
@@ -72,8 +74,25 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
       _settingsError = null;
     });
     try {
-      developer.log('Desktop shell import: ${file.path}', name: 'LEXO_UI');
-      await widget.api.importBook(file.path);
+      developer.log(
+        'DESKTOP_IMPORT_FILE name=${file.name} path=${file.path}',
+        name: 'LEXO_IMPORT',
+      );
+      final sourceText = await file.readAsString();
+      developer.log(
+        'DESKTOP_IMPORT_READ_OK chars=${sourceText.length}',
+        name: 'LEXO_IMPORT',
+      );
+      final title = file.name.replaceAll(RegExp(r'\.txt$', caseSensitive: false), '');
+      developer.log(
+        'DESKTOP_IMPORT_API_START title="$title"',
+        name: 'LEXO_IMPORT',
+      );
+      await widget.api.importDesktopBookText(
+        title: title,
+        sourceText: sourceText,
+      );
+      developer.log('DESKTOP_IMPORT_API_OK', name: 'LEXO_IMPORT');
       if (!mounted) {
         return;
       }
@@ -82,6 +101,10 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
         _selectedIndex = 0;
       });
     } catch (error) {
+      developer.log(
+        'DESKTOP_IMPORT_ERROR error=$error',
+        name: 'LEXO_IMPORT',
+      );
       if (!mounted) {
         return;
       }

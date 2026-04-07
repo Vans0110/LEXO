@@ -35,20 +35,68 @@ class _ReaderScreenState extends State<ReaderScreen> {
   bool _playerExpanded = true;
 
   double _selectedPlaybackSpeed() {
+    final selectedLevel = _selectedLevel();
+    return selectedLevel?.playbackSpeed ?? 1.0;
+  }
+
+  TtsLevel? _selectedLevel() {
     final selectedId = _state.selectedLevelIds.isEmpty ? null : _state.selectedLevelIds.first;
     if (selectedId == null) {
-      return 1.0;
+      return null;
     }
     for (final level in _state.ttsLevels) {
       if (level.id == selectedId) {
-        return level.playbackSpeed;
+        return level;
       }
     }
-    return 1.0;
+    return null;
+  }
+
+  String _formatSpeed(double speed) {
+    if (speed == speed.roundToDouble()) {
+      return '${speed.toStringAsFixed(0)}x';
+    }
+    if ((speed * 10) % 10 == 0) {
+      return '${speed.toStringAsFixed(1)}x';
+    }
+    return '${speed.toStringAsFixed(2)}x';
+  }
+
+  String _speedLabel() {
+    return _formatSpeed(_selectedPlaybackSpeed());
   }
 
   Future<void> _applyPlaybackSpeed() async {
     await _audioPlayer.setRate(_selectedPlaybackSpeed());
+  }
+
+  Future<void> _showSpeedPicker() async {
+    if (_state.ttsLevels.isEmpty) {
+      return;
+    }
+    final selectedId = await showDialog<int>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Скорость'),
+        children: [
+          for (final level in _state.ttsLevels)
+            SimpleDialogOption(
+              onPressed: () => Navigator.of(context).pop(level.id),
+              child: Row(
+                children: [
+                  Expanded(child: Text('${level.name} ${_formatSpeed(level.playbackSpeed)}')),
+                  if (level.id == _selectedLevel()?.id) const Icon(Icons.check, size: 18),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+    if (selectedId == null) {
+      return;
+    }
+    setState(() => _state = _state.copyWith(selectedLevelIds: {selectedId}));
+    await _applyPlaybackSpeed();
   }
 
   TtsJobItem? _selectedJob() {
@@ -125,8 +173,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
         selectedVoiceId = result.ttsProfiles.isNotEmpty ? result.ttsProfiles.first.voiceId : null;
       }
       var selectedLevelIds = _state.selectedLevelIds;
-      if (result.ttsLevels.isNotEmpty && selectedLevelIds.isEmpty) {
-        selectedLevelIds = {result.ttsLevels.first.id};
+      final hasSelectedLevel = result.ttsLevels.any(
+        (item) => selectedLevelIds.isNotEmpty && item.id == selectedLevelIds.first,
+      );
+      if (result.ttsLevels.isNotEmpty && (!hasSelectedLevel || selectedLevelIds.isEmpty)) {
+        final normal = result.ttsLevels.where((item) => item.name == 'Normal');
+        selectedLevelIds = {normal.isNotEmpty ? normal.first.id : result.ttsLevels.first.id};
       }
       setState(() {
         _state = _state.copyWith(
@@ -523,6 +575,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
                                   },
                                   onPrev: () => _controlPlayback('prev'),
                                   onNext: () => _controlPlayback('next'),
+                                  onSpeedTap: _showSpeedPicker,
+                                  onSpeedLongPress: _showSpeedPicker,
+                                  speedLabel: _speedLabel(),
                                 ),
                               ),
                             ],

@@ -17,19 +17,7 @@ class MobileBookPackageRepository {
   }
 
   Future<LibraryPayload> listBooks() async {
-    final dir = await _libraryDir();
-    final packages = <MobileBookPackage>[];
-    for (final entity in dir.listSync()) {
-      if (entity is! Directory) {
-        continue;
-      }
-      final packageFile = File('${entity.path}/package.json');
-      if (!packageFile.existsSync()) {
-        continue;
-      }
-      final raw = jsonDecode(packageFile.readAsStringSync()) as Map<String, dynamic>;
-      packages.add(MobileBookPackage(raw));
-    }
+    final packages = await listPackages();
     packages.sort((a, b) {
       final left = a.meta.lastOpenedAt ?? a.meta.exportedAt ?? '';
       final right = b.meta.lastOpenedAt ?? b.meta.exportedAt ?? '';
@@ -43,6 +31,23 @@ class MobileBookPackageRepository {
           package.meta.toLibraryItem(isActive: package.meta.localBookId == activeBookId),
       ],
     );
+  }
+
+  Future<List<MobileBookPackage>> listPackages() async {
+    final dir = await _libraryDir();
+    final packages = <MobileBookPackage>[];
+    for (final entity in dir.listSync()) {
+      if (entity is! Directory) {
+        continue;
+      }
+      final packageFile = File('${entity.path}/package.json');
+      if (!packageFile.existsSync()) {
+        continue;
+      }
+      final raw = jsonDecode(packageFile.readAsStringSync()) as Map<String, dynamic>;
+      packages.add(MobileBookPackage(raw));
+    }
+    return packages;
   }
 
   Future<MobileBookPackage> readPackage(String localBookId) async {
@@ -67,6 +72,29 @@ class MobileBookPackageRepository {
       const JsonEncoder.withIndent('  ').convert(packageJson),
       encoding: utf8,
     );
+  }
+
+  Future<MobileBookPackage?> findByDesktopBookId(String desktopBookId) async {
+    final packages = await listPackages();
+    for (final package in packages) {
+      if (package.meta.desktopBookId == desktopBookId) {
+        return package;
+      }
+    }
+    return null;
+  }
+
+  Future<MobileBookPackage?> findByContentHash(String contentHash) async {
+    if (contentHash.trim().isEmpty) {
+      return null;
+    }
+    final packages = await listPackages();
+    for (final package in packages) {
+      if (package.meta.contentHash == contentHash) {
+        return package;
+      }
+    }
+    return null;
   }
 
   Future<void> deletePackage(String localBookId) async {

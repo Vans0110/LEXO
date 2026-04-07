@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 
 import '../../../api/api_client.dart';
+import '../../../mobile/mobile_cards_repository.dart';
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../models.dart';
 import 'mobile_reader_screen.dart';
@@ -131,6 +132,8 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
           builder: (_) => MobileReaderScreen(
             api: widget.api,
             localBookId: item.id,
+            cardsRepository: MobileCardsRepository(),
+            deviceId: '',
           ),
         ),
       );
@@ -241,10 +244,6 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
               onPressed: _busy ? null : _openSettings,
               icon: const Icon(Icons.settings_outlined),
             ),
-          IconButton(
-            onPressed: _busy ? null : _loadLibrary,
-            icon: const Icon(Icons.refresh),
-          ),
         ],
       ),
       body: SafeArea(
@@ -302,10 +301,6 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
                                       ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
-                                Text('${item.sourceLang} -> ${item.targetLang}'),
-                                const SizedBox(height: 6),
-                                Text('Позиция ${item.currentParagraphIndex + 1}'),
                                 const SizedBox(height: 16),
                                 Row(
                                   children: [

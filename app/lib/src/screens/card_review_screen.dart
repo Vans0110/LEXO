@@ -6,12 +6,14 @@ import '../cards_models.dart';
 class CardReviewScreen extends StatefulWidget {
   const CardReviewScreen({
     super.key,
-    required this.api,
+    this.api,
     required this.items,
+    this.onApplyReviewResult,
   });
 
-  final LexoApiClient api;
+  final LexoApiClient? api;
   final List<SavedCardItem> items;
+  final Future<SavedCardItem> Function(String cardId, String direction)? onApplyReviewResult;
 
   @override
   State<CardReviewScreen> createState() => _CardReviewScreenState();
@@ -38,15 +40,19 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
     final current = _queue.first;
     setState(() => _busy = true);
     try {
-      final updated = await widget.api.applyReviewResult(
-        cardId: current.id,
-        direction: direction,
-      );
+      final callback = widget.onApplyReviewResult;
+      final updated = callback != null
+          ? await callback(current.id, direction)
+          : await widget.api!.applyReviewResult(
+              cardId: current.id,
+              direction: direction,
+            );
       if (!mounted) {
         return;
       }
       setState(() {
         _queue.removeAt(0);
+        _queue.add(updated);
         _completed += 1;
         if (direction == 'right') {
           _advanced += 1;
@@ -73,81 +79,64 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final current = _queue.isNotEmpty ? _queue.first : null;
+    final current = _queue.first;
     return Scaffold(
       appBar: AppBar(title: const Text('Review')),
-      body: current == null
-          ? _ReviewFinished(
-              completed: _completed,
-              advanced: _advanced,
-              difficult: _difficult,
-              mastered: _mastered,
-            )
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Осталось: ${_queue.length}',
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    LinearProgressIndicator(
-                      value: widget.items.isEmpty ? 0 : _completed / widget.items.length,
-                    ),
-                    const SizedBox(height: 24),
-                    Expanded(
-                      child: Dismissible(
-                        key: ValueKey(current.id),
-                        direction: DismissDirection.horizontal,
-                        confirmDismiss: (direction) async {
-                          await _applySwipe(
-                            direction == DismissDirection.endToStart ? 'left' : 'right',
-                          );
-                          return false;
-                        },
-                        background: _SwipeBackground(
-                          alignment: Alignment.centerLeft,
-                          color: Colors.green,
-                          label: 'Знаю',
-                          icon: Icons.arrow_forward,
-                        ),
-                        secondaryBackground: _SwipeBackground(
-                          alignment: Alignment.centerRight,
-                          color: Colors.orange,
-                          label: 'Сложно',
-                          icon: Icons.arrow_back,
-                        ),
-                        child: _ReviewCard(item: current),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: _busy ? null : () => _applySwipe('left'),
-                            icon: const Icon(Icons.swipe_left),
-                            label: const Text('Не знаю'),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: FilledButton.icon(
-                            onPressed: _busy ? null : () => _applySwipe('right'),
-                            icon: const Icon(Icons.swipe_right),
-                            label: const Text('Знаю'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Dismissible(
+                  key: ValueKey('${current.id}-${current.progressScore}-${current.reviewCount}'),
+                  direction: DismissDirection.horizontal,
+                  confirmDismiss: (direction) async {
+                    await _applySwipe(
+                      direction == DismissDirection.endToStart ? 'left' : 'right',
+                    );
+                    return false;
+                  },
+                  background: _SwipeBackground(
+                    alignment: Alignment.centerLeft,
+                    color: Colors.green,
+                    label: 'Знаю',
+                    icon: Icons.arrow_forward,
+                  ),
+                  secondaryBackground: _SwipeBackground(
+                    alignment: Alignment.centerRight,
+                    color: Colors.orange,
+                    label: 'Сложно',
+                    icon: Icons.arrow_back,
+                  ),
+                  child: _ReviewCard(item: current),
                 ),
               ),
-            ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _busy ? null : () => _applySwipe('left'),
+                      icon: const Icon(Icons.swipe_left),
+                      label: const Text('Не знаю'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: _busy ? null : () => _applySwipe('right'),
+                      icon: const Icon(Icons.swipe_right),
+                      label: const Text('Знаю'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -171,6 +160,8 @@ class _ReviewCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              _ReviewProgressStrip(score: item.progressScore),
+              const SizedBox(height: 16),
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
@@ -202,6 +193,35 @@ class _ReviewCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ReviewProgressStrip extends StatelessWidget {
+  const _ReviewProgressStrip({required this.score});
+
+  final int score;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        for (var index = 0; index < 7; index++) ...[
+          Expanded(
+            child: Container(
+              height: 6,
+              decoration: BoxDecoration(
+                color: index < score
+                    ? colorScheme.primary
+                    : colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          if (index < 6) const SizedBox(width: 4),
+        ],
+      ],
     );
   }
 }
@@ -241,40 +261,6 @@ class _SwipeBackground extends StatelessWidget {
             Text(label),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _ReviewFinished extends StatelessWidget {
-  const _ReviewFinished({
-    required this.completed,
-    required this.advanced,
-    required this.difficult,
-    required this.mastered,
-  });
-
-  final int completed;
-  final int advanced;
-  final int difficult;
-  final int mastered;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Сессия завершена', style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 16),
-            Text('$completed карточек просмотрено'),
-            Text('$advanced продвинулись'),
-            Text('$difficult остались сложными'),
-            Text('$mastered уже закреплены'),
-          ],
-        ),
       ),
     );
   }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../models.dart';
-
 class MobileSettingsScreen extends StatelessWidget {
   const MobileSettingsScreen({
     super.key,
@@ -9,22 +7,26 @@ class MobileSettingsScreen extends StatelessWidget {
     this.currentBookTitle,
     this.busy = false,
     this.errorText,
-    this.onImportBook,
-    this.onImportFromDesktop,
     this.hostUrl,
+    this.lastSyncAt,
+    this.pendingChangesCount = 0,
+    this.debugText,
     this.onEditHostUrl,
-    this.onUpdateCurrentBook,
+    this.onSync,
+    this.onCopyDebugLog,
   });
 
   final String title;
   final String? currentBookTitle;
   final bool busy;
   final String? errorText;
-  final VoidCallback? onImportBook;
-  final VoidCallback? onImportFromDesktop;
   final String? hostUrl;
+  final String? lastSyncAt;
+  final int pendingChangesCount;
+  final String? debugText;
   final VoidCallback? onEditHostUrl;
-  final VoidCallback? onUpdateCurrentBook;
+  final VoidCallback? onSync;
+  final VoidCallback? onCopyDebugLog;
 
   @override
   Widget build(BuildContext context) {
@@ -36,54 +38,6 @@ class MobileSettingsScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           children: [
-            if (currentBookTitle != null) ...[
-              Text(
-                currentBookTitle!,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 6),
-              const Text('Текущая книга'),
-              const SizedBox(height: 20),
-            ],
-            if (onImportBook != null)
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Row(
-                        children: [
-                          Icon(Icons.upload_file_outlined),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'Загрузка',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      FilledButton.icon(
-                        onPressed: busy ? null : onImportBook,
-                        icon: const Icon(Icons.note_add_outlined),
-                        label: const Text('Загрузить TXT-книгу'),
-                      ),
-                      if (onImportFromDesktop != null) ...[
-                        const SizedBox(height: 12),
-                        OutlinedButton.icon(
-                          onPressed: busy ? null : onImportFromDesktop,
-                          icon: const Icon(Icons.download_outlined),
-                          label: const Text('Импорт из Desktop'),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -110,18 +64,83 @@ class MobileSettingsScreen extends StatelessWidget {
                       icon: const Icon(Icons.edit_outlined),
                       label: const Text('Настроить Host URL'),
                     ),
-                    if (onUpdateCurrentBook != null) ...[
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: busy ? null : onUpdateCurrentBook,
-                        icon: const Icon(Icons.sync_outlined),
-                        label: const Text('Обновить текущую книгу'),
-                      ),
-                    ],
                   ],
                 ),
               ),
             ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.sync_outlined),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Sync',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Последняя синхронизация: '
+                      '${(lastSyncAt == null || lastSyncAt!.trim().isEmpty) ? 'ещё не было' : lastSyncAt!}',
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Несинхронизированные изменения: '
+                      '${pendingChangesCount > 0 ? 'да ($pendingChangesCount)' : 'нет'}',
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: busy ? null : onSync,
+                      icon: const Icon(Icons.sync_outlined),
+                      label: Text(busy ? 'Синхронизация...' : 'Синхронизировать'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (debugText != null && debugText!.trim().isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.bug_report_outlined),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Text(
+                              'Sync Debug',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                          FilledButton.tonalIcon(
+                            onPressed: onCopyDebugLog,
+                            icon: const Icon(Icons.copy_all_outlined),
+                            label: const Text('Копировать'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      SelectableText(
+                        debugText!,
+                        style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
             if (errorText != null && errorText!.trim().isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(

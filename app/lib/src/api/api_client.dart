@@ -7,10 +7,11 @@ import '../detail_sheet_models.dart';
 import '../models.dart';
 
 class LexoApiClient {
+  static const int _audioDownloadMaxAttempts = 3;
+
   LexoApiClient({String? baseUrl}) : _baseUrl = baseUrl ?? _defaultBaseUrl();
 
   String _baseUrl;
-  final HttpClient _http = HttpClient();
 
   String get baseUrl => _baseUrl;
 
@@ -48,7 +49,25 @@ class LexoApiClient {
     return BookStatus.fromJson(data);
   }
 
-  Future<Map<String, dynamic>> importBookText({
+  Future<BookStatus> importDesktopBookText({
+    required String title,
+    required String sourceText,
+    String sourceLang = 'en',
+    String targetLang = 'ru',
+  }) async {
+    final data = await _post(
+      '/books/import-text',
+      {
+        'title': title,
+        'source_text': sourceText,
+        'source_lang': sourceLang,
+        'target_lang': targetLang,
+      },
+    );
+    return BookStatus.fromJson(data);
+  }
+
+  Future<Map<String, dynamic>> importMobileBookText({
     required String title,
     required String sourceText,
     String sourceLang = 'en',
@@ -158,6 +177,34 @@ class LexoApiClient {
     return _get('/mobile/books/package?book_id=$bookId');
   }
 
+  Future<Map<String, dynamic>> syncMobileCardsFull({
+    required String deviceId,
+    required String? lastSyncAt,
+    required List<Map<String, dynamic>> cardsDelta,
+  }) {
+    return _post(
+      '/mobile/sync/full',
+      {
+        'device_id': deviceId,
+        'last_sync_at': lastSyncAt,
+        'cards_delta': cardsDelta,
+      },
+    );
+  }
+
+  Future<void> postMobileDebugLog({
+    required String tag,
+    required String message,
+  }) async {
+    await _post(
+      '/mobile/debug/log',
+      {
+        'tag': tag,
+        'message': message,
+      },
+    );
+  }
+
   Future<List<TtsProfile>> getTtsProfiles() async {
     final data = await _get('/tts/profiles');
     return (data['items'] as List<dynamic>? ?? const [])
@@ -187,17 +234,41 @@ class LexoApiClient {
     final uri = Uri.parse(
       '$baseUrl/mobile/books/audio?book_id=$bookId&job_id=$jobId&segment_index=$segmentIndex',
     );
-    developer.log('GET $uri', name: 'LEXO_API');
-    final request = await _http.getUrl(uri);
-    final response = await request.close();
-    final bytes = await response.fold<List<int>>(<int>[], (buffer, chunk) {
-      buffer.addAll(chunk);
-      return buffer;
-    });
-    if (response.statusCode >= 400) {
-      throw LexoApiException('Audio download failed with status ${response.statusCode}');
+    Object? lastError;
+    for (var attempt = 1; attempt <= _audioDownloadMaxAttempts; attempt += 1) {
+      developer.log('GET $uri attempt=$attempt', name: 'LEXO_API');
+      final client = HttpClient();
+      try {
+        final request = await client.getUrl(uri);
+        final response = await request.close();
+        final bytes = await response.fold<List<int>>(<int>[], (buffer, chunk) {
+          buffer.addAll(chunk);
+          return buffer;
+        });
+        if (response.statusCode >= 400) {
+          throw LexoApiException('Audio download failed with status ${response.statusCode}');
+        }
+        developer.log(
+          'AUDIO_OK GET $uri attempt=$attempt bytes=${bytes.length}',
+          name: 'LEXO_API',
+        );
+        return bytes;
+      } on HttpException catch (error) {
+        lastError = error;
+        developer.log(
+          'AUDIO_RETRY GET $uri attempt=$attempt error=$error',
+          name: 'LEXO_API',
+        );
+        if (attempt >= _audioDownloadMaxAttempts) {
+          rethrow;
+        }
+      } finally {
+        client.close(force: true);
+      }
     }
-    return bytes;
+    throw lastError is Exception
+        ? lastError
+        : LexoApiException('Audio download failed after $_audioDownloadMaxAttempts attempts');
   }
 
   Future<TtsState> generateTts({
@@ -250,9 +321,16 @@ class LexoApiClient {
   Future<Map<String, dynamic>> _get(String path) async {
     final uri = Uri.parse('$baseUrl$path');
     developer.log('GET $uri', name: 'LEXO_API');
-    final request = await _http.getUrl(uri);
+    final client = HttpClient();
+    final request = await client.getUrl(uri);
+    request.persistentConnection = false;
+    request.headers.set(HttpHeaders.connectionHeader, 'close');
     final response = await request.close();
-    return _readJson(response, 'GET', uri);
+    try {
+      return await _readJson(response, 'GET', uri);
+    } finally {
+      client.close(force: true);
+    }
   }
 
   Future<Map<String, dynamic>> _post(
@@ -264,11 +342,18 @@ class LexoApiClient {
       'POST $uri payload=${jsonEncode(payload)}',
       name: 'LEXO_API',
     );
-    final request = await _http.postUrl(uri);
+    final client = HttpClient();
+    final request = await client.postUrl(uri);
+    request.persistentConnection = false;
+    request.headers.set(HttpHeaders.connectionHeader, 'close');
     request.headers.contentType = ContentType.json;
     request.write(jsonEncode(payload));
     final response = await request.close();
-    return _readJson(response, 'POST', uri);
+    try {
+      return await _readJson(response, 'POST', uri);
+    } finally {
+      client.close(force: true);
+    }
   }
 
   Future<Map<String, dynamic>> _readJson(
@@ -276,7 +361,20 @@ class LexoApiClient {
     String method,
     Uri uri,
   ) async {
-    final body = await utf8.decoder.bind(response).join();
+    final bytes = await response.fold<List<int>>(<int>[], (buffer, chunk) {
+      buffer.addAll(chunk);
+      return buffer;
+    });
+    late final String body;
+    try {
+      body = utf8.decode(bytes);
+    } on FormatException catch (error) {
+      body = utf8.decode(bytes, allowMalformed: true);
+      developer.log(
+        'RESPONSE UTF8_FALLBACK $method $uri error=$error bytes=${bytes.length}',
+        name: 'LEXO_API',
+      );
+    }
     developer.log(
       'RESPONSE ${response.statusCode} $method $uri body=$body',
       name: 'LEXO_API',

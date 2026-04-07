@@ -85,11 +85,63 @@ class MobileBookPackage {
                 const [])
             .cast<Map<String, dynamic>>()
             .map(TtsLevel.fromJson)
-            .toList();
+            .toList(),
+        ttsState = _buildTtsState(
+          (rawJson['tts_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+        ),
+        segmentsByJobId = _buildSegmentsByJobId(
+          (rawJson['tts_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+        );
 
   final Map<String, dynamic> rawJson;
   final MobileBookPackageMeta meta;
   final ReaderPayload readerPayload;
   final List<TtsProfile> profiles;
   final List<TtsLevel> levels;
+  final TtsState ttsState;
+  final Map<String, List<TtsSegmentItem>> segmentsByJobId;
+
+  List<TtsSegmentItem> segmentsForJob(String jobId) {
+    return segmentsByJobId[jobId] ?? const <TtsSegmentItem>[];
+  }
+
+  static TtsState _buildTtsState(Map<String, dynamic> manifest) {
+    final jobsJson = (manifest['jobs'] as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>();
+    final jobs = jobsJson.map(TtsJobItem.fromJson).toList();
+    Map<String, dynamic>? activeJobJson;
+    for (final job in jobsJson) {
+      final playbackState = job['playback_state'] as String? ?? 'idle';
+      if (playbackState == 'playing' || playbackState == 'paused') {
+        activeJobJson = job;
+        break;
+      }
+    }
+    final activeSegments = ((activeJobJson?['segments'] as List<dynamic>?) ?? const [])
+        .cast<Map<String, dynamic>>()
+        .map(TtsSegmentItem.fromJson)
+        .toList();
+    return TtsState(
+      jobs: jobs,
+      activeJob: activeJobJson != null ? TtsJobItem.fromJson(activeJobJson) : null,
+      activeSegments: activeSegments,
+    );
+  }
+
+  static Map<String, List<TtsSegmentItem>> _buildSegmentsByJobId(Map<String, dynamic> manifest) {
+    final jobsJson = (manifest['jobs'] as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>();
+    final result = <String, List<TtsSegmentItem>>{};
+    for (final job in jobsJson) {
+      final jobId = job['id'] as String? ?? '';
+      if (jobId.isEmpty) {
+        continue;
+      }
+      result[jobId] = ((job['segments'] as List<dynamic>?) ?? const [])
+          .cast<Map<String, dynamic>>()
+          .map(TtsSegmentItem.fromJson)
+          .toList();
+    }
+    return result;
+  }
 }

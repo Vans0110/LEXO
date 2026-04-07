@@ -6,28 +6,41 @@ import 'package:path_provider/path_provider.dart';
 class MobileAppSettings {
   const MobileAppSettings({
     this.hostUrl,
+    this.deviceId,
+    this.lastSyncAt,
   });
 
   final String? hostUrl;
+  final String? deviceId;
+  final String? lastSyncAt;
 
   MobileAppSettings copyWith({
     String? hostUrl,
+    String? deviceId,
+    String? lastSyncAt,
     bool clearHostUrl = false,
+    bool clearLastSyncAt = false,
   }) {
     return MobileAppSettings(
       hostUrl: clearHostUrl ? null : (hostUrl ?? this.hostUrl),
+      deviceId: deviceId ?? this.deviceId,
+      lastSyncAt: clearLastSyncAt ? null : (lastSyncAt ?? this.lastSyncAt),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'host_url': hostUrl,
+      'device_id': deviceId,
+      'last_sync_at': lastSyncAt,
     };
   }
 
   factory MobileAppSettings.fromJson(Map<String, dynamic> json) {
     return MobileAppSettings(
       hostUrl: json['host_url'] as String?,
+      deviceId: json['device_id'] as String?,
+      lastSyncAt: json['last_sync_at'] as String?,
     );
   }
 }

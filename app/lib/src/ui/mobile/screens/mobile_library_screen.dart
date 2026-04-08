@@ -190,7 +190,7 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
     });
     try {
       final localPackage = await _repository.readPackage(item.id);
-      final package = await widget.api.getMobileBookPackage(desktopBookId);
+      final package = await widget.api.downloadMobileBookPackageChunked(desktopBookId);
       final meta = package['meta'] as Map<String, dynamic>? ?? <String, dynamic>{};
       meta['local_book_id'] = item.id;
       meta['current_paragraph_index'] = localPackage.meta.currentParagraphIndex;

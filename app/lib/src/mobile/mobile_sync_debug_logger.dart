@@ -11,6 +11,7 @@ class MobileSyncDebugLogger {
   final LexoApiClient _api;
   final List<String> _recentLines = <String>[];
   String? _lastRemoteError;
+  bool _remoteLoggingEnabled = true;
 
   String get debugReport {
     final parts = <String>[
@@ -20,7 +21,7 @@ class MobileSyncDebugLogger {
     return parts.join('\n');
   }
 
-  Future<void> log(String message) async {
+  Future<void> log(String message, {bool sendRemote = true}) async {
     final timestamp = DateTime.now().toUtc().toIso8601String();
     final line = '[$timestamp] $message';
     _recentLines.add(line);
@@ -28,15 +29,18 @@ class MobileSyncDebugLogger {
       _recentLines.removeRange(0, _recentLines.length - 60);
     }
     developer.log(line, name: 'LEXO_SYNC');
-    try {
-      await _api.postMobileDebugLog(
-        tag: 'MOBILE_SYNC',
-        message: line,
-      );
-      _lastRemoteError = null;
-    } catch (error) {
-      _lastRemoteError = 'REMOTE_LOG_ERROR: $error';
-      developer.log(_lastRemoteError!, name: 'LEXO_SYNC');
+    if (sendRemote && _remoteLoggingEnabled) {
+      try {
+        await _api.postMobileDebugLog(
+          tag: 'MOBILE_SYNC',
+          message: line,
+        );
+        _lastRemoteError = null;
+      } catch (error) {
+        _lastRemoteError = 'REMOTE_LOG_ERROR: $error';
+        _remoteLoggingEnabled = false;
+        developer.log(_lastRemoteError!, name: 'LEXO_SYNC');
+      }
     }
     final file = await _logFile();
     if (!file.parent.existsSync()) {
@@ -50,8 +54,9 @@ class MobileSyncDebugLogger {
     return file.path;
   }
 
-  Future<void> startSession(String reason) async {
-    await log('SESSION_START reason="$reason"');
+  Future<void> startSession(String reason, {bool sendRemote = true}) async {
+    _remoteLoggingEnabled = sendRemote;
+    await log('SESSION_START reason="$reason"', sendRemote: sendRemote);
   }
 
   Future<File> _logFile() async {

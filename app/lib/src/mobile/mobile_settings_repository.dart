@@ -3,9 +3,15 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
+const String kFallbackMobileHostUrl = 'http://192.168.1.50:8765';
+const String kDefaultMobileHostUrl = String.fromEnvironment(
+  'LEXO_DEFAULT_MOBILE_HOST_URL',
+  defaultValue: kFallbackMobileHostUrl,
+);
+
 class MobileAppSettings {
   const MobileAppSettings({
-    this.hostUrl,
+    this.hostUrl = kDefaultMobileHostUrl,
     this.deviceId,
     this.lastSyncAt,
   });
@@ -38,7 +44,9 @@ class MobileAppSettings {
 
   factory MobileAppSettings.fromJson(Map<String, dynamic> json) {
     return MobileAppSettings(
-      hostUrl: json['host_url'] as String?,
+      hostUrl: (json['host_url'] as String?)?.trim().isEmpty ?? true
+          ? kDefaultMobileHostUrl
+          : json['host_url'] as String?,
       deviceId: json['device_id'] as String?,
       lastSyncAt: json['last_sync_at'] as String?,
     );

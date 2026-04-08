@@ -5,9 +5,7 @@ chcp 65001 >nul
 set "ROOT_DIR=%~dp0.."
 cd /d "%ROOT_DIR%"
 
-set "PYTHON_CMD="
 set "FLUTTER_CMD=C:\src\flutter\bin\flutter.bat"
-set "PROJECT_VENV=%ROOT_DIR%\.venv\Scripts\python.exe"
 set "APP_DIR=%ROOT_DIR%\app"
 set "LOG_DIR=%ROOT_DIR%\logs"
 set "ANDROID_LOGCAT_FILE=%LOG_DIR%\android_logcat.txt"
@@ -19,31 +17,13 @@ set "EMULATOR_CMD="
 set "TARGET_DEVICE="
 set "AVD_NAME=LEXO_Pixel_6"
 set "EMULATOR_ARGS=-avd %AVD_NAME% -no-snapshot-load"
-set "LEXO_ANDROID_BASE_URL=http://127.0.0.1:8765"
-set "LEXO_TRANSLATOR_MODE=mock"
-set "LEXO_TTS_PROVIDER_MODE=mock"
+set "LEXO_ANDROID_HOST_LINK=%LEXO_ANDROID_HOST_LINK%"
+set "LEXO_ANDROID_DEFAULT_HOST_URL=%LEXO_ANDROID_DEFAULT_HOST_URL%"
+
+if not defined LEXO_ANDROID_HOST_LINK set "LEXO_ANDROID_HOST_LINK=0"
+if not defined LEXO_ANDROID_DEFAULT_HOST_URL set "LEXO_ANDROID_DEFAULT_HOST_URL=http://10.0.2.2:8765"
 
 if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
-
-if exist "%PROJECT_VENV%" (
-  set "PYTHON_CMD=%PROJECT_VENV%"
-) else (
-  where python >nul 2>nul
-  if not errorlevel 1 (
-    set "PYTHON_CMD=python"
-  ) else (
-    where py >nul 2>nul
-    if not errorlevel 1 (
-      set "PYTHON_CMD=py -3"
-    )
-  )
-)
-
-if not defined PYTHON_CMD (
-  echo [LEXO] Python not found in PATH.
-  pause
-  exit /b 1
-)
 
 if not exist "%FLUTTER_CMD%" (
   where flutter.bat >nul 2>nul
@@ -197,30 +177,35 @@ echo [LEXO] Emulator boot complete.
 echo [LEXO] Using Android device: %TARGET_DEVICE%
 echo [LEXO] Clearing adb logcat buffer...
 "%ADB_CMD%" -s %TARGET_DEVICE% logcat -c >nul 2>nul
-echo [LEXO] Configuring adb reverse for host access...
-"%ADB_CMD%" -s %TARGET_DEVICE% reverse tcp:8765 tcp:8765 >nul 2>nul
-if errorlevel 1 (
-  echo [LEXO] Warning: adb reverse tcp:8765 failed. App may fall back to emulator host routing.
+echo [LEXO] Android mobile launcher does not start host automatically.
+if "%LEXO_ANDROID_HOST_LINK%"=="1" (
+  echo [LEXO] Emulator host-link mode is enabled.
+  echo [LEXO] This launcher only configures stable adb reverse transport.
+  echo [LEXO] Start host separately:
+  echo [LEXO]   run_lexo_engine_lan.bat
+  echo [LEXO] Enabling adb reverse tcp:8765 -> tcp:8765...
+  "%ADB_CMD%" -s %TARGET_DEVICE% reverse tcp:8765 tcp:8765 >nul 2>nul
+  if errorlevel 1 (
+    echo [LEXO] adb reverse failed.
+    pause
+    exit /b 1
+  )
+  echo [LEXO] adb reverse enabled.
 ) else (
-  echo [LEXO] adb reverse enabled: device 127.0.0.1:8765 -> host 127.0.0.1:8765
+  echo [LEXO] Offline mode is enabled.
+  echo [LEXO] Android mobile launcher does not configure automatic host routing.
+  echo [LEXO] If you need desktop/LAN sync, start host separately:
+  echo [LEXO]   run_lexo_engine_lan.bat
+  echo [LEXO] Then enter PC IP manually in mobile Settings -> Host URL.
+  echo [LEXO] If you only test offline mobile UI, host is not required.
 )
-
-echo [LEXO] Starting Python engine...
-if exist "%ROOT_DIR%\data\models\nllb-200-distilled-600m\ct2\model.bin" (
-  set "LEXO_TRANSLATOR_MODE=nllb"
-)
-if exist "%ROOT_DIR%\.venv_kokoro\Scripts\python.exe" (
-  set "LEXO_TTS_PROVIDER_MODE=kokoro"
-)
-start "LEXO Engine" cmd /k "cd /d %ROOT_DIR% && set LEXO_HOST=0.0.0.0 && set LEXO_PORT=8765 && set LEXO_TRANSLATOR=%LEXO_TRANSLATOR_MODE% && set LEXO_TTS_PROVIDER=%LEXO_TTS_PROVIDER_MODE% && %PYTHON_CMD% -m engine.main"
-
 echo [LEXO] Waiting before starting mobile UI...
-timeout /t 3 /nobreak >nul
+timeout /t 1 /nobreak >nul
 
 echo [LEXO] Starting Flutter Android app...
-echo [LEXO] Flutter base URL: %LEXO_ANDROID_BASE_URL%
+echo [LEXO] Emulator default Host URL inside app: %LEXO_ANDROID_DEFAULT_HOST_URL%
 pushd "%APP_DIR%"
-call "%FLUTTER_CMD%" run -d "%TARGET_DEVICE%" --dart-define=LEXO_BASE_URL=%LEXO_ANDROID_BASE_URL%
+call "%FLUTTER_CMD%" run -d "%TARGET_DEVICE%" --dart-define=LEXO_DEFAULT_MOBILE_HOST_URL=%LEXO_ANDROID_DEFAULT_HOST_URL%
 set "FLUTTER_EXIT=%ERRORLEVEL%"
 popd
 if not "%FLUTTER_EXIT%"=="0" (

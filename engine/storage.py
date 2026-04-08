@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 import shutil
 import sqlite3
@@ -26,6 +27,7 @@ from .word_alignment import build_context_window, build_tap_word_payloads, build
 
 
 ACTIVE_BOOK_STATE_KEY = "active_book_id"
+MOBILE_PACKAGE_MAX_PART_BYTES = 64 * 1024
 
 
 class LexoStorage:
@@ -412,6 +414,35 @@ class LexoStorage:
             "reader_payload": reader_payload,
             "tts_manifest": self._build_mobile_tts_manifest(book_id),
         }
+
+    def build_mobile_book_package_manifest(self, book_id: str) -> dict:
+        package = self.build_mobile_book_package(book_id)
+        parts = self._build_mobile_book_package_parts(package)
+        return {
+            "book_id": book_id,
+            "meta": package["meta"],
+            "parts": [
+                {
+                    "part_id": part["part_id"],
+                    "kind": part["kind"],
+                    "size_bytes": len(json.dumps(part["payload"], ensure_ascii=False).encode("utf-8")),
+                }
+                for part in parts
+            ],
+        }
+
+    def build_mobile_book_package_part(self, book_id: str, part_id: str) -> dict:
+        package = self.build_mobile_book_package(book_id)
+        parts = self._build_mobile_book_package_parts(package)
+        for part in parts:
+            if part["part_id"] == part_id:
+                return {
+                    "book_id": book_id,
+                    "part_id": part_id,
+                    "kind": part["kind"],
+                    "payload": part["payload"],
+                }
+        raise ValueError(f"Package part not found: {part_id}")
 
     def get_tts_audio_path(self, book_id: str, job_id: str, segment_index: int) -> Path:
         with self._connect() as conn:
@@ -1063,7 +1094,7 @@ class LexoStorage:
                 """
             ).fetchall()
         return {
-            "merged_cards": [self._saved_card_to_payload(row) for row in rows],
+            "merged_cards_count": len(rows),
             "server_sync_time": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -1072,14 +1103,34 @@ class LexoStorage:
         if not card_id:
             return
         existing = conn.execute("SELECT * FROM saved_cards WHERE id = ?", (card_id,)).fetchone()
+        if existing is None:
+            existing = conn.execute(
+                """
+                SELECT *
+                FROM saved_cards
+                WHERE COALESCE(source_book_id, '') = ?
+                  AND card_type = ?
+                  AND lemma = ?
+                  AND translation = ?
+                LIMIT 1
+                """,
+                (
+                    str(payload.get("source_book_id") or payload.get("origin_book_uuid") or ""),
+                    str(payload.get("card_type") or "lexical"),
+                    str(payload.get("lemma") or ""),
+                    str(payload.get("translation") or ""),
+                ),
+            ).fetchone()
         incoming_updated_at = self._normalize_sync_timestamp(payload.get("updated_at") or payload.get("created_at"))
         incoming_deleted_at = self._normalize_optional_sync_timestamp(payload.get("deleted_at"))
         if existing is not None:
             existing_updated_at = self._normalize_sync_timestamp(existing["updated_at"] or existing["created_at"])
             existing_deleted_at = self._normalize_optional_sync_timestamp(existing["deleted_at"])
-            if existing_deleted_at and (not incoming_deleted_at or incoming_updated_at <= existing_updated_at):
+            if existing_deleted_at and not incoming_deleted_at and incoming_updated_at <= existing_updated_at:
                 return
-            if incoming_updated_at < existing_updated_at and not incoming_deleted_at:
+            if incoming_deleted_at and incoming_updated_at < existing_updated_at:
+                return
+            if not existing_deleted_at and incoming_updated_at < existing_updated_at and not incoming_deleted_at:
                 return
         values = self._card_payload_to_row_values(device_id, payload, incoming_updated_at, incoming_deleted_at)
         if existing is None:
@@ -1106,7 +1157,7 @@ class LexoStorage:
                 status = ?, progress_score = ?, review_count = ?, last_reviewed_at = ?
             WHERE id = ?
             """,
-            values[1:] + (card_id,),
+            values[1:] + (str(existing["id"]),),
         )
 
     def _card_payload_to_row_values(
@@ -1706,6 +1757,64 @@ class LexoStorage:
             "levels": self.get_tts_levels()["items"],
             "jobs": jobs,
         }
+
+    def _build_mobile_book_package_parts(self, package: dict) -> list[dict]:
+        meta = dict(package.get("meta") or {})
+        source_text = str(package.get("source_text") or "")
+        reader_payload = dict(package.get("reader_payload") or {})
+        tts_manifest = dict(package.get("tts_manifest") or {})
+        paragraphs = list(reader_payload.get("paragraphs") or [])
+
+        reader_meta = {
+            "book_id": reader_payload.get("book_id"),
+            "title": reader_payload.get("title"),
+            "status": reader_payload.get("status"),
+            "source_lang": reader_payload.get("source_lang"),
+            "target_lang": reader_payload.get("target_lang"),
+            "current_paragraph_index": reader_payload.get("current_paragraph_index", 0),
+            "paragraph_count": len(paragraphs),
+        }
+
+        parts: list[dict] = [
+            {"part_id": "meta", "kind": "meta", "payload": meta},
+            {"part_id": "source_text", "kind": "source_text", "payload": {"source_text": source_text}},
+            {"part_id": "reader_meta", "kind": "reader_meta", "payload": reader_meta},
+        ]
+        chunk_index = 1
+        current_chunk: list[dict] = []
+        current_size = 0
+        for paragraph in paragraphs:
+            paragraph_size = len(json.dumps(paragraph, ensure_ascii=False).encode("utf-8"))
+            projected_size = current_size + paragraph_size
+            if current_chunk and projected_size > MOBILE_PACKAGE_MAX_PART_BYTES:
+                parts.append(
+                    {
+                        "part_id": f"reader_paragraphs_{chunk_index}",
+                        "kind": "reader_paragraphs",
+                        "payload": {
+                            "chunk_index": chunk_index,
+                            "paragraphs": current_chunk,
+                        },
+                    }
+                )
+                chunk_index += 1
+                current_chunk = []
+                current_size = 0
+            current_chunk.append(paragraph)
+            current_size += paragraph_size
+        if current_chunk:
+            parts.append(
+                {
+                    "part_id": f"reader_paragraphs_{chunk_index}",
+                    "kind": "reader_paragraphs",
+                    "payload": {
+                        "chunk_index": chunk_index,
+                        "paragraphs": current_chunk,
+                    },
+                }
+            )
+        parts.append({"part_id": "tts_manifest", "kind": "tts_manifest", "payload": tts_manifest})
+        return parts
 
 
     def _mark_error(self, book_id: str, message: str) -> None:

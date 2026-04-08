@@ -233,6 +233,15 @@ class MobileCardsRepository {
     await _writeCards(items);
   }
 
+  Future<void> markPendingAsSynced() async {
+    final items = await _readCards();
+    final next = items
+        .map((item) => item.syncState == 'synced' ? item : _markSynced(item))
+        .toList()
+      ..sort((left, right) => right.updatedAt.compareTo(left.updatedAt));
+    await _writeCards(next);
+  }
+
   SavedCardItem _markSynced(SavedCardItem item) {
     return SavedCardItem(
       id: item.id,

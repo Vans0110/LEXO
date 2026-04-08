@@ -188,6 +188,20 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     });
     try {
       final cardsDelta = await _cardsRepository.exportDelta();
+      final hostReachable = await widget.api.pingHost();
+      if (!hostReachable) {
+        await _syncLogger.startSession('manual_sync_button', sendRemote: false);
+        await _syncLogger.log(
+          'SYNC_ABORT host_unreachable base_url=${widget.api.baseUrl}',
+          sendRemote: false,
+        );
+        _refreshSyncDebugText();
+        if (!mounted) {
+          return;
+        }
+        setState(() => _settingsError = 'Host недоступен. Проверьте Host URL и что LAN host запущен.');
+        return;
+      }
       await _syncLogger.startSession('manual_sync_button');
       _refreshSyncDebugText();
       await _syncLogger.log(
@@ -201,11 +215,19 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
       );
       final mergedCards = (result['merged_cards'] as List<dynamic>? ?? const [])
           .cast<Map<String, dynamic>>();
+      final mergedCardsCount = result['merged_cards_count'] as int? ?? mergedCards.length;
       await _syncLogger.log(
-        'SYNC_CARDS_MERGED count=${mergedCards.length}',
+        'SYNC_CARDS_MERGED count=$mergedCardsCount',
       );
       _refreshSyncDebugText();
-      await _cardsRepository.replaceWithMergedCards(mergedCards);
+      if (mergedCards.isNotEmpty) {
+        await _cardsRepository.replaceWithMergedCards(mergedCards);
+      } else {
+        final remoteCards = await widget.api.getSavedCards();
+        await _cardsRepository.replaceWithMergedCards(
+          remoteCards.items.map((item) => item.toJson()).toList(),
+        );
+      }
       final syncedBooks = await _syncBooksFromDesktopHost();
       final serverSyncTime = result['server_sync_time'] as String? ?? DateTime.now().toUtc().toIso8601String();
       await _syncLogger.log(
@@ -319,7 +341,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
         'remote_hash=${item.contentHash ?? ''}',
       );
       _refreshSyncDebugText();
-      final package = await widget.api.getMobileBookPackage(item.id);
+      final package = await widget.api.downloadMobileBookPackageChunked(item.id);
       final meta = package['meta'] as Map<String, dynamic>? ?? <String, dynamic>{};
       final readerPayload = package['reader_payload'] as Map<String, dynamic>? ?? <String, dynamic>{};
       if (existing != null) {

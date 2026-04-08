@@ -83,6 +83,24 @@ class LexoHandler(BaseHTTPRequestHandler):
                 print(f"[LEXO ENGINE] MOBILE_PACKAGE book_id={book_id} bytes={len(payload_bytes)}")
                 self._send_json(HTTPStatus.OK, payload)
                 return
+            if path == "/mobile/books/package-manifest":
+                book_id = _query_value(query, "book_id") or ""
+                payload = STORAGE.build_mobile_book_package_manifest(book_id)
+                payload_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+                print(f"[LEXO ENGINE] MOBILE_PACKAGE_MANIFEST book_id={book_id} bytes={len(payload_bytes)}")
+                self._send_json(HTTPStatus.OK, payload)
+                return
+            if path == "/mobile/books/package-part":
+                book_id = _query_value(query, "book_id") or ""
+                part_id = _query_value(query, "part_id") or ""
+                payload = STORAGE.build_mobile_book_package_part(book_id, part_id)
+                payload_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+                print(
+                    f"[LEXO ENGINE] MOBILE_PACKAGE_PART book_id={book_id} part_id={part_id} "
+                    f"bytes={len(payload_bytes)}"
+                )
+                self._send_json(HTTPStatus.OK, payload)
+                return
             if path == "/mobile/books/audio":
                 book_id = _query_value(query, "book_id") or ""
                 job_id = _query_value(query, "job_id") or ""

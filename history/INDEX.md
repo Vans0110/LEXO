@@ -35,3 +35,7 @@
 ### 2026-04-07
 - Сессия: Реализация MVP16 для локальных mobile cards, ручного sync с desktop host и переработки mobile Settings под Host + Sync
 - Файл: [2026-04-07.md](/mnt/d/Programs/LEXO/history/2026-04-07.md)
+
+### 2026-04-08
+- Сессия: Mobile reader переведён на strict offline runtime, host оставлен только для sync
+- Файл: [2026-04-08.md](/mnt/d/Programs/LEXO/history/2026-04-08.md)

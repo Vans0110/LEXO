@@ -8,6 +8,8 @@ import '../models.dart';
 
 class LexoApiClient {
   static const int _audioDownloadMaxAttempts = 3;
+  static const Duration _hostProbeTimeout = Duration(seconds: 1);
+  static const Duration _debugLogTimeout = Duration(milliseconds: 700);
 
   LexoApiClient({String? baseUrl}) : _baseUrl = baseUrl ?? _defaultBaseUrl();
 
@@ -177,6 +179,76 @@ class LexoApiClient {
     return _get('/mobile/books/package?book_id=$bookId');
   }
 
+  Future<Map<String, dynamic>> getMobileBookPackageManifest(String bookId) async {
+    return _get('/mobile/books/package-manifest?book_id=$bookId');
+  }
+
+  Future<Map<String, dynamic>> getMobileBookPackagePart({
+    required String bookId,
+    required String partId,
+  }) async {
+    return _get('/mobile/books/package-part?book_id=$bookId&part_id=$partId');
+  }
+
+  Future<Map<String, dynamic>> downloadMobileBookPackageChunked(String bookId) async {
+    final manifest = await getMobileBookPackageManifest(bookId);
+    final meta = manifest['meta'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    final partItems = (manifest['parts'] as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>();
+    final paragraphs = <Map<String, dynamic>>[];
+    final readerPayload = <String, dynamic>{
+      'book_id': meta['desktop_book_id'] ?? meta['local_book_id'],
+      'title': meta['title'],
+      'status': meta['status'] ?? 'ready',
+      'source_lang': meta['source_lang'],
+      'target_lang': meta['target_lang'],
+      'current_paragraph_index': meta['current_paragraph_index'] ?? 0,
+      'paragraphs': paragraphs,
+    };
+    final package = <String, dynamic>{
+      'meta': <String, dynamic>{...meta},
+      'source_text': '',
+      'reader_payload': readerPayload,
+      'tts_manifest': <String, dynamic>{},
+    };
+    for (final part in partItems) {
+      final partId = part['part_id'] as String? ?? '';
+      if (partId.isEmpty) {
+        continue;
+      }
+      final partResponse = await getMobileBookPackagePart(bookId: bookId, partId: partId);
+      final kind = partResponse['kind'] as String? ?? '';
+      final payload = partResponse['payload'] as Map<String, dynamic>? ?? <String, dynamic>{};
+      switch (kind) {
+        case 'meta':
+          package['meta'] = payload;
+          break;
+        case 'source_text':
+          package['source_text'] = payload['source_text'] as String? ?? '';
+          break;
+        case 'reader_meta':
+          readerPayload
+            ..['book_id'] = payload['book_id']
+            ..['title'] = payload['title']
+            ..['status'] = payload['status'] ?? 'ready'
+            ..['source_lang'] = payload['source_lang']
+            ..['target_lang'] = payload['target_lang']
+            ..['current_paragraph_index'] = payload['current_paragraph_index'] ?? 0;
+          break;
+        case 'reader_paragraphs':
+          paragraphs.addAll(
+            (payload['paragraphs'] as List<dynamic>? ?? const [])
+                .cast<Map<String, dynamic>>(),
+          );
+          break;
+        case 'tts_manifest':
+          package['tts_manifest'] = payload;
+          break;
+      }
+    }
+    return package;
+  }
+
   Future<Map<String, dynamic>> syncMobileCardsFull({
     required String deviceId,
     required String? lastSyncAt,
@@ -192,6 +264,15 @@ class LexoApiClient {
     );
   }
 
+  Future<bool> pingHost() async {
+    try {
+      final data = await _get('/health', timeout: _hostProbeTimeout);
+      return data['ok'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> postMobileDebugLog({
     required String tag,
     required String message,
@@ -202,6 +283,7 @@ class LexoApiClient {
         'tag': tag,
         'message': message,
       },
+      timeout: _debugLogTimeout,
     );
   }
 
@@ -318,14 +400,17 @@ class LexoApiClient {
     await _post('/reader/position', {'book_id': bookId, 'paragraph_index': paragraphIndex});
   }
 
-  Future<Map<String, dynamic>> _get(String path) async {
+  Future<Map<String, dynamic>> _get(String path, {Duration? timeout}) async {
     final uri = Uri.parse('$baseUrl$path');
     developer.log('GET $uri', name: 'LEXO_API');
     final client = HttpClient();
-    final request = await client.getUrl(uri);
+    if (timeout != null) {
+      client.connectionTimeout = timeout;
+    }
+    final request = await client.getUrl(uri).timeout(timeout ?? const Duration(days: 1));
     request.persistentConnection = false;
     request.headers.set(HttpHeaders.connectionHeader, 'close');
-    final response = await request.close();
+    final response = await request.close().timeout(timeout ?? const Duration(days: 1));
     try {
       return await _readJson(response, 'GET', uri);
     } finally {
@@ -336,6 +421,7 @@ class LexoApiClient {
   Future<Map<String, dynamic>> _post(
     String path,
     Map<String, dynamic> payload,
+    {Duration? timeout}
   ) async {
     final uri = Uri.parse('$baseUrl$path');
     developer.log(
@@ -343,12 +429,15 @@ class LexoApiClient {
       name: 'LEXO_API',
     );
     final client = HttpClient();
-    final request = await client.postUrl(uri);
+    if (timeout != null) {
+      client.connectionTimeout = timeout;
+    }
+    final request = await client.postUrl(uri).timeout(timeout ?? const Duration(days: 1));
     request.persistentConnection = false;
     request.headers.set(HttpHeaders.connectionHeader, 'close');
     request.headers.contentType = ContentType.json;
     request.write(jsonEncode(payload));
-    final response = await request.close();
+    final response = await request.close().timeout(timeout ?? const Duration(days: 1));
     try {
       return await _readJson(response, 'POST', uri);
     } finally {

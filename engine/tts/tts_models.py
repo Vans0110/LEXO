@@ -17,17 +17,29 @@ class SpeechProfile:
     level_id: int
     level_name: str
     target_wpm: int
+    audio_variant: str
+    native_rate: float
+    word_gap_ms: int
+    expand_word_gaps: bool
+    playback_speed: float
     rate: float
     pause_scale: float
 
     @property
     def cache_key(self) -> str:
-        rate_value = f"{self.rate:.3f}"
+        variant_value = self.audio_variant or "base"
+        native_rate_value = f"{self.native_rate:.3f}"
+        word_gap_value = int(self.word_gap_ms or 0)
         pause_value = f"{self.pause_scale:.3f}"
-        return f"level={self.level_id}|rate={rate_value}|pause={pause_value}"
+        return (
+            f"variant={variant_value}|native_rate={native_rate_value}|"
+            f"word_gap={word_gap_value}|pause={pause_value}"
+        )
 
 
 @dataclass(slots=True)
 class GeneratedAudio:
     audio_path: str
     duration_ms: int
+    timings_path: str | None = None
+    timings: list[dict] | None = None

@@ -42,8 +42,10 @@ class TtsPanel extends StatelessWidget {
       }
     }
     TtsJobItem? selectedJob;
+    final requiredAudioVariant = selectedLevel?.audioVariant ?? 'base';
     for (final job in jobs) {
-      if (selectedVoiceId == null || job.voiceId == selectedVoiceId) {
+      if ((selectedVoiceId == null || job.voiceId == selectedVoiceId) &&
+          job.audioVariant == requiredAudioVariant) {
         selectedJob = job;
         break;
       }

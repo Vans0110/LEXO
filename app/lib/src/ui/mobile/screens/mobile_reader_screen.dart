@@ -46,7 +46,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   double _selectedPlaybackSpeed() {
     final selectedLevel = _selectedLevel();
-    return selectedLevel?.playbackSpeed ?? 1.0;
+    return selectedLevel?.effectivePlaybackSpeed ?? 1.0;
   }
 
   TtsLevel? _selectedLevel() {
@@ -74,6 +74,10 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   Future<void> _applyPlaybackSpeed() async {
     await _audioPlayer.setRate(_selectedPlaybackSpeed());
+  }
+
+  String _requiredAudioVariant() {
+    return _selectedLevel()?.audioVariant ?? 'base';
   }
 
   Future<void> _togglePlayPause() async {
@@ -191,8 +195,9 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     if (voiceId == null) {
       return null;
     }
+    final requiredAudioVariant = _requiredAudioVariant();
     for (final job in _state.ttsState?.jobs ?? const <TtsJobItem>[]) {
-      if (job.voiceId == voiceId) {
+      if (job.voiceId == voiceId && job.audioVariant == requiredAudioVariant) {
         return job;
       }
     }
@@ -235,6 +240,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
               levelId: selectedJob.levelId,
               levelName: selectedJob.levelName,
               targetWpm: selectedJob.targetWpm,
+              audioVariant: selectedJob.audioVariant,
+              nativeRate: selectedJob.nativeRate,
               rate: selectedJob.rate,
               pauseScale: selectedJob.pauseScale,
               voiceId: selectedJob.voiceId,
@@ -300,6 +307,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
                 levelId: activeJob.levelId,
                 levelName: activeJob.levelName,
                 targetWpm: activeJob.targetWpm,
+                audioVariant: activeJob.audioVariant,
+                nativeRate: activeJob.nativeRate,
                 rate: activeJob.rate,
                 pauseScale: activeJob.pauseScale,
                 voiceId: activeJob.voiceId,
@@ -329,6 +338,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
                 levelId: activeJob.levelId,
                 levelName: activeJob.levelName,
                 targetWpm: activeJob.targetWpm,
+                audioVariant: activeJob.audioVariant,
+                nativeRate: activeJob.nativeRate,
                 rate: activeJob.rate,
                 pauseScale: activeJob.pauseScale,
                 voiceId: activeJob.voiceId,
@@ -362,6 +373,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
                 levelId: activeJob.levelId,
                 levelName: activeJob.levelName,
                 targetWpm: activeJob.targetWpm,
+                audioVariant: activeJob.audioVariant,
+                nativeRate: activeJob.nativeRate,
                 rate: activeJob.rate,
                 pauseScale: activeJob.pauseScale,
                 voiceId: activeJob.voiceId,
@@ -459,6 +472,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
               levelId: activeJob.levelId,
               levelName: activeJob.levelName,
               targetWpm: activeJob.targetWpm,
+              audioVariant: activeJob.audioVariant,
+              nativeRate: activeJob.nativeRate,
               rate: activeJob.rate,
               pauseScale: activeJob.pauseScale,
               voiceId: activeJob.voiceId,
@@ -502,7 +517,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   String _speedLabel() {
-    return _formatSpeed(_selectedPlaybackSpeed());
+    final selectedLevel = _selectedLevel();
+    return _formatSpeed(selectedLevel?.playbackSpeed ?? 1.0);
   }
 
   Future<void> _showSpeedPicker() async {

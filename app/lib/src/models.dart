@@ -355,17 +355,29 @@ class TtsLevel {
     required this.id,
     required this.name,
     required this.playbackSpeed,
+    this.effectivePlaybackSpeed = 1.0,
+    this.audioVariant = 'base',
+    this.nativeRate = 0.89,
   });
 
   final int id;
   final String name;
   final double playbackSpeed;
+  final double effectivePlaybackSpeed;
+  final String audioVariant;
+  final double nativeRate;
 
   factory TtsLevel.fromJson(Map<String, dynamic> json) {
     return TtsLevel(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
       playbackSpeed: (json['playback_speed'] as num?)?.toDouble() ?? 1.0,
+      effectivePlaybackSpeed:
+          (json['effective_playback_speed'] as num?)?.toDouble()
+          ?? (json['playback_speed'] as num?)?.toDouble()
+          ?? 1.0,
+      audioVariant: json['audio_variant'] as String? ?? 'base',
+      nativeRate: (json['native_rate'] as num?)?.toDouble() ?? 0.89,
     );
   }
 }
@@ -376,6 +388,8 @@ class TtsJobItem {
     required this.levelId,
     required this.levelName,
     required this.targetWpm,
+    required this.audioVariant,
+    required this.nativeRate,
     required this.rate,
     required this.pauseScale,
     required this.voiceId,
@@ -394,6 +408,8 @@ class TtsJobItem {
   final int levelId;
   final String levelName;
   final int targetWpm;
+  final String audioVariant;
+  final double nativeRate;
   final double rate;
   final double pauseScale;
   final String voiceId;
@@ -443,6 +459,8 @@ class TtsJobItem {
       levelId: json['level_id'] as int? ?? 0,
       levelName: json['level_name'] as String? ?? '',
       targetWpm: json['target_wpm'] as int? ?? 0,
+      audioVariant: json['audio_variant'] as String? ?? 'base',
+      nativeRate: (json['native_rate'] as num?)?.toDouble() ?? 0.89,
       rate: (json['rate'] as num?)?.toDouble() ?? 1.0,
       pauseScale: (json['pause_scale'] as num?)?.toDouble() ?? 1.0,
       voiceId: json['voice_id'] as String? ?? '',

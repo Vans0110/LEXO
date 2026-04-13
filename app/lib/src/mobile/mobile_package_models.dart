@@ -1,4 +1,5 @@
 import '../models.dart';
+import '../detail_sheet_models.dart';
 
 class MobileBookPackageMeta {
   const MobileBookPackageMeta({
@@ -91,6 +92,9 @@ class MobileBookPackage {
         ),
         segmentsByJobId = _buildSegmentsByJobId(
           (rawJson['tts_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+        ),
+        detailByWordId = _buildDetailByWordId(
+          rawJson['detail_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{},
         );
 
   final Map<String, dynamic> rawJson;
@@ -100,6 +104,7 @@ class MobileBookPackage {
   final List<TtsLevel> levels;
   final TtsState ttsState;
   final Map<String, List<TtsSegmentItem>> segmentsByJobId;
+  final Map<String, DetailSheetPayload> detailByWordId;
 
   List<TtsSegmentItem> segmentsForJob(String jobId) {
     return segmentsByJobId[jobId] ?? const <TtsSegmentItem>[];
@@ -142,6 +147,16 @@ class MobileBookPackage {
           .map(TtsSegmentItem.fromJson)
           .toList();
     }
+    return result;
+  }
+
+  static Map<String, DetailSheetPayload> _buildDetailByWordId(Map<String, dynamic> manifest) {
+    final result = <String, DetailSheetPayload>{};
+    manifest.forEach((key, value) {
+      if (value is Map<String, dynamic>) {
+        result[key] = DetailSheetPayload.fromJson(value);
+      }
+    });
     return result;
   }
 }

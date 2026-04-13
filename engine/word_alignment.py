@@ -6,6 +6,7 @@ import re
 WORD_PATTERN = re.compile(r"[A-Za-zА-Яа-яЁё0-9]+(?:[-'][A-Za-zА-Яа-яЁё0-9]+)*")
 ARTICLE_WORDS = {"the", "a", "an"}
 COPULA_WORDS = {"is", "am", "are", "was", "were"}
+POSSESSIVE_WORDS = {"my", "your", "his", "her", "our", "their"}
 TARGET_FUNCTION_WORDS = {
     "в",
     "во",
@@ -37,6 +38,32 @@ TARGET_FUNCTION_WORDS = {
     "о",
     "об",
     "обо",
+}
+TARGET_POSSESSIVE_WORDS = {
+    "свой",
+    "своя",
+    "своё",
+    "свои",
+    "свою",
+    "своего",
+    "своей",
+    "своих",
+    "его",
+    "ее",
+    "её",
+    "их",
+    "мой",
+    "моя",
+    "мою",
+    "твой",
+    "твоя",
+    "наш",
+    "наша",
+    "ваш",
+    "ваша",
+    "моих",
+    "твоих",
+    "наших",
 }
 PRONOUN_WORDS = {"i", "you", "he", "she", "it", "we", "they"}
 PREPOSITION_WORDS = {
@@ -175,6 +202,20 @@ ANCHOR_TRANSLATIONS = {
     "luna": {"луна", "луну"},
     "anna": {"анна", "анну"},
 }
+REPORTING_VERB_TRANSLATIONS = {
+    "say": {"говорит", "сказал", "сказала", "ответил", "ответила", "отвечает"},
+    "says": {"говорит", "сказал", "сказала", "ответил", "ответила", "отвечает"},
+    "think": {"думает", "подумал", "подумала"},
+    "thinks": {"думает", "подумал", "подумала"},
+    "ask": {"спрашивает", "спросил", "спросила"},
+    "asks": {"спрашивает", "спросил", "спросила"},
+    "whisper": {"шепчет", "прошептал", "прошептала"},
+    "whispers": {"шепчет", "прошептал", "прошептала"},
+    "reply": {"отвечает", "ответил", "ответила"},
+    "replies": {"отвечает", "ответил", "ответила"},
+    "answer": {"отвечает", "ответил", "ответила"},
+    "answers": {"отвечает", "ответил", "ответила"},
+}
 
 
 def tokenize_words(text: str) -> list[dict]:
@@ -198,6 +239,7 @@ def build_word_mappings(
         return [], []
 
     target_by_source_index: dict[int, int | None] = {}
+    target_span_by_source_index: dict[int, tuple[int, int]] = {}
     anchor_pairs = _match_anchor_pairs(source_tokens, target_tokens)
     _assign_window_targets(
         source_tokens=source_tokens,
@@ -223,12 +265,34 @@ def build_word_mappings(
                 target_tokens=target_tokens,
                 target_by_source_index=target_by_source_index,
             )
+    _rescue_reporting_verb_targets(
+        source_tokens=source_tokens,
+        target_tokens=target_tokens,
+        target_by_source_index=target_by_source_index,
+    )
+    _apply_special_phrase_overrides(
+        source_tokens=source_tokens,
+        target_tokens=target_tokens,
+        target_by_source_index=target_by_source_index,
+        target_span_by_source_index=target_span_by_source_index,
+    )
+    _repair_possessive_targets(
+        source_tokens=source_tokens,
+        target_tokens=target_tokens,
+        target_by_source_index=target_by_source_index,
+    )
+    _cleanup_grammar_targets(
+        source_tokens=source_tokens,
+        target_by_source_index=target_by_source_index,
+        target_span_by_source_index=target_span_by_source_index,
+    )
 
     words: list[dict] = []
     alignments: list[dict] = []
     for order_index, token in enumerate(source_tokens):
         word_id = f"w_{paragraph_start_index + order_index}"
         target_index = target_by_source_index.get(order_index)
+        target_span = target_span_by_source_index.get(order_index)
         anchor_source_index = _resolve_anchor_source_index(
             source_tokens=source_tokens,
             source_index=order_index,
@@ -256,12 +320,21 @@ def build_word_mappings(
                 }
             )
             continue
+        target_start_index = target_index
+        target_end_index = target_index
+        target_text_value = target_tokens[target_index]["text"]
+        if target_span is not None:
+            target_start_index, target_end_index = target_span
+            target_text_value = " ".join(
+                token["text"]
+                for token in target_tokens[target_start_index : target_end_index + 1]
+            ).strip()
         alignments.append(
             {
                 "source_word_id": word_id,
-                "target_start_index": target_index,
-                "target_end_index": target_index,
-                "target_text": target_tokens[target_index]["text"],
+                "target_start_index": target_start_index,
+                "target_end_index": target_end_index,
+                "target_text": target_text_value,
                 "confidence": 0.95 if token["normalized"] not in ARTICLE_WORDS else 0.75,
             }
         )
@@ -321,6 +394,8 @@ def build_tap_word_payloads(
                 "segment_id",
                 "segment_source_text",
                 "segment_target_text",
+                "segment_type",
+                "segment_translation_kind",
                 "lemma",
                 "pos",
                 "morph",
@@ -366,6 +441,11 @@ def _resolve_function_target(
         previous_target_index = anchor_target_index - 1
         if _is_target_function_word(target_tokens[previous_target_index]):
             return previous_target_index
+        return None
+    if token["normalized"] in COPULA_WORDS:
+        if anchor_target_index > 0 and _is_target_function_word(target_tokens[anchor_target_index - 1]):
+            return anchor_target_index - 1
+        return None
     return anchor_target_index
 
 
@@ -529,6 +609,407 @@ def _is_target_function_word(token: dict) -> bool:
     return token["normalized"] in TARGET_FUNCTION_WORDS
 
 
+def _apply_special_phrase_overrides(
+    source_tokens: list[dict],
+    target_tokens: list[dict],
+    target_by_source_index: dict[int, int | None],
+    target_span_by_source_index: dict[int, tuple[int, int]],
+) -> None:
+    if not source_tokens or not target_tokens:
+        return
+
+    _apply_pronoun_be_adjective_overrides(
+        source_tokens=source_tokens,
+        target_tokens=target_tokens,
+        target_by_source_index=target_by_source_index,
+        target_span_by_source_index=target_span_by_source_index,
+    )
+    _apply_exact_phrase_override(
+        source_tokens=source_tokens,
+        target_tokens=target_tokens,
+        source_phrase=("how", "are", "you"),
+        target_phrase=("как", "дела"),
+        apply_mode="all",
+        target_by_source_index=target_by_source_index,
+        target_span_by_source_index=target_span_by_source_index,
+    )
+    _apply_exact_phrase_override(
+        source_tokens=source_tokens,
+        target_tokens=target_tokens,
+        source_phrase=("thank", "you"),
+        target_phrase=("спасибо",),
+        apply_mode="all",
+        target_by_source_index=target_by_source_index,
+        target_span_by_source_index=target_span_by_source_index,
+    )
+    _apply_exact_phrase_override(
+        source_tokens=source_tokens,
+        target_tokens=target_tokens,
+        source_phrase=("goodnight",),
+        target_phrase=("спокойной", "ночи"),
+        apply_mode="all",
+        target_by_source_index=target_by_source_index,
+        target_span_by_source_index=target_span_by_source_index,
+    )
+    _apply_exact_phrase_override(
+        source_tokens=source_tokens,
+        target_tokens=target_tokens,
+        source_phrase=("in", "the", "afternoon"),
+        target_phrase=("днем",),
+        apply_mode="all",
+        target_by_source_index=target_by_source_index,
+        target_span_by_source_index=target_span_by_source_index,
+    )
+    _apply_it_day_overrides(
+        source_tokens=source_tokens,
+        target_tokens=target_tokens,
+        target_by_source_index=target_by_source_index,
+        target_span_by_source_index=target_span_by_source_index,
+    )
+
+
+def _apply_pronoun_be_adjective_overrides(
+    source_tokens: list[dict],
+    target_tokens: list[dict],
+    target_by_source_index: dict[int, int | None],
+    target_span_by_source_index: dict[int, tuple[int, int]],
+) -> None:
+    if len(source_tokens) < 3:
+        return
+    source_words = [token["normalized"] for token in source_tokens]
+    pronoun = source_words[0]
+    copula = source_words[1]
+    predicate = source_words[2]
+    if pronoun not in PRONOUN_WORDS - {"it"}:
+        return
+    if copula not in COPULA_WORDS:
+        return
+
+    pronoun_target_candidates = {
+        "i": {"я"},
+        "you": {"ты", "вы"},
+        "he": {"он"},
+        "she": {"она"},
+        "we": {"мы"},
+        "they": {"они"},
+    }.get(pronoun, set())
+    if pronoun_target_candidates:
+        pronoun_target_index = _find_target_token_index(target_tokens, pronoun_target_candidates)
+        if pronoun_target_index is not None:
+            _set_target_span_override(0, pronoun_target_index, pronoun_target_index, target_by_source_index, target_span_by_source_index)
+
+    if predicate in {"great", "grate"}:
+        predicate_span = _find_target_phrase_span(target_tokens, ("в", "порядке"))
+        if predicate_span is None:
+            return
+        target_by_source_index[1] = None
+        _set_target_span_override(2, predicate_span[0], predicate_span[1], target_by_source_index, target_span_by_source_index)
+        return
+
+    predicate_candidates = {
+        "happy": {"счастлив", "счастлива", "счастливы"},
+        "tired": {"уставший", "уставшая", "уставшие"},
+        "ready": {"готов", "готова", "готовы"},
+        "hungry": {"голодный", "голодна", "голодны"},
+        "sad": {"грустный", "грустна", "грустны"},
+    }.get(predicate, set())
+    if not predicate_candidates:
+        return
+    predicate_index = _find_target_token_index(target_tokens, predicate_candidates)
+    if predicate_index is None:
+        return
+    target_by_source_index[1] = None
+    _set_target_span_override(2, predicate_index, predicate_index, target_by_source_index, target_span_by_source_index)
+
+
+def _apply_exact_phrase_override(
+    source_tokens: list[dict],
+    target_tokens: list[dict],
+    source_phrase: tuple[str, ...],
+    target_phrase: tuple[str, ...],
+    apply_mode: str,
+    target_by_source_index: dict[int, int | None],
+    target_span_by_source_index: dict[int, tuple[int, int]],
+) -> None:
+    source_start = _find_source_phrase_range(source_tokens, source_phrase)
+    target_span = _find_target_phrase_span(target_tokens, target_phrase)
+    if source_start is None or target_span is None:
+        return
+    target_start, target_end = target_span
+    for offset in range(len(source_phrase)):
+        source_index = source_start + offset
+        if apply_mode == "all":
+            _set_target_span_override(
+                source_index=source_index,
+                target_start_index=target_start,
+                target_end_index=target_end,
+                target_by_source_index=target_by_source_index,
+                target_span_by_source_index=target_span_by_source_index,
+            )
+
+
+def _apply_it_day_overrides(
+    source_tokens: list[dict],
+    target_tokens: list[dict],
+    target_by_source_index: dict[int, int | None],
+    target_span_by_source_index: dict[int, tuple[int, int]],
+) -> None:
+    source_words = [token["normalized"] for token in source_tokens]
+    subject_index = _find_target_token_index(target_tokens, {"сегодня", "это"})
+    day_index = _find_target_token_index(target_tokens, {"день"})
+    if subject_index is None or day_index is None:
+        return
+
+    if source_words[:5] == ["it", "is", "a", "beautiful", "day"]:
+        adjective_index = _find_target_token_index(
+            target_tokens,
+            {"прекрасный", "прекрасная", "прекрасное", "прекрасную", "прекрасного"},
+        )
+        if adjective_index is None:
+            return
+        _set_target_span_override(0, subject_index, subject_index, target_by_source_index, target_span_by_source_index)
+        target_by_source_index[1] = None
+        target_by_source_index[2] = None
+        _set_target_span_override(3, adjective_index, adjective_index, target_by_source_index, target_span_by_source_index)
+        _set_target_span_override(4, day_index, day_index, target_by_source_index, target_span_by_source_index)
+        return
+
+    if source_words[:6] == ["it", "is", "a", "very", "good", "day"]:
+        very_index = _find_target_token_index(target_tokens, {"очень"})
+        adjective_index = _find_target_token_index(target_tokens, {"хороший", "хорошая", "хорошее"})
+        if very_index is None or adjective_index is None:
+            return
+        _set_target_span_override(0, subject_index, subject_index, target_by_source_index, target_span_by_source_index)
+        target_by_source_index[1] = None
+        target_by_source_index[2] = None
+        _set_target_span_override(3, very_index, very_index, target_by_source_index, target_span_by_source_index)
+        _set_target_span_override(4, adjective_index, adjective_index, target_by_source_index, target_span_by_source_index)
+        _set_target_span_override(5, day_index, day_index, target_by_source_index, target_span_by_source_index)
+
+
+def _find_source_phrase_range(source_tokens: list[dict], source_phrase: tuple[str, ...]) -> int | None:
+    normalized_tokens = [token["normalized"] for token in source_tokens]
+    phrase_length = len(source_phrase)
+    for index in range(0, len(normalized_tokens) - phrase_length + 1):
+        if tuple(normalized_tokens[index : index + phrase_length]) == source_phrase:
+            return index
+    return None
+
+
+def _find_target_phrase_span(
+    target_tokens: list[dict],
+    target_phrase: tuple[str, ...],
+) -> tuple[int, int] | None:
+    normalized_tokens = [token["normalized"] for token in target_tokens]
+    phrase_length = len(target_phrase)
+    for index in range(0, len(normalized_tokens) - phrase_length + 1):
+        if tuple(normalized_tokens[index : index + phrase_length]) == target_phrase:
+            return index, index + phrase_length - 1
+    return None
+
+
+def _find_target_token_index(target_tokens: list[dict], candidates: set[str]) -> int | None:
+    for index, token in enumerate(target_tokens):
+        if token["normalized"] in candidates:
+            return index
+    return None
+
+
+def _set_target_span_override(
+    source_index: int,
+    target_start_index: int,
+    target_end_index: int,
+    target_by_source_index: dict[int, int | None],
+    target_span_by_source_index: dict[int, tuple[int, int]],
+) -> None:
+    target_by_source_index[source_index] = target_start_index
+    target_span_by_source_index[source_index] = (target_start_index, target_end_index)
+
+
+def _rescue_reporting_verb_targets(
+    source_tokens: list[dict],
+    target_tokens: list[dict],
+    target_by_source_index: dict[int, int | None],
+) -> None:
+    if not source_tokens or not target_tokens:
+        return
+
+    used_target_indices = {
+        target_index
+        for target_index in target_by_source_index.values()
+        if target_index is not None and target_index >= 0
+    }
+    anchor_pairs = _match_anchor_pairs(source_tokens, target_tokens)
+    target_anchor_by_source_index = {source_index: target_index for source_index, target_index in anchor_pairs}
+
+    for source_index, token in enumerate(source_tokens):
+        normalized = token["normalized"]
+        if normalized not in REPORTING_VERB_TRANSLATIONS:
+            continue
+
+        current_target_index = target_by_source_index.get(source_index)
+        if current_target_index is not None and current_target_index >= 0:
+            current_target_token = target_tokens[current_target_index]
+            if current_target_token["normalized"] in REPORTING_VERB_TRANSLATIONS[normalized]:
+                continue
+
+        rescued_target_index = _find_reporting_verb_target_index(
+            source_tokens=source_tokens,
+            source_index=source_index,
+            target_tokens=target_tokens,
+            used_target_indices=used_target_indices,
+            target_anchor_by_source_index=target_anchor_by_source_index,
+        )
+        if rescued_target_index is None:
+            continue
+        target_by_source_index[source_index] = rescued_target_index
+        used_target_indices.add(rescued_target_index)
+
+
+def _find_reporting_verb_target_index(
+    source_tokens: list[dict],
+    source_index: int,
+    target_tokens: list[dict],
+    used_target_indices: set[int],
+    target_anchor_by_source_index: dict[int, int],
+) -> int | None:
+    normalized = source_tokens[source_index]["normalized"]
+    candidates = REPORTING_VERB_TRANSLATIONS.get(normalized) or set()
+    if not candidates:
+        return None
+
+    candidate_indices = [
+        index
+        for index, token in enumerate(target_tokens)
+        if token["normalized"] in candidates
+    ]
+    if not candidate_indices:
+        return None
+
+    preferred_anchor_indices: list[int] = []
+    if source_index > 0 and _is_hard_anchor(source_tokens[source_index - 1]):
+        anchor_target_index = target_anchor_by_source_index.get(source_index - 1)
+        if anchor_target_index is not None:
+            preferred_anchor_indices.append(anchor_target_index)
+    if source_index + 1 < len(source_tokens) and _is_hard_anchor(source_tokens[source_index + 1]):
+        anchor_target_index = target_anchor_by_source_index.get(source_index + 1)
+        if anchor_target_index is not None:
+            preferred_anchor_indices.append(anchor_target_index)
+
+    def score(index: int) -> tuple[int, int, int]:
+        is_used = 1 if index in used_target_indices else 0
+        anchor_distance = min((abs(index - anchor_index) for anchor_index in preferred_anchor_indices), default=0)
+        source_distance = abs(index - source_index)
+        return (is_used, anchor_distance, source_distance)
+
+    candidate_indices.sort(key=score)
+    return candidate_indices[0]
+
+
+def _repair_possessive_targets(
+    source_tokens: list[dict],
+    target_tokens: list[dict],
+    target_by_source_index: dict[int, int | None],
+) -> None:
+    for source_index, token in enumerate(source_tokens):
+        if token["normalized"] not in POSSESSIVE_WORDS:
+            continue
+        target_index = target_by_source_index.get(source_index)
+        if target_index is not None and target_index >= 0:
+            current_target = target_tokens[target_index]
+            if current_target["normalized"] in TARGET_POSSESSIVE_WORDS:
+                continue
+            if not _is_target_function_word(current_target):
+                rescued_index = _find_matching_possessive_target(
+                    source_tokens=source_tokens,
+                    source_index=source_index,
+                    target_tokens=target_tokens,
+                )
+                if rescued_index is not None:
+                    target_by_source_index[source_index] = rescued_index
+                continue
+
+        rescued_index = _find_matching_possessive_target(
+            source_tokens=source_tokens,
+            source_index=source_index,
+            target_tokens=target_tokens,
+        )
+        if rescued_index is None:
+            target_by_source_index[source_index] = None
+            continue
+        target_by_source_index[source_index] = rescued_index
+
+
+def _find_matching_possessive_target(
+    source_tokens: list[dict],
+    source_index: int,
+    target_tokens: list[dict],
+) -> int | None:
+    candidates = _target_possessive_candidates_for_source(source_tokens[source_index]["normalized"])
+    if not candidates:
+        return None
+
+    paired_noun_candidates = _target_noun_candidates_for_possessive_pair(
+        source_tokens=source_tokens,
+        source_index=source_index,
+    )
+    if paired_noun_candidates:
+        for index, token in enumerate(target_tokens):
+            if token["normalized"] not in candidates:
+                continue
+            if index + 1 < len(target_tokens) and target_tokens[index + 1]["normalized"] in paired_noun_candidates:
+                return index
+
+    return _find_target_token_index(target_tokens, candidates)
+
+
+def _target_possessive_candidates_for_source(normalized_source: str) -> set[str]:
+    mapping = {
+        "my": {"мой", "моя", "мою", "моих"},
+        "your": {"твой", "твоя", "твою", "твоих"},
+        "his": {"его"},
+        "her": {"ее", "её"},
+        "our": {"наш", "наша", "нашу", "наших"},
+        "their": {"их"},
+    }
+    return mapping.get(normalized_source, set())
+
+
+def _target_noun_candidates_for_possessive_pair(
+    source_tokens: list[dict],
+    source_index: int,
+) -> set[str]:
+    if source_index + 1 >= len(source_tokens):
+        return set()
+    next_word = source_tokens[source_index + 1]["normalized"]
+    mapping = {
+        "legs": {"ногах", "ноги", "ног"},
+        "feet": {"ступнях", "ступни", "ногах"},
+        "hands": {"руках", "руки", "рук"},
+        "friend": {"друга", "друг", "подругу", "подруга"},
+        "cat": {"кота", "кот", "кошку", "кошка"},
+        "dog": {"собаку", "собака", "пса", "пес"},
+        "book": {"книгу", "книга"},
+    }
+    return mapping.get(next_word, set())
+
+
+def _cleanup_grammar_targets(
+    source_tokens: list[dict],
+    target_by_source_index: dict[int, int | None],
+    target_span_by_source_index: dict[int, tuple[int, int]],
+) -> None:
+    for source_index, token in enumerate(source_tokens):
+        normalized = token["normalized"]
+        if source_index in target_span_by_source_index:
+            continue
+        if normalized in ARTICLE_WORDS:
+            target_by_source_index[source_index] = None
+            continue
+        if normalized in COPULA_WORDS:
+            target_by_source_index[source_index] = None
+
+
 def _should_skip_leading_target_function_tokens(
     source_tokens: list[dict],
     source_start: int,
@@ -563,6 +1044,9 @@ def _build_tap_units(words: list[dict]) -> list[dict]:
     index = 0
     while index < len(words):
         unit = (
+            _match_fixed_phrase_unit(words, index)
+            or _match_it_be_unit(words, index)
+            or
             _match_time_unit(words, index)
             or _match_chapter_unit(words, index)
             or _match_pronoun_be_unit(words, index)
@@ -576,6 +1060,31 @@ def _build_tap_units(words: list[dict]) -> list[dict]:
         units.append(unit)
         index = unit["end_index"] + 1
     return units
+
+
+def _match_fixed_phrase_unit(words: list[dict], index: int) -> dict | None:
+    patterns = (
+        (("good", "morning"), "phrase"),
+        (("how", "are", "you"), "phrase"),
+        (("thank", "you"), "phrase"),
+        (("goodnight",), "phrase"),
+        (("in", "the", "afternoon"), "phrase"),
+    )
+    for pattern, unit_type in patterns:
+        end_index = index + len(pattern)
+        if end_index > len(words):
+            continue
+        if tuple(_word_normalized(word) for word in words[index:end_index]) == pattern:
+            return _build_unit(words, index, end_index - 1, unit_type)
+    return None
+
+
+def _match_it_be_unit(words: list[dict], index: int) -> dict | None:
+    if index + 1 >= len(words):
+        return None
+    if _word_normalized(words[index]) == "it" and _word_normalized(words[index + 1]) in COPULA_WORDS:
+        return _build_unit(words, index, index + 1, "pronoun_be")
+    return None
 
 
 def _match_time_unit(words: list[dict], index: int) -> dict | None:

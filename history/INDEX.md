@@ -39,3 +39,15 @@
 ### 2026-04-08
 - Сессия: Mobile reader переведён на strict offline runtime, host оставлен только для sync
 - Файл: [2026-04-08.md](/mnt/d/Programs/LEXO/history/2026-04-08.md)
+
+### 2026-04-09
+- Сессия: Добавлен literal word-by-word path для study segments и начата очередь 1 по quality contract из ТЗ-1
+- Файл: [2026-04-09.md](/mnt/d/Programs/LEXO/history/2026-04-09.md)
+
+### 2026-04-10
+- Сессия: Формализация отдельного V2 core как unit-first source-driven контура
+- Файл: [2026-04-10.md](/mnt/d/Programs/LEXO/history/2026-04-10.md)
+
+### 2026-04-13
+- Сессия: Точечный фикс reporting-verb alignment и cleanup явных ошибок EN->RU перевода
+- Файл: [2026-04-13.md](/mnt/d/Programs/LEXO/history/2026-04-13.md)

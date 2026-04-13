@@ -36,7 +36,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   double _selectedPlaybackSpeed() {
     final selectedLevel = _selectedLevel();
-    return selectedLevel?.playbackSpeed ?? 1.0;
+    return selectedLevel?.effectivePlaybackSpeed ?? 1.0;
   }
 
   TtsLevel? _selectedLevel() {
@@ -63,7 +63,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   String _speedLabel() {
-    return _formatSpeed(_selectedPlaybackSpeed());
+    final selectedLevel = _selectedLevel();
+    return _formatSpeed(selectedLevel?.playbackSpeed ?? 1.0);
+  }
+
+  String _requiredAudioVariant() {
+    return _selectedLevel()?.audioVariant ?? 'base';
   }
 
   Future<void> _applyPlaybackSpeed() async {
@@ -104,8 +109,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
     if (voiceId == null) {
       return null;
     }
+    final requiredAudioVariant = _requiredAudioVariant();
     for (final job in _state.ttsState?.jobs ?? const <TtsJobItem>[]) {
-      if (job.voiceId == voiceId) {
+      if (job.voiceId == voiceId && job.audioVariant == requiredAudioVariant) {
         return job;
       }
     }

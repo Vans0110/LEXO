@@ -20,6 +20,10 @@ def build_audio_path(cache_dir: Path, cache_key: str) -> Path:
     return cache_dir / f"{cache_key}.wav"
 
 
+def build_timings_path(cache_dir: Path, cache_key: str) -> Path:
+    return cache_dir / f"{cache_key}.timings.json"
+
+
 def read_audio_duration_ms(path: Path, text_fallback: str = "") -> int:
     if not path.exists():
         return max(800, len(text_fallback) * 45)

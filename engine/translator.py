@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 from .config import NLLB_CT2_DIR, NLLB_ORIGINAL_DIR, translator_mode
+from .didactic_rules import apply_didactic_post_edit, resolve_didactic_translation
 
 
 DEFAULT_MODEL_NAME = "mock-local-translation"
@@ -111,6 +112,65 @@ def create_default_provider() -> TranslationProvider:
     if mode == "nllb":
         return NllbProvider()
     return MockProvider()
+
+
+def translate_segment_batch(
+    provider: TranslationProvider,
+    segments: list[dict],
+    source_lang: str,
+    target_lang: str,
+) -> list[dict]:
+    unresolved_indexes: list[int] = []
+    unresolved_texts: list[str] = []
+    results: list[dict] = []
+
+    for index, segment in enumerate(segments):
+        source_text = str(segment.get("source_text") or "").strip()
+        preset_text = str(segment.get("target_text") or "").strip()
+        preset_kind = str(segment.get("translation_kind") or "").strip()
+        if preset_text:
+            results.append(
+                {
+                    "target_text": preset_text,
+                    "translation_kind": preset_kind or "rule_exact",
+                }
+            )
+            continue
+
+        didactic_text = resolve_didactic_translation(source_text, source_lang, target_lang)
+        if didactic_text is not None:
+            results.append(
+                {
+                    "target_text": didactic_text,
+                    "translation_kind": "rule_exact",
+                }
+            )
+            continue
+
+        unresolved_indexes.append(index)
+        unresolved_texts.append(source_text)
+        results.append({})
+
+    if unresolved_texts:
+        translated = provider.translate_segments(unresolved_texts, source_lang, target_lang)
+        for unresolved_index, source_text, translated_text in zip(
+            unresolved_indexes,
+            unresolved_texts,
+            translated,
+            strict=True,
+        ):
+            cleaned = apply_didactic_post_edit(
+                source_segment=source_text,
+                translated_segment=translated_text,
+                source_lang=source_lang,
+                target_lang=target_lang,
+            ).strip()
+            results[unresolved_index] = {
+                "target_text": cleaned,
+                "translation_kind": "provider_fallback",
+            }
+
+    return results
 
 
 def _resolve_nllb_lang(lang: str) -> str:

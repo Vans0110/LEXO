@@ -18,12 +18,19 @@ from .lexical_enrichment import (
     grammar_hint_for_word,
     morph_label_for_word,
 )
-from .segmenter import split_paragraphs, split_sentences
+from .segmenter import split_paragraphs, split_study_segments
 from .text_loader import normalize_text
-from .translator import TranslationProvider, create_default_provider
+from .translator import TranslationProvider, create_default_provider, translate_segment_batch
 from .tts.tts_provider import TtsProvider, create_default_tts_provider
 from .tts.tts_service import LexoTtsService
-from .word_alignment import build_context_window, build_tap_word_payloads, build_word_mappings
+from .word_alignment import (
+    ARTICLE_WORDS,
+    COPULA_WORDS,
+    build_context_window,
+    build_tap_word_payloads,
+    build_word_mappings,
+    tokenize_words,
+)
 
 
 ACTIVE_BOOK_STATE_KEY = "active_book_id"
@@ -43,6 +50,7 @@ class LexoStorage:
         self.models_dir = self.data_dir / "models"
         self.logs_dir = self.data_dir / "logs"
         self.tts_dir = self.data_dir / "tts"
+        self.word_audio_dir = self.data_dir / "word_audio"
         self.db_path = self.data_dir / "lexo.db"
         self.translator = translator or create_default_provider()
         self.tts_provider = tts_provider or create_default_tts_provider()
@@ -50,7 +58,14 @@ class LexoStorage:
         self._ensure_layout()
 
     def _ensure_layout(self) -> None:
-        for path in (self.data_dir, self.books_dir, self.models_dir, self.logs_dir, self.tts_dir):
+        for path in (
+            self.data_dir,
+            self.books_dir,
+            self.models_dir,
+            self.logs_dir,
+            self.tts_dir,
+            self.word_audio_dir,
+        ):
             path.mkdir(parents=True, exist_ok=True)
         self._init_db()
         self._migrate_legacy_current_book()
@@ -96,6 +111,8 @@ class LexoStorage:
                     order_index INTEGER NOT NULL,
                     source_text TEXT NOT NULL,
                     target_text TEXT NOT NULL,
+                    segment_type TEXT NOT NULL DEFAULT 'simple_action',
+                    translation_kind TEXT NOT NULL DEFAULT 'provider_fallback',
                     FOREIGN KEY(book_id) REFERENCES books(id),
                     FOREIGN KEY(paragraph_id) REFERENCES paragraphs(id)
                 );
@@ -122,6 +139,18 @@ class LexoStorage:
                     target_text TEXT NOT NULL,
                     confidence REAL NOT NULL DEFAULT 0.0,
                     FOREIGN KEY(source_word_id) REFERENCES source_words(id)
+                );
+                CREATE TABLE IF NOT EXISTS target_tokens (
+                    id TEXT PRIMARY KEY,
+                    book_id TEXT NOT NULL,
+                    paragraph_id TEXT NOT NULL,
+                    segment_id TEXT NOT NULL,
+                    order_index INTEGER NOT NULL,
+                    surface_text TEXT NOT NULL,
+                    normalized_text TEXT NOT NULL,
+                    FOREIGN KEY(book_id) REFERENCES books(id),
+                    FOREIGN KEY(paragraph_id) REFERENCES paragraphs(id),
+                    FOREIGN KEY(segment_id) REFERENCES segments(id)
                 );
                 CREATE TABLE IF NOT EXISTS saved_words (
                     id TEXT PRIMARY KEY,
@@ -171,6 +200,7 @@ class LexoStorage:
                     book_id TEXT NOT NULL,
                     engine_id TEXT NOT NULL,
                     voice_id TEXT NOT NULL,
+                    audio_variant TEXT NOT NULL DEFAULT 'base',
                     mode TEXT NOT NULL,
                     status TEXT NOT NULL,
                     playback_state TEXT NOT NULL,
@@ -186,7 +216,9 @@ class LexoStorage:
                     paragraph_index INTEGER NOT NULL,
                     engine_id TEXT NOT NULL,
                     voice_id TEXT NOT NULL,
+                    audio_variant TEXT NOT NULL DEFAULT 'base',
                     source_text TEXT NOT NULL,
+                    timings_path TEXT NOT NULL DEFAULT '',
                     audio_path TEXT NOT NULL,
                     duration_ms INTEGER NOT NULL,
                     status TEXT NOT NULL,
@@ -215,7 +247,9 @@ class LexoStorage:
                 """
             )
             self._ensure_book_columns(conn)
+            self._ensure_segment_columns(conn)
             self._ensure_source_word_columns(conn)
+            self._ensure_target_token_columns(conn)
             self._ensure_saved_card_columns(conn)
             self._ensure_tts_columns(conn)
 
@@ -238,6 +272,31 @@ class LexoStorage:
         for name, definition in additions.items():
             if name not in columns:
                 conn.execute(f"ALTER TABLE source_words ADD COLUMN {name} {definition}")
+
+    def _ensure_segment_columns(self, conn: sqlite3.Connection) -> None:
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(segments)").fetchall()}
+        additions = {
+            "segment_type": "TEXT NOT NULL DEFAULT 'simple_action'",
+            "translation_kind": "TEXT NOT NULL DEFAULT 'provider_fallback'",
+        }
+        for name, definition in additions.items():
+            if name not in columns:
+                conn.execute(f"ALTER TABLE segments ADD COLUMN {name} {definition}")
+
+    def _ensure_target_token_columns(self, conn: sqlite3.Connection) -> None:
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(target_tokens)").fetchall()}
+        if not columns:
+            return
+        if "order_index" not in columns:
+            conn.execute("ALTER TABLE target_tokens ADD COLUMN order_index INTEGER")
+            if "order_index_in_segment" in columns:
+                conn.execute(
+                    """
+                    UPDATE target_tokens
+                    SET order_index = order_index_in_segment
+                    WHERE order_index IS NULL
+                    """
+                )
 
     def _ensure_saved_card_columns(self, conn: sqlite3.Connection) -> None:
         columns = {row["name"] for row in conn.execute("PRAGMA table_info(saved_cards)").fetchall()}
@@ -263,6 +322,8 @@ class LexoStorage:
             "level_id": "INTEGER NOT NULL DEFAULT 1",
             "level_name": "TEXT NOT NULL DEFAULT ''",
             "target_wpm": "INTEGER NOT NULL DEFAULT 164",
+            "audio_variant": "TEXT NOT NULL DEFAULT 'base'",
+            "native_rate": "REAL NOT NULL DEFAULT 0.89",
             "rate": "REAL NOT NULL DEFAULT 1.0",
             "pause_scale": "REAL NOT NULL DEFAULT 1.0",
             "total_segments": "INTEGER NOT NULL DEFAULT 0",
@@ -274,6 +335,10 @@ class LexoStorage:
                 conn.execute(f"ALTER TABLE tts_jobs ADD COLUMN {name} {definition}")
 
         segment_columns = {row["name"] for row in conn.execute("PRAGMA table_info(tts_segments)").fetchall()}
+        if "audio_variant" not in segment_columns:
+            conn.execute("ALTER TABLE tts_segments ADD COLUMN audio_variant TEXT NOT NULL DEFAULT 'base'")
+        if "timings_path" not in segment_columns:
+            conn.execute("ALTER TABLE tts_segments ADD COLUMN timings_path TEXT NOT NULL DEFAULT ''")
         if "synthesis_text" not in segment_columns:
             conn.execute("ALTER TABLE tts_segments ADD COLUMN synthesis_text TEXT")
         if "pause_after_ms" not in segment_columns:
@@ -413,6 +478,7 @@ class LexoStorage:
             "source_text": source_text,
             "reader_payload": reader_payload,
             "tts_manifest": self._build_mobile_tts_manifest(book_id),
+            "detail_manifest": self._build_mobile_detail_manifest(book_id, reader_payload),
         }
 
     def build_mobile_book_package_manifest(self, book_id: str) -> dict:
@@ -459,6 +525,60 @@ class LexoStorage:
         audio_path = Path(str(row["audio_path"]))
         if not audio_path.exists() or not audio_path.is_file():
             raise FileNotFoundError(f"Audio file not found: {audio_path}")
+        return audio_path
+
+    def get_tts_timings(self, book_id: str, job_id: str, segment_index: int) -> list[dict]:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT timings_path
+                FROM tts_segments
+                WHERE book_id = ? AND job_id = ? AND segment_index = ?
+                """,
+                (book_id, job_id, segment_index),
+            ).fetchone()
+        if row is None:
+            raise ValueError("TTS segment not found")
+        timings_path_raw = str(row["timings_path"] or "")
+        if not timings_path_raw:
+            return []
+        timings_path = Path(timings_path_raw)
+        if not timings_path.exists() or not timings_path.is_file():
+            return []
+        payload = json.loads(timings_path.read_text(encoding="utf-8"))
+        if not isinstance(payload, list):
+            return []
+        return [item for item in payload if isinstance(item, dict)]
+
+    def get_word_audio_path(self, word: str, voice_id: str | None = None) -> Path:
+        normalized = str(word or "").strip()
+        if not normalized:
+            raise ValueError("Word is required")
+        profiles = [item for item in self.tts_provider.list_profiles() if int(item.get("is_enabled", 0)) == 1]
+        if not profiles:
+            raise ValueError("No TTS voice profiles available")
+        selected_profile = profiles[0]
+        if voice_id is not None:
+            for item in profiles:
+                if str(item.get("voice_id") or "") == voice_id:
+                    selected_profile = item
+                    break
+        selected_voice_id = str(selected_profile.get("voice_id") or "")
+        engine_id = str(selected_profile.get("engine_id") or self.tts_provider.engine_id)
+        cache_key = hashlib.sha256(f"{engine_id}|{selected_voice_id}|{normalized.lower()}".encode("utf-8")).hexdigest()
+        audio_dir = self.word_audio_dir / engine_id / selected_voice_id
+        audio_dir.mkdir(parents=True, exist_ok=True)
+        audio_path = audio_dir / f"{cache_key}.wav"
+        if audio_path.exists() and audio_path.is_file():
+            return audio_path
+        self.tts_provider.synthesize(
+            normalized,
+            selected_voice_id,
+            audio_path,
+            rate=0.89,
+        )
+        if not audio_path.exists() or not audio_path.is_file():
+            raise FileNotFoundError(f"Word audio file not found: {audio_path}")
         return audio_path
 
     def list_books(self) -> dict:
@@ -533,6 +653,7 @@ class LexoStorage:
                 "DELETE FROM word_alignments WHERE source_word_id IN (SELECT id FROM source_words WHERE book_id = ?)",
                 (book_id,),
             )
+            conn.execute("DELETE FROM target_tokens WHERE book_id = ?", (book_id,))
             conn.execute("DELETE FROM source_words WHERE book_id = ?", (book_id,))
             conn.execute("DELETE FROM segments WHERE book_id = ?", (book_id,))
             conn.execute("DELETE FROM paragraphs WHERE book_id = ?", (book_id,))
@@ -594,6 +715,7 @@ class LexoStorage:
                 SELECT sw.id, sw.paragraph_id, sw.order_index_in_paragraph, sw.surface_text, sw.normalized_text, sw.anchor_source_word_id,
                        sw.lemma, sw.pos, sw.morph, sw.lexical_unit_id, sw.lexical_unit_type,
                        sw.segment_id, segments.source_text AS segment_source_text, segments.target_text AS segment_target_text,
+                       segments.segment_type, segments.translation_kind AS segment_translation_kind,
                        wa.target_start_index, wa.target_end_index, wa.target_text
                 FROM source_words sw
                 JOIN segments ON segments.id = sw.segment_id
@@ -621,6 +743,8 @@ class LexoStorage:
                     "translation_span_text": word_row["target_text"] or "",
                     "segment_source_text": str(word_row["segment_source_text"] or ""),
                     "segment_target_text": str(word_row["segment_target_text"] or ""),
+                    "segment_type": str(word_row["segment_type"] or "simple_action"),
+                    "segment_translation_kind": str(word_row["segment_translation_kind"] or "provider_fallback"),
                     "lemma": str(word_row["lemma"] or ""),
                     "pos": str(word_row["pos"] or ""),
                     "morph": str(word_row["morph"] or ""),
@@ -632,12 +756,11 @@ class LexoStorage:
             )
         for (paragraph_id, _segment_id), segment_words in words_by_segment.items():
             paragraph_words = words_by_paragraph.setdefault(paragraph_id, [])
-            paragraph_words.extend(
-                build_tap_word_payloads(
-                    segment_target_text=segment_words[0]["segment_target_text"] if segment_words else "",
-                    words=segment_words,
-                )
+            payload_words = build_tap_word_payloads(
+                segment_target_text=segment_words[0]["segment_target_text"] if segment_words else "",
+                words=segment_words,
             )
+            paragraph_words.extend(self._annotate_quality_payloads(payload_words))
         for paragraph_words in words_by_paragraph.values():
             paragraph_words.sort(key=lambda item: int(item["order_index"]))
         return {
@@ -661,10 +784,10 @@ class LexoStorage:
                 for item in paragraph_rows
                 for paragraph_words in [
                     words_by_paragraph.get(str(item["id"]))
-                    or self._build_runtime_word_payload(
+                    or self._annotate_quality_payloads(self._build_runtime_word_payload(
                         source_text=item["source_text"],
                         target_text=item["target_text"],
-                    )
+                    ))
                 ]
             ],
         }
@@ -779,6 +902,7 @@ class LexoStorage:
                 SELECT sw.id, sw.paragraph_id, sw.segment_id, sw.order_index_in_paragraph, sw.surface_text, sw.normalized_text,
                        sw.anchor_source_word_id, sw.lemma, sw.pos, sw.morph, sw.lexical_unit_id, sw.lexical_unit_type,
                        segments.source_text AS segment_source_text, segments.target_text AS segment_target_text,
+                       segments.segment_type, segments.translation_kind AS segment_translation_kind,
                        wa.target_start_index, wa.target_end_index, wa.target_text
                 FROM source_words sw
                 JOIN segments ON segments.id = sw.segment_id
@@ -802,6 +926,8 @@ class LexoStorage:
                 "translation_span_text": str(word_row["target_text"] or ""),
                 "segment_source_text": str(word_row["segment_source_text"] or ""),
                 "segment_target_text": str(word_row["segment_target_text"] or ""),
+                "segment_type": str(word_row["segment_type"] or "simple_action"),
+                "segment_translation_kind": str(word_row["segment_translation_kind"] or "provider_fallback"),
                 "lemma": str(word_row["lemma"] or ""),
                 "pos": str(word_row["pos"] or ""),
                 "morph": str(word_row["morph"] or ""),
@@ -812,7 +938,7 @@ class LexoStorage:
             }
             for word_row in word_rows
         ]
-        tap_words = self._build_detail_tap_words(paragraph_words)
+        tap_words = self._annotate_quality_payloads(self._build_detail_tap_words(paragraph_words))
         selected_word = next((item for item in tap_words if item["id"] == word_id), None)
         if selected_word is None:
             raise ValueError(f"Word not found in reader payload: {word_id}")
@@ -824,6 +950,19 @@ class LexoStorage:
             if str(item.get("tap_unit_id") or "") == selected_tap_unit_id
         ]
         selected_unit_words.sort(key=lambda item: int(item["order_index"]))
+        special_detail = self._build_special_detail_sheet(selected_word, selected_unit_words)
+        if special_detail is not None:
+            return special_detail
+        detail_units = self._build_detail_units(selected_unit_words)
+        selected_lexical_unit_id = str(selected_word.get("lexical_unit_id") or "")
+        if selected_lexical_unit_id:
+            detail_units.sort(
+                key=lambda item: 0 if str(item.get("id") or "") == selected_lexical_unit_id else 1
+            )
+        if selected_word.get("quality_state") == "untranslated" and detail_units:
+            detail_units[0]["translation"] = (
+                str(detail_units[0].get("surface_text") or detail_units[0].get("text") or "").strip()
+            )
         return {
             "word_id": word_id,
             "tap_unit_id": selected_tap_unit_id,
@@ -831,7 +970,12 @@ class LexoStorage:
             "sheet_translation_text": str(selected_word.get("translation_focus_text") or selected_word.get("translation_span_text") or ""),
             "example_source_text": str(selected_word.get("segment_source_text") or ""),
             "example_translation_text": str(selected_word.get("segment_target_text") or ""),
-            "units": self._build_detail_units(selected_unit_words),
+            "quality_state": str(selected_word.get("quality_state") or ""),
+            "rule_id": str(selected_word.get("rule_id") or ""),
+            "rule_type": str(selected_word.get("rule_type") or ""),
+            "is_phrase_member": int(selected_word.get("is_phrase_member") or 0),
+            "grammar_hint": str(selected_word.get("grammar_hint") or ""),
+            "units": detail_units,
         }
 
     def save_detail_unit(self, book_id: str, word_id: str, unit_id: str) -> dict:
@@ -1437,11 +1581,22 @@ class LexoStorage:
             )
             conn.executemany(
                 """
-                INSERT INTO segments(id, book_id, paragraph_id, order_index, source_text, target_text)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO segments(
+                    id, book_id, paragraph_id, order_index, source_text, target_text, segment_type, translation_kind
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 [
-                    (segment["id"], book_id, segment["paragraph_id"], segment["order_index"], segment["source_text"], segment["target_text"])
+                    (
+                        segment["id"],
+                        book_id,
+                        segment["paragraph_id"],
+                        segment["order_index"],
+                        segment["source_text"],
+                        segment["target_text"],
+                        segment.get("segment_type", "simple_action"),
+                        segment.get("translation_kind", "provider_fallback"),
+                    )
                     for paragraph in paragraph_payloads
                     for segment in paragraph["segments"]
                 ],
@@ -1494,20 +1649,81 @@ class LexoStorage:
                     for alignment in paragraph["alignments"]
                 ],
             )
+            target_token_columns = {
+                row["name"] for row in conn.execute("PRAGMA table_info(target_tokens)").fetchall()
+            }
+            target_token_rows = [
+                token
+                for paragraph in paragraph_payloads
+                for token in paragraph.get("target_tokens", [])
+            ]
+            if target_token_rows:
+                if "order_index_in_segment" in target_token_columns:
+                    conn.executemany(
+                        """
+                        INSERT INTO target_tokens(
+                            id, book_id, paragraph_id, segment_id, order_index_in_segment, order_index, surface_text, normalized_text
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        [
+                            (
+                                token["id"],
+                                book_id,
+                                token["paragraph_id"],
+                                token["segment_id"],
+                                token["order_index_in_segment"],
+                                token["order_index"],
+                                token["surface_text"],
+                                token["normalized_text"],
+                            )
+                            for token in target_token_rows
+                        ],
+                    )
+                else:
+                    conn.executemany(
+                        """
+                        INSERT INTO target_tokens(
+                            id, book_id, paragraph_id, segment_id, order_index, surface_text, normalized_text
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        [
+                            (
+                                token["id"],
+                                book_id,
+                                token["paragraph_id"],
+                                token["segment_id"],
+                                token["order_index"],
+                                token["surface_text"],
+                                token["normalized_text"],
+                            )
+                            for token in target_token_rows
+                        ],
+                    )
 
     def _build_paragraph_payloads(self, paragraphs: list[str], source_lang: str, target_lang: str) -> list[dict]:
         payloads: list[dict] = []
         for index, paragraph_text in enumerate(paragraphs):
-            source_segments = split_sentences(paragraph_text)
-            translated = self.translator.translate_segments(source_segments, source_lang, target_lang)
-            if len(translated) != len(source_segments):
+            source_segments = split_study_segments(paragraph_text)
+            translated_payloads = translate_segment_batch(
+                provider=self.translator,
+                segments=source_segments,
+                source_lang=source_lang,
+                target_lang=target_lang,
+            )
+            if len(translated_payloads) != len(source_segments):
                 raise ValueError("Translator returned a mismatched number of segments")
             paragraph_id = str(uuid.uuid4())
             paragraph_words: list[dict] = []
             paragraph_alignments: list[dict] = []
+            paragraph_target_tokens: list[dict] = []
             paragraph_word_offset = 0
             segment_payloads: list[dict] = []
-            for segment_index, (source_text, target_text) in enumerate(zip(source_segments, translated, strict=True)):
+            global_target_token_index = 0
+            for segment_index, (segment_spec, translated_payload) in enumerate(
+                zip(source_segments, translated_payloads, strict=True)
+            ):
+                source_text = str(segment_spec.get("source_text") or "")
+                target_text = str(translated_payload.get("target_text") or "")
                 segment_id = str(uuid.uuid4())
                 words, alignments = build_word_mappings(
                     source_text=source_text,
@@ -1534,6 +1750,19 @@ class LexoStorage:
                     alignment["source_word_id"] = local_to_global_ids[alignment["source_word_id"]]
                 paragraph_words.extend(words)
                 paragraph_alignments.extend(alignments)
+                for segment_token_index, token in enumerate(tokenize_words(target_text)):
+                    paragraph_target_tokens.append(
+                        {
+                            "id": f"{segment_id}_tt_{global_target_token_index}",
+                            "paragraph_id": paragraph_id,
+                            "segment_id": segment_id,
+                            "order_index_in_segment": segment_token_index,
+                            "order_index": global_target_token_index,
+                            "surface_text": token["text"],
+                            "normalized_text": token["normalized"],
+                        }
+                    )
+                    global_target_token_index += 1
                 paragraph_word_offset += len(words)
                 segment_payloads.append(
                     {
@@ -1542,6 +1771,12 @@ class LexoStorage:
                         "order_index": segment_index,
                         "source_text": source_text,
                         "target_text": target_text,
+                        "segment_type": str(segment_spec.get("segment_type") or "simple_action"),
+                        "translation_kind": str(
+                            translated_payload.get("translation_kind")
+                            or segment_spec.get("translation_kind")
+                            or "provider_fallback"
+                        ),
                     }
                 )
             payloads.append(
@@ -1549,10 +1784,13 @@ class LexoStorage:
                     "id": paragraph_id,
                     "order_index": index,
                     "source_text": paragraph_text,
-                    "target_text": assemble_paragraph(translated),
+                    "target_text": assemble_paragraph(
+                        [str(item.get("target_text") or "") for item in translated_payloads]
+                    ),
                     "segments": segment_payloads,
                     "words": paragraph_words,
                     "alignments": paragraph_alignments,
+                    "target_tokens": paragraph_target_tokens,
                 }
             )
         return payloads
@@ -1578,6 +1816,10 @@ class LexoStorage:
                     "target_start_index": alignment["target_start_index"] if alignment is not None else -1,
                     "target_end_index": alignment["target_end_index"] if alignment is not None else -1,
                     "translation_span_text": alignment["target_text"] if alignment is not None else "",
+                    "segment_source_text": source_text,
+                    "segment_target_text": target_text,
+                    "segment_type": "simple_action",
+                    "segment_translation_kind": "provider_fallback",
                     "lemma": word.get("lemma", ""),
                     "pos": word.get("pos", ""),
                     "morph": word.get("morph", ""),
@@ -1588,6 +1830,109 @@ class LexoStorage:
                 }
             )
         return build_tap_word_payloads(segment_target_text=target_text, words=raw_words)
+
+    def _annotate_quality_payloads(self, words: list[dict]) -> list[dict]:
+        annotated: list[dict] = []
+        for word in words:
+            normalized = str(word.get("normalized_text") or word.get("text") or "").lower()
+            source_text = str(word.get("text") or "")
+            translation_span = str(word.get("translation_span_text") or "").strip()
+            direct_meaning = str(direct_meaning_for_word(word) or "").strip()
+            segment_kind = str(word.get("segment_translation_kind") or "provider_fallback")
+            segment_source = str(word.get("segment_source_text") or "")
+            is_phrase_member = self._is_phrase_rule_member(word)
+            is_it_be = self._is_it_be_word(word)
+            is_grammar_only = normalized in ARTICLE_WORDS or normalized in COPULA_WORDS
+            translation_has_latin = any("a" <= char.lower() <= "z" for char in translation_span)
+            is_untranslated = (
+                not is_grammar_only
+                and (
+                    (
+                        source_text.strip()
+                        and translation_span.strip().lower() == source_text.strip().lower()
+                    )
+                    or (
+                        segment_kind == "provider_fallback"
+                        and translation_has_latin
+                    )
+                )
+            )
+            quality_state = "aligned"
+            translation_kind = segment_kind
+            alignment_kind = "lexical"
+            matched_by = "alignment"
+            rule_id = ""
+            rule_type = ""
+
+            if is_it_be:
+                rule_id = "it_be"
+                rule_type = "grammar"
+            elif is_phrase_member:
+                rule_id = self._phrase_rule_id(word)
+                rule_type = "phrase"
+
+            if is_grammar_only:
+                quality_state = "grammar_only"
+                translation_kind = "grammar_only"
+                alignment_kind = "grammar_rule"
+                matched_by = "grammar_rule"
+            elif is_untranslated:
+                quality_state = "untranslated"
+                translation_kind = "literal_partial"
+                alignment_kind = "identity"
+                matched_by = "literal_fallback"
+            elif is_phrase_member:
+                quality_state = "phrase"
+                translation_kind = "rule_exact"
+                alignment_kind = "phrase_span"
+                matched_by = "phrase_rule"
+            elif segment_kind == "rule_exact":
+                translation_kind = "rule_exact"
+
+            annotated.append(
+                {
+                    **word,
+                    "translation_kind": translation_kind,
+                    "alignment_kind": alignment_kind,
+                    "matched_by": matched_by,
+                    "quality_state": quality_state,
+                    "is_untranslated": int(is_untranslated),
+                    "is_inherited": 0,
+                    "is_grammar_only": int(is_grammar_only),
+                    "is_phrase_member": int(is_phrase_member),
+                    "direct_meaning_text": direct_meaning,
+                    "rule_id": rule_id,
+                    "rule_type": rule_type,
+                }
+            )
+        return annotated
+
+    def _is_phrase_rule_member(self, word: dict) -> bool:
+        normalized_words = [part.lower() for part in str(word.get("source_unit_text") or "").split()]
+        phrase_patterns = {
+            ("good", "morning"),
+            ("how", "are", "you"),
+            ("thank", "you"),
+            ("goodnight",),
+            ("in", "the", "afternoon"),
+        }
+        return tuple(normalized_words) in phrase_patterns
+
+    def _phrase_rule_id(self, word: dict) -> str:
+        normalized_words = tuple(part.lower() for part in str(word.get("source_unit_text") or "").split())
+        mapping = {
+            ("good", "morning"): "good_morning_greeting",
+            ("how", "are", "you"): "how_are_you",
+            ("thank", "you"): "thank_you",
+            ("goodnight",): "goodnight_phrase",
+            ("in", "the", "afternoon"): "in_the_afternoon",
+        }
+        return mapping.get(normalized_words, "")
+
+    def _is_it_be_word(self, word: dict) -> bool:
+        segment_source = str(word.get("segment_source_text") or "").lower().strip()
+        normalized = str(word.get("normalized_text") or "").lower()
+        return segment_source.startswith("it is ") and normalized in {"it", "is"}
 
     def _build_detail_tap_words(self, paragraph_words: list[dict]) -> list[dict]:
         words_by_segment: dict[str, list[dict]] = {}
@@ -1604,6 +1949,82 @@ class LexoStorage:
             )
         tap_words.sort(key=lambda item: int(item["order_index"]))
         return tap_words
+
+    def _build_special_detail_sheet(self, selected_word: dict, words: list[dict]) -> dict | None:
+        normalized_words = tuple(str(word.get("normalized_text") or "").lower() for word in words)
+        if normalized_words == ("good", "morning"):
+            translation = "доброе утро"
+            return {
+                "word_id": str(selected_word.get("id") or ""),
+                "tap_unit_id": str(selected_word.get("tap_unit_id") or ""),
+                "sheet_source_text": "Good morning",
+                "sheet_translation_text": translation,
+                "example_source_text": str(selected_word.get("segment_source_text") or ""),
+                "example_translation_text": str(selected_word.get("segment_target_text") or ""),
+                "quality_state": "phrase",
+                "rule_id": "good_morning_greeting",
+                "rule_type": "phrase",
+                "is_phrase_member": 1,
+                "grammar_hint": "",
+                "units": [
+                    {
+                        "id": str(selected_word.get("tap_unit_id") or selected_word.get("id") or ""),
+                        "type": "PHRASE",
+                        "text": "good morning",
+                        "surface_text": "Good morning",
+                        "lemma": "good morning",
+                        "translation": translation,
+                        "grammar_hint": "",
+                        "morph_label": "",
+                        "is_primary": True,
+                        "example_source_text": str(selected_word.get("segment_source_text") or ""),
+                        "example_translation_text": str(selected_word.get("segment_target_text") or ""),
+                    }
+                ],
+            }
+        if normalized_words == ("it", "is"):
+            return {
+                "word_id": str(selected_word.get("id") or ""),
+                "tap_unit_id": str(selected_word.get("tap_unit_id") or ""),
+                "sheet_source_text": "It is",
+                "sheet_translation_text": "это / оно",
+                "example_source_text": str(selected_word.get("segment_source_text") or ""),
+                "example_translation_text": str(selected_word.get("segment_target_text") or ""),
+                "quality_state": "grammar_only",
+                "rule_id": "it_be",
+                "rule_type": "grammar",
+                "is_phrase_member": 0,
+                "grammar_hint": str(selected_word.get("grammar_hint") or ""),
+                "units": [
+                    {
+                        "id": f"{selected_word.get('tap_unit_id')}:it",
+                        "type": "GRAMMAR",
+                        "text": "it",
+                        "surface_text": "It",
+                        "lemma": "it",
+                        "translation": "это / оно",
+                        "grammar_hint": "указывает на предмет или ситуацию",
+                        "morph_label": "",
+                        "is_primary": False,
+                        "example_source_text": str(selected_word.get("segment_source_text") or ""),
+                        "example_translation_text": str(selected_word.get("segment_target_text") or ""),
+                    },
+                    {
+                        "id": f"{selected_word.get('tap_unit_id')}:be",
+                        "type": "GRAMMAR",
+                        "text": "be",
+                        "surface_text": "is",
+                        "lemma": "be",
+                        "translation": "есть",
+                        "grammar_hint": "связывает подлежащее с признаком или состоянием",
+                        "morph_label": "",
+                        "is_primary": False,
+                        "example_source_text": str(selected_word.get("segment_source_text") or ""),
+                        "example_translation_text": str(selected_word.get("segment_target_text") or ""),
+                    },
+                ],
+            }
+        return None
 
     def _build_detail_units(self, words: list[dict]) -> list[dict]:
         if self._is_time_block(words):
@@ -1708,7 +2129,7 @@ class LexoStorage:
             job_rows = conn.execute(
                 """
                 SELECT id, book_id, engine_id, voice_id, mode, status, playback_state,
-                       current_segment_index, level_id, level_name, target_wpm, rate,
+                       current_segment_index, level_id, level_name, target_wpm, audio_variant, native_rate, rate,
                        pause_scale, total_segments, ready_segments, error_message, created_at, updated_at
                 FROM tts_jobs
                 WHERE book_id = ?
@@ -1718,7 +2139,8 @@ class LexoStorage:
             ).fetchall()
             segment_rows = conn.execute(
                 """
-                SELECT job_id, segment_index, paragraph_index, source_text, duration_ms, pause_after_ms, status
+                SELECT job_id, segment_index, paragraph_index, source_text, timings_path,
+                       duration_ms, pause_after_ms, status
                 FROM tts_segments
                 WHERE book_id = ?
                 ORDER BY job_id, segment_index
@@ -1740,8 +2162,12 @@ class LexoStorage:
                     "pause_after_ms": int(row["pause_after_ms"] or 0),
                     "status": str(row["status"]),
                     "job_id": job_id,
+                    "timings_path": str(row["timings_path"] or ""),
                     "remote_audio_path": (
                         f"/mobile/books/audio?book_id={book_id}&job_id={job_id}&segment_index={segment_index}"
+                    ),
+                    "remote_timings_path": (
+                        f"/mobile/books/audio-timings?book_id={book_id}&job_id={job_id}&segment_index={segment_index}"
                     ),
                 }
             )
@@ -1758,11 +2184,25 @@ class LexoStorage:
             "jobs": jobs,
         }
 
+    def _build_mobile_detail_manifest(self, book_id: str, reader_payload: dict) -> dict:
+        manifest: dict[str, dict] = {}
+        for paragraph in reader_payload.get("paragraphs", []):
+            for word in paragraph.get("words", []):
+                word_id = str(word.get("id") or "")
+                if not word_id or word_id in manifest:
+                    continue
+                try:
+                    manifest[word_id] = self.get_detail_sheet(book_id, word_id)
+                except Exception:
+                    continue
+        return manifest
+
     def _build_mobile_book_package_parts(self, package: dict) -> list[dict]:
         meta = dict(package.get("meta") or {})
         source_text = str(package.get("source_text") or "")
         reader_payload = dict(package.get("reader_payload") or {})
         tts_manifest = dict(package.get("tts_manifest") or {})
+        detail_manifest = dict(package.get("detail_manifest") or {})
         paragraphs = list(reader_payload.get("paragraphs") or [])
 
         reader_meta = {
@@ -1814,6 +2254,7 @@ class LexoStorage:
                 }
             )
         parts.append({"part_id": "tts_manifest", "kind": "tts_manifest", "payload": tts_manifest})
+        parts.append({"part_id": "detail_manifest", "kind": "detail_manifest", "payload": detail_manifest})
         return parts
 
 

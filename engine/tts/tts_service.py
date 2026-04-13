@@ -80,7 +80,8 @@ class LexoTtsService:
             )
         paragraphs = self._paragraphs(book_id)
         start_index = int(status["current_paragraph_index"]) if mode == "play_from_current" else 0
-        profiles = [build_profile()]
+        selected_level_id = int(level_ids[0]) if level_ids else None
+        profiles = [build_profile(selected_level_id)]
         jobs_to_start: list[str] = []
         timestamp = datetime.now(timezone.utc).isoformat()
 
@@ -90,15 +91,16 @@ class LexoTtsService:
                     """
                     SELECT id, status, playback_state
                     FROM tts_jobs
-                    WHERE book_id = ? AND voice_id = ?
+                    WHERE book_id = ? AND voice_id = ? AND audio_variant = ?
                     """,
-                    (book_id, voice_id),
+                    (book_id, voice_id, profile.audio_variant),
                 ).fetchall()
                 if overwrite:
                     self._delete_existing_job_artifacts(
                         conn=conn,
                         book_id=book_id,
                         voice_id=voice_id,
+                        audio_variant=profile.audio_variant,
                         existing_rows=existing,
                     )
                 chunks = build_tts_chunks(
@@ -111,20 +113,23 @@ class LexoTtsService:
                 for row in existing:
                     conn.execute("DELETE FROM tts_segments WHERE job_id = ?", (row["id"],))
                 conn.execute(
-                    "DELETE FROM tts_jobs WHERE book_id = ? AND voice_id = ?",
-                    (book_id, voice_id),
+                    "DELETE FROM tts_jobs WHERE book_id = ? AND voice_id = ? AND audio_variant = ?",
+                    (book_id, voice_id, profile.audio_variant),
                 )
                 job_id = str(uuid.uuid4())
-                audio_dir = self.tts_dir / book_id / self.provider.engine_id / voice_id / "base"
+                audio_dir = (
+                    self.tts_dir / book_id / self.provider.engine_id / voice_id / profile.audio_variant
+                )
                 audio_dir.mkdir(parents=True, exist_ok=True)
                 conn.execute(
                     """
                     INSERT INTO tts_jobs(
                         id, book_id, engine_id, voice_id, mode, status, playback_state,
                         current_segment_index, created_at, updated_at, level_id, level_name,
-                        target_wpm, rate, pause_scale, total_segments, ready_segments, error_message
+                        target_wpm, audio_variant, native_rate, rate, pause_scale,
+                        total_segments, ready_segments, error_message
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         job_id,
@@ -140,6 +145,8 @@ class LexoTtsService:
                         profile.level_id,
                         profile.level_name,
                         profile.target_wpm,
+                        profile.audio_variant,
+                        profile.native_rate,
                         profile.rate,
                         profile.pause_scale,
                         len(chunks),
@@ -151,9 +158,10 @@ class LexoTtsService:
                     """
                     INSERT INTO tts_segments(
                         id, job_id, book_id, segment_index, paragraph_index, engine_id, voice_id,
-                        source_text, synthesis_text, pause_after_ms, audio_path, duration_ms, status, hash, created_at
+                        audio_variant, source_text, synthesis_text, pause_after_ms, timings_path, audio_path, duration_ms,
+                        status, hash, created_at
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     [
                         (
@@ -164,9 +172,11 @@ class LexoTtsService:
                             chunk.paragraph_index,
                             self.provider.engine_id,
                             voice_id,
+                            profile.audio_variant,
                             chunk.source_text,
                             chunk.synthesis_text,
                             chunk.pause_after_ms,
+                            "",
                             str(audio_dir / f"pending_{chunk.order_index}.wav"),
                             0,
                             "pending",
@@ -188,6 +198,7 @@ class LexoTtsService:
         conn: sqlite3.Connection,
         book_id: str,
         voice_id: str,
+        audio_variant: str,
         existing_rows: list[sqlite3.Row],
     ) -> None:
         for row in existing_rows:
@@ -196,15 +207,15 @@ class LexoTtsService:
 
         audio_rows = conn.execute(
             """
-            SELECT audio_path
+            SELECT audio_path, timings_path
             FROM tts_segments
-            WHERE book_id = ? AND voice_id = ? AND job_id IN (
+            WHERE book_id = ? AND voice_id = ? AND audio_variant = ? AND job_id IN (
                 SELECT id
                 FROM tts_jobs
-                WHERE book_id = ? AND voice_id = ?
+                WHERE book_id = ? AND voice_id = ? AND audio_variant = ?
             )
             """,
-            (book_id, voice_id, book_id, voice_id),
+            (book_id, voice_id, audio_variant, book_id, voice_id, audio_variant),
         ).fetchall()
         for audio_row in audio_rows:
             audio_path_raw = str(audio_row["audio_path"] or "")
@@ -213,8 +224,13 @@ class LexoTtsService:
             audio_path = Path(audio_path_raw)
             if audio_path.exists() and audio_path.is_file():
                 audio_path.unlink(missing_ok=True)
+            timings_path_raw = str(audio_row["timings_path"] or "")
+            if timings_path_raw:
+                timings_path = Path(timings_path_raw)
+                if timings_path.exists() and timings_path.is_file():
+                    timings_path.unlink(missing_ok=True)
 
-        audio_dir = self.tts_dir / book_id / self.provider.engine_id / voice_id / "base"
+        audio_dir = self.tts_dir / book_id / self.provider.engine_id / voice_id / audio_variant
         if audio_dir.exists() and audio_dir.is_dir():
             for child in audio_dir.iterdir():
                 if child.is_file():
@@ -291,7 +307,7 @@ class LexoTtsService:
             rows = conn.execute(
                 """
                 SELECT id, book_id, engine_id, voice_id, mode, status, playback_state,
-                       current_segment_index, level_id, level_name, target_wpm, rate,
+                       current_segment_index, level_id, level_name, target_wpm, audio_variant, native_rate, rate,
                        pause_scale, total_segments, ready_segments, error_message, created_at, updated_at
                 FROM tts_jobs
                 WHERE book_id = ?
@@ -302,7 +318,7 @@ class LexoTtsService:
             active_job = conn.execute(
                 """
                 SELECT id, book_id, engine_id, voice_id, mode, status, playback_state,
-                       current_segment_index, level_id, level_name, target_wpm, rate,
+                       current_segment_index, level_id, level_name, target_wpm, audio_variant, native_rate, rate,
                        pause_scale, total_segments, ready_segments, error_message, created_at, updated_at
                 FROM tts_jobs
                 WHERE book_id = ? AND playback_state IN ('playing', 'paused')
@@ -315,7 +331,8 @@ class LexoTtsService:
             if active_job is not None:
                 active_segments_rows = conn.execute(
                     """
-                    SELECT segment_index, paragraph_index, source_text, audio_path, duration_ms, pause_after_ms, status
+                    SELECT segment_index, paragraph_index, source_text, audio_path, duration_ms, pause_after_ms,
+                           status, audio_variant, timings_path
                     FROM tts_segments
                     WHERE job_id = ?
                     ORDER BY segment_index
@@ -340,7 +357,8 @@ class LexoTtsService:
             with self._connect() as conn:
                 job = conn.execute(
                     """
-                    SELECT id, book_id, voice_id, level_id, level_name, target_wpm, rate, pause_scale
+                    SELECT id, book_id, voice_id, level_id, level_name, target_wpm, audio_variant,
+                           native_rate, rate, pause_scale
                     FROM tts_jobs WHERE id = ?
                     """,
                     (job_id,),
@@ -365,10 +383,21 @@ class LexoTtsService:
                 level_id=int(job["level_id"]),
                 level_name=str(job["level_name"]),
                 target_wpm=int(job["target_wpm"]),
+                audio_variant=str(job["audio_variant"] or "base"),
+                native_rate=float(job["native_rate"] or job["rate"] or 0.89),
+                word_gap_ms=300 if str(job["audio_variant"] or "base") == "slow_native" else 0,
+                expand_word_gaps=False,
+                playback_speed=1.0,
                 rate=float(job["rate"]),
                 pause_scale=float(job["pause_scale"]),
             )
-            cache_dir = self.tts_dir / job["book_id"] / self.provider.engine_id / job["voice_id"] / "base"
+            cache_dir = (
+                self.tts_dir
+                / job["book_id"]
+                / self.provider.engine_id
+                / job["voice_id"]
+                / profile.audio_variant
+            )
             cache_dir.mkdir(parents=True, exist_ok=True)
 
             for row in rows:
@@ -390,15 +419,17 @@ class LexoTtsService:
                     conn.execute(
                         """
                         UPDATE tts_segments
-                        SET audio_path = ?, duration_ms = ?, pause_after_ms = ?, status = ?, hash = ?
+                        SET audio_path = ?, timings_path = ?, duration_ms = ?, pause_after_ms = ?, status = ?, hash = ?, audio_variant = ?
                         WHERE id = ?
                         """,
                         (
                             chunk_payload["audio_path"],
+                            chunk_payload["timings_path"],
                             chunk_payload["duration_ms"],
                             chunk_payload["pause_after_ms"],
                             "ready",
                             chunk_payload["hash"],
+                            profile.audio_variant,
                             row["id"],
                         ),
                     )
@@ -446,6 +477,8 @@ class LexoTtsService:
             "level_id": int(job.get("level_id") or 0),
             "level_name": job.get("level_name") or "",
             "target_wpm": int(job.get("target_wpm") or 0),
+            "audio_variant": job.get("audio_variant") or "base",
+            "native_rate": float(job.get("native_rate") or job.get("rate") or 0.89),
             "rate": float(job.get("rate") or 1.0),
             "pause_scale": float(job.get("pause_scale") or 1.0),
             "total_segments": total_segments,

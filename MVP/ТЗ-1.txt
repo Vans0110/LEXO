@@ -1,0 +1,892 @@
+Ниже уже можно делать **нормальное ТЗ на переработку**, потому что теперь картина по коду достаточно точная
+
+# Вывод по текущему состоянию
+
+## Что в проекте уже сильное
+
+Сейчас у тебя уже не сырой MVP, а рабочая основа:
+
+* есть typed segmentation
+* есть literal/rule translation path
+* есть tap unit слой
+* есть detail sheet
+* есть cards
+* есть mobile offline package
+* есть разделение `GRAMMAR / LEXICAL / PHRASE`
+
+Это правильная база
+
+## Что делает продукт некачественным прямо сейчас
+
+Проблемы уже не в общей идее, а в **строгой согласованности данных**
+
+Критические дефекты:
+
+* headings и meta-lines не отделяются от narrative
+* quality state перевода и alignment отсутствует как сущность
+* untranslated слова выглядят как “нормальный перевод”
+* function words получают ложные русские span’ы
+* detail payload несимметричен между desktop и mobile
+* phrase layer и detail layer расходятся
+* нет regression-проверок pipeline
+* часть payload-моделей на фронте ожидает поля, которых backend не отдает
+* есть мёртвый старый UX-слой, который надо убрать из основного контура
+
+## Главный диагноз
+
+Сейчас продукт ломается не потому, что “плохо переводит”, а потому что **не умеет честно сообщать, что именно он сделал**
+
+То есть сейчас у системы нет формального ответа на вопрос:
+
+* это точный перевод
+* это grammar-only блок
+* это phrase block
+* это эвристический span
+* это fallback
+* это untranslated
+
+Пока этого нет, UX всегда будет местами врать пользователю
+
+---
+
+# Цель переработки
+
+Сделать **строгий обучающий literal-product**, где:
+
+* сегментация даёт корректные учебные единицы
+* перевод не литературный, а учебный
+* alignment не притворяется точным там, где он эвристический
+* untranslated слова явно помечаются
+* grammar words не получают фальшивый русский перевод
+* desktop и mobile показывают один и тот же detail/result
+* payload отражает качество результата, а не только текст
+
+---
+
+# Итоговое ТЗ на изменение
+
+---
+
+## 1. Переработать сегментацию в `engine/segmenter.py`
+
+### Что изменить
+
+Добавить новый слой сегментов:
+
+* `heading_title`
+* `heading_chapter`
+* `meta_time`
+* `dialogue_quote`
+* `dialogue_reporting`
+* `study_phrase`
+* `study_clause`
+
+Текущие типы не удалять сразу, а заменить целевой логикой так, чтобы persisted result уже строился на новых типах
+
+### Обязательные правила
+
+#### 1.1 Заголовок книги
+
+Строка вида:
+
+* `The Sunny Morning`
+
+если она стоит как отдельная строка до главы или до narrative, должна давать:
+
+* один segment type = `heading_title`
+
+Не `simple_action`
+
+#### 1.2 Заголовок главы
+
+Строка вида:
+
+* `Chapter 1: The New Day`
+
+должна давать:
+
+* один segment type = `heading_chapter`
+
+Не `simple_action`
+
+#### 1.3 Heading + time + narrative
+
+Строка/абзац вида:
+
+* `Chapter 3: The Park At 10:00 AM, Tom goes to the park`
+
+должна резаться минимум на:
+
+* `Chapter 3: The Park` -> `heading_chapter`
+* `At 10:00 AM` -> `meta_time`
+* `Tom goes to the park` -> `simple_action` или новый narrative-type
+
+Сейчас это один сегмент — это баг
+
+#### 1.4 Dialogue
+
+Фраза:
+
+* `"Good morning, Luna!" Tom says.`
+
+должна строиться как:
+
+* `Good morning` -> phrase/greeting segment
+* `Luna` -> noun segment
+* `Tom says` -> reporting segment
+
+Это уже близко есть, но надо довести до консистентного persisted output
+
+#### 1.5 Time expressions
+
+`At 10:00 AM`, `In the afternoon`, `In the morning`, `In the evening`
+должны стабильно выделяться в `meta_time`, даже если перед ними был heading
+
+### Критерий готовности
+
+На фиксированном наборе кейсов сегментер обязан выдавать именно ожидаемые типы и границы, без смешивания heading с narrative
+
+---
+
+## 2. Переработать translation result model в `engine/translator.py`
+
+### Что изменить
+
+Перевод каждого segment и каждого важного unit должен иметь явный `translation_kind`
+
+### Ввести обязательные значения
+
+Для segment/unit результата:
+
+* `rule_exact`
+* `literal_exact`
+* `literal_partial`
+* `provider_fallback`
+* `untranslated`
+* `grammar_only`
+
+### Правила
+
+#### 2.1 Unknown token
+
+Если literal path не знает слово и оно осталось как исходный токен:
+
+* `translation_kind = untranslated`
+
+Примеры:
+
+* eggs
+* toast
+* flowers
+* trees
+
+#### 2.2 Артикли
+
+`a`, `an`, `the` не должны получать fake lexical translation
+Для них:
+
+* `translation_kind = grammar_only`
+* `translation_text = ""`
+* `grammar_hint` обязателен
+
+#### 2.3 Be-forms
+
+`is/am/are/was/were` не должны выглядеть как точный lexical match к прилагательному
+
+Если span унаследован от предиката:
+
+* `translation_kind = grammar_only` или `heuristic_inherited`
+
+Но не обычный lexical hit
+
+#### 2.4 Phrase translations
+
+Если phrase взята из `LITERAL_PHRASE_TRANSLATIONS` или `STUDY_PHRASE_TRANSLATIONS`:
+
+* `translation_kind = rule_exact`
+
+#### 2.5 Provider fallback
+
+Если segment или token переведён через model/provider fallback:
+
+* `translation_kind = provider_fallback`
+
+### Критерий готовности
+
+В payload больше не должно быть ситуации, когда английское слово осталось английским, но ничем не помечено
+
+---
+
+## 3. Перестроить alignment model в `engine/word_alignment.py`
+
+Это центральная часть
+
+### Что изменить
+
+Сейчас есть только:
+
+* `source_word -> target span`
+* confidence
+
+Этого недостаточно
+
+Нужно добавить **persisted alignment state**
+
+### Ввести обязательные поля в alignment storage/result
+
+Для каждого `source_word`:
+
+* `alignment_kind`
+* `translation_kind`
+* `matched_by`
+* `is_untranslated`
+* `is_inherited`
+* `is_grammar_only`
+* `is_phrase_member`
+
+### Значения `alignment_kind`
+
+* `exact_rule`
+* `exact_dictionary`
+* `anchor_matched`
+* `heuristic_span`
+* `function_inherited`
+* `empty`
+* `untranslated`
+
+### Значения `matched_by`
+
+* `rule_id`
+* `direct_meaning`
+* `anchor_dictionary`
+* `position_guess`
+* `function_inheritance`
+* `provider_text`
+* `none`
+
+### Обязательные правила
+
+#### 3.1 Function words
+
+Для function words запрещено отдавать ложный lexical alignment
+
+Пример, что надо исправить:
+
+* `the -> к`
+* `the -> в`
+* `is -> яркий`
+* `is -> счастливый`
+
+Правильное поведение:
+
+* grammar-only row
+* empty direct translation
+* optional inherited context block
+* quality flag о том, что это не lexical match
+
+#### 3.2 Untranslated tokens
+
+Если `translation_span_text == source_text` и нет dictionary/rule match:
+
+* `alignment_kind = untranslated`
+* `matched_by = none`
+* `is_untranslated = true`
+
+#### 3.3 Phrase-bound words
+
+Если слово входит в phrase tap-unit:
+
+* `is_phrase_member = true`
+* `phrase_unit_id` обязателен
+* detail builder должен использовать phrase как первичную сущность
+
+#### 3.4 Confidence
+
+Оставить confidence, но перестать использовать его как замену quality state
+
+### Критерий готовности
+
+По payload можно однозначно различить:
+
+* grammar-only
+* phrase-bound
+* untranslated
+* heuristic
+* exact
+
+---
+
+## 4. Добавить target token layer в storage
+
+Сейчас это архитектурный долг
+
+### Что изменить
+
+Добавить таблицу `target_tokens`
+
+Минимальные поля:
+
+* `id`
+* `book_id`
+* `paragraph_id`
+* `segment_id`
+* `order_index`
+* `text`
+* `normalized_text`
+* `source_segment_type`
+
+И пересобрать alignment так, чтобы `word_alignments` ссылался не только на span indexes в строке, а на целостный target token слой
+
+### Зачем это нужно сейчас, а не потом
+
+Без этого:
+
+* quality flags будут полумерой
+* detail/unit aggregation останется хрупкой
+* context bar будет дальше жить на строковых кусках
+* desktop/mobile консистентно не собрать
+
+### Критерий готовности
+
+Любой target span должен быть восстанавливаем не из строки, а из target token sequence
+
+---
+
+## 5. Нормализовать detail sheet и убрать расхождение desktop/mobile
+
+Сейчас это явный баг архитектуры
+
+### Проблема
+
+Сейчас:
+
+* desktop сначала получает backend payload, потом fallback local
+* mobile всегда строит local payload
+* алгоритмы разные
+* output разный
+
+### Что изменить
+
+Сделать **один canonical builder detail payload**
+
+Источник истины: backend-логика
+Но mobile offline должен использовать **тот же алгоритм**, а не другой
+
+### Обязательное решение
+
+Вынести canonical detail-builder контракт и привести оба режима к одному формату
+
+Есть 2 допустимых варианта, выбрать один и реализовать полностью:
+
+#### Вариант A
+
+Backend генерирует detail payload при packaging mobile book, и mobile использует уже подготовленные detail structures
+
+#### Вариант B
+
+Вынести detail-building rules в общий повторяемый алгоритм и привести mobile local builder к 100% совпадению с backend
+
+С учётом текущей архитектуры у тебя **правильнее Вариант A**
+
+### Что backend обязан отдавать
+
+Top-level payload должен всегда содержать:
+
+* `word_id`
+* `tap_unit_id`
+* `sheet_source_text`
+* `sheet_translation_text`
+* `example_source_text`
+* `example_translation_text`
+* `rule_id`
+* `rule_type`
+* `explanation_id`
+* `grammar_hint`
+* `quality_state`
+* `units`
+
+Каждый unit обязан содержать:
+
+* `id`
+* `type`
+* `text`
+* `surface_text`
+* `lemma`
+* `translation`
+* `grammar_hint`
+* `morph_label`
+* `is_primary`
+* `rule_id`
+* `rule_type`
+* `explanation_id`
+* `translation_kind`
+* `alignment_kind`
+* `quality_state`
+* `example_source_text`
+* `example_translation_text`
+
+### Обязательное правило для phrase unit
+
+Если tap block есть phrase-rule:
+
+* `Good morning`
+* `Thank you`
+* `How are you`
+* `Wakes up`
+* `Looks out`
+
+то detail sheet primary unit должен быть **одним PHRASE unit**, а не разваливаться на `good` и `morning`
+
+### Критерий готовности
+
+Desktop и mobile на одном и том же `tap_unit_id` обязаны строить одинаковый detail payload
+
+---
+
+## 6. Привести `app/lib/src/detail_sheet_models.dart` в соответствие backend
+
+Сейчас модель ждёт поля, которых backend не даёт
+
+### Что изменить
+
+Нельзя оставлять рассинхрон между declared Dart model и backend payload
+
+Нужно:
+
+* либо backend начинает отдавать все ожидаемые поля
+* либо Dart model режется до реально существующего контракта
+
+С учётом задачи качественного продукта — делать **первый вариант**
+
+### Критерий готовности
+
+Нет ни одного поля, которое UI ждёт, но backend системно не поставляет
+
+---
+
+## 7. Исправить phrase/detail mismatch
+
+### Обязательные кейсы
+
+Довести до консистентного поведения:
+
+* `Good morning`
+* `Goodnight`
+* `Thank you`
+* `How are you`
+* `It is`
+* `wakes up`
+* `looks out`
+* `In the afternoon`
+
+### Правило
+
+Если rule/tap-unit уже собран как phrase/grammar block в reader,
+то detail primary unit обязан отражать **тот же блок**, а не распадаться на более примитивные куски без необходимости
+
+### Критерий готовности
+
+Reader tap block и detail primary unit всегда совпадают по учебной логике
+
+---
+
+## 8. Переработать lexical enrichment в `engine/lexical_enrichment.py`
+
+### Что изменить
+
+Сейчас POS/morph местами мусорные:
+
+* `red` как `VERB Past`
+* `tired` как past-like
+* и т.д.
+
+Для обучающего продукта это нельзя оставлять
+
+### Обязательные изменения
+
+#### 8.1 Ограничить fallback POS heuristics
+
+Если POS не определён надёжно:
+
+* лучше `UNKNOWN`/пусто
+* чем ложный `VERB`
+
+#### 8.2 `morph_label`
+
+Не генерировать morph label по слабой эвристике, если уверенности нет
+
+#### 8.3 Grammar hints
+
+Оставить словарь hints, но перестать смешивать:
+
+* lexical meaning
+* grammar explanation
+* inherited span
+
+### Критерий готовности
+
+Ложноположительных POS/morph должно стать меньше, даже ценой пустых значений
+
+---
+
+## 9. Переработать Reader payload
+
+### Добавить поля в `ParagraphWordItem`
+
+Обязательно:
+
+* `translation_kind`
+* `alignment_kind`
+* `quality_state`
+* `matched_by`
+* `is_untranslated`
+* `is_grammar_only`
+* `is_phrase_member`
+
+### Правила отображения
+
+#### 9.1 Если `is_untranslated = true`
+
+UI не должен показывать это как обычный перевод
+
+#### 9.2 Если `is_grammar_only = true`
+
+`translation_focus_text` может быть пустым, но grammar explanation должен быть доступен
+
+#### 9.3 Если `alignment_kind = heuristic_span`
+
+debug/UI должны иметь возможность это отразить
+
+### Критерий готовности
+
+Reader payload самодостаточен для честного UI
+
+---
+
+## 10. Переработать translation bar
+
+Сейчас она живёт на старой логике: одна строка и ±3 target tokens
+
+### Что изменить
+
+Оставить bar как быстрый UX, но сделать её честной:
+
+* если unit = phrase, bar показывает phrase translation
+* если unit = grammar-only, bar показывает grammar-safe output, а не fake lexical match
+* если unit = untranslated, bar явно показывает, что перевода нет
+
+### Обязательное поведение
+
+#### Grammar-only
+
+Для `the`, `a`, `is` bar не должна подсовывать чужой русский span как будто это прямой перевод
+
+#### Untranslated
+
+Для `eggs`, `toast`, `flowers`, `trees` bar не должна показывать просто английское слово как норму без статуса
+
+### Критерий готовности
+
+Bar не врёт пользователю про качество соответствия
+
+---
+
+## 11. Удалить старый неактуальный путь из основного контура
+
+### Что вывести из боевого UX
+
+Не использовать как основной поток:
+
+* `word_card.dart`
+* `saved_words_screen.dart`
+* raw word path
+* `/word/audio` stub flow
+
+Если endpoint нужен для совместимости — оставить, но убрать из основного продукта
+
+### Что ещё исправить
+
+* `app/test/widget_test.dart` удалить или переписать под текущий app shell
+* убрать из тестового/боевого контура ссылки на `MyApp`, которого уже нет
+
+---
+
+## 12. Ввести обязательный regression-набор
+
+Это не “на будущее”. Это часть текущей реализации, иначе после правок всё снова поплывёт
+
+### Сделать один реальный pipeline regression set
+
+Формат:
+
+* input
+* expected segments
+* expected translations
+* expected alignment kinds
+* expected detail primary units
+
+### Минимальный обязательный набор кейсов
+
+1. `The Sunny Morning`
+2. `Chapter 1: The New Day`
+3. `At 10:00 AM, Tom goes to the park`
+4. `"Good morning, Luna!" Tom says.`
+5. `In the afternoon, Tom goes home.`
+6. `He eats eggs and toast.`
+7. `He sees a big garden with red flowers and green trees.`
+8. `The sun is bright.`
+9. `He is happy.`
+10. `It is a beautiful day.`
+
+### Что проверять
+
+Для каждого кейса:
+
+* правильные segment types
+* правильный translated segment text
+* отсутствие fake lexical mapping для grammar words
+* наличие `untranslated` там, где словарь не знает слово
+* phrase-detail consistency
+
+---
+
+# Что менять по файлам
+
+---
+
+## `engine/segmenter.py`
+
+Нужно:
+
+* добавить heading/meta типы
+* переработать split order
+* сначала выделять heading/meta, потом time, потом dialogue, потом copula/simple
+* убрать смешивание chapter/title с narrative
+
+---
+
+## `engine/translator.py`
+
+Нужно:
+
+* добавить `translation_kind`
+* перестать считать unknown token обычным переводом
+* пометить rule/literal/provider/untranslated/grammar-only
+* расширить literal path так, чтобы базовые частотные plural nouns не разваливали учебный UX
+
+---
+
+## `engine/word_alignment.py`
+
+Нужно:
+
+* добавить persisted `alignment_kind`
+* добавить `matched_by`
+* добавить флаги grammar-only / untranslated / phrase-member / inherited
+* перестать маскировать function inheritance под lexical match
+
+---
+
+## `engine/lexical_enrichment.py`
+
+Нужно:
+
+* ослабить ложные POS fallback
+* не врать morph_label
+* стабилизировать grammar hints как grammar-only слой
+
+---
+
+## `engine/storage.py`
+
+Нужно:
+
+* расширить DB schema
+* добавить `target_tokens`
+* сохранить новые alignment/translation quality fields
+* сделать canonical detail payload builder
+* формировать полный detail payload с metadata
+* перестроить mobile package так, чтобы mobile использовал тот же detail contract
+
+---
+
+## `app/lib/src/models.dart`
+
+Нужно:
+
+* расширить `ParagraphWordItem`
+* добавить новые quality/typing поля
+
+---
+
+## `app/lib/src/detail_sheet_models.dart`
+
+Нужно:
+
+* выровнять модель под backend contract
+* убрать фантазийные optional gaps
+* принимать полный canonical payload
+
+---
+
+## `app/lib/src/screens/reader_screen.dart`
+
+Нужно:
+
+* перестать считать `translation_span_text != ""` признаком успеха
+* учитывать `translation_kind / alignment_kind / quality_state`
+* desktop fallback использовать только как аварийный режим, не как второй алгоритм
+
+---
+
+## `app/lib/src/ui/mobile/screens/mobile_reader_screen.dart`
+
+Нужно:
+
+* перестать собирать detail payload по другой логике
+* перейти на canonical payload из mobile package/backend contract
+
+---
+
+## `app/test/widget_test.dart`
+
+Нужно:
+
+* удалить или переписать под текущую архитектуру
+
+---
+
+# Новый контракт данных
+
+## Для segment
+
+Обязательные поля:
+
+* `segment_type`
+* `translation_kind`
+* `source_text`
+* `target_text`
+
+## Для word payload
+
+Обязательные поля:
+
+* `id`
+* `text`
+* `tap_unit_id`
+* `source_unit_text`
+* `translation_span_text`
+* `translation_left_text`
+* `translation_focus_text`
+* `translation_right_text`
+* `rule_id`
+* `rule_type`
+* `explanation_id`
+* `lemma`
+* `pos`
+* `morph`
+* `lexical_unit_id`
+* `lexical_unit_type`
+* `grammar_hint`
+* `morph_label`
+* `translation_kind`
+* `alignment_kind`
+* `matched_by`
+* `quality_state`
+* `is_untranslated`
+* `is_grammar_only`
+* `is_phrase_member`
+
+## Для detail payload
+
+Обязательные поля описал выше — backend и mobile должны использовать один контракт
+
+---
+
+# Что считать готовым результатом
+
+Продукт можно считать приведённым в качественное состояние, когда одновременно выполняются все условия:
+
+## Сегментация
+
+* `The Sunny Morning` не narrative
+* `Chapter 1: The New Day` не narrative
+* heading/time/narrative не склеиваются
+
+## Перевод
+
+* `eggs`, `toast`, `flowers`, `trees` не маскируются под нормальный перевод
+* `is`, `the`, `a` не получают fake lexical translations
+
+## Alignment
+
+* можно однозначно увидеть, exact это, heuristic, grammar-only или untranslated
+
+## Detail
+
+* `Good morning` — один phrase unit
+* `It is` — один учебный grammar block
+* desktop/mobile дают одинаковый результат
+
+## Payload
+
+* backend и frontend модели совпадают
+* нет скрытых missing fields
+
+## Тесты
+
+* regression-набор из 10 кейсов проходит стабильно
+
+---
+
+# Приоритет реализации
+
+Строго в таком порядке
+
+## Этап 1
+
+* `engine/segmenter.py`
+* `engine/translator.py`
+* `engine/word_alignment.py`
+
+Без этого всё остальное бессмысленно
+
+## Этап 2
+
+* `engine/storage.py`
+* DB schema
+* detail canonical contract
+* mobile package update
+
+## Этап 3
+
+* `app/lib/src/models.dart`
+* `app/lib/src/detail_sheet_models.dart`
+* desktop/mobile reader integration
+
+## Этап 4
+
+* regression checks
+* чистка dead code
+* `widget_test.dart`
+
+---
+
+# Финальный вывод
+
+Текущая система уже идёт в правильную сторону.
+Проблема не в том, что она “слишком топорная”. Для обучалки это как раз нормально.
+Проблема в другом:
+
+**она ещё не различает честный учебный literal и ложное совпадение**
+
+Поэтому ядро ТЗ такое:
+
+* отделить правильные учебные единицы
+* формализовать качество перевода и alignment
+* сделать один канонический detail/result contract
+* перестать скрывать untranslated и grammar-only случаи под видом нормального перевода
+
+Это и превратит текущую реализацию в качественный продукт.
+
+Следующим сообщением я могу сделать уже **рабочее ТЗ в формате “файл → что менять → было/стало → критерий приёмки”**.

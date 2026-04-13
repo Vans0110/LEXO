@@ -175,6 +175,37 @@ class LexoApiClient {
     return _post('/word/audio', {'word': word});
   }
 
+  Future<List<int>> downloadWordAudio(String word) async {
+    final uri = Uri.parse('$baseUrl/word/audio?word=${Uri.encodeQueryComponent(word)}');
+    Object? lastError;
+    for (var attempt = 1; attempt <= _audioDownloadMaxAttempts; attempt += 1) {
+      developer.log('GET $uri attempt=$attempt', name: 'LEXO_API');
+      final client = HttpClient();
+      try {
+        final request = await client.getUrl(uri);
+        final response = await request.close();
+        final bytes = await response.fold<List<int>>(<int>[], (buffer, chunk) {
+          buffer.addAll(chunk);
+          return buffer;
+        });
+        if (response.statusCode >= 400) {
+          throw LexoApiException('Word audio download failed with status ${response.statusCode}');
+        }
+        return bytes;
+      } on HttpException catch (error) {
+        lastError = error;
+        if (attempt >= _audioDownloadMaxAttempts) {
+          rethrow;
+        }
+      } finally {
+        client.close(force: true);
+      }
+    }
+    throw lastError is Exception
+        ? lastError
+        : LexoApiException('Word audio download failed after $_audioDownloadMaxAttempts attempts');
+  }
+
   Future<Map<String, dynamic>> getMobileBookPackage(String bookId) async {
     return _get('/mobile/books/package?book_id=$bookId');
   }
@@ -210,6 +241,7 @@ class LexoApiClient {
       'source_text': '',
       'reader_payload': readerPayload,
       'tts_manifest': <String, dynamic>{},
+      'detail_manifest': <String, dynamic>{},
     };
     for (final part in partItems) {
       final partId = part['part_id'] as String? ?? '';
@@ -243,6 +275,9 @@ class LexoApiClient {
           break;
         case 'tts_manifest':
           package['tts_manifest'] = payload;
+          break;
+        case 'detail_manifest':
+          package['detail_manifest'] = payload;
           break;
       }
     }

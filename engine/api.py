@@ -6,7 +6,7 @@ import traceback
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlencode, urlparse
 
 from .storage import LexoStorage
 
@@ -116,6 +116,26 @@ class LexoHandler(BaseHTTPRequestHandler):
                     f'path="{audio_path}" bytes={audio_path.stat().st_size}'
                 )
                 self._send_file(HTTPStatus.OK, audio_path, "audio/wav")
+                return
+            if path == "/word/audio":
+                word = _query_value(query, "word") or ""
+                voice_id = _query_value(query, "voice_id")
+                audio_path = STORAGE.get_word_audio_path(word, voice_id=voice_id)
+                self._send_file(HTTPStatus.OK, audio_path, "audio/wav")
+                return
+            if path == "/mobile/books/audio-timings":
+                book_id = _query_value(query, "book_id") or ""
+                job_id = _query_value(query, "job_id") or ""
+                segment_index = int(_query_value(query, "segment_index") or "0")
+                self._send_json(
+                    HTTPStatus.OK,
+                    {
+                        "book_id": book_id,
+                        "job_id": job_id,
+                        "segment_index": segment_index,
+                        "timings": STORAGE.get_tts_timings(book_id, job_id, segment_index),
+                    },
+                )
                 return
             self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
         except Exception as exc:  # pragma: no cover
@@ -237,7 +257,11 @@ class LexoHandler(BaseHTTPRequestHandler):
                 self._send_json(HTTPStatus.OK, result)
                 return
             if path == "/word/audio":
-                self._send_json(HTTPStatus.OK, {"audio_path": "stub://word-audio"})
+                word = str(payload.get("word") or "").strip()
+                voice_id = str(payload.get("voice_id") or "").strip() or None
+                STORAGE.get_word_audio_path(word, voice_id=voice_id)
+                query = urlencode({"word": word, **({"voice_id": voice_id} if voice_id else {})})
+                self._send_json(HTTPStatus.OK, {"audio_url": f"/word/audio?{query}"})
                 return
             self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
         except KeyError as exc:

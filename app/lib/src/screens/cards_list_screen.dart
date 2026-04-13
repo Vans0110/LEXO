@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../api/api_client.dart';
 import '../cards_models.dart';
@@ -30,11 +34,19 @@ class _CardsListScreenState extends State<CardsListScreen> {
   SavedCardsPayload? _payload;
   bool _busy = true;
   String? _error;
+  late final Player _audioPlayer;
 
   @override
   void initState() {
     super.initState();
+    _audioPlayer = Player();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
   }
 
   @override
@@ -127,6 +139,19 @@ class _CardsListScreenState extends State<CardsListScreen> {
     }
   }
 
+  Future<void> _playWordAudio(String word) async {
+    final api = widget.api;
+    if (api == null) {
+      throw Exception('API is not available for word audio');
+    }
+    final bytes = await api.downloadWordAudio(word);
+    final tempDir = await getTemporaryDirectory();
+    final audioFile = File('${tempDir.path}/lexo_card_word_${word.hashCode}.wav');
+    await audioFile.writeAsBytes(bytes, flush: true);
+    await _audioPlayer.stop();
+    await _audioPlayer.open(Media(audioFile.path), play: true);
+  }
+
   Future<bool> _confirmDelete(SavedCardItem item) async {
     final result = await showDialog<bool>(
       context: context,
@@ -203,6 +228,18 @@ class _CardsListScreenState extends State<CardsListScreen> {
                                     background: const _DeleteBackground(),
                                     child: _CardListTile(
                                       item: item,
+                                      onPlayAudio: () async {
+                                        try {
+                                          await _playWordAudio(item.headText);
+                                        } catch (error) {
+                                          if (!mounted) {
+                                            return;
+                                          }
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Не удалось проиграть слово: $error')),
+                                          );
+                                        }
+                                      },
                                       onLongPress: () async {
                                         final confirmed = await _confirmDelete(item);
                                         if (!confirmed) {
@@ -226,10 +263,12 @@ class _CardsListScreenState extends State<CardsListScreen> {
 class _CardListTile extends StatelessWidget {
   const _CardListTile({
     required this.item,
+    this.onPlayAudio,
     this.onLongPress,
   });
 
   final SavedCardItem item;
+  final VoidCallback? onPlayAudio;
   final VoidCallback? onLongPress;
 
   @override
@@ -246,6 +285,10 @@ class _CardListTile extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
+          ),
+          trailing: IconButton(
+            onPressed: onPlayAudio,
+            icon: const Icon(Icons.volume_up_outlined),
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 6),

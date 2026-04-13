@@ -55,7 +55,7 @@ class MockTtsProvider(TtsProvider):
             encoding="utf-8",
         )
         duration_ms = max(800, len(text) * 45)
-        return GeneratedAudio(audio_path=str(output_path), duration_ms=duration_ms)
+        return GeneratedAudio(audio_path=str(output_path), duration_ms=duration_ms, timings=[])
 
 
 class KokoroProvider(TtsProvider):
@@ -115,9 +115,17 @@ class KokoroProvider(TtsProvider):
                 f"{completed.stderr.strip() or completed.stdout.strip() or 'unknown error'}"
             )
         payload = _parse_kokoro_payload(completed.stdout, output_path)
+        timings = list(payload.get("timings") or [])
+        timings_path = output_path.with_suffix(".timings.json")
+        timings_path.write_text(
+            json.dumps(timings, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
         return GeneratedAudio(
             audio_path=payload["audio_path"],
             duration_ms=int(payload["duration_ms"]),
+            timings_path=str(timings_path),
+            timings=timings,
         )
 
     def _ensure_runtime(self) -> None:
@@ -152,5 +160,6 @@ def _parse_kokoro_payload(stdout: str, output_path: Path) -> dict:
         return {
             "audio_path": str(output_path),
             "duration_ms": int(frames / framerate * 1000),
+            "timings": [],
         }
     raise ValueError("Kokoro runner returned no parseable payload")

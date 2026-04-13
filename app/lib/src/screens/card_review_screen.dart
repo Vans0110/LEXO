@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../api/api_client.dart';
 import '../cards_models.dart';
@@ -21,6 +25,7 @@ class CardReviewScreen extends StatefulWidget {
 
 class _CardReviewScreenState extends State<CardReviewScreen> {
   late final List<SavedCardItem> _queue;
+  late final Player _audioPlayer;
   bool _busy = false;
   int _completed = 0;
   int _advanced = 0;
@@ -31,6 +36,13 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
   void initState() {
     super.initState();
     _queue = List<SavedCardItem>.from(widget.items);
+    _audioPlayer = Player();
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
   }
 
   Future<void> _applySwipe(String direction) async {
@@ -77,6 +89,19 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
     }
   }
 
+  Future<void> _playWordAudio(String word) async {
+    final api = widget.api;
+    if (api == null) {
+      throw Exception('API is not available for word audio');
+    }
+    final bytes = await api.downloadWordAudio(word);
+    final tempDir = await getTemporaryDirectory();
+    final audioFile = File('${tempDir.path}/lexo_review_word_${word.hashCode}.wav');
+    await audioFile.writeAsBytes(bytes, flush: true);
+    await _audioPlayer.stop();
+    await _audioPlayer.open(Media(audioFile.path), play: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     final current = _queue.first;
@@ -110,7 +135,22 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
                     label: 'Сложно',
                     icon: Icons.arrow_back,
                   ),
-                  child: _ReviewCard(item: current),
+                  child: _ReviewCard(
+                    key: ValueKey('${current.id}-${current.progressScore}-${current.reviewCount}'),
+                    item: current,
+                    onPlayAudio: () async {
+                      try {
+                        await _playWordAudio(current.headText);
+                      } catch (error) {
+                        if (!mounted) {
+                          return;
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Не удалось проиграть слово: $error')),
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -141,55 +181,89 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
   }
 }
 
-class _ReviewCard extends StatelessWidget {
-  const _ReviewCard({required this.item});
+class _ReviewCard extends StatefulWidget {
+  const _ReviewCard({super.key, required this.item, required this.onPlayAudio});
 
   final SavedCardItem item;
+  final VoidCallback onPlayAudio;
+
+  @override
+  State<_ReviewCard> createState() => _ReviewCardState();
+}
+
+class _ReviewCardState extends State<_ReviewCard> {
+  bool _showTranslation = false;
+
+  @override
+  void didUpdateWidget(covariant _ReviewCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.item.id != widget.item.id ||
+        oldWidget.item.reviewCount != widget.item.reviewCount ||
+        oldWidget.item.progressScore != widget.item.progressScore) {
+      _showTranslation = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return SizedBox.expand(
-      child: Card(
-        margin: EdgeInsets.zero,
-        elevation: 0,
-        color: colorScheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _ReviewProgressStrip(score: item.progressScore),
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  item.progressLabel,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => setState(() => _showTranslation = !_showTranslation),
+        child: Card(
+          margin: EdgeInsets.zero,
+          elevation: 0,
+          color: colorScheme.surfaceContainerLow,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _ReviewProgressStrip(score: widget.item.progressScore),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: widget.onPlayAudio,
+                        icon: const Icon(Icons.volume_up_outlined),
+                      ),
+                      Text(
+                        widget.item.progressLabel,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  _showTranslation ? widget.item.translation : widget.item.headText,
+                  textAlign: TextAlign.center,
+                  style: (_showTranslation
+                          ? Theme.of(context).textTheme.titleLarge
+                          : Theme.of(context).textTheme.headlineMedium)
+                      ?.copyWith(
+                        color: _showTranslation ? colorScheme.primary : null,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  _showTranslation ? 'Нажми, чтобы вернуть английское слово' : 'Нажми, чтобы увидеть перевод',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
                 ),
-              ),
-              const Spacer(),
-              Text(
-                item.headText,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                item.translation,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-              const Spacer(),
-            ],
+                const Spacer(),
+              ],
+            ),
           ),
         ),
       ),

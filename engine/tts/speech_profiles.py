@@ -11,9 +11,36 @@ GENERATION_PROFILE = {
 }
 
 PLAYBACK_PRESETS = [
-    {"id": 1, "name": "Slow", "playback_speed": 0.85},
-    {"id": 2, "name": "Normal", "playback_speed": 1.0},
-    {"id": 3, "name": "Fast", "playback_speed": 1.15},
+    {
+        "id": 1,
+        "name": "Slow",
+        "playback_speed": 0.85,
+        "effective_playback_speed": 1.0,
+        "audio_variant": "slow_native",
+        "native_rate": 0.85,
+        "word_gap_ms": 300,
+        "expand_word_gaps": False,
+    },
+    {
+        "id": 2,
+        "name": "Normal",
+        "playback_speed": 1.0,
+        "effective_playback_speed": 1.0,
+        "audio_variant": "base",
+        "native_rate": 0.89,
+        "word_gap_ms": 0,
+        "expand_word_gaps": False,
+    },
+    {
+        "id": 3,
+        "name": "Fast",
+        "playback_speed": 1.15,
+        "effective_playback_speed": 1.15,
+        "audio_variant": "base",
+        "native_rate": 0.89,
+        "word_gap_ms": 0,
+        "expand_word_gaps": False,
+    },
 ]
 
 
@@ -21,11 +48,22 @@ def list_levels() -> list[dict]:
     return [dict(item) for item in PLAYBACK_PRESETS]
 
 
-def build_profile(_level_id: int | None = None) -> SpeechProfile:
+def build_profile(level_id: int | None = None) -> SpeechProfile:
+    selected = PLAYBACK_PRESETS[1]
+    if level_id is not None:
+        for item in PLAYBACK_PRESETS:
+            if int(item["id"]) == int(level_id):
+                selected = item
+                break
     return SpeechProfile(
-        level_id=int(GENERATION_PROFILE["id"]),
-        level_name=str(GENERATION_PROFILE["name"]),
+        level_id=int(selected["id"]),
+        level_name=str(selected["name"]),
         target_wpm=0,
-        rate=float(GENERATION_PROFILE["tts_rate"]),
+        audio_variant=str(selected["audio_variant"]),
+        native_rate=float(selected["native_rate"]),
+        word_gap_ms=int(selected["word_gap_ms"]),
+        expand_word_gaps=bool(selected.get("expand_word_gaps", False)),
+        playback_speed=float(selected["effective_playback_speed"]),
+        rate=float(selected["native_rate"]),
         pause_scale=float(GENERATION_PROFILE["pause_scale"]),
     )

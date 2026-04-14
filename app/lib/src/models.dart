@@ -200,6 +200,10 @@ class ParagraphWordItem {
     required this.translationLeftText,
     required this.translationFocusText,
     required this.translationRightText,
+    required this.unitTranslationSpanText,
+    required this.unitTranslationLeftText,
+    required this.unitTranslationFocusText,
+    required this.unitTranslationRightText,
     this.segmentSourceText,
     this.segmentTargetText,
     this.lemma,
@@ -221,6 +225,10 @@ class ParagraphWordItem {
   final String translationLeftText;
   final String translationFocusText;
   final String translationRightText;
+  final String unitTranslationSpanText;
+  final String unitTranslationLeftText;
+  final String unitTranslationFocusText;
+  final String unitTranslationRightText;
   final String? segmentSourceText;
   final String? segmentTargetText;
   final String? lemma;
@@ -243,6 +251,10 @@ class ParagraphWordItem {
       translationLeftText: json['translation_left_text'] as String? ?? '',
       translationFocusText: json['translation_focus_text'] as String? ?? '',
       translationRightText: json['translation_right_text'] as String? ?? '',
+      unitTranslationSpanText: json['unit_translation_span_text'] as String? ?? '',
+      unitTranslationLeftText: json['unit_translation_left_text'] as String? ?? '',
+      unitTranslationFocusText: json['unit_translation_focus_text'] as String? ?? '',
+      unitTranslationRightText: json['unit_translation_right_text'] as String? ?? '',
       segmentSourceText: json['segment_source_text'] as String?,
       segmentTargetText: json['segment_target_text'] as String?,
       lemma: json['lemma'] as String?,
@@ -507,6 +519,74 @@ class TtsState {
       jobs: jobs,
       activeJob: activeJobJson != null ? TtsJobItem.fromJson(activeJobJson) : null,
       activeSegments: activeSegments,
+    );
+  }
+}
+
+class TtsPackageStage {
+  const TtsPackageStage({
+    required this.stageKey,
+    required this.label,
+    required this.status,
+    required this.doneCount,
+    required this.totalCount,
+    required this.errorMessage,
+  });
+
+  final String stageKey;
+  final String label;
+  final String status;
+  final int doneCount;
+  final int totalCount;
+  final String errorMessage;
+
+  bool get isRunning => status == 'queued' || status == 'running';
+  bool get isDone => status == 'done';
+  bool get isError => status == 'error';
+
+  factory TtsPackageStage.fromJson(Map<String, dynamic> json) {
+    return TtsPackageStage(
+      stageKey: json['stage_key'] as String? ?? '',
+      label: json['label'] as String? ?? '',
+      status: json['status'] as String? ?? 'pending',
+      doneCount: json['done_count'] as int? ?? 0,
+      totalCount: json['total_count'] as int? ?? 0,
+      errorMessage: json['error_message'] as String? ?? '',
+    );
+  }
+}
+
+class TtsPackageState {
+  const TtsPackageState({
+    required this.packageJobId,
+    required this.bookId,
+    required this.voiceId,
+    required this.status,
+    required this.errorMessage,
+    required this.stages,
+  });
+
+  final String packageJobId;
+  final String bookId;
+  final String voiceId;
+  final String status;
+  final String errorMessage;
+  final List<TtsPackageStage> stages;
+
+  bool get hasJob => packageJobId.isNotEmpty;
+  bool get isRunning => status == 'queued' || status == 'running';
+
+  factory TtsPackageState.fromJson(Map<String, dynamic> json) {
+    return TtsPackageState(
+      packageJobId: json['package_job_id'] as String? ?? '',
+      bookId: json['book_id'] as String? ?? '',
+      voiceId: json['voice_id'] as String? ?? '',
+      status: json['status'] as String? ?? 'idle',
+      errorMessage: json['error_message'] as String? ?? '',
+      stages: (json['stages'] as List<dynamic>? ?? const [])
+          .cast<Map<String, dynamic>>()
+          .map(TtsPackageStage.fromJson)
+          .toList(),
     );
   }
 }

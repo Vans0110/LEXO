@@ -377,6 +377,12 @@ def build_tap_word_payloads(
         )
         effective_span_text = focus_text or unit["translation_span_text"]
         for word in unit["words"]:
+            word_left_text, word_focus_text, word_right_text = build_context_window(
+                target_text=segment_target_text,
+                target_start_index=word.get("target_start_index", -1),
+                target_end_index=word.get("target_end_index", -1),
+            )
+            word_effective_span_text = word_focus_text or str(word.get("translation_span_text") or "")
             payload = {
                 "id": word["id"],
                 "text": word["text"],
@@ -384,10 +390,14 @@ def build_tap_word_payloads(
                 "anchor_word_id": word["anchor_word_id"],
                 "tap_unit_id": unit["id"],
                 "source_unit_text": unit["source_text"],
-                "translation_span_text": effective_span_text,
-                "translation_left_text": left_text,
-                "translation_focus_text": effective_span_text,
-                "translation_right_text": right_text,
+                "translation_span_text": str(word.get("translation_span_text") or ""),
+                "translation_left_text": word_left_text,
+                "translation_focus_text": word_effective_span_text,
+                "translation_right_text": word_right_text,
+                "unit_translation_span_text": unit["translation_span_text"],
+                "unit_translation_left_text": left_text,
+                "unit_translation_focus_text": effective_span_text,
+                "unit_translation_right_text": right_text,
             }
             for optional_key in (
                 "normalized_text",

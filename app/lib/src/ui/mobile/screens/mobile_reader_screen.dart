@@ -560,16 +560,24 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   void _handleWordTap(ParagraphItem item, ParagraphWordItem word) {
-    final focusText = word.translationFocusText.trim().isNotEmpty
-        ? word.translationFocusText
-        : word.translationSpanText;
+    final focusText = word.unitTranslationFocusText.trim().isNotEmpty
+        ? word.unitTranslationFocusText
+        : (word.unitTranslationSpanText.trim().isNotEmpty
+              ? word.unitTranslationSpanText
+              : (word.translationFocusText.trim().isNotEmpty
+                    ? word.translationFocusText
+                    : word.translationSpanText));
     setState(() {
       _state = _state.copyWith(
         selectedParagraphIndex: item.index,
         selectedTapUnitId: word.tapUnitId,
-        translationLeftText: word.translationLeftText,
+        translationLeftText: word.unitTranslationLeftText.trim().isNotEmpty
+            ? word.unitTranslationLeftText
+            : word.translationLeftText,
         translationFocusText: focusText.isNotEmpty ? focusText : word.text,
-        translationRightText: word.translationRightText,
+        translationRightText: word.unitTranslationRightText.trim().isNotEmpty
+            ? word.unitTranslationRightText
+            : word.translationRightText,
       );
     });
     _savePosition(item.index);

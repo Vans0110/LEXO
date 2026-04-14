@@ -51,3 +51,7 @@
 ### 2026-04-13
 - Сессия: Точечный фикс reporting-verb alignment и cleanup явных ошибок EN->RU перевода
 - Файл: [2026-04-13.md](/mnt/d/Programs/LEXO/history/2026-04-13.md)
+
+### 2026-04-14
+- Сессия: Slow TTS blocks переведены на `..` per-block
+- Файл: [2026-04-14.md](/mnt/d/Programs/LEXO/history/2026-04-14.md)

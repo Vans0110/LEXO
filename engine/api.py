@@ -73,6 +73,14 @@ class LexoHandler(BaseHTTPRequestHandler):
                     STORAGE.get_tts_state(_query_value(query, "book_id")),
                 )
                 return
+            if path == "/tts/package-state":
+                book_id = _query_value(query, "book_id") or ""
+                voice_id = _query_value(query, "voice_id") or ""
+                if not book_id or not voice_id:
+                    self._send_json(HTTPStatus.BAD_REQUEST, {"error": "book_id and voice_id are required"})
+                    return
+                self._send_json(HTTPStatus.OK, STORAGE.get_tts_package(book_id, voice_id))
+                return
             if path == "/mobile/desktop-books":
                 self._send_json(HTTPStatus.OK, STORAGE.list_books())
                 return
@@ -217,6 +225,15 @@ class LexoHandler(BaseHTTPRequestHandler):
                 return
             if path == "/tts/control":
                 result = STORAGE.control_tts(payload["book_id"], payload["job_id"], payload["action"])
+                self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/tts/generate-package":
+                result = STORAGE.generate_tts_package(
+                    payload["book_id"],
+                    payload["voice_id"],
+                    bool(payload.get("overwrite", False)),
+                    bool(payload.get("overwrite_word_audio", False)),
+                )
                 self._send_json(HTTPStatus.OK, result)
                 return
             if path == "/saved-words":

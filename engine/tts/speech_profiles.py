@@ -15,7 +15,7 @@ PLAYBACK_PRESETS = [
         "id": 1,
         "name": "Slow",
         "playback_speed": 0.85,
-        "effective_playback_speed": 1.0,
+        "effective_playback_speed": 0.85,
         "audio_variant": "slow_native",
         "native_rate": 0.85,
         "word_gap_ms": 300,

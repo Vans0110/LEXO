@@ -10,6 +10,7 @@ class TtsPanel extends StatelessWidget {
     required this.selectedVoiceId,
     required this.selectedLevelIds,
     required this.state,
+    required this.packageState,
     required this.busy,
     required this.onVoiceChanged,
     required this.onLevelToggle,
@@ -22,6 +23,7 @@ class TtsPanel extends StatelessWidget {
   final String? selectedVoiceId;
   final Set<int> selectedLevelIds;
   final TtsState? state;
+  final TtsPackageState? packageState;
   final bool busy;
   final ValueChanged<String?> onVoiceChanged;
   final void Function(int levelId, bool selected) onLevelToggle;
@@ -147,10 +149,61 @@ class TtsPanel extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text('${selectedJob.readySegments}/${selectedJob.totalSegments}'),
               ],
+              if (packageState != null && packageState!.hasJob) ...[
+                const SizedBox(height: 12),
+                const Divider(height: 1),
+                const SizedBox(height: 12),
+                Text(
+                  packageState!.isRunning ? 'Voice package' : 'Offline package',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                for (final stage in packageState!.stages) ...[
+                  Text(
+                    '${stage.label} • ${_statusLabel(stage.status)}',
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
+                  const SizedBox(height: 4),
+                  LinearProgressIndicator(
+                    value: stage.totalCount > 0
+                        ? (stage.doneCount / stage.totalCount).clamp(0.0, 1.0)
+                        : null,
+                  ),
+                  const SizedBox(height: 4),
+                  Text('${stage.doneCount}/${stage.totalCount}'),
+                  if (stage.errorMessage.trim().isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        stage.errorMessage,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                ],
+              ],
             ],
           ),
         ),
       ),
     );
+  }
+
+  String _statusLabel(String status) {
+    switch (status) {
+      case 'queued':
+        return 'В очереди';
+      case 'running':
+        return 'Генерация';
+      case 'done':
+        return 'Готово';
+      case 'error':
+        return 'Ошибка';
+      default:
+        return status;
+    }
   }
 }

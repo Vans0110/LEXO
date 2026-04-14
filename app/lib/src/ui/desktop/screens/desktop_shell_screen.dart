@@ -64,16 +64,16 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
   Future<void> _pickAndImport() async {
     const typeGroup = XTypeGroup(label: 'text', extensions: ['txt']);
     developer.log('DESKTOP_IMPORT_PICK_START', name: 'LEXO_IMPORT');
-    final file = await openFile(acceptedTypeGroups: [typeGroup]);
-    if (file == null) {
-      developer.log('DESKTOP_IMPORT_PICK_CANCELLED', name: 'LEXO_IMPORT');
-      return;
-    }
-    setState(() {
-      _settingsBusy = true;
-      _settingsError = null;
-    });
     try {
+      final file = await openFile(acceptedTypeGroups: [typeGroup]);
+      if (file == null) {
+        developer.log('DESKTOP_IMPORT_PICK_CANCELLED', name: 'LEXO_IMPORT');
+        return;
+      }
+      setState(() {
+        _settingsBusy = true;
+        _settingsError = null;
+      });
       developer.log(
         'DESKTOP_IMPORT_FILE name=${file.name} path=${file.path}',
         name: 'LEXO_IMPORT',

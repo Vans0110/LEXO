@@ -77,22 +77,22 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _pickAndImport() async {
     const typeGroup = XTypeGroup(label: 'text', extensions: ['txt']);
     developer.log('HOME_IMPORT_PICK_START', name: 'LEXO_IMPORT');
-    final file = await openFile(acceptedTypeGroups: [typeGroup]);
-    if (file == null) {
-      developer.log('HOME_IMPORT_PICK_CANCELLED', name: 'LEXO_IMPORT');
-      return;
-    }
-    developer.log(
-      'HOME_IMPORT_FILE name=${file.name} path=${file.path}',
-      name: 'LEXO_IMPORT',
-    );
-    setState(() {
-      _state = _state.copyWith(
-        busy: true,
-        clearError: true,
-      );
-    });
     try {
+      final file = await openFile(acceptedTypeGroups: [typeGroup]);
+      if (file == null) {
+        developer.log('HOME_IMPORT_PICK_CANCELLED', name: 'LEXO_IMPORT');
+        return;
+      }
+      developer.log(
+        'HOME_IMPORT_FILE name=${file.name} path=${file.path}',
+        name: 'LEXO_IMPORT',
+      );
+      setState(() {
+        _state = _state.copyWith(
+          busy: true,
+          clearError: true,
+        );
+      });
       final sourceText = await file.readAsString();
       developer.log(
         'HOME_IMPORT_READ_OK chars=${sourceText.length}',

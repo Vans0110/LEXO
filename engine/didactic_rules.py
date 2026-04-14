@@ -7,6 +7,8 @@ NAME_TRANSLATIONS = {
     "tom": "Том",
     "luna": "Луна",
     "anna": "Анна",
+    "sarah": "Сара",
+    "leo": "Лео",
 }
 REPORTING_VERB_TRANSLATIONS = {
     "says": "говорит",
@@ -79,6 +81,28 @@ def resolve_didactic_translation(
         return "Он читает книгу на диване."
     if normalized_source == "they walk together.":
         return "Они идут вместе."
+    if normalized_source == '"wow," sarah says.':
+        return '"Вау", - говорит Сара.'
+    if normalized_source == '"it is beautiful here."':
+        return '"Здесь очень красиво."'
+    if normalized_source == "leo barks.":
+        return "Лео лает."
+    if normalized_source == "leo has his leash in his mouth.":
+        return "Лео держит поводок в зубах."
+    if normalized_source == "leo wags his tail.":
+        return "Лео виляет хвостом."
+    if normalized_source == "the squirrel is small and brown.":
+        return "Белка маленькая и коричневая."
+    if normalized_source == "sarah gives him a small treat.":
+        return "Сара даёт ему маленькое лакомство."
+    if normalized_source == "he smells the grass and the stones.":
+        return "Он нюхает траву и камни."
+    if normalized_source == "he walks slowly.":
+        return "Он идёт медленно."
+    if normalized_source == "she takes a photo with her phone to show her mother.":
+        return "Она делает фото на телефон, чтобы показать своей маме."
+    if normalized_source == "she sees a small village and a blue lake far away.":
+        return "Она видит вдали маленькую деревню и голубое озеро."
     return (
         _resolve_dialogue_reporting_rule(source_segment)
         or _resolve_formula_reporting_rule(source_segment)
@@ -148,6 +172,33 @@ def apply_didactic_post_edit(
         text = text.replace("ходят вместе", "идут вместе")
     if normalized_source == "he reads a book on the sofa.":
         text = text.replace("читает книгу на софе", "читает книгу на диване")
+    if "leash" in normalized_source:
+        text = text.replace("лишка", "поводок")
+        text = text.replace("в рот", "в зубах")
+    if "wags his tail" in normalized_source:
+        text = text.replace("раздвигает хвост", "виляет хвостом")
+    if normalized_source == "leo barks.":
+        text = text.replace("греет", "лает")
+    if "squirrel is small and brown" in normalized_source:
+        text = text.replace("Скура", "Белка")
+    if "small treat" in normalized_source:
+        text = text.replace("небольшое удовольствие", "маленькое лакомство")
+    if "smells the grass and the stones" in normalized_source:
+        text = text.replace("пахнет травой и камнями", "нюхает траву и камни")
+    if normalized_source == '"wow," sarah says.':
+        text = text.replace('"Вау, - говорит Сара. - Я знаю.', '"Вау", - говорит Сара.')
+        text = text.replace('"Вау", - сказала Сара.', '"Вау", - говорит Сара.')
+    if normalized_source == '"it is beautiful here."':
+        text = text.replace('"Здесь очень красиво".', '"Здесь очень красиво."')
+    if normalized_source == "he walks slowly.":
+        text = text.replace("ходит медленно", "идёт медленно")
+    if normalized_source == "she takes a photo with her phone to show her mother.":
+        text = text.replace(
+            "фотографирует с помощью своего телефона, чтобы показать своей матери",
+            "делает фото на телефон, чтобы показать своей маме",
+        )
+    if normalized_source == "she sees a small village and a blue lake far away.":
+        text = text.replace("маленькую деревню и голубое озеро далеко", "вдали маленькую деревню и голубое озеро")
 
     if normalized_source == "how are you? tom asks.":
         text = text.replace("спросил", "спрашивает")

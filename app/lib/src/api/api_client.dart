@@ -343,6 +343,14 @@ class LexoApiClient {
     return TtsState.fromJson(data);
   }
 
+  Future<TtsPackageState> getTtsPackageState({
+    required String bookId,
+    required String voiceId,
+  }) async {
+    final data = await _get('/tts/package-state?book_id=$bookId&voice_id=$voiceId');
+    return TtsPackageState.fromJson(data);
+  }
+
   Future<List<int>> downloadTtsAudio({
     required String bookId,
     required String jobId,
@@ -406,6 +414,24 @@ class LexoApiClient {
       },
     );
     return TtsState.fromJson(data);
+  }
+
+  Future<TtsPackageState> generateTtsPackage({
+    required String bookId,
+    required String voiceId,
+    bool overwrite = false,
+    bool overwriteWordAudio = false,
+  }) async {
+    final data = await _post(
+      '/tts/generate-package',
+      {
+        'book_id': bookId,
+        'voice_id': voiceId,
+        'overwrite': overwrite,
+        'overwrite_word_audio': overwriteWordAudio,
+      },
+    );
+    return TtsPackageState.fromJson(data);
   }
 
   Future<TtsState> startTtsPlayback({

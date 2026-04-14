@@ -5,7 +5,7 @@ import re
 from ..segmenter import split_sentences
 from .tts_models import SpeechProfile
 from .tts_models import TtsChunk
-from .tts_text_normalizer import normalize_text_for_tts
+from .tts_text_normalizer import build_slow_synthesis_text, normalize_text_for_tts
 
 
 MIN_SPLIT_WORDS = 6
@@ -78,7 +78,7 @@ def build_tts_chunks(
                         order_index=order_index,
                         paragraph_index=paragraph_index,
                         source_text=_join_parts(current_parts),
-                        synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
+                        synthesis_text=_build_synthesis_text(_join_parts(current_parts), profile),
                         pause_after_ms=pause_after_ms,
                     )
                 )
@@ -95,7 +95,7 @@ def build_tts_chunks(
                             order_index=order_index,
                             paragraph_index=paragraph_index,
                             source_text=_join_parts(current_parts),
-                            synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
+                            synthesis_text=_build_synthesis_text(_join_parts(current_parts), profile),
                             pause_after_ms=pause_after_ms,
                         )
                     )
@@ -112,7 +112,7 @@ def build_tts_chunks(
                             order_index=order_index,
                             paragraph_index=paragraph_index,
                             source_text=_join_parts(current_parts),
-                            synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
+                            synthesis_text=_build_synthesis_text(_join_parts(current_parts), profile),
                             pause_after_ms=pause_after_ms,
                         )
                     )
@@ -130,7 +130,7 @@ def build_tts_chunks(
                             order_index=order_index,
                             paragraph_index=paragraph_index,
                             source_text=_join_parts(current_parts),
-                            synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
+                            synthesis_text=_build_synthesis_text(_join_parts(current_parts), profile),
                             pause_after_ms=pause_after_ms,
                         )
                     )
@@ -147,7 +147,7 @@ def build_tts_chunks(
                             order_index=order_index,
                             paragraph_index=paragraph_index,
                             source_text=_join_parts(current_parts),
-                            synthesis_text=_join_parts(current_parts),
+                            synthesis_text=_build_synthesis_text(_join_parts(current_parts), profile),
                             pause_after_ms=pause_after_ms,
                         )
                     )
@@ -161,7 +161,7 @@ def build_tts_chunks(
                     order_index=order_index,
                     paragraph_index=paragraph_index,
                     source_text=_join_parts(current_parts),
-                    synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
+                    synthesis_text=_build_synthesis_text(_join_parts(current_parts), profile),
                     pause_after_ms=pause_after_ms,
                 )
             )
@@ -176,13 +176,19 @@ def build_tts_chunks(
                     order_index=order_index,
                     paragraph_index=paragraph_index,
                     source_text=_join_parts(current_parts),
-                    synthesis_text=normalize_text_for_tts(_join_parts(current_parts)),
+                    synthesis_text=_build_synthesis_text(_join_parts(current_parts), profile),
                     pause_after_ms=pause_after_ms,
                 )
             )
             order_index += 1
 
     return chunks
+
+
+def _build_synthesis_text(text: str, profile: SpeechProfile | None) -> str:
+    if profile is not None and profile.audio_variant == "slow_native":
+        return normalize_text_for_tts(text)
+    return normalize_text_for_tts(text)
 
 
 def _paragraph_units(

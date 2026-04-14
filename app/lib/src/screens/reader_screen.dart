@@ -186,19 +186,33 @@ class _ReaderScreenState extends State<ReaderScreen> {
         final normal = result.ttsLevels.where((item) => item.name == 'Normal');
         selectedLevelIds = {normal.isNotEmpty ? normal.first.id : result.ttsLevels.first.id};
       }
+      TtsPackageState? packageState = result.ttsPackageState;
+      if (selectedVoiceId != null &&
+          selectedVoiceId.isNotEmpty &&
+          packageState?.voiceId != selectedVoiceId) {
+        try {
+          packageState = await _controller.refreshTtsPackageState(
+            bookId: widget.bookId,
+            voiceId: selectedVoiceId,
+          );
+        } catch (_) {
+          packageState = result.ttsPackageState;
+        }
+      }
       setState(() {
         _state = _state.copyWith(
           payload: result.payload,
           ttsProfiles: result.ttsProfiles,
           ttsLevels: result.ttsLevels,
           ttsState: result.ttsState,
+          ttsPackageState: packageState,
           selectedVoiceId: selectedVoiceId,
           selectedLevelIds: selectedLevelIds,
           loading: false,
         );
       });
       await _applyPlaybackSpeed();
-      _syncPolling(result.ttsState);
+      _syncPolling(result.ttsState, packageState);
     } catch (error) {
       if (!mounted) {
         return;
@@ -217,15 +231,27 @@ class _ReaderScreenState extends State<ReaderScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _state = _state.copyWith(ttsState: nextState));
-      _syncPolling(nextState);
+      TtsPackageState? nextPackageState = _state.ttsPackageState;
+      final voiceId = _state.selectedVoiceId;
+      if (voiceId != null && voiceId.isNotEmpty) {
+        try {
+          nextPackageState = await _controller.refreshTtsPackageState(
+            bookId: widget.bookId,
+            voiceId: voiceId,
+          );
+        } catch (_) {
+          // Не ломаем polling package state из-за временной ошибки.
+        }
+      }
+      setState(() => _state = _state.copyWith(ttsState: nextState, ttsPackageState: nextPackageState));
+      _syncPolling(nextState, nextPackageState);
     } catch (_) {
       // Не ломаем экран из-за временной ошибки polling.
     }
   }
 
-  void _syncPolling(TtsState? state) {
-    if (state?.hasGeneratingJobs ?? false) {
+  void _syncPolling(TtsState? state, TtsPackageState? packageState) {
+    if ((state?.hasGeneratingJobs ?? false) || (packageState?.isRunning ?? false)) {
       _pollTimer ??= Timer.periodic(_pollInterval, (_) => _refreshTtsState());
       return;
     }
@@ -249,17 +275,18 @@ class _ReaderScreenState extends State<ReaderScreen> {
     setState(() => _state = _state.copyWith(actionBusy: true, clearError: true));
     try {
       await _audioPlayer.stop();
-      final state = await _controller.generateTts(
+      final packageState = await _controller.generateTtsPackage(
         bookId: widget.bookId,
         voiceId: voiceId,
-        levelIds: [_state.selectedLevelIds.first],
         overwrite: overwrite,
+        overwriteWordAudio: overwrite,
       );
+      final state = await _controller.refreshTtsState(widget.bookId);
       if (!mounted) {
         return;
       }
-      setState(() => _state = _state.copyWith(ttsState: state));
-      _syncPolling(state);
+      setState(() => _state = _state.copyWith(ttsState: state, ttsPackageState: packageState));
+      _syncPolling(state, packageState);
     } catch (error) {
       if (!mounted) {
         return;
@@ -427,16 +454,24 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   void _handleWordTap(ParagraphItem item, ParagraphWordItem word) {
-    final focusText = word.translationFocusText.trim().isNotEmpty
-        ? word.translationFocusText
-        : word.translationSpanText;
+    final focusText = word.unitTranslationFocusText.trim().isNotEmpty
+        ? word.unitTranslationFocusText
+        : (word.unitTranslationSpanText.trim().isNotEmpty
+              ? word.unitTranslationSpanText
+              : (word.translationFocusText.trim().isNotEmpty
+                    ? word.translationFocusText
+                    : word.translationSpanText));
     setState(() {
       _state = _state.copyWith(
         selectedParagraphIndex: item.index,
         selectedTapUnitId: word.tapUnitId,
-        translationLeftText: word.translationLeftText,
+        translationLeftText: word.unitTranslationLeftText.trim().isNotEmpty
+            ? word.unitTranslationLeftText
+            : word.translationLeftText,
         translationFocusText: focusText.isNotEmpty ? focusText : word.text,
-        translationRightText: word.translationRightText,
+        translationRightText: word.unitTranslationRightText.trim().isNotEmpty
+            ? word.unitTranslationRightText
+            : word.translationRightText,
       );
     });
     _savePosition(item.index);
@@ -530,10 +565,27 @@ class _ReaderScreenState extends State<ReaderScreen> {
                             selectedVoiceId: _state.selectedVoiceId,
                             selectedLevelIds: _state.selectedLevelIds,
                             state: ttsState,
+                            packageState: _state.ttsPackageState,
                             busy: _state.actionBusy,
-                            onVoiceChanged: (value) => setState(
-                              () => _state = _state.copyWith(selectedVoiceId: value),
-                            ),
+                            onVoiceChanged: (value) async {
+                              setState(() => _state = _state.copyWith(selectedVoiceId: value));
+                              if (value == null || value.isEmpty) {
+                                return;
+                              }
+                              try {
+                                final packageState = await _controller.refreshTtsPackageState(
+                                  bookId: widget.bookId,
+                                  voiceId: value,
+                                );
+                                if (!mounted) {
+                                  return;
+                                }
+                                setState(() => _state = _state.copyWith(ttsPackageState: packageState));
+                                _syncPolling(_state.ttsState, packageState);
+                              } catch (_) {
+                                // Не ломаем выбор голоса из-за package-state.
+                              }
+                            },
                             onLevelToggle: (levelId, selected) {
                               if (!selected) {
                                 return;

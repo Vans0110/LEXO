@@ -5,6 +5,8 @@ import json
 import re
 import shutil
 import sqlite3
+import threading
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -55,6 +57,8 @@ class LexoStorage:
         self.translator = translator or create_default_provider()
         self.tts_provider = tts_provider or create_default_tts_provider()
         self.tts_service = LexoTtsService(self.db_path, self.tts_dir, self.tts_provider)
+        self._package_workers: dict[str, threading.Thread] = {}
+        self._package_lock = threading.Lock()
         self._ensure_layout()
 
     def _ensure_layout(self) -> None:
@@ -225,6 +229,28 @@ class LexoStorage:
                     hash TEXT NOT NULL,
                     created_at TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS tts_package_jobs (
+                    id TEXT PRIMARY KEY,
+                    book_id TEXT NOT NULL,
+                    voice_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    error_message TEXT
+                );
+                CREATE TABLE IF NOT EXISTS tts_package_stages (
+                    id TEXT PRIMARY KEY,
+                    package_job_id TEXT NOT NULL,
+                    stage_key TEXT NOT NULL,
+                    label TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    done_count INTEGER NOT NULL DEFAULT 0,
+                    total_count INTEGER NOT NULL DEFAULT 0,
+                    error_message TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY(package_job_id) REFERENCES tts_package_jobs(id)
+                );
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_paragraphs_book_order
                 ON paragraphs(book_id, order_index);
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_segments_paragraph_order
@@ -244,6 +270,8 @@ class LexoStorage:
                 );
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_tts_segments_job_order
                 ON tts_segments(job_id, segment_index);
+                CREATE UNIQUE INDEX IF NOT EXISTS idx_tts_package_stage_unique
+                ON tts_package_stages(package_job_id, stage_key);
                 """
             )
             self._ensure_book_columns(conn)
@@ -350,6 +378,12 @@ class LexoStorage:
             WHERE synthesis_text IS NULL OR synthesis_text = ''
             """
         )
+
+    _PACKAGE_STAGE_LABELS = {
+        "base_audio": "Base audio",
+        "slow_audio": "Slow audio",
+        "word_audio": "Word audio",
+    }
 
     def _migrate_legacy_current_book(self) -> None:
         legacy_source = self.data_dir / "current_book" / "source.txt"
@@ -551,35 +585,7 @@ class LexoStorage:
         return [item for item in payload if isinstance(item, dict)]
 
     def get_word_audio_path(self, word: str, voice_id: str | None = None) -> Path:
-        normalized = str(word or "").strip()
-        if not normalized:
-            raise ValueError("Word is required")
-        profiles = [item for item in self.tts_provider.list_profiles() if int(item.get("is_enabled", 0)) == 1]
-        if not profiles:
-            raise ValueError("No TTS voice profiles available")
-        selected_profile = profiles[0]
-        if voice_id is not None:
-            for item in profiles:
-                if str(item.get("voice_id") or "") == voice_id:
-                    selected_profile = item
-                    break
-        selected_voice_id = str(selected_profile.get("voice_id") or "")
-        engine_id = str(selected_profile.get("engine_id") or self.tts_provider.engine_id)
-        cache_key = hashlib.sha256(f"{engine_id}|{selected_voice_id}|{normalized.lower()}".encode("utf-8")).hexdigest()
-        audio_dir = self.word_audio_dir / engine_id / selected_voice_id
-        audio_dir.mkdir(parents=True, exist_ok=True)
-        audio_path = audio_dir / f"{cache_key}.wav"
-        if audio_path.exists() and audio_path.is_file():
-            return audio_path
-        self.tts_provider.synthesize(
-            normalized,
-            selected_voice_id,
-            audio_path,
-            rate=0.89,
-        )
-        if not audio_path.exists() or not audio_path.is_file():
-            raise FileNotFoundError(f"Word audio file not found: {audio_path}")
-        return audio_path
+        return self._ensure_word_audio_path(word, voice_id=voice_id, overwrite=False)
 
     def list_books(self) -> dict:
         with self._connect() as conn:
@@ -967,7 +973,13 @@ class LexoStorage:
             "word_id": word_id,
             "tap_unit_id": selected_tap_unit_id,
             "sheet_source_text": str(selected_word.get("source_unit_text") or selected_word.get("text") or ""),
-            "sheet_translation_text": str(selected_word.get("translation_focus_text") or selected_word.get("translation_span_text") or ""),
+            "sheet_translation_text": str(
+                selected_word.get("unit_translation_focus_text")
+                or selected_word.get("unit_translation_span_text")
+                or selected_word.get("translation_focus_text")
+                or selected_word.get("translation_span_text")
+                or ""
+            ),
             "example_source_text": str(selected_word.get("segment_source_text") or ""),
             "example_translation_text": str(selected_word.get("segment_target_text") or ""),
             "quality_state": str(selected_word.get("quality_state") or ""),
@@ -990,7 +1002,9 @@ class LexoStorage:
         added_at = datetime.now(timezone.utc).isoformat()
         word = str(unit.get("surface_text") or unit.get("text") or "").strip()
         lemma = str(unit.get("lemma") or unit.get("text") or word).strip()
-        translation = str(unit.get("translation") or detail.get("sheet_translation_text") or "").strip()
+        translation = str(unit.get("translation") or "").strip()
+        if not translation and unit_type != "LEXICAL":
+            translation = str(detail.get("sheet_translation_text") or "").strip()
         word_row = self._get_source_word_row(word_id)
         card_type = unit_type.lower()
         head_text = str(unit.get("text") or lemma or word).strip()
@@ -1497,6 +1511,23 @@ class LexoStorage:
             overwrite=overwrite,
         )
 
+    def generate_tts_package(
+        self,
+        book_id: str,
+        voice_id: str,
+        overwrite: bool = False,
+        overwrite_word_audio: bool = False,
+    ) -> dict:
+        return self.start_tts_package_generation(
+            book_id=book_id,
+            voice_id=voice_id,
+            overwrite=overwrite,
+            overwrite_word_audio=overwrite_word_audio,
+        )
+
+    def get_tts_package(self, book_id: str, voice_id: str) -> dict:
+        return self.get_tts_package_state(book_id=book_id, voice_id=voice_id)
+
     def start_tts_job(self, book_id: str, job_id: str) -> dict:
         return self.tts_service.start_playback(book_id=book_id, job_id=job_id)
 
@@ -1509,6 +1540,444 @@ class LexoStorage:
         if resolved_book_id is None:
             return {"jobs": [], "active_job": None, "active_segments": []}
         return self.tts_service.get_state(book_id=resolved_book_id)
+
+    def start_tts_package_generation(
+        self,
+        book_id: str,
+        voice_id: str,
+        overwrite: bool = False,
+        overwrite_word_audio: bool = False,
+    ) -> dict:
+        timestamp = datetime.now(timezone.utc).isoformat()
+        package_job_id = f"tts_package_{uuid.uuid4().hex[:12]}"
+        with self._connect() as conn:
+            resolved_book_id = self._resolve_book_id(conn, book_id)
+            if resolved_book_id is None:
+                raise ValueError(f"Book not found: {book_id}")
+            existing = conn.execute(
+                """
+                SELECT id
+                FROM tts_package_jobs
+                WHERE book_id = ? AND voice_id = ? AND status IN ('queued', 'running')
+                LIMIT 1
+                """,
+                (resolved_book_id, voice_id),
+            ).fetchone()
+            if existing is not None:
+                raise ValueError("TTS package generation is already in progress for this voice")
+            conn.execute(
+                """
+                INSERT INTO tts_package_jobs(id, book_id, voice_id, status, created_at, updated_at, error_message)
+                VALUES (?, ?, ?, ?, ?, ?, NULL)
+                """,
+                (package_job_id, resolved_book_id, voice_id, "queued", timestamp, timestamp),
+            )
+            for stage_key, label in self._PACKAGE_STAGE_LABELS.items():
+                conn.execute(
+                    """
+                    INSERT INTO tts_package_stages(
+                        id, package_job_id, stage_key, label, status, done_count, total_count,
+                        error_message, created_at, updated_at
+                    )
+                    VALUES (?, ?, ?, ?, ?, 0, 0, NULL, ?, ?)
+                    """,
+                    (f"{package_job_id}_{stage_key}", package_job_id, stage_key, label, "pending", timestamp, timestamp),
+                )
+        self._start_tts_package_worker(
+            package_job_id=package_job_id,
+            overwrite=overwrite,
+            overwrite_word_audio=overwrite_word_audio,
+        )
+        return self.get_tts_package_state(book_id=book_id, voice_id=voice_id)
+
+    def get_tts_package_state(self, book_id: str, voice_id: str) -> dict:
+        with self._connect() as conn:
+            resolved_book_id = self._resolve_book_id(conn, book_id)
+            if resolved_book_id is None:
+                return {
+                    "book_id": book_id,
+                    "voice_id": voice_id,
+                    "status": "idle",
+                    "package_job_id": "",
+                    "stages": [],
+                }
+            job = conn.execute(
+                """
+                SELECT *
+                FROM tts_package_jobs
+                WHERE book_id = ? AND voice_id = ?
+                ORDER BY created_at DESC
+                LIMIT 1
+                """,
+                (resolved_book_id, voice_id),
+            ).fetchone()
+            if job is None:
+                return {
+                    "book_id": resolved_book_id,
+                    "voice_id": voice_id,
+                    "status": "idle",
+                    "package_job_id": "",
+                    "stages": [],
+                }
+            stage_rows = conn.execute(
+                """
+                SELECT stage_key, label, status, done_count, total_count, error_message
+                FROM tts_package_stages
+                WHERE package_job_id = ?
+                ORDER BY CASE stage_key
+                    WHEN 'base_audio' THEN 1
+                    WHEN 'slow_audio' THEN 2
+                    WHEN 'word_audio' THEN 3
+                    ELSE 99
+                END
+                """,
+                (job["id"],),
+            ).fetchall()
+        return {
+            "book_id": resolved_book_id,
+            "voice_id": voice_id,
+            "package_job_id": str(job["id"]),
+            "status": str(job["status"] or "idle"),
+            "error_message": str(job["error_message"] or ""),
+            "stages": [
+                {
+                    "stage_key": str(row["stage_key"]),
+                    "label": str(row["label"]),
+                    "status": str(row["status"]),
+                    "done_count": int(row["done_count"] or 0),
+                    "total_count": int(row["total_count"] or 0),
+                    "error_message": str(row["error_message"] or ""),
+                }
+                for row in stage_rows
+            ],
+        }
+
+    def _start_tts_package_worker(
+        self,
+        *,
+        package_job_id: str,
+        overwrite: bool,
+        overwrite_word_audio: bool,
+    ) -> None:
+        worker = threading.Thread(
+            target=self._run_tts_package_job,
+            args=(package_job_id, overwrite, overwrite_word_audio),
+            daemon=True,
+        )
+        with self._package_lock:
+            self._package_workers[package_job_id] = worker
+        worker.start()
+
+    def _run_tts_package_job(
+        self,
+        package_job_id: str,
+        overwrite: bool,
+        overwrite_word_audio: bool,
+    ) -> None:
+        try:
+            with self._connect() as conn:
+                job = conn.execute(
+                    "SELECT book_id, voice_id FROM tts_package_jobs WHERE id = ?",
+                    (package_job_id,),
+                ).fetchone()
+            if job is None:
+                return
+            book_id = str(job["book_id"])
+            voice_id = str(job["voice_id"])
+            base_level_id = self._resolve_level_id_for_variant("base")
+            slow_level_id = self._resolve_level_id_for_variant("slow_native")
+            self._update_package_job_status(package_job_id, "running")
+            self._run_package_audio_stage(
+                package_job_id=package_job_id,
+                stage_key="base_audio",
+                book_id=book_id,
+                voice_id=voice_id,
+                level_id=base_level_id,
+                audio_variant="base",
+                overwrite=overwrite,
+            )
+            self._run_package_audio_stage(
+                package_job_id=package_job_id,
+                stage_key="slow_audio",
+                book_id=book_id,
+                voice_id=voice_id,
+                level_id=slow_level_id,
+                audio_variant="slow_native",
+                overwrite=overwrite,
+            )
+            self._run_package_word_stage(
+                package_job_id=package_job_id,
+                book_id=book_id,
+                voice_id=voice_id,
+                overwrite_word_audio=overwrite_word_audio,
+            )
+            self._update_package_job_status(package_job_id, "done")
+        except Exception as exc:
+            self._update_package_job_status(package_job_id, "error", error_message=str(exc))
+        finally:
+            with self._package_lock:
+                self._package_workers.pop(package_job_id, None)
+
+    def _run_package_audio_stage(
+        self,
+        *,
+        package_job_id: str,
+        stage_key: str,
+        book_id: str,
+        voice_id: str,
+        level_id: int,
+        audio_variant: str,
+        overwrite: bool,
+    ) -> None:
+        self._update_package_stage(package_job_id, stage_key, status="running", error_message="")
+        existing = self._find_tts_job_for_variant(book_id=book_id, voice_id=voice_id, audio_variant=audio_variant)
+        if not overwrite:
+            if existing is not None and existing["status"] == "ready":
+                total = int(existing["total_segments"] or 0)
+                ready = int(existing["ready_segments"] or 0)
+                self._update_package_stage(
+                    package_job_id,
+                    stage_key,
+                    status="done",
+                    done_count=ready,
+                    total_count=total,
+                    error_message="",
+                )
+                return
+            if existing is not None and existing["status"] in {"queued", "generating"}:
+                self._poll_package_audio_stage(
+                    package_job_id=package_job_id,
+                    stage_key=stage_key,
+                    book_id=book_id,
+                    voice_id=voice_id,
+                    audio_variant=audio_variant,
+                )
+                return
+        else:
+            if existing is not None and existing["status"] in {"queued", "generating"}:
+                raise RuntimeError(f"Cannot overwrite {audio_variant} while generation is already in progress")
+        self.tts_service.generate_jobs(
+            book_id=book_id,
+            voice_id=voice_id,
+            level_ids=[level_id],
+            overwrite=overwrite,
+        )
+        self._poll_package_audio_stage(
+            package_job_id=package_job_id,
+            stage_key=stage_key,
+            book_id=book_id,
+            voice_id=voice_id,
+            audio_variant=audio_variant,
+        )
+
+    def _poll_package_audio_stage(
+        self,
+        *,
+        package_job_id: str,
+        stage_key: str,
+        book_id: str,
+        voice_id: str,
+        audio_variant: str,
+    ) -> None:
+        while True:
+            state = self.tts_service.get_state(book_id)
+            job = next(
+                (
+                    item
+                    for item in state["jobs"]
+                    if str(item.get("voice_id") or "") == voice_id
+                    and str(item.get("audio_variant") or "base") == audio_variant
+                ),
+                None,
+            )
+            if job is None:
+                time.sleep(0.2)
+                continue
+            total = int(job.get("total_segments") or 0)
+            ready = int(job.get("ready_segments") or 0)
+            status = str(job.get("status") or "queued")
+            self._update_package_stage(
+                package_job_id,
+                stage_key,
+                status="running" if status in {"queued", "generating"} else status,
+                done_count=ready,
+                total_count=total,
+                error_message=str(job.get("error_message") or ""),
+            )
+            if status == "ready":
+                self._update_package_stage(
+                    package_job_id,
+                    stage_key,
+                    status="done",
+                    done_count=ready,
+                    total_count=total,
+                    error_message="",
+                )
+                return
+            if status == "error":
+                raise RuntimeError(str(job.get("error_message") or f"{audio_variant} generation failed"))
+            time.sleep(0.35)
+
+    def _run_package_word_stage(
+        self,
+        *,
+        package_job_id: str,
+        book_id: str,
+        voice_id: str,
+        overwrite_word_audio: bool,
+    ) -> None:
+        self._update_package_stage(package_job_id, "word_audio", status="running", error_message="")
+        entries = self._collect_book_word_audio_entries(book_id)
+        total = len(entries)
+        self._update_package_stage(package_job_id, "word_audio", status="running", total_count=total)
+        for index, entry in enumerate(entries, start=1):
+            self._ensure_word_audio_path(entry, voice_id=voice_id, overwrite=overwrite_word_audio)
+            self._update_package_stage(
+                package_job_id,
+                "word_audio",
+                status="running",
+                done_count=index,
+                total_count=total,
+                error_message="",
+            )
+        self._update_package_stage(
+            package_job_id,
+            "word_audio",
+            status="done",
+            done_count=total,
+            total_count=total,
+            error_message="",
+        )
+
+    def _collect_book_word_audio_entries(self, book_id: str) -> list[str]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT lemma, normalized_text, lexical_unit_type
+                FROM source_words
+                WHERE book_id = ?
+                ORDER BY order_index_in_paragraph
+                """,
+                (book_id,),
+            ).fetchall()
+        entries: list[str] = []
+        seen: set[str] = set()
+        for row in rows:
+            lexical_unit_type = str(row["lexical_unit_type"] or "").upper()
+            normalized = str(row["normalized_text"] or "").strip().lower()
+            lemma = str(row["lemma"] or "").strip().lower()
+            candidate = lemma or normalized
+            if not candidate:
+                continue
+            if lexical_unit_type == "GRAMMAR":
+                continue
+            if candidate in ARTICLE_WORDS or candidate in COPULA_WORDS:
+                continue
+            if not re.search(r"[a-z]", candidate):
+                continue
+            if candidate in seen:
+                continue
+            seen.add(candidate)
+            entries.append(candidate)
+        return entries
+
+    def _ensure_word_audio_path(self, word: str, voice_id: str | None = None, overwrite: bool = False) -> Path:
+        normalized = str(word or "").strip()
+        if not normalized:
+            raise ValueError("Word is required")
+        profiles = [item for item in self.tts_provider.list_profiles() if int(item.get("is_enabled", 0)) == 1]
+        if not profiles:
+            raise ValueError("No TTS voice profiles available")
+        selected_profile = profiles[0]
+        if voice_id is not None:
+            for item in profiles:
+                if str(item.get("voice_id") or "") == voice_id:
+                    selected_profile = item
+                    break
+        selected_voice_id = str(selected_profile.get("voice_id") or "")
+        engine_id = str(selected_profile.get("engine_id") or self.tts_provider.engine_id)
+        cache_key = hashlib.sha256(f"{engine_id}|{selected_voice_id}|{normalized.lower()}".encode("utf-8")).hexdigest()
+        audio_dir = self.word_audio_dir / engine_id / selected_voice_id
+        audio_dir.mkdir(parents=True, exist_ok=True)
+        audio_path = audio_dir / f"{cache_key}.wav"
+        if audio_path.exists() and audio_path.is_file() and not overwrite:
+            return audio_path
+        if overwrite and audio_path.exists() and audio_path.is_file():
+            audio_path.unlink(missing_ok=True)
+        self.tts_provider.synthesize(
+            normalized,
+            selected_voice_id,
+            audio_path,
+            rate=0.89,
+        )
+        if not audio_path.exists() or not audio_path.is_file():
+            raise FileNotFoundError(f"Word audio file not found: {audio_path}")
+        return audio_path
+
+    def _find_tts_job_for_variant(self, *, book_id: str, voice_id: str, audio_variant: str) -> sqlite3.Row | None:
+        with self._connect() as conn:
+            return conn.execute(
+                """
+                SELECT *
+                FROM tts_jobs
+                WHERE book_id = ? AND voice_id = ? AND audio_variant = ?
+                ORDER BY created_at DESC
+                LIMIT 1
+                """,
+                (book_id, voice_id, audio_variant),
+            ).fetchone()
+
+    def _resolve_level_id_for_variant(self, audio_variant: str) -> int:
+        levels = self.tts_service.get_levels().get("items", [])
+        for item in levels:
+            if str(item.get("audio_variant") or "base") == audio_variant:
+                return int(item["id"])
+        raise ValueError(f"No TTS level configured for audio variant '{audio_variant}'")
+
+    def _update_package_job_status(self, package_job_id: str, status: str, error_message: str | None = None) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                UPDATE tts_package_jobs
+                SET status = ?, error_message = ?, updated_at = ?
+                WHERE id = ?
+                """,
+                (status, error_message, datetime.now(timezone.utc).isoformat(), package_job_id),
+            )
+
+    def _update_package_stage(
+        self,
+        package_job_id: str,
+        stage_key: str,
+        *,
+        status: str | None = None,
+        done_count: int | None = None,
+        total_count: int | None = None,
+        error_message: str | None = None,
+    ) -> None:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT status, done_count, total_count, error_message FROM tts_package_stages WHERE package_job_id = ? AND stage_key = ?",
+                (package_job_id, stage_key),
+            ).fetchone()
+            if row is None:
+                return
+            conn.execute(
+                """
+                UPDATE tts_package_stages
+                SET status = ?, done_count = ?, total_count = ?, error_message = ?, updated_at = ?
+                WHERE package_job_id = ? AND stage_key = ?
+                """,
+                (
+                    status if status is not None else row["status"],
+                    done_count if done_count is not None else int(row["done_count"] or 0),
+                    total_count if total_count is not None else int(row["total_count"] or 0),
+                    error_message if error_message is not None else str(row["error_message"] or ""),
+                    datetime.now(timezone.utc).isoformat(),
+                    package_job_id,
+                    stage_key,
+                ),
+            )
 
     def _mark_processing(
         self,

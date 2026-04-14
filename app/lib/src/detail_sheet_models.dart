@@ -63,7 +63,9 @@ class DetailSheetPayload {
           .join(' ');
       final displayText = lexicalUnitType == 'GRAMMAR' ? surfaceText : lemmaText;
       final translation = grouped
-          .map((entry) => entry.translationSpanText.trim())
+          .map((entry) => entry.translationFocusText.trim().isNotEmpty
+              ? entry.translationFocusText.trim()
+              : entry.translationSpanText.trim())
           .where((entry) => entry.isNotEmpty)
           .toSet()
           .join(' ');
@@ -92,9 +94,13 @@ class DetailSheetPayload {
       wordId: word.id,
       tapUnitId: word.tapUnitId,
       sheetSourceText: word.sourceUnitText,
-      sheetTranslationText: word.translationFocusText.trim().isNotEmpty
-          ? word.translationFocusText
-          : word.translationSpanText,
+      sheetTranslationText: word.unitTranslationFocusText.trim().isNotEmpty
+          ? word.unitTranslationFocusText
+          : (word.unitTranslationSpanText.trim().isNotEmpty
+              ? word.unitTranslationSpanText
+              : (word.translationFocusText.trim().isNotEmpty
+                  ? word.translationFocusText
+                  : word.translationSpanText)),
       exampleSourceText: word.segmentSourceText ?? item.sourceText,
       exampleTranslationText: word.segmentTargetText ?? item.targetText,
       units: units,

@@ -175,6 +175,12 @@ def _translate_heading_chapter(text: str) -> str:
     if not title:
         return f"Глава {number}"
     title_map = {
+        "a special saturday": "Особенная суббота",
+        "the journey": "Путешествие",
+        "the forest": "Лес",
+        "the picnic": "Пикник",
+        "the top of the hill": "Вершина холма",
+        "going home": "Возвращение домой",
         "the park": "Парк",
         "the new day": "Новый день",
         "home": "Дом",

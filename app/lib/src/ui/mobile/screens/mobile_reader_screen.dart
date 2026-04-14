@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
@@ -37,6 +38,9 @@ class MobileReaderScreen extends StatefulWidget {
 class _MobileReaderScreenState extends State<MobileReaderScreen> {
   late final MobileBookPackageRepository _packageRepository;
   late final Player _audioPlayer;
+  StreamSubscription<Playlist>? _playlistSubscription;
+  StreamSubscription<bool>? _playingSubscription;
+  StreamSubscription<bool>? _completedSubscription;
 
   ReaderFeatureState _state = const ReaderFeatureState();
   String? _desktopBookId;
@@ -102,7 +106,17 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     super.initState();
     _packageRepository = MobileBookPackageRepository();
     _audioPlayer = Player();
-    _audioPlayer.stream.completed.listen((completed) {
+    _playlistSubscription = _audioPlayer.stream.playlist.listen((playlist) {
+      if (mounted) {
+        _syncLocalPlaybackFromPlaylist(playlist);
+      }
+    });
+    _playingSubscription = _audioPlayer.stream.playing.listen((playing) {
+      if (mounted) {
+        _syncLocalPlaybackPlaying(playing);
+      }
+    });
+    _completedSubscription = _audioPlayer.stream.completed.listen((completed) {
       if (mounted && completed) {
         _handleTrackCompleted();
       }
@@ -112,6 +126,9 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   @override
   void dispose() {
+    _playlistSubscription?.cancel();
+    _playingSubscription?.cancel();
+    _completedSubscription?.cancel();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -204,6 +221,116 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     return null;
   }
 
+  TtsJobItem _copyJob(
+    TtsJobItem job, {
+    String? playbackState,
+    int? currentSegmentIndex,
+    int? currentSegmentNumber,
+    double? playbackProgress,
+  }) {
+    return TtsJobItem(
+      jobId: job.jobId,
+      levelId: job.levelId,
+      levelName: job.levelName,
+      targetWpm: job.targetWpm,
+      audioVariant: job.audioVariant,
+      nativeRate: job.nativeRate,
+      rate: job.rate,
+      pauseScale: job.pauseScale,
+      voiceId: job.voiceId,
+      status: job.status,
+      playbackState: playbackState ?? job.playbackState,
+      currentSegmentIndex: currentSegmentIndex ?? job.currentSegmentIndex,
+      totalSegments: job.totalSegments,
+      readySegments: job.readySegments,
+      generationProgress: job.generationProgress,
+      currentSegmentNumber: currentSegmentNumber ?? job.currentSegmentNumber,
+      playbackProgress: playbackProgress ?? job.playbackProgress,
+      errorMessage: job.errorMessage,
+    );
+  }
+
+  Future<List<String>?> _collectLocalPlaylistPaths(
+    String jobId,
+    List<TtsSegmentItem> segments,
+  ) async {
+    if (jobId.isEmpty || segments.isEmpty) {
+      return null;
+    }
+    final paths = <String>[];
+    for (final segment in segments) {
+      final cached = await _packageRepository.getCachedAudioPath(
+        localBookId: widget.localBookId,
+        jobId: jobId,
+        segmentIndex: segment.segmentIndex,
+      );
+      if (cached == null) {
+        return null;
+      }
+      paths.add(cached);
+    }
+    return paths;
+  }
+
+  void _syncLocalPlaybackFromPlaylist(Playlist playlist) {
+    if (!_useLocalPlayback) {
+      return;
+    }
+    final state = _state.ttsState;
+    final activeJob = state?.activeJob;
+    if (state == null || activeJob == null || state.activeSegments.isEmpty) {
+      return;
+    }
+    final index = math.max(
+      0,
+      math.min(playlist.index, state.activeSegments.length - 1),
+    );
+    final nextJob = _copyJob(
+      activeJob,
+      currentSegmentIndex: index,
+      currentSegmentNumber: math.min(index + 1, activeJob.totalSegments),
+      playbackProgress: activeJob.totalSegments > 0 ? ((index + 1) / activeJob.totalSegments) : 0,
+    );
+    if (nextJob.currentSegmentIndex == activeJob.currentSegmentIndex &&
+        nextJob.currentSegmentNumber == activeJob.currentSegmentNumber &&
+        nextJob.playbackProgress == activeJob.playbackProgress) {
+      return;
+    }
+    setState(() {
+      _state = _state.copyWith(
+        ttsState: TtsState(
+          jobs: state.jobs,
+          activeJob: nextJob,
+          activeSegments: state.activeSegments,
+        ),
+      );
+    });
+  }
+
+  void _syncLocalPlaybackPlaying(bool playing) {
+    if (!_useLocalPlayback) {
+      return;
+    }
+    final state = _state.ttsState;
+    final activeJob = state?.activeJob;
+    if (state == null || activeJob == null || state.activeSegments.isEmpty) {
+      return;
+    }
+    final nextPlaybackState = playing ? 'playing' : 'paused';
+    if (activeJob.playbackState == nextPlaybackState) {
+      return;
+    }
+    setState(() {
+      _state = _state.copyWith(
+        ttsState: TtsState(
+          jobs: state.jobs,
+          activeJob: _copyJob(activeJob, playbackState: nextPlaybackState),
+          activeSegments: state.activeSegments,
+        ),
+      );
+    });
+  }
+
   Future<void> _runGenerateVoice({required bool overwrite}) async {
     final selectedJob = _selectedJob();
     if (overwrite && selectedJob != null) {
@@ -224,12 +351,15 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   Future<void> _startPlayback(String jobId) async {
     final localSegments = _localSegmentsByJobId[jobId] ?? const <TtsSegmentItem>[];
-    final hasCompleteLocalAudio = await _hasCompleteLocalAudio(jobId, localSegments);
-    if (localSegments.isNotEmpty && hasCompleteLocalAudio) {
+    final localAudioPaths = await _collectLocalPlaylistPaths(jobId, localSegments);
+    if (localSegments.isNotEmpty && localAudioPaths != null && localAudioPaths.length == localSegments.length) {
       final selectedJob = _selectedJob();
       if (selectedJob == null || selectedJob.jobId != jobId) {
         return;
       }
+      final playlist = Playlist([
+        for (final path in localAudioPaths) Media(path),
+      ]);
       setState(() {
         _useLocalPlayback = true;
         _state = _state.copyWith(
@@ -259,8 +389,10 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
           ),
         );
       });
+      await _audioPlayer.stop();
+      await _audioPlayer.setPlaylistMode(PlaylistMode.none);
+      await _audioPlayer.open(playlist, play: true);
       await _applyPlaybackSpeed();
-      await _playCurrentSegment();
       return;
     }
     setState(() {
@@ -268,26 +400,6 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         error: 'Для этого голоса нет локального audio. Выполните Синхронизацию.',
       );
     });
-  }
-
-  Future<bool> _hasCompleteLocalAudio(
-    String jobId,
-    List<TtsSegmentItem> segments,
-  ) async {
-    if (jobId.isEmpty || segments.isEmpty) {
-      return false;
-    }
-    for (final segment in segments) {
-      final cached = await _packageRepository.getCachedAudioPath(
-        localBookId: widget.localBookId,
-        jobId: jobId,
-        segmentIndex: segment.segmentIndex,
-      );
-      if (cached == null) {
-        return false;
-      }
-    }
-    return true;
   }
 
   Future<void> _controlPlayback(String action) async {
@@ -298,101 +410,15 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     if (_useLocalPlayback) {
       if (action == 'pause') {
         await _audioPlayer.pause();
-        setState(() {
-          _state = _state.copyWith(
-            ttsState: TtsState(
-              jobs: _state.ttsState?.jobs ?? const <TtsJobItem>[],
-              activeJob: TtsJobItem(
-                jobId: activeJob.jobId,
-                levelId: activeJob.levelId,
-                levelName: activeJob.levelName,
-                targetWpm: activeJob.targetWpm,
-                audioVariant: activeJob.audioVariant,
-                nativeRate: activeJob.nativeRate,
-                rate: activeJob.rate,
-                pauseScale: activeJob.pauseScale,
-                voiceId: activeJob.voiceId,
-                status: activeJob.status,
-                playbackState: 'paused',
-                currentSegmentIndex: activeJob.currentSegmentIndex,
-                totalSegments: activeJob.totalSegments,
-                readySegments: activeJob.readySegments,
-                generationProgress: activeJob.generationProgress,
-                currentSegmentNumber: activeJob.currentSegmentNumber,
-                playbackProgress: activeJob.playbackProgress,
-                errorMessage: activeJob.errorMessage,
-              ),
-              activeSegments: _state.ttsState?.activeSegments ?? const <TtsSegmentItem>[],
-            ),
-          );
-        });
       } else if (action == 'resume') {
         await _applyPlaybackSpeed();
         await _audioPlayer.play();
-        setState(() {
-          _state = _state.copyWith(
-            ttsState: TtsState(
-              jobs: _state.ttsState?.jobs ?? const <TtsJobItem>[],
-              activeJob: TtsJobItem(
-                jobId: activeJob.jobId,
-                levelId: activeJob.levelId,
-                levelName: activeJob.levelName,
-                targetWpm: activeJob.targetWpm,
-                audioVariant: activeJob.audioVariant,
-                nativeRate: activeJob.nativeRate,
-                rate: activeJob.rate,
-                pauseScale: activeJob.pauseScale,
-                voiceId: activeJob.voiceId,
-                status: activeJob.status,
-                playbackState: 'playing',
-                currentSegmentIndex: activeJob.currentSegmentIndex,
-                totalSegments: activeJob.totalSegments,
-                readySegments: activeJob.readySegments,
-                generationProgress: activeJob.generationProgress,
-                currentSegmentNumber: activeJob.currentSegmentNumber,
-                playbackProgress: activeJob.playbackProgress,
-                errorMessage: activeJob.errorMessage,
-              ),
-              activeSegments: _state.ttsState?.activeSegments ?? const <TtsSegmentItem>[],
-            ),
-          );
-        });
       } else if (action == 'next' || action == 'prev') {
-        final segments = _state.ttsState?.activeSegments ?? const <TtsSegmentItem>[];
-        if (segments.isEmpty) {
-          return;
+        if (action == 'next') {
+          await _audioPlayer.next();
+        } else {
+          await _audioPlayer.previous();
         }
-        var nextIndex = activeJob.currentSegmentIndex + (action == 'next' ? 1 : -1);
-        nextIndex = math.max(0, math.min(nextIndex, segments.length - 1));
-        setState(() {
-          _state = _state.copyWith(
-            ttsState: TtsState(
-              jobs: _state.ttsState?.jobs ?? const <TtsJobItem>[],
-              activeJob: TtsJobItem(
-                jobId: activeJob.jobId,
-                levelId: activeJob.levelId,
-                levelName: activeJob.levelName,
-                targetWpm: activeJob.targetWpm,
-                audioVariant: activeJob.audioVariant,
-                nativeRate: activeJob.nativeRate,
-                rate: activeJob.rate,
-                pauseScale: activeJob.pauseScale,
-                voiceId: activeJob.voiceId,
-                status: activeJob.status,
-                playbackState: 'playing',
-                currentSegmentIndex: nextIndex,
-                totalSegments: activeJob.totalSegments,
-                readySegments: activeJob.readySegments,
-                generationProgress: activeJob.generationProgress,
-                currentSegmentNumber: math.min(nextIndex + 1, activeJob.totalSegments),
-                playbackProgress: activeJob.totalSegments > 0 ? ((nextIndex + 1) / activeJob.totalSegments) : 0,
-                errorMessage: activeJob.errorMessage,
-              ),
-              activeSegments: segments,
-            ),
-          );
-        });
-        await _playCurrentSegment();
       }
       return;
     }
@@ -421,82 +447,30 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     });
   }
 
-  Future<void> _playCurrentSegment() async {
-    final state = _state.ttsState;
-    final activeJob = state?.activeJob;
-    if (state == null ||
-        activeJob == null ||
-        state.activeSegments.isEmpty) {
-      return;
-    }
-    final index = math.max(
-      0,
-      math.min(activeJob.currentSegmentIndex, state.activeSegments.length - 1),
-    );
-    final segment = state.activeSegments[index];
-    var localAudioPath = await _packageRepository.getCachedAudioPath(
-      localBookId: widget.localBookId,
-      jobId: activeJob.jobId,
-      segmentIndex: segment.segmentIndex,
-    );
-    if (localAudioPath == null) {
-      setState(() {
-        _state = _state.copyWith(
-          error: 'Локальный audio segment не найден. Выполните Синхронизацию.',
-        );
-      });
-      return;
-    }
-    await _audioPlayer.stop();
-    await _audioPlayer.open(Media(localAudioPath), play: true);
-    await _applyPlaybackSpeed();
-  }
-
   Future<void> _handleTrackCompleted() async {
     final state = _state.ttsState;
     final activeJob = state?.activeJob;
     if (state == null || activeJob == null || state.activeSegments.isEmpty) {
       return;
     }
-    if (activeJob.currentSegmentIndex >= state.activeSegments.length - 1) {
-      return;
-    }
     if (_useLocalPlayback) {
-      final nextIndex = activeJob.currentSegmentIndex + 1;
+      if (activeJob.currentSegmentIndex < state.activeSegments.length - 1) {
+        return;
+      }
+      await _audioPlayer.stop();
+      if (!mounted) {
+        return;
+      }
       setState(() {
+        _useLocalPlayback = false;
         _state = _state.copyWith(
           ttsState: TtsState(
             jobs: state.jobs,
-            activeJob: TtsJobItem(
-              jobId: activeJob.jobId,
-              levelId: activeJob.levelId,
-              levelName: activeJob.levelName,
-              targetWpm: activeJob.targetWpm,
-              audioVariant: activeJob.audioVariant,
-              nativeRate: activeJob.nativeRate,
-              rate: activeJob.rate,
-              pauseScale: activeJob.pauseScale,
-              voiceId: activeJob.voiceId,
-              status: activeJob.status,
-              playbackState: 'playing',
-              currentSegmentIndex: nextIndex,
-              totalSegments: activeJob.totalSegments,
-              readySegments: activeJob.readySegments,
-              generationProgress: activeJob.generationProgress,
-              currentSegmentNumber: math.min(nextIndex + 1, activeJob.totalSegments),
-              playbackProgress: activeJob.totalSegments > 0 ? ((nextIndex + 1) / activeJob.totalSegments) : 0,
-              errorMessage: activeJob.errorMessage,
-            ),
-            activeSegments: state.activeSegments,
+            activeJob: null,
+            activeSegments: const <TtsSegmentItem>[],
           ),
         );
       });
-      final currentSegment = state.activeSegments[activeJob.currentSegmentIndex];
-      final gap = Duration(milliseconds: currentSegment.pauseAfterMs);
-      if (gap > Duration.zero) {
-        await Future<void>.delayed(gap);
-      }
-      await _playCurrentSegment();
       return;
     }
     await _audioPlayer.stop();

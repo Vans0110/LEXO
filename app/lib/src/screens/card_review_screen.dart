@@ -13,11 +13,13 @@ class CardReviewScreen extends StatefulWidget {
     this.api,
     required this.items,
     this.onApplyReviewResult,
+    this.resolveLocalWordAudioPath,
   });
 
   final LexoApiClient? api;
   final List<SavedCardItem> items;
   final Future<SavedCardItem> Function(String cardId, String direction)? onApplyReviewResult;
+  final Future<String?> Function(SavedCardItem item)? resolveLocalWordAudioPath;
 
   @override
   State<CardReviewScreen> createState() => _CardReviewScreenState();
@@ -89,17 +91,28 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
     }
   }
 
-  Future<void> _playWordAudio(String word) async {
-    final api = widget.api;
-    if (api == null) {
-      throw Exception('API is not available for word audio');
+  Future<void> _playWordAudio(SavedCardItem item) async {
+    final resolver = widget.resolveLocalWordAudioPath;
+    String audioPath;
+    if (resolver != null) {
+      final resolved = await resolver(item);
+      if (resolved == null || resolved.trim().isEmpty) {
+        throw Exception('Локальный word audio не найден. Выполните Синхронизацию книги.');
+      }
+      audioPath = resolved;
+    } else {
+      final api = widget.api;
+      if (api == null) {
+        throw Exception('API is not available for word audio');
+      }
+      final bytes = await api.downloadWordAudio(item.headText);
+      final tempDir = await getTemporaryDirectory();
+      final audioFile = File('${tempDir.path}/lexo_review_word_${item.headText.hashCode}.wav');
+      await audioFile.writeAsBytes(bytes, flush: true);
+      audioPath = audioFile.path;
     }
-    final bytes = await api.downloadWordAudio(word);
-    final tempDir = await getTemporaryDirectory();
-    final audioFile = File('${tempDir.path}/lexo_review_word_${word.hashCode}.wav');
-    await audioFile.writeAsBytes(bytes, flush: true);
     await _audioPlayer.stop();
-    await _audioPlayer.open(Media(audioFile.path), play: true);
+    await _audioPlayer.open(Media(audioPath), play: true);
   }
 
   @override
@@ -140,7 +153,7 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
                     item: current,
                     onPlayAudio: () async {
                       try {
-                        await _playWordAudio(current.headText);
+                        await _playWordAudio(current);
                       } catch (error) {
                         if (!mounted) {
                           return;

@@ -512,6 +512,7 @@ class LexoStorage:
             "source_text": source_text,
             "reader_payload": reader_payload,
             "tts_manifest": self._build_mobile_tts_manifest(book_id),
+            "word_audio_manifest": self._build_mobile_word_audio_manifest(book_id),
             "detail_manifest": self._build_mobile_detail_manifest(book_id, reader_payload),
         }
 
@@ -2653,6 +2654,31 @@ class LexoStorage:
             "jobs": jobs,
         }
 
+    def _build_mobile_word_audio_manifest(self, book_id: str) -> dict:
+        entries = self._collect_book_word_audio_entries(book_id)
+        voice_id = ""
+        with self._connect() as conn:
+            ready_job = conn.execute(
+                """
+                SELECT voice_id
+                FROM tts_jobs
+                WHERE book_id = ? AND status = 'ready'
+                ORDER BY updated_at DESC, created_at DESC
+                LIMIT 1
+                """,
+                (book_id,),
+            ).fetchone()
+        if ready_job is not None:
+            voice_id = str(ready_job["voice_id"] or "")
+        if not voice_id:
+            profiles = self.get_tts_profiles()["items"]
+            if profiles:
+                voice_id = str(profiles[0].get("voice_id") or "")
+        return {
+            "voice_id": voice_id,
+            "items": entries,
+        }
+
     def _build_mobile_detail_manifest(self, book_id: str, reader_payload: dict) -> dict:
         manifest: dict[str, dict] = {}
         for paragraph in reader_payload.get("paragraphs", []):
@@ -2671,6 +2697,7 @@ class LexoStorage:
         source_text = str(package.get("source_text") or "")
         reader_payload = dict(package.get("reader_payload") or {})
         tts_manifest = dict(package.get("tts_manifest") or {})
+        word_audio_manifest = dict(package.get("word_audio_manifest") or {})
         detail_manifest = dict(package.get("detail_manifest") or {})
         paragraphs = list(reader_payload.get("paragraphs") or [])
 
@@ -2723,6 +2750,7 @@ class LexoStorage:
                 }
             )
         parts.append({"part_id": "tts_manifest", "kind": "tts_manifest", "payload": tts_manifest})
+        parts.append({"part_id": "word_audio_manifest", "kind": "word_audio_manifest", "payload": word_audio_manifest})
         parts.append({"part_id": "detail_manifest", "kind": "detail_manifest", "payload": detail_manifest})
         return parts
 

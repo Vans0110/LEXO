@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../../../api/api_client.dart';
 import '../../../cards_models.dart';
 import '../../../mobile/mobile_cards_repository.dart';
+import '../../../mobile/mobile_package_models.dart';
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../mobile/mobile_settings_repository.dart';
 import '../../../mobile/mobile_sync_debug_logger.dart';
@@ -305,6 +306,44 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     return updated;
   }
 
+  Future<String?> _resolveLocalCardAudioPath(SavedCardItem item) async {
+    final sourceBookId = item.sourceBookId.trim();
+    if (sourceBookId.isEmpty) {
+      return null;
+    }
+    MobileBookPackage? package = await _packageRepository.findByDesktopBookId(sourceBookId);
+    if (package == null) {
+      try {
+        package = await _packageRepository.readPackage(sourceBookId);
+      } catch (_) {
+        package = null;
+      }
+    }
+    if (package == null) {
+      return null;
+    }
+    final voiceId = package.wordAudioVoiceId.trim();
+    if (voiceId.isEmpty) {
+      return null;
+    }
+    final candidates = <String>{
+      item.lemma.trim(),
+      item.headText.trim(),
+      item.surfaceText.trim(),
+    }..removeWhere((value) => value.isEmpty);
+    for (final candidate in candidates) {
+      final cached = await _packageRepository.getCachedWordAudioPath(
+        localBookId: package.meta.localBookId,
+        voiceId: voiceId,
+        word: candidate,
+      );
+      if (cached != null) {
+        return cached;
+      }
+    }
+    return null;
+  }
+
   Future<void> _handleCardsChanged() async {
     final pendingChangesCount = await _cardsRepository.pendingChangesCount();
     if (!mounted) {
@@ -419,6 +458,54 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
         '${failedSegments.isEmpty ? '' : ' failed_segments=${failedSegments.join(',')}'}',
       );
       _refreshSyncDebugText();
+      final wordAudioManifest = package['word_audio_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+      final wordAudioVoiceId = wordAudioManifest['voice_id'] as String? ?? '';
+      final wordAudioItems = (wordAudioManifest['items'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString().trim())
+          .where((item) => item.isNotEmpty)
+          .toList();
+      var expectedWordAudio = 0;
+      var presentWordAudio = 0;
+      var downloadedWordAudio = 0;
+      final failedWordAudio = <String>[];
+      if (wordAudioVoiceId.isNotEmpty) {
+        for (final word in wordAudioItems) {
+          expectedWordAudio += 1;
+          final cached = await _packageRepository.getCachedWordAudioPath(
+            localBookId: localBookId,
+            voiceId: wordAudioVoiceId,
+            word: word,
+          );
+          if (cached != null) {
+            presentWordAudio += 1;
+            continue;
+          }
+          try {
+            final bytes = await widget.api.downloadWordAudio(word, voiceId: wordAudioVoiceId);
+            await _packageRepository.ensureWordAudioFile(
+              localBookId: localBookId,
+              voiceId: wordAudioVoiceId,
+              word: word,
+              bytes: bytes,
+            );
+            downloadedWordAudio += 1;
+            presentWordAudio += 1;
+          } catch (error) {
+            failedWordAudio.add(word);
+            await _syncLogger.log(
+              'SYNC_BOOK_WORD_AUDIO_ERROR desktop_id=${item.id} local_id=$localBookId '
+              'voice_id=$wordAudioVoiceId word="$word" error="$error"',
+            );
+            _refreshSyncDebugText();
+          }
+        }
+      }
+      await _syncLogger.log(
+        'SYNC_BOOK_WORD_AUDIO desktop_id=${item.id} local_id=$localBookId '
+        'voice_id=$wordAudioVoiceId expected=$expectedWordAudio present=$presentWordAudio '
+        'downloaded=$downloadedWordAudio failed=${failedWordAudio.length}',
+      );
+      _refreshSyncDebugText();
       syncedCount += 1;
     }
     final localLibrary = await _packageRepository.listBooks();
@@ -478,6 +565,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
         loadReviewCards: _loadLocalReviewCards,
         deleteCard: _deleteLocalCard,
         applyReviewResult: _applyLocalReviewResult,
+        resolveLocalWordAudioPath: _resolveLocalCardAudioPath,
       ),
       MobileSettingsScreen(
         title: 'Settings',

@@ -175,8 +175,11 @@ class LexoApiClient {
     return _post('/word/audio', {'word': word});
   }
 
-  Future<List<int>> downloadWordAudio(String word) async {
-    final uri = Uri.parse('$baseUrl/word/audio?word=${Uri.encodeQueryComponent(word)}');
+  Future<List<int>> downloadWordAudio(String word, {String? voiceId}) async {
+    final voiceQuery = (voiceId == null || voiceId.trim().isEmpty)
+        ? ''
+        : '&voice_id=${Uri.encodeQueryComponent(voiceId.trim())}';
+    final uri = Uri.parse('$baseUrl/word/audio?word=${Uri.encodeQueryComponent(word)}$voiceQuery');
     Object? lastError;
     for (var attempt = 1; attempt <= _audioDownloadMaxAttempts; attempt += 1) {
       developer.log('GET $uri attempt=$attempt', name: 'LEXO_API');
@@ -241,6 +244,7 @@ class LexoApiClient {
       'source_text': '',
       'reader_payload': readerPayload,
       'tts_manifest': <String, dynamic>{},
+      'word_audio_manifest': <String, dynamic>{},
       'detail_manifest': <String, dynamic>{},
     };
     for (final part in partItems) {
@@ -275,6 +279,9 @@ class LexoApiClient {
           break;
         case 'tts_manifest':
           package['tts_manifest'] = payload;
+          break;
+        case 'word_audio_manifest':
+          package['word_audio_manifest'] = payload;
           break;
         case 'detail_manifest':
           package['detail_manifest'] = payload;

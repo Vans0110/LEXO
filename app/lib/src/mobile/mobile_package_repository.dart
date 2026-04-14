@@ -152,6 +152,34 @@ class MobileBookPackageRepository {
     return audioFile.path;
   }
 
+  Future<String> ensureWordAudioFile({
+    required String localBookId,
+    required String voiceId,
+    required String word,
+    required List<int> bytes,
+  }) async {
+    final audioFile = await _wordAudioFile(localBookId, voiceId, word);
+    if (!audioFile.parent.existsSync()) {
+      await audioFile.parent.create(recursive: true);
+    }
+    if (!audioFile.existsSync()) {
+      await audioFile.writeAsBytes(bytes, flush: true);
+    }
+    return audioFile.path;
+  }
+
+  Future<String?> getCachedWordAudioPath({
+    required String localBookId,
+    required String voiceId,
+    required String word,
+  }) async {
+    final audioFile = await _wordAudioFile(localBookId, voiceId, word);
+    if (!audioFile.existsSync()) {
+      return null;
+    }
+    return audioFile.path;
+  }
+
   Future<void> deleteJobAudio({
     required String localBookId,
     required String jobId,
@@ -176,5 +204,21 @@ class MobileBookPackageRepository {
   Future<File> _audioFile(String localBookId, String jobId, int segmentIndex) async {
     final bookDir = await _bookDir(localBookId);
     return File('${bookDir.path}/audio/$jobId/$segmentIndex.wav');
+  }
+
+  Future<File> _wordAudioFile(String localBookId, String voiceId, String word) async {
+    final bookDir = await _bookDir(localBookId);
+    final key = _wordAudioKey(word);
+    return File('${bookDir.path}/word_audio/$voiceId/$key.wav');
+  }
+
+  String _wordAudioKey(String word) {
+    final normalized = word.trim().toLowerCase();
+    final bytes = utf8.encode(normalized);
+    final buffer = StringBuffer();
+    for (final byte in bytes) {
+      buffer.write(byte.toRadixString(16).padLeft(2, '0'));
+    }
+    return buffer.toString();
   }
 }

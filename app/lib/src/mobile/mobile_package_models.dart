@@ -93,6 +93,17 @@ class MobileBookPackage {
         segmentsByJobId = _buildSegmentsByJobId(
           (rawJson['tts_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
         ),
+        wordAudioVoiceId = ((rawJson['word_audio_manifest'] as Map<String, dynamic>? ??
+                    const <String, dynamic>{})['voice_id']
+                as String? ??
+            ''),
+        wordAudioEntries = (((rawJson['word_audio_manifest'] as Map<String, dynamic>? ??
+                        const <String, dynamic>{})['items']
+                    as List<dynamic>? ??
+                const [])
+            .map((item) => item.toString())
+            .toSet())
+            .toList(),
         detailByWordId = _buildDetailByWordId(
           rawJson['detail_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{},
         );
@@ -104,6 +115,8 @@ class MobileBookPackage {
   final List<TtsLevel> levels;
   final TtsState ttsState;
   final Map<String, List<TtsSegmentItem>> segmentsByJobId;
+  final String wordAudioVoiceId;
+  final List<String> wordAudioEntries;
   final Map<String, DetailSheetPayload> detailByWordId;
 
   List<TtsSegmentItem> segmentsForJob(String jobId) {

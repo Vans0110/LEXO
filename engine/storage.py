@@ -2378,26 +2378,10 @@ class LexoStorage:
         return annotated
 
     def _is_phrase_rule_member(self, word: dict) -> bool:
-        normalized_words = [part.lower() for part in str(word.get("source_unit_text") or "").split()]
-        phrase_patterns = {
-            ("good", "morning"),
-            ("how", "are", "you"),
-            ("thank", "you"),
-            ("goodnight",),
-            ("in", "the", "afternoon"),
-        }
-        return tuple(normalized_words) in phrase_patterns
+        return False
 
     def _phrase_rule_id(self, word: dict) -> str:
-        normalized_words = tuple(part.lower() for part in str(word.get("source_unit_text") or "").split())
-        mapping = {
-            ("good", "morning"): "good_morning_greeting",
-            ("how", "are", "you"): "how_are_you",
-            ("thank", "you"): "thank_you",
-            ("goodnight",): "goodnight_phrase",
-            ("in", "the", "afternoon"): "in_the_afternoon",
-        }
-        return mapping.get(normalized_words, "")
+        return ""
 
     def _is_it_be_word(self, word: dict) -> bool:
         segment_source = str(word.get("segment_source_text") or "").lower().strip()
@@ -2421,79 +2405,6 @@ class LexoStorage:
         return tap_words
 
     def _build_special_detail_sheet(self, selected_word: dict, words: list[dict]) -> dict | None:
-        normalized_words = tuple(str(word.get("normalized_text") or "").lower() for word in words)
-        if normalized_words == ("good", "morning"):
-            translation = "доброе утро"
-            return {
-                "word_id": str(selected_word.get("id") or ""),
-                "tap_unit_id": str(selected_word.get("tap_unit_id") or ""),
-                "sheet_source_text": "Good morning",
-                "sheet_translation_text": translation,
-                "example_source_text": str(selected_word.get("segment_source_text") or ""),
-                "example_translation_text": str(selected_word.get("segment_target_text") or ""),
-                "quality_state": "phrase",
-                "rule_id": "good_morning_greeting",
-                "rule_type": "phrase",
-                "is_phrase_member": 1,
-                "grammar_hint": "",
-                "units": [
-                    {
-                        "id": str(selected_word.get("tap_unit_id") or selected_word.get("id") or ""),
-                        "type": "PHRASE",
-                        "text": "good morning",
-                        "surface_text": "Good morning",
-                        "lemma": "good morning",
-                        "translation": translation,
-                        "grammar_hint": "",
-                        "morph_label": "",
-                        "is_primary": True,
-                        "example_source_text": str(selected_word.get("segment_source_text") or ""),
-                        "example_translation_text": str(selected_word.get("segment_target_text") or ""),
-                    }
-                ],
-            }
-        if normalized_words == ("it", "is"):
-            return {
-                "word_id": str(selected_word.get("id") or ""),
-                "tap_unit_id": str(selected_word.get("tap_unit_id") or ""),
-                "sheet_source_text": "It is",
-                "sheet_translation_text": "это / оно",
-                "example_source_text": str(selected_word.get("segment_source_text") or ""),
-                "example_translation_text": str(selected_word.get("segment_target_text") or ""),
-                "quality_state": "grammar_only",
-                "rule_id": "it_be",
-                "rule_type": "grammar",
-                "is_phrase_member": 0,
-                "grammar_hint": str(selected_word.get("grammar_hint") or ""),
-                "units": [
-                    {
-                        "id": f"{selected_word.get('tap_unit_id')}:it",
-                        "type": "GRAMMAR",
-                        "text": "it",
-                        "surface_text": "It",
-                        "lemma": "it",
-                        "translation": "это / оно",
-                        "grammar_hint": "указывает на предмет или ситуацию",
-                        "morph_label": "",
-                        "is_primary": False,
-                        "example_source_text": str(selected_word.get("segment_source_text") or ""),
-                        "example_translation_text": str(selected_word.get("segment_target_text") or ""),
-                    },
-                    {
-                        "id": f"{selected_word.get('tap_unit_id')}:be",
-                        "type": "GRAMMAR",
-                        "text": "be",
-                        "surface_text": "is",
-                        "lemma": "be",
-                        "translation": "есть",
-                        "grammar_hint": "связывает подлежащее с признаком или состоянием",
-                        "morph_label": "",
-                        "is_primary": False,
-                        "example_source_text": str(selected_word.get("segment_source_text") or ""),
-                        "example_translation_text": str(selected_word.get("segment_target_text") or ""),
-                    },
-                ],
-            }
         return None
 
     def _build_detail_units(self, words: list[dict]) -> list[dict]:

@@ -634,48 +634,6 @@ def _apply_special_phrase_overrides(
         target_by_source_index=target_by_source_index,
         target_span_by_source_index=target_span_by_source_index,
     )
-    _apply_exact_phrase_override(
-        source_tokens=source_tokens,
-        target_tokens=target_tokens,
-        source_phrase=("how", "are", "you"),
-        target_phrase=("как", "дела"),
-        apply_mode="all",
-        target_by_source_index=target_by_source_index,
-        target_span_by_source_index=target_span_by_source_index,
-    )
-    _apply_exact_phrase_override(
-        source_tokens=source_tokens,
-        target_tokens=target_tokens,
-        source_phrase=("thank", "you"),
-        target_phrase=("спасибо",),
-        apply_mode="all",
-        target_by_source_index=target_by_source_index,
-        target_span_by_source_index=target_span_by_source_index,
-    )
-    _apply_exact_phrase_override(
-        source_tokens=source_tokens,
-        target_tokens=target_tokens,
-        source_phrase=("goodnight",),
-        target_phrase=("спокойной", "ночи"),
-        apply_mode="all",
-        target_by_source_index=target_by_source_index,
-        target_span_by_source_index=target_span_by_source_index,
-    )
-    _apply_exact_phrase_override(
-        source_tokens=source_tokens,
-        target_tokens=target_tokens,
-        source_phrase=("in", "the", "afternoon"),
-        target_phrase=("днем",),
-        apply_mode="all",
-        target_by_source_index=target_by_source_index,
-        target_span_by_source_index=target_span_by_source_index,
-    )
-    _apply_it_day_overrides(
-        source_tokens=source_tokens,
-        target_tokens=target_tokens,
-        target_by_source_index=target_by_source_index,
-        target_span_by_source_index=target_span_by_source_index,
-    )
 
 
 def _apply_pronoun_be_adjective_overrides(
@@ -1073,19 +1031,6 @@ def _build_tap_units(words: list[dict]) -> list[dict]:
 
 
 def _match_fixed_phrase_unit(words: list[dict], index: int) -> dict | None:
-    patterns = (
-        (("good", "morning"), "phrase"),
-        (("how", "are", "you"), "phrase"),
-        (("thank", "you"), "phrase"),
-        (("goodnight",), "phrase"),
-        (("in", "the", "afternoon"), "phrase"),
-    )
-    for pattern, unit_type in patterns:
-        end_index = index + len(pattern)
-        if end_index > len(words):
-            continue
-        if tuple(_word_normalized(word) for word in words[index:end_index]) == pattern:
-            return _build_unit(words, index, end_index - 1, unit_type)
     return None
 
 

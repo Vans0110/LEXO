@@ -30,7 +30,13 @@ if not defined PYTHON_CMD (
   exit /b 1
 )
 
-if exist "%~dp0data\models\nllb-200-distilled-600m\ct2\model.bin" (
+if exist "%~dp0data\models\nllb-200-3.3b\ct2\model.bin" (
+  set "LEXO_TRANSLATOR_MODE=nllb33"
+) else if exist "%~dp0data\models\m2m100_1.2B\ct2\model.bin" (
+  set "LEXO_TRANSLATOR_MODE=m2m100"
+) else if exist "%~dp0data\models\madlad400-10b-mt\ct2\model.bin" (
+  set "LEXO_TRANSLATOR_MODE=madlad"
+) else if exist "%~dp0data\models\nllb-200-distilled-600m\ct2\model.bin" (
   set "LEXO_TRANSLATOR_MODE=nllb"
 )
 if exist "%~dp0.venv_kokoro\Scripts\python.exe" (

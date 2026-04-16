@@ -55,3 +55,11 @@
 ### 2026-04-14
 - Сессия: Slow TTS blocks переведены на `..` per-block
 - Файл: [2026-04-14.md](/mnt/d/Programs/LEXO/history/2026-04-14.md)
+
+### 2026-04-15
+- Сессия: Из translation pipeline убраны book-specific фразы и post-edit подмены после provider
+- Файл: [2026-04-15.md](/mnt/d/Programs/LEXO/history/2026-04-15.md)
+
+### 2026-04-16
+- Сессия: Анализ деградации `The Sunny Morning` на `nllb33` и фикс anti-repeat decode path
+- Файл: [2026-04-16.md](/mnt/d/Programs/LEXO/history/2026-04-16.md)

@@ -126,8 +126,8 @@ def _split_line_to_segments(line: str) -> list[dict]:
             _segment_payload(
                 line.strip(),
                 "heading_title",
-                target_text="Солнечное утро" if _normalize(line) == "the sunny morning" else "",
-                translation_kind="rule_exact" if _normalize(line) == "the sunny morning" else "provider_fallback",
+                target_text="",
+                translation_kind="provider_fallback",
             )
         ]
 
@@ -154,9 +154,6 @@ def _normalize(text: str) -> str:
 
 
 def _looks_like_title(line: str) -> bool:
-    normalized = _normalize(line)
-    if normalized == "the sunny morning":
-        return True
     words = [chunk for chunk in re.findall(r"[A-Za-z]+", line) if chunk]
     if not words or len(words) > 5:
         return False
@@ -174,20 +171,7 @@ def _translate_heading_chapter(text: str) -> str:
         title = str(match.group("title") or "").strip()
     if not title:
         return f"Глава {number}"
-    title_map = {
-        "a special saturday": "Особенная суббота",
-        "the journey": "Путешествие",
-        "the forest": "Лес",
-        "the picnic": "Пикник",
-        "the top of the hill": "Вершина холма",
-        "going home": "Возвращение домой",
-        "the park": "Парк",
-        "the new day": "Новый день",
-        "home": "Дом",
-        "breakfast": "Завтрак",
-    }
-    translated_title = title_map.get(_normalize(title), title)
-    return f"Глава {number}: {translated_title}"
+    return f"Глава {number}: {title}"
 
 
 def _translate_time_phrase(text: str) -> str:

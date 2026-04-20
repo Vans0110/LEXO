@@ -40,6 +40,12 @@ class LexoHandler(BaseHTTPRequestHandler):
                     STORAGE.get_paragraphs(_query_value(query, "book_id")),
                 )
                 return
+            if path == "/books/segment-quality":
+                self._send_json(
+                    HTTPStatus.OK,
+                    STORAGE.get_segment_quality_report(_query_value(query, "book_id")),
+                )
+                return
             if path == "/reader/detail-sheet":
                 self._send_json(
                     HTTPStatus.OK,
@@ -188,6 +194,10 @@ class LexoHandler(BaseHTTPRequestHandler):
                 return
             if path == "/books/delete":
                 result = STORAGE.delete_book(payload["book_id"])
+                self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/books/rebuild-quality":
+                result = STORAGE.rebuild_book_quality(payload.get("book_id"))
                 self._send_json(HTTPStatus.OK, result)
                 return
             if path == "/reader/position":

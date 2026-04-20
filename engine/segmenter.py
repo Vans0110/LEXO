@@ -38,8 +38,30 @@ NUMBER_WORDS = {
 
 
 def split_paragraphs(text: str) -> list[str]:
-    chunks = [chunk.strip() for chunk in text.split("\n\n")]
-    return [chunk for chunk in chunks if chunk]
+    lines = [line.strip() for line in text.split("\n")]
+    paragraphs: list[str] = []
+    current_lines: list[str] = []
+
+    def flush_current() -> None:
+        if not current_lines:
+            return
+        paragraph = "\n".join(current_lines).strip()
+        if paragraph:
+            paragraphs.append(paragraph)
+        current_lines.clear()
+
+    for line in lines:
+        if not line:
+            flush_current()
+            continue
+        if _is_structural_paragraph_line(line):
+            flush_current()
+            paragraphs.append(line)
+            continue
+        current_lines.append(line)
+
+    flush_current()
+    return paragraphs
 
 
 def split_sentences(paragraph: str) -> list[str]:
@@ -158,6 +180,15 @@ def _looks_like_title(line: str) -> bool:
     if not words or len(words) > 5:
         return False
     return all(word[:1].isupper() for word in words)
+
+
+def _is_structural_paragraph_line(line: str) -> bool:
+    stripped = line.strip()
+    if not stripped:
+        return False
+    if CHAPTER_TITLE_RE.match(stripped) or CHAPTER_ONLY_RE.match(stripped):
+        return True
+    return _looks_like_title(stripped)
 
 
 def _translate_heading_chapter(text: str) -> str:

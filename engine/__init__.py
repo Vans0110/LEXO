@@ -1,4 +1,9 @@
 """LEXO engine package."""
-from .main import run
 
 __all__ = ["run"]
+
+
+def run(*args, **kwargs):
+    from .main import run as main_run
+
+    return main_run(*args, **kwargs)

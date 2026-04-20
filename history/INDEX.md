@@ -61,5 +61,13 @@
 - Файл: [2026-04-15.md](/mnt/d/Programs/LEXO/history/2026-04-15.md)
 
 ### 2026-04-16
-- Сессия: Анализ деградации `The Sunny Morning` на `nllb33` и фикс anti-repeat decode path
+- Сессия: Анализ деградации `The Sunny Morning` на `nllb33`, подключение MarianMT и фиксация причины desktop-фриза `Load TXT`
 - Файл: [2026-04-16.md](/mnt/d/Programs/LEXO/history/2026-04-16.md)
+
+### 2026-04-17
+- Сессия: Реализация segment QA, rebuild-пути и формализация отдельного MVP20 для стабильного translation QA без хрупких словарей
+- Файл: [2026-04-17.md](/mnt/d/Programs/LEXO/history/2026-04-17.md)
+
+### 2026-04-20
+- Сессия: Подключение Marian `ru -> en` для back-translation QA
+- Файл: [2026-04-20.md](/mnt/d/Programs/LEXO/history/2026-04-20.md)

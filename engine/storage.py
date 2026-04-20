@@ -8,6 +8,7 @@ import sqlite3
 import threading
 import time
 import uuid
+from collections.abc import Iterator
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -20,9 +21,18 @@ from .lexical_enrichment import (
     grammar_hint_for_word,
     morph_label_for_word,
 )
+from .segment_quality import evaluate_segment_translation
 from .segmenter import split_paragraphs, split_study_segments
 from .text_loader import normalize_text
-from .translator import TranslationProvider, create_default_provider, translate_segment_batch
+from .translator import (
+    MARIAN_OPUS_MODEL_NAME,
+    MARIAN_OPUS_RU_EN_MODEL_NAME,
+    MarianOpusProvider,
+    MarianOpusRuEnProvider,
+    TranslationProvider,
+    create_default_provider,
+    translate_segment_batch,
+)
 from .tts.tts_provider import TtsProvider, create_default_tts_provider
 from .tts.tts_service import LexoTtsService
 from .word_alignment import (
@@ -37,6 +47,7 @@ from .word_alignment import (
 
 ACTIVE_BOOK_STATE_KEY = "active_book_id"
 MOBILE_PACKAGE_MAX_PART_BYTES = 64 * 1024
+MAX_SINGLE_MODEL_ATTEMPTS = 3
 
 
 class LexoStorage:
@@ -59,6 +70,7 @@ class LexoStorage:
         self.tts_service = LexoTtsService(self.db_path, self.tts_dir, self.tts_provider)
         self._package_workers: dict[str, threading.Thread] = {}
         self._package_lock = threading.Lock()
+        self._qa_provider_cache: dict[str, TranslationProvider | None] = {}
         self._ensure_layout()
 
     def _ensure_layout(self) -> None:
@@ -117,6 +129,32 @@ class LexoStorage:
                     target_text TEXT NOT NULL,
                     segment_type TEXT NOT NULL DEFAULT 'simple_action',
                     translation_kind TEXT NOT NULL DEFAULT 'provider_fallback',
+                    quality_score INTEGER NOT NULL DEFAULT 100,
+                    semantic_score REAL NOT NULL DEFAULT 1.0,
+                    ru_quality_score REAL NOT NULL DEFAULT 1.0,
+                    quality_status TEXT NOT NULL DEFAULT 'pass',
+                    decision_status TEXT NOT NULL DEFAULT 'accept',
+                    quality_flags TEXT NOT NULL DEFAULT '[]',
+                    ru_quality_flags TEXT NOT NULL DEFAULT '[]',
+                    retry_reason_flags TEXT NOT NULL DEFAULT '[]',
+                    winner_reason TEXT NOT NULL DEFAULT '',
+                    candidate_count INTEGER NOT NULL DEFAULT 1,
+                    back_translation TEXT NOT NULL DEFAULT '',
+                    source_entities_json TEXT NOT NULL DEFAULT '[]',
+                    back_entities_json TEXT NOT NULL DEFAULT '[]',
+                    entity_preservation_score REAL NOT NULL DEFAULT 1.0,
+                    entity_flags TEXT NOT NULL DEFAULT '[]',
+                    source_frame_json TEXT NOT NULL DEFAULT '{}',
+                    back_frame_json TEXT NOT NULL DEFAULT '{}',
+                    frame_preservation_score REAL NOT NULL DEFAULT 1.0,
+                    frame_flags TEXT NOT NULL DEFAULT '[]',
+                    source_verb_frame_json TEXT NOT NULL DEFAULT '{}',
+                    back_verb_frame_json TEXT NOT NULL DEFAULT '{}',
+                    verb_score REAL NOT NULL DEFAULT 1.0,
+                    verb_flags TEXT NOT NULL DEFAULT '[]',
+                    translation_attempt_count INTEGER NOT NULL DEFAULT 1,
+                    provider_used TEXT NOT NULL DEFAULT '',
+                    alignment_confidence REAL NOT NULL DEFAULT 1.0,
                     FOREIGN KEY(book_id) REFERENCES books(id),
                     FOREIGN KEY(paragraph_id) REFERENCES paragraphs(id)
                 );
@@ -306,6 +344,32 @@ class LexoStorage:
         additions = {
             "segment_type": "TEXT NOT NULL DEFAULT 'simple_action'",
             "translation_kind": "TEXT NOT NULL DEFAULT 'provider_fallback'",
+            "quality_score": "INTEGER NOT NULL DEFAULT 100",
+            "semantic_score": "REAL NOT NULL DEFAULT 1.0",
+            "ru_quality_score": "REAL NOT NULL DEFAULT 1.0",
+            "quality_status": "TEXT NOT NULL DEFAULT 'pass'",
+            "decision_status": "TEXT NOT NULL DEFAULT 'accept'",
+            "quality_flags": "TEXT NOT NULL DEFAULT '[]'",
+            "ru_quality_flags": "TEXT NOT NULL DEFAULT '[]'",
+            "retry_reason_flags": "TEXT NOT NULL DEFAULT '[]'",
+            "winner_reason": "TEXT NOT NULL DEFAULT ''",
+            "candidate_count": "INTEGER NOT NULL DEFAULT 1",
+            "back_translation": "TEXT NOT NULL DEFAULT ''",
+            "source_entities_json": "TEXT NOT NULL DEFAULT '[]'",
+            "back_entities_json": "TEXT NOT NULL DEFAULT '[]'",
+            "entity_preservation_score": "REAL NOT NULL DEFAULT 1.0",
+            "entity_flags": "TEXT NOT NULL DEFAULT '[]'",
+            "source_frame_json": "TEXT NOT NULL DEFAULT '{}'",
+            "back_frame_json": "TEXT NOT NULL DEFAULT '{}'",
+            "frame_preservation_score": "REAL NOT NULL DEFAULT 1.0",
+            "frame_flags": "TEXT NOT NULL DEFAULT '[]'",
+            "source_verb_frame_json": "TEXT NOT NULL DEFAULT '{}'",
+            "back_verb_frame_json": "TEXT NOT NULL DEFAULT '{}'",
+            "verb_score": "REAL NOT NULL DEFAULT 1.0",
+            "verb_flags": "TEXT NOT NULL DEFAULT '[]'",
+            "translation_attempt_count": "INTEGER NOT NULL DEFAULT 1",
+            "provider_used": "TEXT NOT NULL DEFAULT ''",
+            "alignment_confidence": "REAL NOT NULL DEFAULT 1.0",
         }
         for name, definition in additions.items():
             if name not in columns:
@@ -435,6 +499,61 @@ class LexoStorage:
             target_lang=target_lang,
         )
 
+    def rebuild_book_quality(self, book_id: str | None = None) -> dict:
+        with self._connect() as conn:
+            resolved_book_id = self._resolve_book_id(conn, book_id)
+            if resolved_book_id is None:
+                raise ValueError("Book not found")
+            row = conn.execute(
+                """
+                SELECT id, title, source_name, source_lang, target_lang, created_at,
+                       current_paragraph_index, source_path, last_opened_at
+                FROM books
+                WHERE id = ?
+                """,
+                (resolved_book_id,),
+            ).fetchone()
+        if row is None:
+            raise ValueError(f"Book not found: {book_id}")
+
+        resolved_book_id = str(row["id"])
+        source_text = self._read_book_source_text(resolved_book_id)
+        paragraphs = split_paragraphs(normalize_text(source_text))
+        if not paragraphs:
+            raise ValueError("TXT file does not contain readable paragraphs")
+
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE books SET status = ?, error_message = NULL WHERE id = ?",
+                ("processing", resolved_book_id),
+            )
+        try:
+            payloads = self._build_paragraph_payloads(
+                paragraphs,
+                source_lang=str(row["source_lang"] or "en"),
+                target_lang=str(row["target_lang"] or "ru"),
+            )
+            self._clear_book_runtime_content(resolved_book_id)
+            self._replace_book_content(
+                resolved_book_id,
+                str(row["title"] or ""),
+                str(row["source_name"] or ""),
+                str(row["source_lang"] or "en"),
+                str(row["target_lang"] or "ru"),
+                str(row["created_at"] or datetime.now(timezone.utc).isoformat()),
+                str(row["source_path"] or self._book_source_path(resolved_book_id)),
+                payloads,
+                current_paragraph_index=int(row["current_paragraph_index"] or 0),
+                last_opened_at=str(
+                    row["last_opened_at"] or row["created_at"] or datetime.now(timezone.utc).isoformat()
+                ),
+            )
+            self._write_segment_quality_log(resolved_book_id)
+        except Exception as exc:
+            self._mark_error(resolved_book_id, str(exc))
+            raise
+        return self.get_book_status(resolved_book_id)
+
     def _import_book_text(
         self,
         *,
@@ -481,6 +600,7 @@ class LexoStorage:
                 str(book_source_path),
                 payloads,
             )
+            self._write_segment_quality_log(book_id)
             self.set_active_book(book_id)
         except Exception as exc:
             self._mark_error(book_id, str(exc))
@@ -701,6 +821,72 @@ class LexoStorage:
         if row is None:
             return {"has_book": False, "status": "empty"}
         return self._book_row_to_status(row, int(count_row["count"]) if count_row is not None else 0)
+
+    def get_segment_quality_report(self, book_id: str | None = None) -> dict:
+        with self._connect() as conn:
+            resolved_book_id = self._resolve_book_id(conn, book_id)
+            if resolved_book_id is None:
+                return {"book_id": None, "status": "empty", "summary": {}, "segments": []}
+            book_row = conn.execute(
+                "SELECT id, title, status, source_lang, target_lang, model_name FROM books WHERE id = ?",
+                (resolved_book_id,),
+            ).fetchone()
+            segment_rows = conn.execute(
+                """
+                SELECT paragraphs.order_index AS paragraph_index,
+                       segments.order_index AS segment_index,
+                       segments.id,
+                       segments.source_text,
+                       segments.target_text,
+                       segments.segment_type,
+                       segments.translation_kind,
+                       segments.quality_score,
+                       segments.semantic_score,
+                       segments.ru_quality_score,
+                       segments.quality_status,
+                       segments.decision_status,
+                       segments.quality_flags,
+                       segments.ru_quality_flags,
+                       segments.retry_reason_flags,
+                       segments.winner_reason,
+                       segments.candidate_count,
+                       segments.back_translation,
+                       segments.source_entities_json,
+                       segments.back_entities_json,
+                       segments.entity_preservation_score,
+                       segments.entity_flags,
+                       segments.source_frame_json,
+                       segments.back_frame_json,
+                       segments.frame_preservation_score,
+                       segments.frame_flags,
+                       segments.source_verb_frame_json,
+                       segments.back_verb_frame_json,
+                       segments.verb_score,
+                       segments.verb_flags,
+                       segments.translation_attempt_count,
+                       segments.provider_used,
+                       segments.alignment_confidence
+                FROM segments
+                JOIN paragraphs ON paragraphs.id = segments.paragraph_id
+                WHERE segments.book_id = ?
+                ORDER BY paragraphs.order_index, segments.order_index
+                """,
+                (resolved_book_id,),
+            ).fetchall()
+        if book_row is None:
+            return {"book_id": None, "status": "empty", "summary": {}, "segments": []}
+        segments = [self._segment_quality_row_to_payload(row) for row in segment_rows]
+        return {
+            "book_id": str(book_row["id"]),
+            "title": str(book_row["title"]),
+            "status": str(book_row["status"]),
+            "source_lang": str(book_row["source_lang"]),
+            "target_lang": str(book_row["target_lang"]),
+            "model_name": str(book_row["model_name"]),
+            "qa_log_path": str(self._segment_quality_log_path(str(book_row["id"]))),
+            "summary": self._build_segment_quality_summary(segments),
+            "segments": segments,
+        }
 
     def get_paragraphs(self, book_id: str | None = None) -> dict:
         with self._connect() as conn:
@@ -2022,13 +2208,16 @@ class LexoStorage:
         created_at: str,
         source_path: str,
         paragraph_payloads: list[dict],
+        *,
+        current_paragraph_index: int = 0,
+        last_opened_at: str | None = None,
     ) -> None:
         with self._connect() as conn:
             conn.execute(
                 """
                 UPDATE books
                 SET title = ?, source_name = ?, source_lang = ?, target_lang = ?, status = ?,
-                    model_name = ?, error_message = NULL, created_at = ?, current_paragraph_index = 0,
+                    model_name = ?, error_message = NULL, created_at = ?, current_paragraph_index = ?,
                     source_path = ?, last_opened_at = ?
                 WHERE id = ?
                 """,
@@ -2040,8 +2229,9 @@ class LexoStorage:
                     "ready",
                     self.translator.model_name,
                     created_at,
+                    current_paragraph_index,
                     source_path,
-                    created_at,
+                    last_opened_at or created_at,
                     book_id,
                 ),
             )
@@ -2052,9 +2242,16 @@ class LexoStorage:
             conn.executemany(
                 """
                 INSERT INTO segments(
-                    id, book_id, paragraph_id, order_index, source_text, target_text, segment_type, translation_kind
+                    id, book_id, paragraph_id, order_index, source_text, target_text, segment_type, translation_kind,
+                    quality_score, semantic_score, ru_quality_score, quality_status, decision_status,
+                    quality_flags, ru_quality_flags, retry_reason_flags, winner_reason, candidate_count, back_translation,
+                    source_entities_json, back_entities_json, entity_preservation_score, entity_flags,
+                    source_frame_json, back_frame_json, frame_preservation_score, frame_flags,
+                    source_verb_frame_json, back_verb_frame_json, verb_score, verb_flags,
+                    translation_attempt_count, provider_used,
+                    alignment_confidence
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 [
                     (
@@ -2066,6 +2263,32 @@ class LexoStorage:
                         segment["target_text"],
                         segment.get("segment_type", "simple_action"),
                         segment.get("translation_kind", "provider_fallback"),
+                        segment.get("quality_score", 100),
+                        segment.get("semantic_score", 1.0),
+                        segment.get("ru_quality_score", 1.0),
+                        segment.get("quality_status", "pass"),
+                        segment.get("decision_status", "accept"),
+                        segment.get("quality_flags", "[]"),
+                        segment.get("ru_quality_flags", "[]"),
+                        segment.get("retry_reason_flags", "[]"),
+                        segment.get("winner_reason", ""),
+                        segment.get("candidate_count", 1),
+                        segment.get("back_translation", ""),
+                        segment.get("source_entities_json", "[]"),
+                        segment.get("back_entities_json", "[]"),
+                        segment.get("entity_preservation_score", 1.0),
+                        segment.get("entity_flags", "[]"),
+                        segment.get("source_frame_json", "{}"),
+                        segment.get("back_frame_json", "{}"),
+                        segment.get("frame_preservation_score", 1.0),
+                        segment.get("frame_flags", "[]"),
+                        segment.get("source_verb_frame_json", "{}"),
+                        segment.get("back_verb_frame_json", "{}"),
+                        segment.get("verb_score", 1.0),
+                        segment.get("verb_flags", "[]"),
+                        segment.get("translation_attempt_count", 1),
+                        segment.get("provider_used", ""),
+                        segment.get("alignment_confidence", 1.0),
                     )
                     for paragraph in paragraph_payloads
                     for segment in paragraph["segments"]
@@ -2170,17 +2393,31 @@ class LexoStorage:
                         ],
                     )
 
+    def _clear_book_runtime_content(self, book_id: str) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM tts_segments WHERE book_id = ?", (book_id,))
+            conn.execute("DELETE FROM tts_jobs WHERE book_id = ?", (book_id,))
+            conn.execute(
+                "DELETE FROM word_alignments WHERE source_word_id IN (SELECT id FROM source_words WHERE book_id = ?)",
+                (book_id,),
+            )
+            conn.execute("DELETE FROM target_tokens WHERE book_id = ?", (book_id,))
+            conn.execute("DELETE FROM source_words WHERE book_id = ?", (book_id,))
+            conn.execute("DELETE FROM segments WHERE book_id = ?", (book_id,))
+            conn.execute("DELETE FROM paragraphs WHERE book_id = ?", (book_id,))
+        shutil.rmtree(self.tts_dir / book_id, ignore_errors=True)
+
     def _build_paragraph_payloads(self, paragraphs: list[str], source_lang: str, target_lang: str) -> list[dict]:
         payloads: list[dict] = []
         for index, paragraph_text in enumerate(paragraphs):
             source_segments = split_study_segments(paragraph_text)
-            translated_payloads = translate_segment_batch(
+            initial_translated_payloads = translate_segment_batch(
                 provider=self.translator,
                 segments=source_segments,
                 source_lang=source_lang,
                 target_lang=target_lang,
             )
-            if len(translated_payloads) != len(source_segments):
+            if len(initial_translated_payloads) != len(source_segments):
                 raise ValueError("Translator returned a mismatched number of segments")
             paragraph_id = str(uuid.uuid4())
             paragraph_words: list[dict] = []
@@ -2189,17 +2426,30 @@ class LexoStorage:
             paragraph_word_offset = 0
             segment_payloads: list[dict] = []
             global_target_token_index = 0
+            selected_translated_payloads: list[dict] = []
             for segment_index, (segment_spec, translated_payload) in enumerate(
-                zip(source_segments, translated_payloads, strict=True)
+                zip(source_segments, initial_translated_payloads, strict=True)
             ):
+                selected_payload = self._select_segment_translation(
+                    segment_spec=segment_spec,
+                    translated_payload=translated_payload,
+                    source_lang=source_lang,
+                    target_lang=target_lang,
+                )
                 source_text = str(segment_spec.get("source_text") or "")
-                target_text = str(translated_payload.get("target_text") or "")
+                target_text = str(selected_payload.get("target_text") or "")
                 segment_id = str(uuid.uuid4())
                 words, alignments = build_word_mappings(
                     source_text=source_text,
                     target_text=target_text,
                     paragraph_start_index=paragraph_word_offset,
                 )
+                alignment_confidence = float(selected_payload.get("alignment_confidence") or 0.0)
+                if alignment_confidence <= 0.0:
+                    alignments = []
+                else:
+                    for alignment in alignments:
+                        alignment["confidence"] = round(float(alignment["confidence"]) * alignment_confidence, 4)
                 enrich_words(words)
                 local_to_global_ids: dict[str, str] = {}
                 for word in words:
@@ -2243,20 +2493,45 @@ class LexoStorage:
                         "target_text": target_text,
                         "segment_type": str(segment_spec.get("segment_type") or "simple_action"),
                         "translation_kind": str(
-                            translated_payload.get("translation_kind")
+                            selected_payload.get("translation_kind")
                             or segment_spec.get("translation_kind")
                             or "provider_fallback"
                         ),
+                        "quality_score": int(selected_payload.get("quality_score") or 100),
+                        "semantic_score": float(selected_payload.get("semantic_score") or 1.0),
+                        "ru_quality_score": float(selected_payload.get("ru_quality_score") or 1.0),
+                        "quality_status": str(selected_payload.get("quality_status") or "pass"),
+                        "decision_status": str(selected_payload.get("decision_status") or "accept"),
+                        "quality_flags": json.dumps(selected_payload.get("quality_flags") or [], ensure_ascii=False),
+                        "ru_quality_flags": json.dumps(selected_payload.get("ru_quality_flags") or [], ensure_ascii=False),
+                        "retry_reason_flags": json.dumps(selected_payload.get("retry_reason_flags") or [], ensure_ascii=False),
+                        "winner_reason": str(selected_payload.get("winner_reason") or ""),
+                        "candidate_count": int(selected_payload.get("candidate_count") or 1),
+                        "back_translation": str(selected_payload.get("back_translation") or ""),
+                        "source_entities_json": json.dumps(selected_payload.get("source_entities") or [], ensure_ascii=False),
+                        "back_entities_json": json.dumps(selected_payload.get("back_entities") or [], ensure_ascii=False),
+                        "entity_preservation_score": float(selected_payload.get("entity_preservation_score") or 1.0),
+                        "entity_flags": json.dumps(selected_payload.get("entity_flags") or [], ensure_ascii=False),
+                        "source_frame_json": json.dumps(selected_payload.get("source_frame") or {}, ensure_ascii=False),
+                        "back_frame_json": json.dumps(selected_payload.get("back_frame") or {}, ensure_ascii=False),
+                        "frame_preservation_score": float(selected_payload.get("frame_preservation_score") or 1.0),
+                        "frame_flags": json.dumps(selected_payload.get("frame_flags") or [], ensure_ascii=False),
+                        "source_verb_frame_json": json.dumps(selected_payload.get("source_verb_frame") or {}, ensure_ascii=False),
+                        "back_verb_frame_json": json.dumps(selected_payload.get("back_verb_frame") or {}, ensure_ascii=False),
+                        "verb_score": float(selected_payload.get("verb_score") or 1.0),
+                        "verb_flags": json.dumps(selected_payload.get("verb_flags") or [], ensure_ascii=False),
+                        "translation_attempt_count": int(selected_payload.get("translation_attempt_count") or 1),
+                        "provider_used": str(selected_payload.get("provider_used") or ""),
+                        "alignment_confidence": alignment_confidence,
                     }
                 )
+                selected_translated_payloads.append(selected_payload)
             payloads.append(
                 {
                     "id": paragraph_id,
                     "order_index": index,
                     "source_text": paragraph_text,
-                    "target_text": assemble_paragraph(
-                        [str(item.get("target_text") or "") for item in translated_payloads]
-                    ),
+                    "target_text": assemble_paragraph(segment_payloads),
                     "segments": segment_payloads,
                     "words": paragraph_words,
                     "alignments": paragraph_alignments,
@@ -2264,6 +2539,426 @@ class LexoStorage:
                 }
             )
         return payloads
+
+    def _select_segment_translation(
+        self,
+        *,
+        segment_spec: dict,
+        translated_payload: dict,
+        source_lang: str,
+        target_lang: str,
+    ) -> dict:
+        source_text = str(segment_spec.get("source_text") or "")
+        segment_type = str(segment_spec.get("segment_type") or "simple_action")
+        base_payload = self._build_segment_candidate_payload(
+            source_text=source_text,
+            segment_type=segment_type,
+            translated_payload=translated_payload,
+            provider_used=self._resolve_provider_used(translated_payload),
+            translation_attempt_count=1,
+            source_lang=source_lang,
+            target_lang=target_lang,
+        )
+        attempted_candidates = 1
+        if (
+            str(base_payload.get("translation_kind") or "") != "provider_fallback"
+            and not self._requires_retry(base_payload)
+        ):
+            base_payload["candidate_count"] = attempted_candidates
+            base_payload["winner_reason"] = self._winner_reason_for_single_candidate(base_payload)
+            return base_payload
+        if self._is_good_enough_candidate(base_payload):
+            base_payload["candidate_count"] = attempted_candidates
+            base_payload["winner_reason"] = self._winner_reason_for_single_candidate(base_payload)
+            return base_payload
+
+        best_payload = base_payload
+        attempt_count = 1
+        best_is_base = True
+        fallback_providers = list(self._iter_qa_fallback_providers())
+        if (
+            str(base_payload.get("translation_kind") or "") == "provider_fallback"
+            and not fallback_providers
+            and self._requires_retry(base_payload)
+        ):
+            while attempted_candidates < MAX_SINGLE_MODEL_ATTEMPTS and not self._is_good_enough_candidate(best_payload):
+                attempt_count += 1
+                attempted_candidates += 1
+                retried_payloads = translate_segment_batch(
+                    provider=self.translator,
+                    segments=[segment_spec],
+                    source_lang=source_lang,
+                    target_lang=target_lang,
+                )
+                if not retried_payloads:
+                    break
+                candidate_payload = self._build_segment_candidate_payload(
+                    source_text=source_text,
+                    segment_type=segment_type,
+                    translated_payload=retried_payloads[0],
+                    provider_used=self.translator.model_name,
+                    translation_attempt_count=attempt_count,
+                    source_lang=source_lang,
+                    target_lang=target_lang,
+                )
+                if self._candidate_rank_key(candidate_payload) > self._candidate_rank_key(best_payload):
+                    best_payload = candidate_payload
+                    best_is_base = False
+                if self._is_good_enough_candidate(best_payload):
+                    break
+        for provider in fallback_providers:
+            fallback_payloads = translate_segment_batch(
+                provider=provider,
+                segments=[segment_spec],
+                source_lang=source_lang,
+                target_lang=target_lang,
+            )
+            if not fallback_payloads:
+                continue
+            attempt_count += 1
+            attempted_candidates += 1
+            candidate_payload = self._build_segment_candidate_payload(
+                source_text=source_text,
+                segment_type=segment_type,
+                translated_payload=fallback_payloads[0],
+                provider_used=provider.model_name,
+                translation_attempt_count=attempt_count,
+                source_lang=source_lang,
+                target_lang=target_lang,
+            )
+            if self._candidate_rank_key(candidate_payload) > self._candidate_rank_key(best_payload):
+                best_payload = candidate_payload
+                best_is_base = False
+            if self._is_good_enough_candidate(best_payload):
+                break
+
+        best_payload["translation_attempt_count"] = attempt_count
+        best_payload["candidate_count"] = attempted_candidates
+        best_payload["winner_reason"] = self._winner_reason_for_selected_candidate(
+            selected_payload=best_payload,
+            base_payload=base_payload,
+            best_is_base=best_is_base,
+            attempted_candidates=attempted_candidates,
+        )
+        return best_payload
+
+    def _is_good_enough_candidate(self, payload: dict) -> bool:
+        if str(payload.get("quality_status") or "fail") != "pass":
+            return False
+        if int(payload.get("quality_score") or 0) < 95:
+            return False
+        if payload.get("quality_flags"):
+            return False
+        if payload.get("retry_reason_flags"):
+            return False
+        return True
+
+    def _requires_retry(self, payload: dict) -> bool:
+        return bool(payload.get("retry_reason_flags"))
+
+    def _build_segment_candidate_payload(
+        self,
+        *,
+        source_text: str,
+        segment_type: str,
+        translated_payload: dict,
+        provider_used: str,
+        translation_attempt_count: int,
+        source_lang: str,
+        target_lang: str,
+    ) -> dict:
+        target_text = str(translated_payload.get("target_text") or "").strip()
+        back_translation = self._build_back_translation(
+            target_text=target_text,
+            source_lang=target_lang,
+            target_lang=source_lang,
+        )
+        quality = evaluate_segment_translation(
+            source_text=source_text,
+            target_text=target_text,
+            segment_type=segment_type,
+            back_translation=back_translation,
+        )
+        return {
+            "target_text": target_text,
+            "translation_kind": str(translated_payload.get("translation_kind") or "provider_fallback"),
+            "provider_used": provider_used,
+            "translation_attempt_count": translation_attempt_count,
+            **quality,
+        }
+
+    def _resolve_provider_used(self, translated_payload: dict) -> str:
+        translation_kind = str(translated_payload.get("translation_kind") or "provider_fallback")
+        if translation_kind == "provider_fallback":
+            return self.translator.model_name
+        return translation_kind
+
+    def _candidate_rank_key(self, payload: dict) -> tuple[int, int, float, float]:
+        status_order = {"pass": 2, "warn": 1, "fail": 0}
+        return (
+            0 if self._requires_retry(payload) else 1,
+            status_order.get(str(payload.get("quality_status") or "fail"), 0),
+            int(payload.get("quality_score") or 0),
+            float(payload.get("ru_quality_score") or 0.0),
+            float(payload.get("entity_preservation_score") or 0.0),
+            float(payload.get("frame_preservation_score") or 0.0),
+            float(payload.get("verb_score") or 0.0),
+        )
+
+    def _winner_reason_for_single_candidate(self, payload: dict) -> str:
+        decision_status = str(payload.get("decision_status") or "accept")
+        if decision_status == "accept":
+            return "accepted_base_candidate"
+        if decision_status == "accept_low_confidence":
+            return "accepted_base_low_confidence"
+        if decision_status == "retry_required":
+            return "accepted_without_better_candidate"
+        return "rejected_without_fallback"
+
+    def _winner_reason_for_selected_candidate(
+        self,
+        *,
+        selected_payload: dict,
+        base_payload: dict,
+        best_is_base: bool,
+        attempted_candidates: int,
+    ) -> str:
+        if attempted_candidates <= 1:
+            return self._winner_reason_for_single_candidate(selected_payload)
+        if not best_is_base:
+            if str(selected_payload.get("decision_status") or "accept") == "accept":
+                return "fallback_candidate_won"
+            if str(selected_payload.get("decision_status") or "accept") == "accept_low_confidence":
+                return "fallback_candidate_won_low_confidence"
+            return "fallback_candidate_best_available"
+        if self._requires_retry(base_payload):
+            return "base_candidate_kept_after_retry"
+        return "base_candidate_kept_after_comparison"
+
+    def _iter_qa_fallback_providers(self) -> Iterator[TranslationProvider]:
+        if self.translator.model_name == MARIAN_OPUS_MODEL_NAME:
+            return
+        provider = self._qa_provider_cache.get(MARIAN_OPUS_MODEL_NAME)
+        if provider is None and MARIAN_OPUS_MODEL_NAME not in self._qa_provider_cache:
+            try:
+                provider = MarianOpusProvider()
+            except Exception:
+                provider = None
+            self._qa_provider_cache[MARIAN_OPUS_MODEL_NAME] = provider
+        if provider is not None:
+            yield provider
+
+    def _build_back_translation(
+        self,
+        *,
+        target_text: str,
+        source_lang: str,
+        target_lang: str,
+    ) -> str:
+        clean_target = target_text.strip()
+        if not clean_target:
+            return ""
+        provider = self._get_back_translation_provider(source_lang=source_lang, target_lang=target_lang)
+        if provider is None:
+            return ""
+        try:
+            return str(provider.translate_segments([clean_target], source_lang, target_lang)[0]).strip()
+        except Exception:
+            return ""
+
+    def _get_back_translation_provider(
+        self,
+        *,
+        source_lang: str,
+        target_lang: str,
+    ) -> TranslationProvider | None:
+        if self._provider_supports_lang_pair(self.translator, source_lang=source_lang, target_lang=target_lang):
+            return self.translator
+        if source_lang == "ru" and target_lang == "en":
+            provider = self._qa_provider_cache.get(MARIAN_OPUS_RU_EN_MODEL_NAME)
+            if provider is None and MARIAN_OPUS_RU_EN_MODEL_NAME not in self._qa_provider_cache:
+                try:
+                    provider = MarianOpusRuEnProvider()
+                except Exception:
+                    provider = None
+                self._qa_provider_cache[MARIAN_OPUS_RU_EN_MODEL_NAME] = provider
+            return provider
+        return None
+
+    def _provider_supports_lang_pair(
+        self,
+        provider: TranslationProvider,
+        *,
+        source_lang: str,
+        target_lang: str,
+    ) -> bool:
+        if provider.model_name == MARIAN_OPUS_MODEL_NAME:
+            return source_lang == "en" and target_lang == "ru"
+        if provider.model_name == MARIAN_OPUS_RU_EN_MODEL_NAME:
+            return source_lang == "ru" and target_lang == "en"
+        return True
+
+    def _segment_quality_row_to_payload(self, row: sqlite3.Row) -> dict:
+        quality_flags_raw = str(row["quality_flags"] or "[]")
+        ru_quality_flags_raw = str(row["ru_quality_flags"] or "[]")
+        retry_reason_flags_raw = str(row["retry_reason_flags"] or "[]")
+        entity_flags_raw = str(row["entity_flags"] or "[]")
+        frame_flags_raw = str(row["frame_flags"] or "[]")
+        verb_flags_raw = str(row["verb_flags"] or "[]")
+        source_entities_raw = str(row["source_entities_json"] or "[]")
+        back_entities_raw = str(row["back_entities_json"] or "[]")
+        source_frame_raw = str(row["source_frame_json"] or "{}")
+        back_frame_raw = str(row["back_frame_json"] or "{}")
+        source_verb_frame_raw = str(row["source_verb_frame_json"] or "{}")
+        back_verb_frame_raw = str(row["back_verb_frame_json"] or "{}")
+        try:
+            quality_flags = json.loads(quality_flags_raw)
+        except json.JSONDecodeError:
+            quality_flags = []
+        try:
+            ru_quality_flags = json.loads(ru_quality_flags_raw)
+        except json.JSONDecodeError:
+            ru_quality_flags = []
+        try:
+            retry_reason_flags = json.loads(retry_reason_flags_raw)
+        except json.JSONDecodeError:
+            retry_reason_flags = []
+        try:
+            entity_flags = json.loads(entity_flags_raw)
+        except json.JSONDecodeError:
+            entity_flags = []
+        try:
+            frame_flags = json.loads(frame_flags_raw)
+        except json.JSONDecodeError:
+            frame_flags = []
+        try:
+            verb_flags = json.loads(verb_flags_raw)
+        except json.JSONDecodeError:
+            verb_flags = []
+        try:
+            source_entities = json.loads(source_entities_raw)
+        except json.JSONDecodeError:
+            source_entities = []
+        try:
+            back_entities = json.loads(back_entities_raw)
+        except json.JSONDecodeError:
+            back_entities = []
+        try:
+            source_frame = json.loads(source_frame_raw)
+        except json.JSONDecodeError:
+            source_frame = {}
+        try:
+            back_frame = json.loads(back_frame_raw)
+        except json.JSONDecodeError:
+            back_frame = {}
+        try:
+            source_verb_frame = json.loads(source_verb_frame_raw)
+        except json.JSONDecodeError:
+            source_verb_frame = {}
+        try:
+            back_verb_frame = json.loads(back_verb_frame_raw)
+        except json.JSONDecodeError:
+            back_verb_frame = {}
+        if not isinstance(quality_flags, list):
+            quality_flags = []
+        if not isinstance(ru_quality_flags, list):
+            ru_quality_flags = []
+        if not isinstance(retry_reason_flags, list):
+            retry_reason_flags = []
+        if not isinstance(entity_flags, list):
+            entity_flags = []
+        if not isinstance(frame_flags, list):
+            frame_flags = []
+        if not isinstance(verb_flags, list):
+            verb_flags = []
+        if not isinstance(source_entities, list):
+            source_entities = []
+        if not isinstance(back_entities, list):
+            back_entities = []
+        if not isinstance(source_frame, dict):
+            source_frame = {}
+        if not isinstance(back_frame, dict):
+            back_frame = {}
+        if not isinstance(source_verb_frame, dict):
+            source_verb_frame = {}
+        if not isinstance(back_verb_frame, dict):
+            back_verb_frame = {}
+        return {
+            "id": str(row["id"]),
+            "paragraph_index": int(row["paragraph_index"]),
+            "segment_index": int(row["segment_index"]),
+            "source_text": str(row["source_text"] or ""),
+            "target_text": str(row["target_text"] or ""),
+            "segment_type": str(row["segment_type"] or "simple_action"),
+            "translation_kind": str(row["translation_kind"] or "provider_fallback"),
+            "quality_score": int(row["quality_score"] or 0),
+            "semantic_score": float(row["semantic_score"] or 0.0),
+            "ru_quality_score": float(row["ru_quality_score"] or 0.0),
+            "quality_status": str(row["quality_status"] or "pass"),
+            "decision_status": str(row["decision_status"] or "accept"),
+            "quality_flags": [str(item) for item in quality_flags],
+            "ru_quality_flags": [str(item) for item in ru_quality_flags],
+            "retry_reason_flags": [str(item) for item in retry_reason_flags],
+            "winner_reason": str(row["winner_reason"] or ""),
+            "candidate_count": int(row["candidate_count"] or 1),
+            "back_translation": str(row["back_translation"] or ""),
+            "source_entities": source_entities,
+            "back_entities": back_entities,
+            "entity_preservation_score": float(row["entity_preservation_score"] or 0.0),
+            "entity_flags": [str(item) for item in entity_flags],
+            "source_frame": source_frame,
+            "back_frame": back_frame,
+            "frame_preservation_score": float(row["frame_preservation_score"] or 0.0),
+            "frame_flags": [str(item) for item in frame_flags],
+            "source_verb_frame": source_verb_frame,
+            "back_verb_frame": back_verb_frame,
+            "verb_score": float(row["verb_score"] or 0.0),
+            "verb_flags": [str(item) for item in verb_flags],
+            "translation_attempt_count": int(row["translation_attempt_count"] or 1),
+            "provider_used": str(row["provider_used"] or ""),
+            "alignment_confidence": float(row["alignment_confidence"] or 0.0),
+        }
+
+    def _build_segment_quality_summary(self, segments: list[dict]) -> dict:
+        status_counts = {"pass": 0, "warn": 0, "fail": 0}
+        decision_counts = {
+            "accept": 0,
+            "accept_low_confidence": 0,
+            "retry_required": 0,
+            "reject": 0,
+        }
+        flag_counts: dict[str, int] = {}
+        retry_required_count = 0
+        for segment in segments:
+            status = str(segment.get("quality_status") or "pass")
+            status_counts[status] = status_counts.get(status, 0) + 1
+            decision_status = str(segment.get("decision_status") or "accept")
+            decision_counts[decision_status] = decision_counts.get(decision_status, 0) + 1
+            if segment.get("retry_reason_flags"):
+                retry_required_count += 1
+            for flag in segment.get("quality_flags") or []:
+                flag_name = str(flag)
+                flag_counts[flag_name] = flag_counts.get(flag_name, 0) + 1
+        return {
+            "segment_count": len(segments),
+            "status_counts": status_counts,
+            "decision_counts": decision_counts,
+            "retry_required_count": retry_required_count,
+            "flag_counts": dict(sorted(flag_counts.items())),
+        }
+
+    def _write_segment_quality_log(self, book_id: str) -> None:
+        report = self.get_segment_quality_report(book_id)
+        if not report.get("book_id"):
+            return
+        lines = [json.dumps(segment, ensure_ascii=False) for segment in report.get("segments") or []]
+        self._segment_quality_log_path(book_id).write_text(
+            "\n".join(lines) + ("\n" if lines else ""),
+            encoding="utf-8",
+        )
+
+    def _segment_quality_log_path(self, book_id: str) -> Path:
+        return self.logs_dir / f"{book_id}_segment_quality.jsonl"
 
     def _build_runtime_word_payload(self, source_text: str, target_text: str) -> list[dict]:
         words, alignments = build_word_mappings(

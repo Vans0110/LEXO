@@ -19,17 +19,19 @@ M2M100_CT2_DIR = M2M100_DIR / "ct2"
 MADLAD_DIR = MODELS_DIR / "madlad400-10b-mt"
 MADLAD_ORIGINAL_DIR = MADLAD_DIR / "original"
 MADLAD_CT2_DIR = MADLAD_DIR / "ct2"
+MARIAN_OPUS_DIR = MODELS_DIR / "marian-opus-en-ru"
+MARIAN_OPUS_ORIGINAL_DIR = MARIAN_OPUS_DIR / "original"
+MARIAN_OPUS_CT2_DIR = MARIAN_OPUS_DIR / "ct2"
+MARIAN_OPUS_RU_EN_DIR = MODELS_DIR / "marian-opus-ru-en"
+MARIAN_OPUS_RU_EN_ORIGINAL_DIR = MARIAN_OPUS_RU_EN_DIR / "original"
+MARIAN_OPUS_RU_EN_CT2_DIR = MARIAN_OPUS_RU_EN_DIR / "ct2"
 KOKORO_VENV_DIR = ROOT / ".venv_kokoro"
 KOKORO_PYTHON = KOKORO_VENV_DIR / "Scripts" / "python.exe"
 KOKORO_RUNNER = ROOT / "engine" / "tts" / "kokoro_runner.py"
 
-DEFAULT_TRANSLATOR = os.getenv("LEXO_TRANSLATOR", "mock").strip().lower() or "mock"
-DEFAULT_TTS_PROVIDER = os.getenv("LEXO_TTS_PROVIDER", "mock").strip().lower() or "mock"
-
-
 def translator_mode() -> str:
-    return DEFAULT_TRANSLATOR
+    return os.getenv("LEXO_TRANSLATOR", "auto").strip().lower() or "auto"
 
 
 def tts_mode() -> str:
-    return DEFAULT_TTS_PROVIDER
+    return os.getenv("LEXO_TTS_PROVIDER", "mock").strip().lower() or "mock"

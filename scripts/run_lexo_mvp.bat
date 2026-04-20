@@ -7,7 +7,7 @@ cd /d "%~dp0\.."
 set "PYTHON_CMD="
 set "FLUTTER_CMD=C:\src\flutter\bin\flutter.bat"
 set "PROJECT_VENV=%~dp0..\.venv\Scripts\python.exe"
-set "LEXO_TRANSLATOR_MODE=mock"
+set "LEXO_TRANSLATOR_MODE=marian"
 set "LEXO_TTS_PROVIDER_MODE=mock"
 
 if exist "%PROJECT_VENV%" (
@@ -60,14 +60,13 @@ if not exist "app\.dart_tool" (
 )
 
 echo [LEXO] Starting Python engine...
-if exist "%~dp0..\data\models\nllb-200-3.3b\ct2\model.bin" (
-  set "LEXO_TRANSLATOR_MODE=nllb33"
-) else if exist "%~dp0..\data\models\m2m100_1.2B\ct2\model.bin" (
-  set "LEXO_TRANSLATOR_MODE=m2m100"
-) else if exist "%~dp0..\data\models\madlad400-10b-mt\ct2\model.bin" (
-  set "LEXO_TRANSLATOR_MODE=madlad"
-) else if exist "%~dp0..\data\models\nllb-200-distilled-600m\ct2\model.bin" (
-  set "LEXO_TRANSLATOR_MODE=nllb"
+if exist "%~dp0..\data\models\marian-opus-en-ru\ct2\model.bin" (
+  set "LEXO_TRANSLATOR_MODE=marian"
+) else (
+  echo [LEXO] Marian model is required and was not found.
+  echo [LEXO] Expected: data\models\marian-opus-en-ru\ct2\model.bin
+  pause
+  exit /b 1
 )
 if exist "%~dp0..\.venv_kokoro\Scripts\python.exe" (
   set "LEXO_TTS_PROVIDER_MODE=kokoro"

@@ -6,6 +6,10 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 from .config import (
+    MARIAN_OPUS_CT2_DIR,
+    MARIAN_OPUS_ORIGINAL_DIR,
+    MARIAN_OPUS_RU_EN_CT2_DIR,
+    MARIAN_OPUS_RU_EN_ORIGINAL_DIR,
     M2M100_CT2_DIR,
     M2M100_ORIGINAL_DIR,
     MADLAD_CT2_DIR,
@@ -24,6 +28,8 @@ NLLB_MODEL_NAME = "facebook/nllb-200-distilled-600M"
 NLLB33_MODEL_NAME = "facebook/nllb-200-3.3B"
 M2M100_MODEL_NAME = "facebook/m2m100_1.2B"
 MADLAD_MODEL_NAME = "google/madlad400-10b-mt"
+MARIAN_OPUS_MODEL_NAME = "Helsinki-NLP/opus-mt-en-ru"
+MARIAN_OPUS_RU_EN_MODEL_NAME = "Helsinki-NLP/opus-mt-ru-en"
 NLLB_LANG_CODES = {
     "en": "eng_Latn",
     "ru": "rus_Cyrl",
@@ -194,6 +200,8 @@ class Nllb33Provider(TranslationProvider):
 
         self._translator = ctranslate2.Translator(str(self.ct2_model_dir))
         self._tokenizer = transformers.AutoTokenizer.from_pretrained(str(self.tokenizer_dir))
+        self._fallback_provider: NllbProvider | None = None
+        self._fallback_unavailable = False
 
     def _validate_dirs(self) -> None:
         if not self.ct2_model_dir.exists():
@@ -221,6 +229,10 @@ class Nllb33Provider(TranslationProvider):
 
         translated: list[str] = []
         for segment in segments:
+            fallback_provider = self._get_fallback_provider()
+            if fallback_provider is not None and _should_prefer_nllb_fallback(segment):
+                translated.append(fallback_provider.translate_segments([segment], source_lang, target_lang)[0])
+                continue
             translated_text = self._translate_single_segment(
                 segment=segment,
                 src_lang=src_lang,
@@ -236,6 +248,11 @@ class Nllb33Provider(TranslationProvider):
                 )
                 if not _is_degraded_translation(segment, retried_text):
                     translated_text = retried_text
+                else:
+                    if fallback_provider is not None:
+                        fallback_text = fallback_provider.translate_segments([segment], source_lang, target_lang)[0]
+                        if not _is_degraded_translation(segment, fallback_text):
+                            translated_text = fallback_text
             translated.append(translated_text)
         return translated
 
@@ -260,6 +277,18 @@ class Nllb33Provider(TranslationProvider):
         output_tokens = results[0].hypotheses[0]
         output_ids = tokenizer.convert_tokens_to_ids(output_tokens)
         return tokenizer.decode(output_ids, skip_special_tokens=True).strip()
+
+    def _get_fallback_provider(self) -> NllbProvider | None:
+        if self._fallback_unavailable:
+            return None
+        if self._fallback_provider is not None:
+            return self._fallback_provider
+        try:
+            self._fallback_provider = NllbProvider()
+        except Exception:
+            self._fallback_unavailable = True
+            return None
+        return self._fallback_provider
 
 
 class MadladProvider(TranslationProvider):
@@ -323,6 +352,77 @@ class MadladProvider(TranslationProvider):
             text = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
             translated.append(text)
         return translated
+
+
+class MarianOpusProvider(TranslationProvider):
+    model_name = MARIAN_OPUS_MODEL_NAME
+
+    def __init__(
+        self,
+        ct2_model_dir: Path = MARIAN_OPUS_CT2_DIR,
+        tokenizer_dir: Path = MARIAN_OPUS_ORIGINAL_DIR,
+    ) -> None:
+        self.ct2_model_dir = Path(ct2_model_dir)
+        self.tokenizer_dir = Path(tokenizer_dir)
+        self._validate_dirs()
+
+        ctranslate2 = _import_required_module("ctranslate2")
+        transformers = _import_required_module("transformers")
+
+        self._translator = ctranslate2.Translator(str(self.ct2_model_dir))
+        self._tokenizer = transformers.AutoTokenizer.from_pretrained(str(self.tokenizer_dir))
+
+    def _validate_dirs(self) -> None:
+        if not self.ct2_model_dir.exists():
+            raise RuntimeError(
+                f"Marian CT2 model directory not found: {self.ct2_model_dir}. "
+                "Convert the Marian model first."
+            )
+        if not self.tokenizer_dir.exists():
+            raise RuntimeError(
+                f"Marian tokenizer directory not found: {self.tokenizer_dir}. "
+                "Download the Marian model first."
+            )
+
+    def translate_segments(
+        self,
+        segments: list[str],
+        source_lang: str,
+        target_lang: str,
+    ) -> list[str]:
+        if not segments:
+            return []
+
+        tokenizer = self._tokenizer
+        tokenized = tokenizer(segments)
+        source_tokens = [
+            tokenizer.convert_ids_to_tokens(ids)
+            for ids in tokenized["input_ids"]
+        ]
+        results = self._translator.translate_batch(
+            source_tokens,
+            max_batch_size=8,
+            **LITERAL_DECODE_OPTIONS,
+        )
+
+        translated: list[str] = []
+        for result in results:
+            output_tokens = result.hypotheses[0]
+            output_ids = tokenizer.convert_tokens_to_ids(output_tokens)
+            text = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
+            translated.append(text)
+        return translated
+
+
+class MarianOpusRuEnProvider(MarianOpusProvider):
+    model_name = MARIAN_OPUS_RU_EN_MODEL_NAME
+
+    def __init__(
+        self,
+        ct2_model_dir: Path = MARIAN_OPUS_RU_EN_CT2_DIR,
+        tokenizer_dir: Path = MARIAN_OPUS_RU_EN_ORIGINAL_DIR,
+    ) -> None:
+        super().__init__(ct2_model_dir=ct2_model_dir, tokenizer_dir=tokenizer_dir)
 
 
 class M2M100Provider(TranslationProvider):
@@ -396,15 +496,11 @@ class M2M100Provider(TranslationProvider):
 
 def create_default_provider() -> TranslationProvider:
     mode = translator_mode()
-    if mode == "nllb33":
-        return Nllb33Provider()
-    if mode == "nllb":
-        return NllbProvider()
-    if mode == "m2m100":
-        return M2M100Provider()
-    if mode == "madlad":
-        return MadladProvider()
-    return MockProvider()
+    if mode == "mock":
+        return MockProvider()
+    if mode == "auto":
+        return _create_auto_provider()
+    return _create_provider_for_mode(mode)
 
 
 def translate_segment_batch(
@@ -543,6 +639,26 @@ def _is_degraded_translation(source_text: str, translated_text: str) -> bool:
     return False
 
 
+def _should_prefer_nllb_fallback(segment: str) -> bool:
+    words = re.findall(r"[A-Za-zА-Яа-яЁё0-9]+", segment)
+    if '"' in segment:
+        return True
+    if len(words) <= 3:
+        return True
+    if _looks_like_title_segment(words):
+        return True
+    return False
+
+
+def _looks_like_title_segment(words: list[str]) -> bool:
+    if not words or len(words) > 6:
+        return False
+    alpha_words = [word for word in words if re.search(r"[A-Za-zА-Яа-яЁё]", word)]
+    if not alpha_words:
+        return False
+    return all(word[:1].isupper() for word in alpha_words)
+
+
 def _has_repeated_ngram(words: list[str], size: int, *, threshold: int) -> bool:
     if len(words) < size * threshold:
         return False
@@ -590,6 +706,36 @@ def _resolve_madlad_lang(lang: str) -> str:
             f"Supported codes: {', '.join(sorted(MADLAD_LANG_CODES))}"
         )
     return MADLAD_LANG_CODES[normalized]
+
+
+def _create_auto_provider() -> TranslationProvider:
+    candidate_modes = ["marian"]
+    failures: list[str] = []
+    for mode in candidate_modes:
+        try:
+            return _create_provider_for_mode(mode)
+        except Exception as exc:
+            failures.append(f"{mode}: {exc}")
+    joined = "\n".join(f"- {failure}" for failure in failures)
+    raise RuntimeError(
+        "No real translation provider is available for auto mode.\n"
+        "Checked providers:\n"
+        f"{joined}\n"
+        "Install the required runtime packages/model files or explicitly set "
+        "LEXO_TRANSLATOR=mock if you intentionally want placeholder translations."
+    )
+
+
+def _create_provider_for_mode(mode: str) -> TranslationProvider:
+    normalized = (mode or "").strip().lower()
+    if normalized == "marian":
+        return MarianOpusProvider()
+    if normalized == "mock":
+        return MockProvider()
+    raise RuntimeError(
+        f"Unsupported translator mode: {mode}. "
+        "Supported modes: auto, marian, mock."
+    )
 
 
 def _import_required_module(name: str):

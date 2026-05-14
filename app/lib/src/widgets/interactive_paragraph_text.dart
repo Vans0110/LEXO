@@ -23,33 +23,75 @@ class InteractiveParagraphText extends StatelessWidget {
     final baseStyle = const TextStyle(fontSize: 18, height: 1.7);
     final highlightColor = Theme.of(context).colorScheme.primary.withOpacity(0.18);
     final defaultColor = Theme.of(context).colorScheme.onSurface;
+    const wordHighlightPadding = EdgeInsets.symmetric(horizontal: 2, vertical: 1);
     final wordById = {for (final word in words) word.id: word};
+    final unitWordById = <String, ParagraphWordItem>{};
+    for (final word in words) {
+      unitWordById.putIfAbsent(word.tapUnitId, () => word);
+    }
+    final firstTokenIndexByUnit = <String, int>{};
+    final lastTokenIndexByUnit = <String, int>{};
+    for (var index = 0; index < tokens.length; index++) {
+      final tapUnitId = tokens[index].tapUnitId;
+      if (tapUnitId == null || tapUnitId.isEmpty) {
+        continue;
+      }
+      firstTokenIndexByUnit.putIfAbsent(tapUnitId, () => index);
+      lastTokenIndexByUnit[tapUnitId] = index;
+    }
 
     return RichText(
       text: TextSpan(
         children: [
-          for (final token in tokens)
+          for (var index = 0; index < tokens.length; index++)
             () {
+              final token = tokens[index];
               final word = token.wordId == null ? null : wordById[token.wordId];
+              final unitWord = token.tapUnitId == null ? null : unitWordById[token.tapUnitId!];
               final isSelected = token.tapUnitId != null && token.tapUnitId == selectedTapUnitId;
+              final isFirstInUnit =
+                  token.tapUnitId != null && firstTokenIndexByUnit[token.tapUnitId] == index;
+              final isLastInUnit =
+                  token.tapUnitId != null && lastTokenIndexByUnit[token.tapUnitId] == index;
               final style = baseStyle.copyWith(
                 color: defaultColor,
-                fontWeight: token.isWord && isSelected ? FontWeight.w700 : FontWeight.w400,
-                backgroundColor: isSelected ? highlightColor : null,
+                fontWeight: FontWeight.w400,
               );
-              if (word == null) {
-                return TextSpan(text: token.text, style: style);
+              final decoration = isSelected
+                  ? BoxDecoration(
+                      color: highlightColor,
+                      borderRadius: BorderRadius.horizontal(
+                        left: isFirstInUnit ? const Radius.circular(6) : Radius.zero,
+                        right: isLastInUnit ? const Radius.circular(6) : Radius.zero,
+                      ),
+                    )
+                  : null;
+              if (word == null && unitWord == null) {
+                return TextSpan(
+                  text: token.text,
+                  style: style,
+                );
               }
               return WidgetSpan(
                 alignment: PlaceholderAlignment.baseline,
                 baseline: TextBaseline.alphabetic,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: () => onWordTap(word),
-                  onLongPress: () => onWordLongPress(word),
-                  child: Text(
-                    token.text,
-                    style: style,
+                  onTap: () {
+                    final tapWord = unitWord ?? word;
+                    if (tapWord == null) {
+                      return;
+                    }
+                    onWordTap(tapWord);
+                  },
+                  onLongPress: word == null ? null : () => onWordLongPress(word),
+                  child: Container(
+                    padding: wordHighlightPadding,
+                    decoration: decoration ?? const BoxDecoration(color: Colors.transparent),
+                    child: Text(
+                      token.text,
+                      style: style,
+                    ),
                   ),
                 ),
               );

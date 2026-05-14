@@ -5,6 +5,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../api/api_client.dart';
 import '../detail_sheet_models.dart';
@@ -16,10 +17,29 @@ import '../widgets/reader_playback_bar.dart';
 import '../widgets/tts_panel.dart';
 
 class ReaderScreen extends StatefulWidget {
-  const ReaderScreen({super.key, required this.api, required this.bookId});
+  const ReaderScreen({
+    super.key,
+    required this.api,
+    required this.bookId,
+    this.playbackRepeatMode = ReaderPlaybackRepeatMode.off,
+    this.onPlaybackRepeatModeChanged,
+    this.onLibraryPlaybackCompleted,
+    this.autoplayVoiceId,
+    this.autoplayLevelIds = const <int>{},
+    this.autoplayToken = 0,
+  });
 
   final LexoApiClient api;
   final String bookId;
+  final ReaderPlaybackRepeatMode playbackRepeatMode;
+  final ValueChanged<ReaderPlaybackRepeatMode>? onPlaybackRepeatModeChanged;
+  final Future<bool> Function({
+    String? voiceId,
+    required Set<int> selectedLevelIds,
+  })? onLibraryPlaybackCompleted;
+  final String? autoplayVoiceId;
+  final Set<int> autoplayLevelIds;
+  final int autoplayToken;
 
   @override
   State<ReaderScreen> createState() => _ReaderScreenState();
@@ -33,6 +53,15 @@ class _ReaderScreenState extends State<ReaderScreen> {
   late final Player _audioPlayer;
   Timer? _pollTimer;
   bool _playerExpanded = true;
+  bool _playingWordAudio = false;
+  ReaderPlaybackRepeatMode _localPlaybackRepeatMode = ReaderPlaybackRepeatMode.off;
+  int _playbackCycleToken = 0;
+  int _handledAutoplayToken = 0;
+
+  void _uiTrace(String message) {
+    developer.log(message, name: 'LEXO_UI');
+    debugPrint(message);
+  }
 
   double _selectedPlaybackSpeed() {
     final selectedLevel = _selectedLevel();
@@ -69,6 +98,26 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   String _requiredAudioVariant() {
     return _selectedLevel()?.audioVariant ?? 'base';
+  }
+
+  ReaderPlaybackRepeatMode get _effectivePlaybackRepeatMode {
+    return widget.onPlaybackRepeatModeChanged == null
+        ? _localPlaybackRepeatMode
+        : widget.playbackRepeatMode;
+  }
+
+  void _changePlaybackRepeatMode(ReaderPlaybackRepeatMode mode) {
+    _playbackCycleToken += 1;
+    final nextMode = widget.onLibraryPlaybackCompleted == null &&
+            mode == ReaderPlaybackRepeatMode.playLibraryOnce
+        ? ReaderPlaybackRepeatMode.off
+        : mode;
+    final handler = widget.onPlaybackRepeatModeChanged;
+    if (handler != null) {
+      handler(nextMode);
+      return;
+    }
+    setState(() => _localPlaybackRepeatMode = nextMode);
   }
 
   Future<void> _applyPlaybackSpeed() async {
@@ -138,6 +187,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   @override
   void initState() {
     super.initState();
+    _uiTrace('READER_INIT bookId=${widget.bookId}');
     _controller = ReaderFeatureController(widget.api);
     _audioPlayer = Player();
     _audioPlayer.stream.completed.listen((completed) {
@@ -150,13 +200,33 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   @override
   void dispose() {
+    _playbackCycleToken += 1;
+    _uiTrace('READER_DISPOSE bookId=${widget.bookId}');
+    _uiTrace('READER_DISPOSE_BEFORE_TIMER_CANCEL bookId=${widget.bookId}');
     _pollTimer?.cancel();
+    _uiTrace('READER_DISPOSE_AFTER_TIMER_CANCEL bookId=${widget.bookId}');
+    _uiTrace('READER_DISPOSE_BEFORE_PLAYER_DISPOSE bookId=${widget.bookId}');
     _audioPlayer.dispose();
+    _uiTrace('READER_DISPOSE_AFTER_PLAYER_DISPOSE bookId=${widget.bookId}');
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant ReaderScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.playbackRepeatMode != widget.playbackRepeatMode) {
+      _playbackCycleToken += 1;
+    }
+    if (oldWidget.autoplayToken != widget.autoplayToken) {
+      _maybeStartAutoplay();
+    }
+  }
+
   Future<void> _load() async {
-    developer.log('Loading reader payload', name: 'LEXO_UI');
+    _uiTrace(
+      'READER_LOAD_START bookId=${widget.bookId} '
+      'loading=${_state.loading} selectedVoiceId=${_state.selectedVoiceId ?? ''}',
+    );
     setState(() {
       _state = _state.copyWith(
         loading: true,
@@ -171,7 +241,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
       final availableVoiceIds = result.ttsProfiles.map((item) => item.voiceId).toSet();
       final activeVoiceId = result.ttsState.activeJob?.voiceId;
       String? selectedVoiceId;
-      if (activeVoiceId != null && availableVoiceIds.contains(activeVoiceId)) {
+      if ((widget.autoplayVoiceId ?? '').isNotEmpty &&
+          availableVoiceIds.contains(widget.autoplayVoiceId)) {
+        selectedVoiceId = widget.autoplayVoiceId;
+      } else if (activeVoiceId != null && availableVoiceIds.contains(activeVoiceId)) {
         selectedVoiceId = activeVoiceId;
       } else if (_state.selectedVoiceId != null && availableVoiceIds.contains(_state.selectedVoiceId)) {
         selectedVoiceId = _state.selectedVoiceId;
@@ -179,6 +252,13 @@ class _ReaderScreenState extends State<ReaderScreen> {
         selectedVoiceId = result.ttsProfiles.isNotEmpty ? result.ttsProfiles.first.voiceId : null;
       }
       var selectedLevelIds = _state.selectedLevelIds;
+      if (widget.autoplayLevelIds.isNotEmpty) {
+        final availableLevelIds = result.ttsLevels.map((item) => item.id).toSet();
+        final requestedLevelIds = widget.autoplayLevelIds.intersection(availableLevelIds);
+        if (requestedLevelIds.isNotEmpty) {
+          selectedLevelIds = requestedLevelIds;
+        }
+      }
       final hasSelectedLevel = result.ttsLevels.any(
         (item) => selectedLevelIds.isNotEmpty && item.id == selectedLevelIds.first,
       );
@@ -211,9 +291,17 @@ class _ReaderScreenState extends State<ReaderScreen> {
           loading: false,
         );
       });
+      _uiTrace(
+        'READER_LOAD_OK bookId=${widget.bookId} '
+        'paragraphs=${result.payload.paragraphs.length} '
+        'ttsProfiles=${result.ttsProfiles.length} '
+        'ttsLevels=${result.ttsLevels.length}',
+      );
       await _applyPlaybackSpeed();
       _syncPolling(result.ttsState, packageState);
+      await _maybeStartAutoplay();
     } catch (error) {
+      _uiTrace('READER_LOAD_ERROR bookId=${widget.bookId} error=$error');
       if (!mounted) {
         return;
       }
@@ -222,7 +310,24 @@ class _ReaderScreenState extends State<ReaderScreen> {
       if (mounted && _state.loading) {
         setState(() => _state = _state.copyWith(loading: false));
       }
+      _uiTrace('READER_LOAD_END bookId=${widget.bookId} loading=${_state.loading}');
     }
+  }
+
+  Future<void> _maybeStartAutoplay() async {
+    if (widget.autoplayToken <= 0 || _handledAutoplayToken == widget.autoplayToken) {
+      return;
+    }
+    final selectedJob = _selectedJob();
+    if (selectedJob == null || !selectedJob.isReady) {
+      return;
+    }
+    _handledAutoplayToken = widget.autoplayToken;
+    await Future<void>.delayed(Duration.zero);
+    if (!mounted) {
+      return;
+    }
+    await _startPlayback(selectedJob.jobId);
   }
 
   Future<void> _refreshTtsState() async {
@@ -300,6 +405,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   Future<void> _startPlayback(String jobId) async {
+    _playbackCycleToken += 1;
     setState(() => _state = _state.copyWith(actionBusy: true, clearError: true));
     try {
       await _audioPlayer.stop();
@@ -326,6 +432,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   Future<void> _controlPlayback(String action) async {
+    if (action == 'stop') {
+      _playbackCycleToken += 1;
+    }
     final activeJob = _state.ttsState?.activeJob;
     if (activeJob == null) {
       return;
@@ -363,6 +472,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   Future<void> _stopJob(String jobId) async {
+    _playbackCycleToken += 1;
     setState(() => _state = _state.copyWith(actionBusy: true, clearError: true));
     try {
       await _audioPlayer.stop();
@@ -403,17 +513,23 @@ class _ReaderScreenState extends State<ReaderScreen> {
       throw Exception('Audio file not found: ${segment.audioPath}');
     }
     await _audioPlayer.stop();
+    _playingWordAudio = false;
     await _audioPlayer.open(Media(segment.audioPath), play: true);
     await _applyPlaybackSpeed();
   }
 
   Future<void> _handleTrackCompleted() async {
+    if (_playingWordAudio) {
+      _playingWordAudio = false;
+      return;
+    }
     final state = _state.ttsState;
     final activeJob = state?.activeJob;
     if (state == null || activeJob == null || state.activeSegments.isEmpty) {
       return;
     }
     if (activeJob.currentSegmentIndex >= state.activeSegments.length - 1) {
+      await _handleBookCompleted(activeJob);
       return;
     }
     try {
@@ -440,6 +556,76 @@ class _ReaderScreenState extends State<ReaderScreen> {
     }
   }
 
+  Future<void> _handleBookCompleted(TtsJobItem activeJob) async {
+    final cycleToken = ++_playbackCycleToken;
+    await _audioPlayer.stop();
+    if (!mounted || cycleToken != _playbackCycleToken) {
+      return;
+    }
+
+    if (_effectivePlaybackRepeatMode == ReaderPlaybackRepeatMode.off) {
+      try {
+        final stoppedState = await _controller.controlTts(
+          bookId: widget.bookId,
+          jobId: activeJob.jobId,
+          action: 'stop',
+        );
+        if (!mounted || cycleToken != _playbackCycleToken) {
+          return;
+        }
+        setState(() => _state = _state.copyWith(ttsState: stoppedState));
+      } catch (_) {
+        // Completion should not surface a backend stop failure as a reader error.
+      }
+      return;
+    }
+
+    await Future<void>.delayed(const Duration(seconds: 5));
+    if (!mounted || cycleToken != _playbackCycleToken) {
+      return;
+    }
+
+    if (_effectivePlaybackRepeatMode == ReaderPlaybackRepeatMode.repeatBook) {
+      try {
+        await _controller.controlTts(
+          bookId: widget.bookId,
+          jobId: activeJob.jobId,
+          action: 'stop',
+        );
+        if (!mounted || cycleToken != _playbackCycleToken) {
+          return;
+        }
+        await _startPlayback(activeJob.jobId);
+      } catch (error) {
+        if (!mounted) {
+          return;
+        }
+        setState(() => _state = _state.copyWith(error: error.toString()));
+      }
+      return;
+    }
+
+    final openedNext = await widget.onLibraryPlaybackCompleted?.call(
+          voiceId: _state.selectedVoiceId,
+          selectedLevelIds: Set<int>.of(_state.selectedLevelIds),
+        ) ??
+        false;
+    if (openedNext) {
+      return;
+    }
+    try {
+      final stoppedState = await _controller.controlTts(
+        bookId: widget.bookId,
+        jobId: activeJob.jobId,
+        action: 'stop',
+      );
+      if (!mounted || cycleToken != _playbackCycleToken) {
+        return;
+      }
+      setState(() => _state = _state.copyWith(ttsState: stoppedState));
+    } catch (_) {}
+  }
+
   Future<void> _savePosition(int paragraphIndex) async {
     if (_state.lastSavedParagraphIndex == paragraphIndex) {
       return;
@@ -454,24 +640,15 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   void _handleWordTap(ParagraphItem item, ParagraphWordItem word) {
-    final focusText = word.unitTranslationFocusText.trim().isNotEmpty
-        ? word.unitTranslationFocusText
-        : (word.unitTranslationSpanText.trim().isNotEmpty
-              ? word.unitTranslationSpanText
-              : (word.translationFocusText.trim().isNotEmpty
-                    ? word.translationFocusText
-                    : word.translationSpanText));
+    final focusText = word.effectiveFocusText?.trim() ?? '';
+    final effective = focusText.isNotEmpty ? null : buildPreferredSourceFirstFocus(item: item, word: word);
     setState(() {
       _state = _state.copyWith(
         selectedParagraphIndex: item.index,
         selectedTapUnitId: word.tapUnitId,
-        translationLeftText: word.unitTranslationLeftText.trim().isNotEmpty
-            ? word.unitTranslationLeftText
-            : word.translationLeftText,
-        translationFocusText: focusText.isNotEmpty ? focusText : word.text,
-        translationRightText: word.unitTranslationRightText.trim().isNotEmpty
-            ? word.unitTranslationRightText
-            : word.translationRightText,
+        translationLeftText: effective?.left ?? (word.effectiveLeftText ?? ''),
+        translationFocusText: effective?.focus ?? (focusText.isNotEmpty ? focusText : word.text),
+        translationRightText: effective?.right ?? (word.effectiveRightText ?? ''),
       );
     });
     _savePosition(item.index);
@@ -500,23 +677,74 @@ class _ReaderScreenState extends State<ReaderScreen> {
         heightFactor: 0.72,
         child: ReaderDetailSheet(
           payload: payload,
-          onSaveUnit: (unit) => _saveDetailUnit(word.id, unit),
+          onSaveDictionaryCard: (translations) => _saveDictionaryCard(payload, translations),
+          onPlayWordAudio: () => _playDetailWordAudio(payload),
         ),
       ),
     );
   }
 
-  Future<String?> _saveDetailUnit(String wordId, DetailSheetUnitItem unit) async {
-    try {
-      final result = await _controller.saveDetailUnit(
-        bookId: widget.bookId,
-        wordId: wordId,
-        unitId: unit.id,
+  String _detailWordAudioText(DetailSheetPayload payload) {
+    final candidates = <String>{
+      payload.dictionaryEntry?.lemma.trim() ?? '',
+      payload.units
+          .where((unit) => unit.isPrimary)
+          .map((unit) => unit.lemma.trim().isNotEmpty ? unit.lemma.trim() : unit.text.trim())
+          .firstWhere((value) => value.isNotEmpty, orElse: () => ''),
+      payload.sheetSourceText.trim(),
+    }..removeWhere((value) => value.isEmpty);
+    return candidates.isEmpty ? '' : candidates.first;
+  }
+
+  Future<void> _playDetailWordAudio(DetailSheetPayload payload) async {
+    final word = _detailWordAudioText(payload);
+    if (word.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Нет слова для озвучки')),
       );
-      final saved = result['saved'] as bool? ?? false;
-      return saved ? 'Добавлено в Cards' : 'Карточка уже есть';
+      return;
+    }
+    try {
+      final bytes = await widget.api.downloadWordAudio(word);
+      final tempDir = await getTemporaryDirectory();
+      final audioFile = File('${tempDir.path}/lexo_detail_word_${word.hashCode}.wav');
+      await audioFile.writeAsBytes(bytes, flush: true);
+      _playbackCycleToken += 1;
+      await _audioPlayer.stop();
+      _playingWordAudio = true;
+      await _audioPlayer.open(Media(audioFile.path), play: true);
+      await _audioPlayer.setRate(1.0);
     } catch (error) {
-      return 'Не удалось добавить: $error';
+      _playingWordAudio = false;
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не удалось озвучить слово: $error')),
+      );
+    }
+  }
+
+  Future<void> _saveDictionaryCard(DetailSheetPayload payload, List<String> translations) async {
+    try {
+      await _controller.saveDictionaryCard(
+        bookId: widget.bookId,
+        wordId: payload.wordId,
+        translations: translations,
+      );
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Карточка добавлена')),
+      );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не удалось сохранить карточку: $error')),
+      );
     }
   }
 
@@ -530,7 +758,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     debugPrint(
       'DETAIL_SHEET_OPEN paragraph=$paragraphIndex word="${word.text}" '
       'selected_block="${payload.sheetSourceText}" block_translation="${payload.sheetTranslationText}" '
-      'units=${payload.units.length} $unitsText',
+      'units=${payload.units.length} source_first=${payload.sourceFirst?.analysisVersion ?? ''} $unitsText',
     );
   }
 
@@ -635,7 +863,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
                                   onNext: () => _controlPlayback('next'),
                                   onSpeedTap: _showSpeedPicker,
                                   onSpeedLongPress: _showSpeedPicker,
+                                  onRepeatModeTap: () => _changePlaybackRepeatMode(
+                                    _effectivePlaybackRepeatMode.next,
+                                  ),
                                   speedLabel: _speedLabel(),
+                                  repeatMode: _effectivePlaybackRepeatMode,
                                 ),
                               ),
                             ],

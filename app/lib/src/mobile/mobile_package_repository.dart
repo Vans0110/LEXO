@@ -6,6 +6,101 @@ import 'package:path_provider/path_provider.dart';
 import '../models.dart';
 import 'mobile_package_models.dart';
 
+Map<String, dynamic> _normalizeWordPayload(Map<String, dynamic> rawWord) {
+  final word = <String, dynamic>{...rawWord};
+  final sourceFirstFocus = word['source_first_focus_text'] as String? ?? '';
+  final sourceFirstLeft = word['source_first_left_text'] as String? ?? '';
+  final sourceFirstRight = word['source_first_right_text'] as String? ?? '';
+  final unitFocus = word['unit_translation_focus_text'] as String? ?? '';
+  final unitSpan = word['unit_translation_span_text'] as String? ?? '';
+  final unitLeft = word['unit_translation_left_text'] as String? ?? '';
+  final unitRight = word['unit_translation_right_text'] as String? ?? '';
+  final legacyFocus = word['translation_focus_text'] as String? ?? '';
+  final legacySpan = word['translation_span_text'] as String? ?? '';
+  final legacyLeft = word['translation_left_text'] as String? ?? '';
+  final legacyRight = word['translation_right_text'] as String? ?? '';
+  word['effective_translation_text'] = (word['effective_translation_text'] as String?)?.isNotEmpty == true
+      ? word['effective_translation_text']
+      : (sourceFirstFocus.isNotEmpty
+          ? sourceFirstFocus
+          : (unitFocus.isNotEmpty ? unitFocus : (unitSpan.isNotEmpty ? unitSpan : (legacyFocus.isNotEmpty ? legacyFocus : legacySpan))));
+  word['effective_left_text'] = (word['effective_left_text'] as String?)?.isNotEmpty == true
+      ? word['effective_left_text']
+      : (sourceFirstLeft.isNotEmpty ? sourceFirstLeft : (unitLeft.isNotEmpty ? unitLeft : legacyLeft));
+  word['effective_focus_text'] = (word['effective_focus_text'] as String?)?.isNotEmpty == true
+      ? word['effective_focus_text']
+      : (sourceFirstFocus.isNotEmpty ? sourceFirstFocus : (unitFocus.isNotEmpty ? unitFocus : (legacyFocus.isNotEmpty ? legacyFocus : legacySpan)));
+  word['effective_right_text'] = (word['effective_right_text'] as String?)?.isNotEmpty == true
+      ? word['effective_right_text']
+      : (sourceFirstRight.isNotEmpty ? sourceFirstRight : (unitRight.isNotEmpty ? unitRight : legacyRight));
+  word['effective_matched_by'] = (word['effective_matched_by'] as String?)?.isNotEmpty == true
+      ? word['effective_matched_by']
+      : (((word['source_first_unit_id'] as String?)?.isNotEmpty == true)
+          ? 'source_first'
+          : (unitFocus.isNotEmpty ? 'legacy_unit' : (legacyFocus.isNotEmpty ? 'legacy_alignment' : '')));
+  word['effective_alignment_kind'] = (word['effective_alignment_kind'] as String?)?.isNotEmpty == true
+      ? word['effective_alignment_kind']
+      : (word['alignment_kind'] as String? ?? '');
+  word['effective_coverage_status'] = (word['effective_coverage_status'] as String?)?.isNotEmpty == true
+      ? word['effective_coverage_status']
+      : (word['source_first_coverage_status'] as String? ?? '');
+  return word;
+}
+
+Map<String, dynamic> _normalizeDetailPayload(Map<String, dynamic> rawDetail) {
+  final detail = <String, dynamic>{...rawDetail};
+  final units = (detail['units'] as List<dynamic>? ?? const [])
+      .whereType<Map<String, dynamic>>()
+      .toList();
+  final sourceFirst = detail['source_first'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+  final selectedUnit = sourceFirst['selected_unit'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+  final effectiveCoverage = selectedUnit['effective_coverage'] as Map<String, dynamic>? ??
+      selectedUnit['coverage'] as Map<String, dynamic>? ??
+      const <String, dynamic>{};
+  if ((detail['sheet_translation_text'] as String? ?? '').trim().isEmpty) {
+    final fallbackTranslation = (effectiveCoverage['target_text'] as String? ?? '').trim().isNotEmpty
+        ? (effectiveCoverage['target_text'] as String? ?? '')
+        : units
+            .map((unit) => unit['translation'] as String? ?? '')
+            .firstWhere((value) => value.trim().isNotEmpty, orElse: () => '');
+    detail['sheet_translation_text'] = fallbackTranslation;
+  }
+  return detail;
+}
+
+Map<String, dynamic> _normalizePackageJson(Map<String, dynamic> rawPackage) {
+  final package = <String, dynamic>{...rawPackage};
+  final meta = <String, dynamic>{...(package['meta'] as Map<String, dynamic>? ?? const <String, dynamic>{})};
+  final readerPayload = <String, dynamic>{
+    ...(package['reader_payload'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+  };
+  final paragraphs = (readerPayload['paragraphs'] as List<dynamic>? ?? const [])
+      .whereType<Map<String, dynamic>>()
+      .map((paragraph) {
+        final normalizedParagraph = <String, dynamic>{...paragraph};
+        normalizedParagraph['words'] = (paragraph['words'] as List<dynamic>? ?? const [])
+            .whereType<Map<String, dynamic>>()
+            .map(_normalizeWordPayload)
+            .toList();
+        return normalizedParagraph;
+      })
+      .toList();
+  readerPayload['paragraphs'] = paragraphs;
+  package['reader_payload'] = readerPayload;
+  package['dictionary_manifest'] =
+      package['dictionary_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+  final detailManifest = <String, dynamic>{};
+  (package['detail_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{}).forEach((key, value) {
+    if (value is Map<String, dynamic>) {
+      detailManifest[key] = _normalizeDetailPayload(value);
+    }
+  });
+  package['detail_manifest'] = detailManifest;
+  meta['package_version'] = (meta['package_version'] as int?) ?? 2;
+  package['meta'] = meta;
+  return package;
+}
+
 class MobileBookPackageRepository {
   static const _libraryDirName = 'mobile_library';
 
@@ -44,7 +139,9 @@ class MobileBookPackageRepository {
       if (!packageFile.existsSync()) {
         continue;
       }
-      final raw = jsonDecode(packageFile.readAsStringSync()) as Map<String, dynamic>;
+      final raw = _normalizePackageJson(
+        jsonDecode(packageFile.readAsStringSync()) as Map<String, dynamic>,
+      );
       packages.add(MobileBookPackage(raw));
     }
     return packages;
@@ -55,12 +152,15 @@ class MobileBookPackageRepository {
     if (!packageFile.existsSync()) {
       throw Exception('Local book package not found: $localBookId');
     }
-    final raw = jsonDecode(await packageFile.readAsString()) as Map<String, dynamic>;
+    final raw = _normalizePackageJson(
+      jsonDecode(await packageFile.readAsString()) as Map<String, dynamic>,
+    );
     return MobileBookPackage(raw);
   }
 
   Future<void> savePackage(Map<String, dynamic> packageJson) async {
-    final meta = packageJson['meta'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+    final normalizedPackage = _normalizePackageJson(packageJson);
+    final meta = normalizedPackage['meta'] as Map<String, dynamic>? ?? const <String, dynamic>{};
     final localBookId = meta['local_book_id'] as String? ?? meta['desktop_book_id'] as String? ?? '';
     if (localBookId.isEmpty) {
       throw Exception('Package does not contain local_book_id');
@@ -69,7 +169,7 @@ class MobileBookPackageRepository {
     await bookDir.create(recursive: true);
     final packageFile = File('${bookDir.path}/package.json');
     await packageFile.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(packageJson),
+      const JsonEncoder.withIndent('  ').convert(normalizedPackage),
       encoding: utf8,
     );
   }

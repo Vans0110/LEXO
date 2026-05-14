@@ -115,6 +115,7 @@ class ParagraphItem {
     required this.index,
     required this.sourceText,
     required this.targetText,
+    required this.segmentsV2,
     required this.tokens,
     required this.words,
   });
@@ -122,6 +123,7 @@ class ParagraphItem {
   final int index;
   final String sourceText;
   final String targetText;
+  final List<ParagraphSegmentV2Item> segmentsV2;
   final List<ParagraphTokenItem> tokens;
   final List<ParagraphWordItem> words;
 
@@ -133,6 +135,10 @@ class ParagraphItem {
     final words = (json['words'] as List<dynamic>? ?? const [])
         .cast<Map<String, dynamic>>()
         .map(ParagraphWordItem.fromJson)
+        .toList();
+    final segmentsV2 = (json['segments_v2'] as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>()
+        .map(ParagraphSegmentV2Item.fromJson)
         .toList();
     final sourceText = json['source_text'] as String? ?? '';
     if (tokens.isEmpty && sourceText.isNotEmpty) {
@@ -151,8 +157,59 @@ class ParagraphItem {
       index: json['index'] as int,
       sourceText: sourceText,
       targetText: json['target_text'] as String? ?? '',
+      segmentsV2: segmentsV2,
       tokens: tokens,
       words: words,
+    );
+  }
+}
+
+class ParagraphSegmentV2Item {
+  const ParagraphSegmentV2Item({
+    required this.id,
+    required this.orderIndex,
+    required this.sourceText,
+    required this.targetText,
+    required this.segmentType,
+    required this.translationKind,
+    required this.analysisVersion,
+    required this.segmentMeta,
+    required this.sourceAnalysis,
+    required this.sourceLookup,
+    required this.sourceCoverage,
+    required this.sourceEffective,
+    required this.segmentAlignment,
+  });
+
+  final String id;
+  final int orderIndex;
+  final String sourceText;
+  final String targetText;
+  final String segmentType;
+  final String translationKind;
+  final String analysisVersion;
+  final Map<String, dynamic> segmentMeta;
+  final Map<String, dynamic> sourceAnalysis;
+  final Map<String, dynamic> sourceLookup;
+  final Map<String, dynamic> sourceCoverage;
+  final Map<String, dynamic> sourceEffective;
+  final Map<String, dynamic> segmentAlignment;
+
+  factory ParagraphSegmentV2Item.fromJson(Map<String, dynamic> json) {
+    return ParagraphSegmentV2Item(
+      id: json['id'] as String? ?? '',
+      orderIndex: json['order_index'] as int? ?? 0,
+      sourceText: json['source_text'] as String? ?? '',
+      targetText: json['target_text'] as String? ?? '',
+      segmentType: json['segment_type'] as String? ?? 'simple_action',
+      translationKind: json['translation_kind'] as String? ?? 'provider_fallback',
+      analysisVersion: json['analysis_version'] as String? ?? 'legacy_v1',
+      segmentMeta: (json['segment_meta'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+      sourceAnalysis: (json['source_analysis'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+      sourceLookup: (json['source_lookup'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+      sourceCoverage: (json['source_coverage'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+      sourceEffective: (json['source_effective'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+      segmentAlignment: (json['segment_alignment'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
     );
   }
 }
@@ -193,6 +250,10 @@ class ParagraphWordItem {
     required this.id,
     required this.text,
     required this.orderIndex,
+    required this.orderIndexInSegment,
+    required this.targetStartIndex,
+    required this.targetEndIndex,
+    this.segmentId,
     required this.anchorWordId,
     required this.tapUnitId,
     required this.sourceUnitText,
@@ -213,11 +274,29 @@ class ParagraphWordItem {
     this.lexicalUnitType,
     this.grammarHint,
     this.morphLabel,
+    this.sourceFirstUnitId,
+    this.sourceFirstUnitText,
+    this.sourceFirstLeftText,
+    this.sourceFirstFocusText,
+    this.sourceFirstRightText,
+    this.sourceFirstCoverageStatus,
+    this.sourceFirstEffectiveSource,
+    this.effectiveTranslationText,
+    this.effectiveLeftText,
+    this.effectiveFocusText,
+    this.effectiveRightText,
+    this.effectiveMatchedBy,
+    this.effectiveAlignmentKind,
+    this.effectiveCoverageStatus,
   });
 
   final String id;
   final String text;
   final int orderIndex;
+  final int orderIndexInSegment;
+  final int targetStartIndex;
+  final int targetEndIndex;
+  final String? segmentId;
   final String? anchorWordId;
   final String tapUnitId;
   final String sourceUnitText;
@@ -238,23 +317,52 @@ class ParagraphWordItem {
   final String? lexicalUnitType;
   final String? grammarHint;
   final String? morphLabel;
+  final String? sourceFirstUnitId;
+  final String? sourceFirstUnitText;
+  final String? sourceFirstLeftText;
+  final String? sourceFirstFocusText;
+  final String? sourceFirstRightText;
+  final String? sourceFirstCoverageStatus;
+  final String? sourceFirstEffectiveSource;
+  final String? effectiveTranslationText;
+  final String? effectiveLeftText;
+  final String? effectiveFocusText;
+  final String? effectiveRightText;
+  final String? effectiveMatchedBy;
+  final String? effectiveAlignmentKind;
+  final String? effectiveCoverageStatus;
 
   factory ParagraphWordItem.fromJson(Map<String, dynamic> json) {
+    final sourceFirstFocusText = json['source_first_focus_text'] as String?;
+    final sourceFirstLeftText = json['source_first_left_text'] as String?;
+    final sourceFirstRightText = json['source_first_right_text'] as String?;
+    final unitTranslationSpanText = json['unit_translation_span_text'] as String? ?? '';
+    final unitTranslationLeftText = json['unit_translation_left_text'] as String? ?? '';
+    final unitTranslationFocusText = json['unit_translation_focus_text'] as String? ?? '';
+    final unitTranslationRightText = json['unit_translation_right_text'] as String? ?? '';
+    final translationSpanText = json['translation_span_text'] as String? ?? '';
+    final translationLeftText = json['translation_left_text'] as String? ?? '';
+    final translationFocusText = json['translation_focus_text'] as String? ?? '';
+    final translationRightText = json['translation_right_text'] as String? ?? '';
     return ParagraphWordItem(
       id: json['id'] as String? ?? '',
       text: json['text'] as String? ?? '',
       orderIndex: json['order_index'] as int? ?? 0,
+      orderIndexInSegment: json['order_index_in_segment'] as int? ?? 0,
+      targetStartIndex: json['target_start_index'] as int? ?? -1,
+      targetEndIndex: json['target_end_index'] as int? ?? -1,
+      segmentId: json['segment_id'] as String?,
       anchorWordId: json['anchor_word_id'] as String?,
       tapUnitId: json['tap_unit_id'] as String? ?? '',
       sourceUnitText: json['source_unit_text'] as String? ?? '',
-      translationSpanText: json['translation_span_text'] as String? ?? '',
-      translationLeftText: json['translation_left_text'] as String? ?? '',
-      translationFocusText: json['translation_focus_text'] as String? ?? '',
-      translationRightText: json['translation_right_text'] as String? ?? '',
-      unitTranslationSpanText: json['unit_translation_span_text'] as String? ?? '',
-      unitTranslationLeftText: json['unit_translation_left_text'] as String? ?? '',
-      unitTranslationFocusText: json['unit_translation_focus_text'] as String? ?? '',
-      unitTranslationRightText: json['unit_translation_right_text'] as String? ?? '',
+      translationSpanText: translationSpanText,
+      translationLeftText: translationLeftText,
+      translationFocusText: translationFocusText,
+      translationRightText: translationRightText,
+      unitTranslationSpanText: unitTranslationSpanText,
+      unitTranslationLeftText: unitTranslationLeftText,
+      unitTranslationFocusText: unitTranslationFocusText,
+      unitTranslationRightText: unitTranslationRightText,
       segmentSourceText: json['segment_source_text'] as String?,
       segmentTargetText: json['segment_target_text'] as String?,
       lemma: json['lemma'] as String?,
@@ -264,6 +372,50 @@ class ParagraphWordItem {
       lexicalUnitType: json['lexical_unit_type'] as String?,
       grammarHint: json['grammar_hint'] as String?,
       morphLabel: json['morph_label'] as String?,
+      sourceFirstUnitId: json['source_first_unit_id'] as String?,
+      sourceFirstUnitText: json['source_first_unit_text'] as String?,
+      sourceFirstLeftText: sourceFirstLeftText,
+      sourceFirstFocusText: sourceFirstFocusText,
+      sourceFirstRightText: sourceFirstRightText,
+      sourceFirstCoverageStatus: json['source_first_coverage_status'] as String?,
+      sourceFirstEffectiveSource: json['source_first_effective_source'] as String?,
+      effectiveTranslationText: (json['effective_translation_text'] as String?)?.isNotEmpty == true
+          ? json['effective_translation_text'] as String?
+          : (sourceFirstFocusText?.isNotEmpty == true
+              ? sourceFirstFocusText
+              : (unitTranslationFocusText.isNotEmpty
+                  ? unitTranslationFocusText
+                  : (unitTranslationSpanText.isNotEmpty
+                      ? unitTranslationSpanText
+                      : (translationFocusText.isNotEmpty ? translationFocusText : translationSpanText)))),
+      effectiveLeftText: (json['effective_left_text'] as String?)?.isNotEmpty == true
+          ? json['effective_left_text'] as String?
+          : (sourceFirstLeftText?.isNotEmpty == true
+              ? sourceFirstLeftText
+              : (unitTranslationLeftText.isNotEmpty ? unitTranslationLeftText : translationLeftText)),
+      effectiveFocusText: (json['effective_focus_text'] as String?)?.isNotEmpty == true
+          ? json['effective_focus_text'] as String?
+          : (sourceFirstFocusText?.isNotEmpty == true
+              ? sourceFirstFocusText
+              : (unitTranslationFocusText.isNotEmpty
+                  ? unitTranslationFocusText
+                  : (translationFocusText.isNotEmpty ? translationFocusText : translationSpanText))),
+      effectiveRightText: (json['effective_right_text'] as String?)?.isNotEmpty == true
+          ? json['effective_right_text'] as String?
+          : (sourceFirstRightText?.isNotEmpty == true
+              ? sourceFirstRightText
+              : (unitTranslationRightText.isNotEmpty ? unitTranslationRightText : translationRightText)),
+      effectiveMatchedBy: (json['effective_matched_by'] as String?)?.isNotEmpty == true
+          ? json['effective_matched_by'] as String?
+          : ((json['source_first_unit_id'] as String?)?.isNotEmpty == true
+              ? 'source_first'
+              : (unitTranslationFocusText.isNotEmpty ? 'legacy_unit' : (translationFocusText.isNotEmpty ? 'legacy_alignment' : null))),
+      effectiveAlignmentKind: (json['effective_alignment_kind'] as String?)?.isNotEmpty == true
+          ? json['effective_alignment_kind'] as String?
+          : json['alignment_kind'] as String?,
+      effectiveCoverageStatus: (json['effective_coverage_status'] as String?)?.isNotEmpty == true
+          ? json['effective_coverage_status'] as String?
+          : json['source_first_coverage_status'] as String?,
     );
   }
 }

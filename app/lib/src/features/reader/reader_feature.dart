@@ -167,6 +167,14 @@ class ReaderFeatureController {
     return _api.saveDetailUnit(bookId: bookId, wordId: wordId, unitId: unitId);
   }
 
+  Future<Map<String, dynamic>> saveDictionaryCard({
+    required String bookId,
+    required String wordId,
+    required List<String> translations,
+  }) {
+    return _api.saveDictionaryCard(bookId: bookId, wordId: wordId, translations: translations);
+  }
+
   Future<TtsState> refreshTtsState(String bookId) async {
     return _api.getTtsState(bookId);
   }

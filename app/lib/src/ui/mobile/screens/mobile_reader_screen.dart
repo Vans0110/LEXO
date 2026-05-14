@@ -22,6 +22,12 @@ class MobileReaderScreen extends StatefulWidget {
     required this.localBookId,
     required this.cardsRepository,
     required this.deviceId,
+    this.playbackRepeatMode = ReaderPlaybackRepeatMode.off,
+    this.onPlaybackRepeatModeChanged,
+    this.onLibraryPlaybackCompleted,
+    this.autoplayVoiceId,
+    this.autoplayLevelIds = const <int>{},
+    this.autoplayToken = 0,
     this.onCardsChanged,
   });
 
@@ -29,6 +35,15 @@ class MobileReaderScreen extends StatefulWidget {
   final String localBookId;
   final MobileCardsRepository cardsRepository;
   final String deviceId;
+  final ReaderPlaybackRepeatMode playbackRepeatMode;
+  final ValueChanged<ReaderPlaybackRepeatMode>? onPlaybackRepeatModeChanged;
+  final Future<bool> Function({
+    String? voiceId,
+    required Set<int> selectedLevelIds,
+  })? onLibraryPlaybackCompleted;
+  final String? autoplayVoiceId;
+  final Set<int> autoplayLevelIds;
+  final int autoplayToken;
   final VoidCallback? onCardsChanged;
 
   @override
@@ -46,7 +61,12 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   String? _desktopBookId;
   bool _playerExpanded = true;
   bool _useLocalPlayback = false;
+  bool _playingWordAudio = false;
+  ReaderPlaybackRepeatMode _localPlaybackRepeatMode = ReaderPlaybackRepeatMode.off;
+  int _playbackCycleToken = 0;
+  int _handledAutoplayToken = 0;
   Map<String, List<TtsSegmentItem>> _localSegmentsByJobId = const {};
+  Map<String, DetailSheetPayload> _detailByWordId = const {};
 
   double _selectedPlaybackSpeed() {
     final selectedLevel = _selectedLevel();
@@ -82,6 +102,26 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   String _requiredAudioVariant() {
     return _selectedLevel()?.audioVariant ?? 'base';
+  }
+
+  ReaderPlaybackRepeatMode get _effectivePlaybackRepeatMode {
+    return widget.onPlaybackRepeatModeChanged == null
+        ? _localPlaybackRepeatMode
+        : widget.playbackRepeatMode;
+  }
+
+  void _changePlaybackRepeatMode(ReaderPlaybackRepeatMode mode) {
+    _playbackCycleToken += 1;
+    final nextMode = widget.onLibraryPlaybackCompleted == null &&
+            mode == ReaderPlaybackRepeatMode.playLibraryOnce
+        ? ReaderPlaybackRepeatMode.off
+        : mode;
+    final handler = widget.onPlaybackRepeatModeChanged;
+    if (handler != null) {
+      handler(nextMode);
+      return;
+    }
+    setState(() => _localPlaybackRepeatMode = nextMode);
   }
 
   Future<void> _togglePlayPause() async {
@@ -126,11 +166,23 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   @override
   void dispose() {
+    _playbackCycleToken += 1;
     _playlistSubscription?.cancel();
     _playingSubscription?.cancel();
     _completedSubscription?.cancel();
     _audioPlayer.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant MobileReaderScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.playbackRepeatMode != widget.playbackRepeatMode) {
+      _playbackCycleToken += 1;
+    }
+    if (oldWidget.autoplayToken != widget.autoplayToken) {
+      _maybeStartAutoplay();
+    }
   }
 
   Future<void> _load() async {
@@ -146,13 +198,23 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       var selectedLevelIds = _state.selectedLevelIds;
       final availableVoiceIds = profiles.map((item) => item.voiceId).toSet();
       final activeVoiceId = ttsState.activeJob?.voiceId;
-      if (activeVoiceId != null && availableVoiceIds.contains(activeVoiceId)) {
+      if ((widget.autoplayVoiceId ?? '').isNotEmpty &&
+          availableVoiceIds.contains(widget.autoplayVoiceId)) {
+        selectedVoiceId = widget.autoplayVoiceId;
+      } else if (activeVoiceId != null && availableVoiceIds.contains(activeVoiceId)) {
         selectedVoiceId = activeVoiceId;
       } else if (_state.selectedVoiceId != null &&
           availableVoiceIds.contains(_state.selectedVoiceId)) {
         selectedVoiceId = _state.selectedVoiceId;
       }
 
+      if (widget.autoplayLevelIds.isNotEmpty) {
+        final availableLevelIds = levels.map((item) => item.id).toSet();
+        final requestedLevelIds = widget.autoplayLevelIds.intersection(availableLevelIds);
+        if (requestedLevelIds.isNotEmpty) {
+          selectedLevelIds = requestedLevelIds;
+        }
+      }
       final hasSelectedLevel = levels.any(
         (item) => selectedLevelIds.isNotEmpty && item.id == selectedLevelIds.first,
       );
@@ -167,6 +229,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       setState(() {
         _desktopBookId = desktopBookId;
         _localSegmentsByJobId = package.segmentsByJobId;
+        _detailByWordId = package.detailByWordId;
         _state = _state.copyWith(
           payload: package.readerPayload,
           ttsProfiles: profiles,
@@ -179,6 +242,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         );
       });
       await _applyPlaybackSpeed();
+      await _maybeStartAutoplay();
     } catch (error) {
       if (!mounted) {
         return;
@@ -189,6 +253,22 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         setState(() => _state = _state.copyWith(loading: false));
       }
     }
+  }
+
+  Future<void> _maybeStartAutoplay() async {
+    if (widget.autoplayToken <= 0 || _handledAutoplayToken == widget.autoplayToken) {
+      return;
+    }
+    final selectedJob = _selectedJob();
+    if (selectedJob == null || !selectedJob.isReady) {
+      return;
+    }
+    _handledAutoplayToken = widget.autoplayToken;
+    await Future<void>.delayed(Duration.zero);
+    if (!mounted) {
+      return;
+    }
+    await _startPlayback(selectedJob.jobId);
   }
 
   Future<void> _generateVoice() async {
@@ -350,6 +430,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   Future<void> _startPlayback(String jobId) async {
+    _playbackCycleToken += 1;
     final localSegments = _localSegmentsByJobId[jobId] ?? const <TtsSegmentItem>[];
     final localAudioPaths = await _collectLocalPlaylistPaths(jobId, localSegments);
     if (localSegments.isNotEmpty && localAudioPaths != null && localAudioPaths.length == localSegments.length) {
@@ -430,6 +511,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   Future<void> _stopJob(String jobId) async {
+    _playbackCycleToken += 1;
     await _audioPlayer.stop();
     final jobs = _state.ttsState?.jobs ?? const <TtsJobItem>[];
     if (!mounted) {
@@ -448,6 +530,10 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   Future<void> _handleTrackCompleted() async {
+    if (_playingWordAudio) {
+      _playingWordAudio = false;
+      return;
+    }
     final state = _state.ttsState;
     final activeJob = state?.activeJob;
     if (state == null || activeJob == null || state.activeSegments.isEmpty) {
@@ -457,20 +543,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       if (activeJob.currentSegmentIndex < state.activeSegments.length - 1) {
         return;
       }
-      await _audioPlayer.stop();
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        _useLocalPlayback = false;
-        _state = _state.copyWith(
-          ttsState: TtsState(
-            jobs: state.jobs,
-            activeJob: null,
-            activeSegments: const <TtsSegmentItem>[],
-          ),
-        );
-      });
+      await _handleBookCompleted(activeJob, state.jobs);
       return;
     }
     await _audioPlayer.stop();
@@ -483,6 +556,63 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         error: 'Playback остановлен: локальный audio для продолжения недоступен',
         ttsState: TtsState(
           jobs: state.jobs,
+          activeJob: null,
+          activeSegments: const <TtsSegmentItem>[],
+        ),
+      );
+    });
+  }
+
+  Future<void> _handleBookCompleted(
+    TtsJobItem activeJob,
+    List<TtsJobItem> jobs,
+  ) async {
+    final cycleToken = ++_playbackCycleToken;
+    await _audioPlayer.stop();
+    if (!mounted || cycleToken != _playbackCycleToken) {
+      return;
+    }
+
+    if (_effectivePlaybackRepeatMode == ReaderPlaybackRepeatMode.off) {
+      setState(() {
+        _useLocalPlayback = false;
+        _state = _state.copyWith(
+          ttsState: TtsState(
+            jobs: jobs,
+            activeJob: null,
+            activeSegments: const <TtsSegmentItem>[],
+          ),
+        );
+      });
+      return;
+    }
+
+    await Future<void>.delayed(const Duration(seconds: 5));
+    if (!mounted || cycleToken != _playbackCycleToken) {
+      return;
+    }
+
+    if (_effectivePlaybackRepeatMode == ReaderPlaybackRepeatMode.repeatBook) {
+      await _startPlayback(activeJob.jobId);
+      return;
+    }
+
+    final openedNext = await widget.onLibraryPlaybackCompleted?.call(
+          voiceId: _state.selectedVoiceId,
+          selectedLevelIds: Set<int>.of(_state.selectedLevelIds),
+        ) ??
+        false;
+    if (openedNext) {
+      return;
+    }
+    if (!mounted || cycleToken != _playbackCycleToken) {
+      return;
+    }
+    setState(() {
+      _useLocalPlayback = false;
+      _state = _state.copyWith(
+        ttsState: TtsState(
+          jobs: jobs,
           activeJob: null,
           activeSegments: const <TtsSegmentItem>[],
         ),
@@ -534,24 +664,15 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   void _handleWordTap(ParagraphItem item, ParagraphWordItem word) {
-    final focusText = word.unitTranslationFocusText.trim().isNotEmpty
-        ? word.unitTranslationFocusText
-        : (word.unitTranslationSpanText.trim().isNotEmpty
-              ? word.unitTranslationSpanText
-              : (word.translationFocusText.trim().isNotEmpty
-                    ? word.translationFocusText
-                    : word.translationSpanText));
+    final focusText = word.effectiveFocusText?.trim() ?? '';
+    final effective = focusText.isNotEmpty ? null : buildPreferredSourceFirstFocus(item: item, word: word);
     setState(() {
       _state = _state.copyWith(
         selectedParagraphIndex: item.index,
         selectedTapUnitId: word.tapUnitId,
-        translationLeftText: word.unitTranslationLeftText.trim().isNotEmpty
-            ? word.unitTranslationLeftText
-            : word.translationLeftText,
-        translationFocusText: focusText.isNotEmpty ? focusText : word.text,
-        translationRightText: word.unitTranslationRightText.trim().isNotEmpty
-            ? word.unitTranslationRightText
-            : word.translationRightText,
+        translationLeftText: effective?.left ?? (word.effectiveLeftText ?? ''),
+        translationFocusText: effective?.focus ?? (focusText.isNotEmpty ? focusText : word.text),
+        translationRightText: effective?.right ?? (word.effectiveRightText ?? ''),
       );
     });
     _savePosition(item.index);
@@ -559,7 +680,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   Future<void> _handleWordLongPress(ParagraphItem item, ParagraphWordItem word) async {
     _handleWordTap(item, word);
-    final payload = DetailSheetPayload.fromSelection(item: item, word: word);
+    final payload = _detailByWordId[word.id] ?? DetailSheetPayload.fromSelection(item: item, word: word);
     _logDetailSheet(item.index, word, payload);
     if (!mounted) {
       return;
@@ -572,27 +693,87 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         heightFactor: 0.78,
         child: ReaderDetailSheet(
           payload: payload,
-          onSaveUnit: (unit) => _saveDetailUnit(unit),
+          onSaveDictionaryCard: (translations) => _saveDictionaryCard(payload, translations),
+          onPlayWordAudio: () => _playDetailWordAudio(payload),
         ),
       ),
     );
   }
 
-  Future<String?> _saveDetailUnit(DetailSheetUnitItem unit) async {
+  Set<String> _detailWordAudioCandidates(DetailSheetPayload payload) {
+    return <String>{
+      payload.dictionaryEntry?.lemma.trim() ?? '',
+      ...payload.units
+          .where((unit) => unit.isPrimary)
+          .map((unit) => unit.lemma.trim().isNotEmpty ? unit.lemma.trim() : unit.text.trim()),
+      payload.sheetSourceText.trim(),
+    }..removeWhere((value) => value.isEmpty);
+  }
+
+  Future<String?> _resolveDetailWordAudioPath(DetailSheetPayload payload) async {
+    final package = await _packageRepository.readPackage(widget.localBookId);
+    final voiceId = package.wordAudioVoiceId.trim();
+    if (voiceId.isEmpty) {
+      return null;
+    }
+    for (final candidate in _detailWordAudioCandidates(payload)) {
+      final cached = await _packageRepository.getCachedWordAudioPath(
+        localBookId: widget.localBookId,
+        voiceId: voiceId,
+        word: candidate,
+      );
+      if (cached != null) {
+        return cached;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _playDetailWordAudio(DetailSheetPayload payload) async {
     try {
-      final originBookId = (_desktopBookId != null && _desktopBookId!.isNotEmpty)
-          ? _desktopBookId!
-          : widget.localBookId;
-      final result = await widget.cardsRepository.saveDetailUnit(
+      final audioPath = await _resolveDetailWordAudioPath(payload);
+      if (audioPath == null || audioPath.trim().isEmpty) {
+        throw Exception('Локальный word audio не найден. Выполните Синхронизацию книги.');
+      }
+      _playbackCycleToken += 1;
+      await _audioPlayer.stop();
+      _useLocalPlayback = false;
+      _playingWordAudio = true;
+      await _audioPlayer.open(Media(audioPath), play: true);
+      await _audioPlayer.setRate(1.0);
+    } catch (error) {
+      _playingWordAudio = false;
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не удалось озвучить слово: $error')),
+      );
+    }
+  }
+
+  Future<void> _saveDictionaryCard(DetailSheetPayload payload, List<String> translations) async {
+    try {
+      await widget.cardsRepository.saveDictionaryCard(
         deviceId: widget.deviceId,
-        originBookId: originBookId,
-        unit: unit,
+        originBookId: _desktopBookId ?? widget.localBookId,
+        payload: payload,
+        translations: translations,
       );
       widget.onCardsChanged?.call();
-      final saved = result['saved'] as bool? ?? false;
-      return saved ? 'Добавлено в Cards' : 'Карточка уже есть';
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Карточка добавлена')),
+      );
     } catch (error) {
-      return 'Не удалось добавить: $error';
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не удалось сохранить карточку: $error')),
+      );
     }
   }
 
@@ -606,7 +787,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     debugPrint(
       'DETAIL_SHEET_OPEN paragraph=$paragraphIndex word="${word.text}" '
       'selected_block="${payload.sheetSourceText}" block_translation="${payload.sheetTranslationText}" '
-      'units=${payload.units.length} $unitsText',
+      'units=${payload.units.length} source_first=${payload.sourceFirst?.analysisVersion ?? ''} $unitsText',
     );
   }
 
@@ -677,7 +858,11 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
                         onNext: () => _controlPlayback('next'),
                         onSpeedTap: _showSpeedPicker,
                         onSpeedLongPress: _showSpeedPicker,
+                        onRepeatModeTap: () => _changePlaybackRepeatMode(
+                          _effectivePlaybackRepeatMode.next,
+                        ),
                         speedLabel: _speedLabel(),
+                        repeatMode: _effectivePlaybackRepeatMode,
                       ),
                     ),
                   ],

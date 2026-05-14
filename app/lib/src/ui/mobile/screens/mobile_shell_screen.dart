@@ -12,6 +12,7 @@ import '../../../mobile/mobile_settings_repository.dart';
 import '../../../mobile/mobile_sync_debug_logger.dart';
 import '../../../models.dart';
 import '../../../screens/cards_list_screen.dart';
+import '../../../widgets/reader_playback_bar.dart';
 import 'mobile_library_screen.dart';
 import 'mobile_reader_screen.dart';
 import 'mobile_settings_screen.dart';
@@ -41,6 +42,12 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
   String? _activeBookTitle;
   String _syncDebugText = '';
   MobileAppSettings _appSettings = const MobileAppSettings();
+  LibraryPayload? _library;
+  ReaderPlaybackRepeatMode _playbackRepeatMode = ReaderPlaybackRepeatMode.off;
+  List<String> _libraryPlaybackQueue = const <String>[];
+  String? _pendingAutoplayVoiceId;
+  Set<int> _pendingAutoplayLevelIds = const <int>{};
+  int _autoplayToken = 0;
 
   @override
   void initState() {
@@ -79,6 +86,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
   }
 
   void _handleLibraryLoaded(LibraryPayload payload) {
+    _library = payload;
     if (_activeBookId != null) {
       return;
     }
@@ -97,6 +105,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
       return;
     }
     setState(() {
+      _library = payload;
       _activeBookId = activeBookId;
       _activeBookTitle = activeItem?.title;
     });
@@ -108,7 +117,104 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
       _activeBookTitle = item.title;
       _selectedIndex = 1;
       _settingsError = null;
+      _pendingAutoplayVoiceId = null;
+      _pendingAutoplayLevelIds = const <int>{};
     });
+  }
+
+  List<String> _currentLibraryQueue() {
+    final items = _library?.items ?? const <LibraryBookItem>[];
+    return items.map((item) => item.id).where((id) => id.trim().isNotEmpty).toList();
+  }
+
+  void _handlePlaybackRepeatModeChanged(ReaderPlaybackRepeatMode mode) {
+    setState(() {
+      _playbackRepeatMode = mode;
+      _libraryPlaybackQueue =
+          mode == ReaderPlaybackRepeatMode.playLibraryOnce ? _currentLibraryQueue() : const <String>[];
+      if (mode == ReaderPlaybackRepeatMode.off) {
+        _pendingAutoplayVoiceId = null;
+        _pendingAutoplayLevelIds = const <int>{};
+      }
+    });
+  }
+
+  Future<bool> _handleLibraryPlaybackCompleted({
+    String? voiceId,
+    required Set<int> selectedLevelIds,
+  }) async {
+    if (_playbackRepeatMode != ReaderPlaybackRepeatMode.playLibraryOnce) {
+      return false;
+    }
+    final currentBookId = _activeBookId;
+    if (currentBookId == null || currentBookId.isEmpty) {
+      return false;
+    }
+    var library = _library;
+    if (library == null || library.items.isEmpty) {
+      try {
+        library = await _packageRepository.listBooks();
+      } catch (error) {
+        if (mounted) {
+          setState(() {
+            _settingsError = error.toString();
+            _playbackRepeatMode = ReaderPlaybackRepeatMode.off;
+          });
+        }
+        return false;
+      }
+    }
+    final queue = _libraryPlaybackQueue.isNotEmpty
+        ? _libraryPlaybackQueue
+        : library.items.map((item) => item.id).toList();
+    final currentIndex = queue.indexOf(currentBookId);
+    final nextIndex = currentIndex + 1;
+    if (currentIndex < 0 || nextIndex >= queue.length) {
+      if (mounted) {
+        setState(() {
+          _playbackRepeatMode = ReaderPlaybackRepeatMode.off;
+          _libraryPlaybackQueue = const <String>[];
+        });
+      }
+      return false;
+    }
+    final nextBookId = queue[nextIndex];
+    LibraryBookItem? nextBook;
+    for (final item in library.items) {
+      if (item.id == nextBookId) {
+        nextBook = item;
+        break;
+      }
+    }
+    final next = nextBook;
+    if (next == null) {
+      return false;
+    }
+    try {
+      await _packageRepository.markBookOpened(next.id);
+      if (!mounted) {
+        return true;
+      }
+      setState(() {
+        _library = library;
+        _activeBookId = next.id;
+        _activeBookTitle = next.title;
+        _selectedIndex = 1;
+        _settingsError = null;
+        _pendingAutoplayVoiceId = voiceId;
+        _pendingAutoplayLevelIds = Set<int>.of(selectedLevelIds);
+        _autoplayToken += 1;
+      });
+      return true;
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _settingsError = error.toString();
+          _playbackRepeatMode = ReaderPlaybackRepeatMode.off;
+        });
+      }
+      return false;
+    }
   }
 
   Future<void> _editHostUrl() async {
@@ -556,6 +662,12 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
               localBookId: _activeBookId!,
               cardsRepository: _cardsRepository,
               deviceId: _appSettings.deviceId ?? '',
+              playbackRepeatMode: _playbackRepeatMode,
+              onPlaybackRepeatModeChanged: _handlePlaybackRepeatModeChanged,
+              onLibraryPlaybackCompleted: _handleLibraryPlaybackCompleted,
+              autoplayVoiceId: _pendingAutoplayVoiceId,
+              autoplayLevelIds: _pendingAutoplayLevelIds,
+              autoplayToken: _autoplayToken,
               onCardsChanged: _handleCardsChanged,
             ),
       CardsListScreen(

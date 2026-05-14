@@ -1,6 +1,47 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+enum ReaderPlaybackRepeatMode {
+  off,
+  repeatBook,
+  playLibraryOnce,
+}
+
+extension ReaderPlaybackRepeatModeView on ReaderPlaybackRepeatMode {
+  ReaderPlaybackRepeatMode get next {
+    switch (this) {
+      case ReaderPlaybackRepeatMode.off:
+        return ReaderPlaybackRepeatMode.repeatBook;
+      case ReaderPlaybackRepeatMode.repeatBook:
+        return ReaderPlaybackRepeatMode.playLibraryOnce;
+      case ReaderPlaybackRepeatMode.playLibraryOnce:
+        return ReaderPlaybackRepeatMode.off;
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case ReaderPlaybackRepeatMode.off:
+        return Icons.repeat_rounded;
+      case ReaderPlaybackRepeatMode.repeatBook:
+        return Icons.repeat_one_rounded;
+      case ReaderPlaybackRepeatMode.playLibraryOnce:
+        return Icons.playlist_play_rounded;
+    }
+  }
+
+  String get tooltip {
+    switch (this) {
+      case ReaderPlaybackRepeatMode.off:
+        return 'Repeat off';
+      case ReaderPlaybackRepeatMode.repeatBook:
+        return 'Repeat current book';
+      case ReaderPlaybackRepeatMode.playLibraryOnce:
+        return 'Play library once';
+    }
+  }
+}
+
 class ReaderPlaybackBar extends StatelessWidget {
   const ReaderPlaybackBar({
     super.key,
@@ -16,7 +57,9 @@ class ReaderPlaybackBar extends StatelessWidget {
     required this.onNext,
     required this.onSpeedTap,
     required this.onSpeedLongPress,
+    required this.onRepeatModeTap,
     required this.speedLabel,
+    required this.repeatMode,
   });
 
   final bool expanded;
@@ -31,7 +74,9 @@ class ReaderPlaybackBar extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onSpeedTap;
   final VoidCallback onSpeedLongPress;
+  final VoidCallback onRepeatModeTap;
   final String speedLabel;
+  final ReaderPlaybackRepeatMode repeatMode;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +86,12 @@ class ReaderPlaybackBar extends StatelessWidget {
     final arrowIcon = expanded ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_up_rounded;
     final buttonBackground = Colors.black.withValues(alpha: controlsEnabled ? 0.42 : 0.18);
     final iconColor = Colors.white.withValues(alpha: controlsEnabled ? 0.95 : 0.45);
+    final repeatEnabled = !busy;
+    final repeatActive = repeatMode != ReaderPlaybackRepeatMode.off;
+    final repeatBackground = Colors.black.withValues(alpha: repeatEnabled ? 0.42 : 0.18);
+    final repeatIconColor = repeatActive
+        ? theme.colorScheme.primary
+        : Colors.white.withValues(alpha: repeatEnabled ? 0.72 : 0.35);
 
     return SafeArea(
       top: false,
@@ -133,6 +184,14 @@ class ReaderPlaybackBar extends StatelessWidget {
                             tooltip: 'Speed',
                             backgroundColor: buttonBackground,
                             textColor: iconColor,
+                          ),
+                          const SizedBox(width: 8),
+                          _RoundControlButton(
+                            onPressed: repeatEnabled ? onRepeatModeTap : null,
+                            icon: repeatMode.icon,
+                            tooltip: repeatMode.tooltip,
+                            backgroundColor: repeatBackground,
+                            iconColor: repeatIconColor,
                           ),
                         ],
                       ),

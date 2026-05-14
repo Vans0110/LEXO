@@ -123,6 +123,21 @@ class LexoApiClient {
     );
   }
 
+  Future<Map<String, dynamic>> saveDictionaryCard({
+    required String bookId,
+    required String wordId,
+    required List<String> translations,
+  }) {
+    return _post(
+      '/reader/detail-sheet/save-dictionary',
+      {
+        'book_id': bookId,
+        'word_id': wordId,
+        'translations': translations,
+      },
+    );
+  }
+
   Future<List<SavedWordItem>> getSavedWords() async {
     final data = await _get('/saved-words');
     return (data['items'] as List<dynamic>? ?? const [])
@@ -245,6 +260,7 @@ class LexoApiClient {
       'reader_payload': readerPayload,
       'tts_manifest': <String, dynamic>{},
       'word_audio_manifest': <String, dynamic>{},
+      'dictionary_manifest': <String, dynamic>{},
       'detail_manifest': <String, dynamic>{},
     };
     for (final part in partItems) {
@@ -282,6 +298,9 @@ class LexoApiClient {
           break;
         case 'word_audio_manifest':
           package['word_audio_manifest'] = payload;
+          break;
+        case 'dictionary_manifest':
+          package['dictionary_manifest'] = payload;
           break;
         case 'detail_manifest':
           package['detail_manifest'] = payload;

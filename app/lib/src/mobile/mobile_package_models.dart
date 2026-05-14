@@ -104,8 +104,12 @@ class MobileBookPackage {
             .map((item) => item.toString())
             .toSet())
             .toList(),
+        dictionaryManifest = rawJson['dictionary_manifest'] as Map<String, dynamic>? ??
+            const <String, dynamic>{},
         detailByWordId = _buildDetailByWordId(
           rawJson['detail_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{},
+          rawJson['dictionary_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{},
+          rawJson['reader_payload'] as Map<String, dynamic>? ?? const <String, dynamic>{},
         );
 
   final Map<String, dynamic> rawJson;
@@ -117,6 +121,7 @@ class MobileBookPackage {
   final Map<String, List<TtsSegmentItem>> segmentsByJobId;
   final String wordAudioVoiceId;
   final List<String> wordAudioEntries;
+  final Map<String, dynamic> dictionaryManifest;
   final Map<String, DetailSheetPayload> detailByWordId;
 
   List<TtsSegmentItem> segmentsForJob(String jobId) {
@@ -163,13 +168,59 @@ class MobileBookPackage {
     return result;
   }
 
-  static Map<String, DetailSheetPayload> _buildDetailByWordId(Map<String, dynamic> manifest) {
+  static Map<String, DetailSheetPayload> _buildDetailByWordId(
+    Map<String, dynamic> manifest,
+    Map<String, dynamic> dictionaryManifest,
+    Map<String, dynamic> readerPayload,
+  ) {
     final result = <String, DetailSheetPayload>{};
     manifest.forEach((key, value) {
       if (value is Map<String, dynamic>) {
         result[key] = DetailSheetPayload.fromJson(value);
       }
     });
+    final dictionaryEntries = dictionaryManifest['entries'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+    final paragraphs = (readerPayload['paragraphs'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>();
+    for (final paragraph in paragraphs) {
+      final sourceText = paragraph['source_text'] as String? ?? '';
+      final words = (paragraph['words'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>();
+      for (final word in words) {
+        final wordId = word['id'] as String? ?? '';
+        if (wordId.isEmpty || result.containsKey(wordId)) {
+          continue;
+        }
+        final lemma = ((word['lemma'] as String?) ?? (word['text'] as String?) ?? '').trim().toLowerCase();
+        final pos = (word['pos'] as String? ?? '').trim().toUpperCase();
+        final dictionaryKey = '$lemma|$pos';
+        final dictionaryEntry = dictionaryEntries[dictionaryKey];
+        if (dictionaryEntry is! Map<String, dynamic>) {
+          continue;
+        }
+        result[wordId] = DetailSheetPayload.fromJson({
+          'word_id': wordId,
+          'tap_unit_id': word['tap_unit_id'] as String? ?? wordId,
+          'sheet_source_text': (word['source_unit_text'] as String?) ?? (word['text'] as String?) ?? '',
+          'sheet_translation_text': '',
+          'example_source_text': word['segment_source_text'] as String? ?? sourceText,
+          'example_translation_text': '',
+          'source_first': null,
+          'dictionary_entry': dictionaryEntry,
+          'units': [
+            {
+              'unit_id': word['lexical_unit_id'] as String? ?? wordId,
+              'source_text': word['text'] as String? ?? '',
+              'translation': '',
+              'grammar_hint': word['grammar_hint'] as String? ?? '',
+              'morph_label': word['morph_label'] as String? ?? '',
+              'is_primary': true,
+              'is_grammar': false,
+            }
+          ],
+        });
+      }
+    }
     return result;
   }
 }

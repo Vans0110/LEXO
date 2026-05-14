@@ -29,9 +29,5 @@ KOKORO_VENV_DIR = ROOT / ".venv_kokoro"
 KOKORO_PYTHON = KOKORO_VENV_DIR / "Scripts" / "python.exe"
 KOKORO_RUNNER = ROOT / "engine" / "tts" / "kokoro_runner.py"
 
-def translator_mode() -> str:
-    return os.getenv("LEXO_TRANSLATOR", "auto").strip().lower() or "auto"
-
-
 def tts_mode() -> str:
     return os.getenv("LEXO_TTS_PROVIDER", "mock").strip().lower() or "mock"

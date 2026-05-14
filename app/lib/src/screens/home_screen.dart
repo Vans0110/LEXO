@@ -1,11 +1,12 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 
 import '../api/api_client.dart';
 import '../features/library/library_feature.dart';
 import '../models.dart';
+import '../platform/desktop_txt_picker.dart';
 import 'reader_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,6 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
   late final LibraryFeatureController _controller;
   LibraryFeatureState _state = const LibraryFeatureState(busy: true);
 
+  void _uiTrace(String message) {
+    developer.log(message, name: 'LEXO_UI');
+    debugPrint(message);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadStatus() async {
-    developer.log('Loading library', name: 'LEXO_UI');
+    _uiTrace(
+      'HOME_LOAD_STATUS_START busy=${_state.busy} '
+      'items=${_state.library?.items.length ?? -1} openingBookId=${_state.openingBookId ?? ''}',
+    );
     setState(() {
       _state = _state.copyWith(
         busy: true,
@@ -59,10 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
       setState(() => _state = nextState);
+      _uiTrace(
+        'HOME_LOAD_STATUS_OK items=${nextState.library?.items.length ?? -1} '
+        'activeBookId=${nextState.library?.activeBookId ?? ''} busy=${nextState.busy}',
+      );
       if (nextState.library != null) {
         widget.onLibraryLoaded?.call(nextState.library!);
       }
     } catch (error) {
+      _uiTrace('HOME_LOAD_STATUS_ERROR error=$error');
       if (!mounted) {
         return;
       }
@@ -71,56 +85,66 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted && _state.busy) {
         setState(() => _state = _state.copyWith(busy: false));
       }
+      _uiTrace('HOME_LOAD_STATUS_END busy=${_state.busy}');
     }
   }
 
   Future<void> _pickAndImport() async {
-    const typeGroup = XTypeGroup(label: 'text', extensions: ['txt']);
-    developer.log('HOME_IMPORT_PICK_START', name: 'LEXO_IMPORT');
+    final importStartMessage =
+        'HOME_IMPORT_PICK_START busy=${_state.busy} '
+        'items=${_state.library?.items.length ?? -1} openingBookId=${_state.openingBookId ?? ''}';
+    developer.log(importStartMessage, name: 'LEXO_IMPORT');
+    debugPrint(importStartMessage);
     try {
-      final file = await openFile(acceptedTypeGroups: [typeGroup]);
-      if (file == null) {
+      developer.log('HOME_IMPORT_PICKER_AWAIT', name: 'LEXO_IMPORT');
+      debugPrint('HOME_IMPORT_PICKER_AWAIT');
+      final pickedFile = await DesktopTxtPicker.pickTxtFile();
+      if (pickedFile == null) {
         developer.log('HOME_IMPORT_PICK_CANCELLED', name: 'LEXO_IMPORT');
+        debugPrint('HOME_IMPORT_PICK_CANCELLED');
         return;
       }
-      developer.log(
-        'HOME_IMPORT_FILE name=${file.name} path=${file.path}',
-        name: 'LEXO_IMPORT',
-      );
+      developer.log('HOME_IMPORT_PICKER_RETURNED', name: 'LEXO_IMPORT');
+      debugPrint('HOME_IMPORT_PICKER_RETURNED');
+      final importFileMessage = 'HOME_IMPORT_FILE name=${pickedFile.name} path=${pickedFile.path}';
+      developer.log(importFileMessage, name: 'LEXO_IMPORT');
+      debugPrint(importFileMessage);
       setState(() {
         _state = _state.copyWith(
           busy: true,
           clearError: true,
         );
       });
-      final sourceText = await file.readAsString();
-      developer.log(
-        'HOME_IMPORT_READ_OK chars=${sourceText.length}',
-        name: 'LEXO_IMPORT',
-      );
-      final title = file.name.replaceAll(RegExp(r'\.txt$', caseSensitive: false), '');
-      developer.log(
-        'HOME_IMPORT_API_START title="$title"',
-        name: 'LEXO_IMPORT',
-      );
+      final sourceText = await File(pickedFile.path).readAsString();
+      final importReadMessage = 'HOME_IMPORT_READ_OK chars=${sourceText.length}';
+      developer.log(importReadMessage, name: 'LEXO_IMPORT');
+      debugPrint(importReadMessage);
+      final title = pickedFile.titleCandidate.trim();
+      final importApiMessage = 'HOME_IMPORT_API_START title="$title"';
+      developer.log(importApiMessage, name: 'LEXO_IMPORT');
+      debugPrint(importApiMessage);
       final nextState = await _controller.importBookText(
         _state,
         title: title,
         sourceText: sourceText,
       );
       developer.log('HOME_IMPORT_API_OK', name: 'LEXO_IMPORT');
+      debugPrint('HOME_IMPORT_API_OK');
       if (!mounted) {
         return;
       }
       setState(() => _state = nextState);
+      _uiTrace(
+        'HOME_IMPORT_APPLIED items=${nextState.library?.items.length ?? -1} '
+        'activeBookId=${nextState.library?.activeBookId ?? ''}',
+      );
       if (nextState.library != null) {
         widget.onLibraryLoaded?.call(nextState.library!);
       }
     } catch (error) {
-      developer.log(
-        'HOME_IMPORT_ERROR error=$error',
-        name: 'LEXO_IMPORT',
-      );
+      final importErrorMessage = 'HOME_IMPORT_ERROR error=$error';
+      developer.log(importErrorMessage, name: 'LEXO_IMPORT');
+      debugPrint(importErrorMessage);
       if (!mounted) {
         return;
       }
@@ -172,7 +196,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 16),
                 FilledButton(
-                  onPressed: _state.busy ? null : _pickAndImport,
+                  onPressed: _state.busy
+                      ? null
+                      : () {
+                          _uiTrace(
+                            'HOME_IMPORT_CLICK busy=${_state.busy} '
+                            'items=${_state.library?.items.length ?? -1}',
+                          );
+                          _pickAndImport();
+                        },
                   child: Text(_state.busy ? 'Подождите...' : 'Load TXT'),
                 ),
                 const SizedBox(height: 16),
@@ -197,6 +229,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onPressed: _state.busy || _state.openingBookId != null
                                           ? null
                                           : () async {
+                                              _uiTrace(
+                                                'HOME_OPEN_CLICK bookId=${item.id} title="${item.title}" '
+                                                'items=${_state.library?.items.length ?? -1}',
+                                              );
                                               setState(() {
                                                 _state = _state.copyWith(
                                                   openingBookId: item.id,
@@ -205,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               });
                                               try {
                                                 await _controller.openBook(item.id);
+                                                _uiTrace('HOME_OPEN_API_OK bookId=${item.id}');
                                                 if (!mounted) return;
                                                 setState(
                                                   () => _state = _state.copyWith(clearOpeningBookId: true),
@@ -214,6 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   await _loadStatus();
                                                   return;
                                                 }
+                                                _uiTrace('HOME_OPEN_READER_PUSH bookId=${item.id}');
                                                 await Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                     builder: (_) => ReaderScreen(
@@ -225,6 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 if (!mounted) return;
                                                 await _loadStatus();
                                               } catch (error) {
+                                                _uiTrace('HOME_OPEN_ERROR bookId=${item.id} error=$error');
                                                 if (!mounted) {
                                                   return;
                                                 }
@@ -250,10 +289,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onPressed: _state.busy
                                           ? null
                                           : () async {
+                                              _uiTrace(
+                                                'HOME_DELETE_BUTTON_CLICK bookId=${item.id} title="${item.title}"',
+                                              );
                                               final confirmed = await _confirmDelete(item);
                                               if (!confirmed || !mounted) {
                                                 return;
                                               }
+                                              final deleteStartMessage =
+                                                  'HOME_DELETE_START bookId=${item.id} title="${item.title}" '
+                                                  'itemsBefore=${_state.library?.items.length ?? -1}';
+                                              developer.log(deleteStartMessage, name: 'LEXO_DELETE');
+                                              debugPrint(deleteStartMessage);
                                               setState(() {
                                                 _state = _state.copyWith(
                                                   busy: true,
@@ -263,11 +310,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                               try {
                                                 final nextState = await _controller.deleteBook(_state, item.id);
                                                 if (!mounted) return;
+                                                final deleteOkMessage =
+                                                    'HOME_DELETE_OK bookId=${item.id} '
+                                                    'itemsAfter=${nextState.library?.items.length ?? -1} '
+                                                    'activeBookId=${nextState.library?.activeBookId ?? ''}';
+                                                developer.log(deleteOkMessage, name: 'LEXO_DELETE');
+                                                debugPrint(deleteOkMessage);
                                                 setState(() => _state = nextState);
                                                 if (nextState.library != null) {
                                                   widget.onLibraryLoaded?.call(nextState.library!);
                                                 }
                                               } catch (error) {
+                                                final deleteErrorMessage =
+                                                    'HOME_DELETE_ERROR bookId=${item.id} error=$error';
+                                                developer.log(deleteErrorMessage, name: 'LEXO_DELETE');
+                                                debugPrint(deleteErrorMessage);
                                                 if (!mounted) {
                                                   return;
                                                 }
@@ -298,7 +355,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
                 const SizedBox(height: 16),
                 OutlinedButton(
-                  onPressed: _state.busy ? null : _loadStatus,
+                  onPressed: _state.busy
+                      ? null
+                      : () {
+                          _uiTrace('HOME_REFRESH_CLICK');
+                          _loadStatus();
+                        },
                   child: const Text('Refresh Library'),
                 ),
               ],

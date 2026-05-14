@@ -16,6 +16,10 @@ STORAGE = LexoStorage(ROOT)
 BODY_STREAM_CHUNK_SIZE = 64 * 1024
 
 
+def _safe_log(message: object) -> None:
+    print(str(message).encode("ascii", errors="backslashreplace").decode("ascii"))
+
+
 class LexoHandler(BaseHTTPRequestHandler):
     server_version = "LEXOEngine/0.2"
 
@@ -23,7 +27,7 @@ class LexoHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         query = parse_qs(parsed.query)
-        print(f"[LEXO ENGINE] GET {path}")
+        _safe_log(f"[LEXO ENGINE] GET {path}")
         try:
             if path == "/health":
                 self._send_json(HTTPStatus.OK, {"ok": True, "service": "lexo-engine"})
@@ -94,14 +98,14 @@ class LexoHandler(BaseHTTPRequestHandler):
                 book_id = _query_value(query, "book_id") or ""
                 payload = STORAGE.build_mobile_book_package(book_id)
                 payload_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-                print(f"[LEXO ENGINE] MOBILE_PACKAGE book_id={book_id} bytes={len(payload_bytes)}")
+                _safe_log(f"[LEXO ENGINE] MOBILE_PACKAGE book_id={book_id} bytes={len(payload_bytes)}")
                 self._send_json(HTTPStatus.OK, payload)
                 return
             if path == "/mobile/books/package-manifest":
                 book_id = _query_value(query, "book_id") or ""
                 payload = STORAGE.build_mobile_book_package_manifest(book_id)
                 payload_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-                print(f"[LEXO ENGINE] MOBILE_PACKAGE_MANIFEST book_id={book_id} bytes={len(payload_bytes)}")
+                _safe_log(f"[LEXO ENGINE] MOBILE_PACKAGE_MANIFEST book_id={book_id} bytes={len(payload_bytes)}")
                 self._send_json(HTTPStatus.OK, payload)
                 return
             if path == "/mobile/books/package-part":
@@ -109,7 +113,7 @@ class LexoHandler(BaseHTTPRequestHandler):
                 part_id = _query_value(query, "part_id") or ""
                 payload = STORAGE.build_mobile_book_package_part(book_id, part_id)
                 payload_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-                print(
+                _safe_log(
                     f"[LEXO ENGINE] MOBILE_PACKAGE_PART book_id={book_id} part_id={part_id} "
                     f"bytes={len(payload_bytes)}"
                 )
@@ -124,7 +128,7 @@ class LexoHandler(BaseHTTPRequestHandler):
                     job_id,
                     segment_index,
                 )
-                print(
+                _safe_log(
                     "[LEXO ENGINE] MOBILE_AUDIO "
                     f"book_id={book_id} job_id={job_id} segment_index={segment_index} "
                     f'path="{audio_path}" bytes={audio_path.stat().st_size}'
@@ -153,14 +157,14 @@ class LexoHandler(BaseHTTPRequestHandler):
                 return
             self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
         except Exception as exc:  # pragma: no cover
-            print(f"[LEXO ENGINE] GET {path} failed: {exc}")
+            _safe_log(f"[LEXO ENGINE] GET {path} failed: {exc}")
             traceback.print_exc()
             self._try_send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": str(exc)})
 
     def do_POST(self) -> None:
         path = urlparse(self.path).path
         payload = self._read_json_body()
-        print(f"[LEXO ENGINE] POST {path} payload={payload}")
+        _safe_log(f"[LEXO ENGINE] POST {path} payload={payload}")
         try:
             if path == "/books/import":
                 result = STORAGE.import_book(
@@ -200,6 +204,22 @@ class LexoHandler(BaseHTTPRequestHandler):
                 result = STORAGE.rebuild_book_quality(payload.get("book_id"))
                 self._send_json(HTTPStatus.OK, result)
                 return
+            if path == "/books/rebuild-source-first":
+                result = STORAGE.rebuild_book_source_first(payload.get("book_id"))
+                self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/books/rebuild-simalign":
+                result = STORAGE.rebuild_book_simalign(payload.get("book_id"))
+                self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/books/rebuild-resolved-alignment":
+                result = STORAGE.rebuild_book_resolved_alignment(payload.get("book_id"))
+                self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/books/rebuild-dictionary-manifest":
+                result = STORAGE.rebuild_book_dictionary_manifest(payload.get("book_id"))
+                self._send_json(HTTPStatus.OK, result)
+                return
             if path == "/reader/position":
                 result = STORAGE.save_reader_position(
                     payload["book_id"],
@@ -212,6 +232,14 @@ class LexoHandler(BaseHTTPRequestHandler):
                     payload["book_id"],
                     payload["word_id"],
                     payload["unit_id"],
+                )
+                self._send_json(HTTPStatus.OK, result)
+                return
+            if path == "/reader/detail-sheet/save-dictionary":
+                result = STORAGE.save_dictionary_card(
+                    payload["book_id"],
+                    payload["word_id"],
+                    [str(item) for item in (payload.get("translations") or [])],
                 )
                 self._send_json(HTTPStatus.OK, result)
                 return
@@ -276,7 +304,7 @@ class LexoHandler(BaseHTTPRequestHandler):
             if path == "/mobile/debug/log":
                 tag = str(payload.get("tag") or "MOBILE_DEBUG").strip() or "MOBILE_DEBUG"
                 message = str(payload.get("message") or "").strip()
-                print(f"[LEXO {tag}] {message}")
+                _safe_log(f"[LEXO {tag}] {message}")
                 self._send_json(HTTPStatus.OK, {"ok": True})
                 return
             if path == "/saved-words/raw":
@@ -292,13 +320,13 @@ class LexoHandler(BaseHTTPRequestHandler):
                 return
             self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
         except KeyError as exc:
-            print(f"[LEXO ENGINE] POST {path} bad request: missing {exc.args[0]}")
+            _safe_log(f"[LEXO ENGINE] POST {path} bad request: missing {exc.args[0]}")
             self._try_send_json(HTTPStatus.BAD_REQUEST, {"error": f"Missing field: {exc.args[0]}"})
         except (ValueError, FileNotFoundError) as exc:
-            print(f"[LEXO ENGINE] POST {path} bad request: {exc}")
+            _safe_log(f"[LEXO ENGINE] POST {path} bad request: {exc}")
             self._try_send_json(HTTPStatus.BAD_REQUEST, {"error": str(exc)})
         except Exception as exc:  # pragma: no cover
-            print(f"[LEXO ENGINE] POST {path} failed: {exc}")
+            _safe_log(f"[LEXO ENGINE] POST {path} failed: {exc}")
             traceback.print_exc()
             self._try_send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": str(exc)})
 
@@ -356,7 +384,7 @@ class LexoHandler(BaseHTTPRequestHandler):
         try:
             self._send_json(status, payload)
         except Exception as send_exc:  # pragma: no cover
-            print(f"[LEXO ENGINE] Failed to send error response for {self.path}: {send_exc}")
+            _safe_log(f"[LEXO ENGINE] Failed to send error response for {self.path}: {send_exc}")
             traceback.print_exc()
             self.close_connection = True
 
@@ -374,10 +402,10 @@ class LexoHandler(BaseHTTPRequestHandler):
             self.wfile.flush()
             bytes_sent = len(body)
             self.close_connection = True
-            print(f"[LEXO ENGINE] RESPONSE_OK {label} bytes={bytes_sent}/{len(body)}")
+            _safe_log(f"[LEXO ENGINE] RESPONSE_OK {label} bytes={bytes_sent}/{len(body)}")
         except (BrokenPipeError, ConnectionResetError, TimeoutError, socket.timeout, OSError) as exc:
             self.close_connection = True
-            print(
+            _safe_log(
                 f"[LEXO ENGINE] RESPONSE_ABORTED {label} bytes={bytes_sent}/{len(body)} "
                 f"error={exc.__class__.__name__}: {exc}"
             )
@@ -391,10 +419,10 @@ class LexoHandler(BaseHTTPRequestHandler):
                 self.wfile.flush()
                 bytes_sent += len(chunk)
             self.close_connection = True
-            print(f"[LEXO ENGINE] RESPONSE_OK {label} bytes={bytes_sent}/{total_size}")
+            _safe_log(f"[LEXO ENGINE] RESPONSE_OK {label} bytes={bytes_sent}/{total_size}")
         except (BrokenPipeError, ConnectionResetError, TimeoutError, socket.timeout, OSError) as exc:
             self.close_connection = True
-            print(
+            _safe_log(
                 f"[LEXO ENGINE] RESPONSE_ABORTED {label} bytes={bytes_sent}/{total_size} "
                 f"error={exc.__class__.__name__}: {exc}"
             )
@@ -413,7 +441,7 @@ class LexoHandler(BaseHTTPRequestHandler):
 
 def run(host: str = "127.0.0.1", port: int = 8765) -> None:
     server = ThreadingHTTPServer((host, port), LexoHandler)
-    print(f"LEXO engine running at http://{host}:{port}")
+    _safe_log(f"LEXO engine running at http://{host}:{port}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

@@ -119,6 +119,96 @@ class MobileCardsRepository {
     };
   }
 
+  Future<Map<String, dynamic>> saveDictionaryCard({
+    required String deviceId,
+    required String originBookId,
+    required DetailSheetPayload payload,
+    required List<String> translations,
+  }) async {
+    final selected = _dedupeTexts(translations);
+    if (selected.isEmpty) {
+      throw Exception('At least one translation is required');
+    }
+    final dictionary = payload.dictionaryEntry;
+    final translationText = selected.join('; ');
+    final lemma = (dictionary?.lemma.trim().isNotEmpty == true)
+        ? dictionary!.lemma.trim()
+        : payload.sheetSourceText.trim().toLowerCase();
+    final surface = dictionary?.query.trim().isNotEmpty == true
+        ? dictionary!.query.trim()
+        : payload.sheetSourceText.trim();
+    final items = await _readCards();
+    final existing = items.where((item) => !item.isDeleted).firstWhere(
+          (item) =>
+              item.sourceBookId == originBookId &&
+              item.sourceUnitId == payload.wordId &&
+              item.translation == translationText,
+          orElse: () => const SavedCardItem(
+            id: '',
+            deviceId: '',
+            cardType: '',
+            headText: '',
+            surfaceText: '',
+            lemma: '',
+            translation: '',
+            exampleText: '',
+            exampleTranslation: '',
+            pos: '',
+            grammarLabel: '',
+            morphLabel: '',
+            sourceBookId: '',
+            sourceUnitId: '',
+            createdAt: '',
+            updatedAt: '',
+            deletedAt: '',
+            syncState: 'synced',
+            status: 'new',
+            progressScore: 0,
+            reviewCount: 0,
+            lastReviewedAt: '',
+          ),
+        );
+    if (existing.id.isNotEmpty) {
+      return {
+        'ok': true,
+        'saved': false,
+        'item': existing.toJson(),
+      };
+    }
+    final now = DateTime.now().toUtc().toIso8601String();
+    final card = SavedCardItem(
+      id: _newUuid(),
+      deviceId: deviceId,
+      cardType: 'lexical',
+      headText: lemma,
+      surfaceText: surface,
+      lemma: lemma,
+      translation: translationText,
+      exampleText: payload.exampleSourceText,
+      exampleTranslation: payload.exampleTranslationText,
+      pos: dictionary?.partOfSpeech ?? '',
+      grammarLabel: '',
+      morphLabel: '',
+      sourceBookId: originBookId,
+      sourceUnitId: payload.wordId,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: '',
+      syncState: 'local_new',
+      status: 'new',
+      progressScore: 0,
+      reviewCount: 0,
+      lastReviewedAt: '',
+    );
+    items.add(card);
+    await _writeCards(items);
+    return {
+      'ok': true,
+      'saved': true,
+      'item': card.toJson(),
+    };
+  }
+
   Future<SavedCardItem> applyReviewResult({
     required String cardId,
     required String direction,
@@ -310,6 +400,21 @@ class MobileCardsRepository {
       return 'known';
     }
     return 'mastered';
+  }
+
+  List<String> _dedupeTexts(List<String> items) {
+    final result = <String>[];
+    final seen = <String>{};
+    for (final item in items) {
+      final text = item.trim();
+      final key = text.toLowerCase();
+      if (text.isEmpty || seen.contains(key)) {
+        continue;
+      }
+      seen.add(key);
+      result.add(text);
+    }
+    return result;
   }
 
   Future<List<SavedCardItem>> _readCards() async {

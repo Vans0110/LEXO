@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../models.dart';
+import 'continuous_translation_strip.dart';
 import 'interactive_paragraph_text.dart';
-import 'translation_context_bar.dart';
 
 class ReaderTextFlow extends StatelessWidget {
   const ReaderTextFlow({
@@ -28,14 +28,22 @@ class ReaderTextFlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedParagraph = selectedParagraphIndex == null
+        ? null
+        : payload.paragraphs.cast<ParagraphItem?>().firstWhere(
+              (item) => item?.index == selectedParagraphIndex,
+              orElse: () => null,
+            );
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       child: Column(
         children: [
-          TranslationContextBar(
-            leftText: translationLeftText,
-            focusText: translationFocusText,
-            rightText: translationRightText,
+          ContinuousTranslationStrip(
+            item: selectedParagraph,
+            selectedTapUnitId: selectedTapUnitId,
+            translationLeftText: translationLeftText,
+            translationFocusText: translationFocusText,
+            translationRightText: translationRightText,
           ),
           const SizedBox(height: 20),
           Expanded(

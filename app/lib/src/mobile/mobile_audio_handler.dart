@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart' as audio_service;
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart' as just_audio;
+import 'package:path_provider/path_provider.dart';
 
 class LexoPlaybackSegment {
   const LexoPlaybackSegment({
@@ -90,16 +92,17 @@ class LexoAudioHandler extends audio_service.BaseAudioHandler
         ),
     ];
     queue.add(_mediaItems);
-    final initialIndex = request.initialIndex.clamp(0, _mediaItems.length - 1).toInt();
+    final initialIndex = request.initialIndex
+        .clamp(0, _mediaItems.length - 1)
+        .toInt();
     mediaItem.add(_mediaItems[initialIndex]);
     await _player.stop();
+    final audioSources = <just_audio.AudioSource>[];
+    for (final segment in request.segments) {
+      audioSources.add(await _audioSourceForSegment(segment));
+    }
     await _player.setAudioSources(
-      [
-        for (final segment in request.segments)
-          segment.isSilence
-              ? just_audio.SilenceAudioSource(duration: segment.silenceDuration)
-              : just_audio.AudioSource.uri(Uri.file(segment.audioPath)),
-      ],
+      audioSources,
       initialIndex: initialIndex,
       initialPosition: Duration.zero,
     );
@@ -108,6 +111,73 @@ class LexoAudioHandler extends audio_service.BaseAudioHandler
       request.repeatBook ? just_audio.LoopMode.all : just_audio.LoopMode.off,
     );
     await _player.play();
+  }
+
+  Future<just_audio.AudioSource> _audioSourceForSegment(
+    LexoPlaybackSegment segment,
+  ) async {
+    if (!segment.isSilence) {
+      return just_audio.AudioSource.uri(Uri.file(segment.audioPath));
+    }
+    if (Platform.isAndroid) {
+      return just_audio.SilenceAudioSource(duration: segment.silenceDuration);
+    }
+    final file = await _ensureSilenceWavFile(segment.silenceDuration);
+    return just_audio.AudioSource.uri(Uri.file(file.path));
+  }
+
+  Future<File> _ensureSilenceWavFile(Duration duration) async {
+    final root = await getApplicationSupportDirectory();
+    final milliseconds =
+        duration.inMilliseconds <= 0 ? 1 : duration.inMilliseconds;
+    final file = File('${root.path}/audio/silence_${milliseconds}ms.wav');
+    if (file.existsSync()) {
+      return file;
+    }
+    if (!file.parent.existsSync()) {
+      await file.parent.create(recursive: true);
+    }
+    await file.writeAsBytes(_buildSilenceWavBytes(duration), flush: true);
+    return file;
+  }
+
+  Uint8List _buildSilenceWavBytes(Duration duration) {
+    const sampleRate = 16000;
+    const channels = 1;
+    const bitsPerSample = 16;
+    final sampleCount =
+        (sampleRate * duration.inMicroseconds / Duration.microsecondsPerSecond)
+            .round()
+            .clamp(1, sampleRate * 60)
+            .toInt();
+    final dataSize = sampleCount * channels * (bitsPerSample ~/ 8);
+    final bytes = Uint8List(44 + dataSize);
+    final data = ByteData.view(bytes.buffer);
+
+    void writeAscii(int offset, String text) {
+      for (var i = 0; i < text.length; i += 1) {
+        bytes[offset + i] = text.codeUnitAt(i);
+      }
+    }
+
+    writeAscii(0, 'RIFF');
+    data.setUint32(4, 36 + dataSize, Endian.little);
+    writeAscii(8, 'WAVE');
+    writeAscii(12, 'fmt ');
+    data.setUint32(16, 16, Endian.little);
+    data.setUint16(20, 1, Endian.little);
+    data.setUint16(22, channels, Endian.little);
+    data.setUint32(24, sampleRate, Endian.little);
+    data.setUint32(
+      28,
+      sampleRate * channels * (bitsPerSample ~/ 8),
+      Endian.little,
+    );
+    data.setUint16(32, channels * (bitsPerSample ~/ 8), Endian.little);
+    data.setUint16(34, bitsPerSample, Endian.little);
+    writeAscii(36, 'data');
+    data.setUint32(40, dataSize, Endian.little);
+    return bytes;
   }
 
   @override

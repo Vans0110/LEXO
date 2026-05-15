@@ -5,7 +5,7 @@
 ## Записи
 
 ### 2026-05-15
-- Сессия: Fast-fix mobile sync chunked package contract для `local_book_id`; native loop + 5s silence для mobile `repeatBook`; этапы 1-4 background audio service; analyzer/widget test, Android compile fixes, active queue rebuild/wrap-around/current-segment preserve/silence для `playLibraryOnce`, mobile word-audio manifest, диагностика silence item, bottom padding под player, белая active repeat icon/splash, footer spacer, уменьшение mobile reader bottom spacer
+- Сессия: Fast-fix mobile sync chunked package contract для `local_book_id`; native loop + 5s silence для mobile `repeatBook`; этапы 1-4 background audio service; analyzer/widget test, Android compile fixes, active queue rebuild/wrap-around/current-segment preserve/silence для `playLibraryOnce`, mobile word-audio manifest, диагностика silence item, bottom padding под player, белая active repeat icon/splash, footer spacer, уменьшение mobile reader bottom spacer, iOS fallback для silence item
 - Файл: [2026-05-15.md](/mnt/d/Programs/LEXO/history/2026-05-15.md)
 
 ### 2026-05-14

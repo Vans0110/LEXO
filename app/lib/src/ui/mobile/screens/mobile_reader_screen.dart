@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
+import 'package:audio_service/audio_service.dart' as audio_service;
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
@@ -9,6 +10,8 @@ import '../../../api/api_client.dart';
 import '../../../detail_sheet_models.dart';
 import '../../../features/reader/reader_feature.dart';
 import '../../../mobile/mobile_cards_repository.dart';
+import '../../../mobile/mobile_audio_handler.dart';
+import '../../../mobile/mobile_package_models.dart';
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../models.dart';
 import '../../../widgets/reader_detail_sheet.dart';
@@ -23,6 +26,7 @@ class MobileReaderScreen extends StatefulWidget {
     required this.cardsRepository,
     required this.deviceId,
     this.playbackRepeatMode = ReaderPlaybackRepeatMode.off,
+    this.libraryPlaybackQueue = const <String>[],
     this.onPlaybackRepeatModeChanged,
     this.onLibraryPlaybackCompleted,
     this.autoplayVoiceId,
@@ -36,6 +40,7 @@ class MobileReaderScreen extends StatefulWidget {
   final MobileCardsRepository cardsRepository;
   final String deviceId;
   final ReaderPlaybackRepeatMode playbackRepeatMode;
+  final List<String> libraryPlaybackQueue;
   final ValueChanged<ReaderPlaybackRepeatMode>? onPlaybackRepeatModeChanged;
   final Future<bool> Function({
     String? voiceId,
@@ -56,12 +61,16 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   StreamSubscription<Playlist>? _playlistSubscription;
   StreamSubscription<bool>? _playingSubscription;
   StreamSubscription<bool>? _completedSubscription;
+  StreamSubscription<audio_service.MediaItem?>? _backgroundMediaSubscription;
+  StreamSubscription<audio_service.PlaybackState>? _backgroundPlaybackSubscription;
+  audio_service.MediaItem? _pendingBackgroundMediaItem;
 
   ReaderFeatureState _state = const ReaderFeatureState();
   String? _desktopBookId;
   bool _playerExpanded = true;
   bool _useLocalPlayback = false;
   bool _playingWordAudio = false;
+  bool _handlingBackgroundCompletion = false;
   ReaderPlaybackRepeatMode _localPlaybackRepeatMode = ReaderPlaybackRepeatMode.off;
   int _playbackCycleToken = 0;
   int _handledAutoplayToken = 0;
@@ -98,6 +107,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   Future<void> _applyPlaybackSpeed() async {
     await _audioPlayer.setRate(_selectedPlaybackSpeed());
+    await LexoBackgroundAudio.handler?.setSpeed(_selectedPlaybackSpeed());
   }
 
   String _requiredAudioVariant() {
@@ -110,18 +120,33 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         : widget.playbackRepeatMode;
   }
 
+  PlaylistMode _nativePlaylistModeFor(ReaderPlaybackRepeatMode mode) {
+    return mode == ReaderPlaybackRepeatMode.repeatBook
+        ? PlaylistMode.loop
+        : PlaylistMode.none;
+  }
+
   void _changePlaybackRepeatMode(ReaderPlaybackRepeatMode mode) {
     _playbackCycleToken += 1;
     final nextMode = widget.onLibraryPlaybackCompleted == null &&
             mode == ReaderPlaybackRepeatMode.playLibraryOnce
         ? ReaderPlaybackRepeatMode.off
         : mode;
+    unawaited(_audioPlayer.setPlaylistMode(_nativePlaylistModeFor(nextMode)));
+    unawaited(
+      LexoBackgroundAudio.handler?.setRepeatBook(nextMode == ReaderPlaybackRepeatMode.repeatBook) ??
+          Future<void>.value(),
+    );
     final handler = widget.onPlaybackRepeatModeChanged;
     if (handler != null) {
       handler(nextMode);
       return;
     }
     setState(() => _localPlaybackRepeatMode = nextMode);
+    if (nextMode == ReaderPlaybackRepeatMode.repeatBook ||
+        nextMode == ReaderPlaybackRepeatMode.playLibraryOnce) {
+      unawaited(_rebuildBackgroundQueueForActiveJob(repeatMode: nextMode));
+    }
   }
 
   Future<void> _togglePlayPause() async {
@@ -161,6 +186,17 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         _handleTrackCompleted();
       }
     });
+    final backgroundHandler = LexoBackgroundAudio.handler;
+    _backgroundMediaSubscription = backgroundHandler?.mediaItem.listen((item) {
+      if (mounted) {
+        _syncBackgroundMediaItem(item);
+      }
+    });
+    _backgroundPlaybackSubscription = backgroundHandler?.playbackState.listen((state) {
+      if (mounted) {
+        _syncBackgroundPlaybackState(state);
+      }
+    });
     _load();
   }
 
@@ -170,6 +206,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     _playlistSubscription?.cancel();
     _playingSubscription?.cancel();
     _completedSubscription?.cancel();
+    _backgroundMediaSubscription?.cancel();
+    _backgroundPlaybackSubscription?.cancel();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -179,6 +217,25 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.playbackRepeatMode != widget.playbackRepeatMode) {
       _playbackCycleToken += 1;
+      unawaited(
+        _audioPlayer.setPlaylistMode(_nativePlaylistModeFor(_effectivePlaybackRepeatMode)),
+      );
+      unawaited(
+        LexoBackgroundAudio.handler?.setRepeatBook(
+              _effectivePlaybackRepeatMode == ReaderPlaybackRepeatMode.repeatBook,
+            ) ??
+            Future<void>.value(),
+      );
+    }
+    if ((oldWidget.playbackRepeatMode != widget.playbackRepeatMode ||
+            oldWidget.libraryPlaybackQueue != widget.libraryPlaybackQueue) &&
+        (_effectivePlaybackRepeatMode == ReaderPlaybackRepeatMode.repeatBook ||
+            _effectivePlaybackRepeatMode == ReaderPlaybackRepeatMode.playLibraryOnce)) {
+      unawaited(
+        _rebuildBackgroundQueueForActiveJob(
+          repeatMode: _effectivePlaybackRepeatMode,
+        ),
+      );
     }
     if (oldWidget.autoplayToken != widget.autoplayToken) {
       _maybeStartAutoplay();
@@ -241,6 +298,11 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
           lastSavedParagraphIndex: package.readerPayload.currentParagraphIndex,
         );
       });
+      final pendingBackgroundMediaItem = _pendingBackgroundMediaItem;
+      if (pendingBackgroundMediaItem != null) {
+        _pendingBackgroundMediaItem = null;
+        _syncBackgroundMediaItem(pendingBackgroundMediaItem);
+      }
       await _applyPlaybackSpeed();
       await _maybeStartAutoplay();
     } catch (error) {
@@ -334,13 +396,21 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     String jobId,
     List<TtsSegmentItem> segments,
   ) async {
+    return _collectLocalPlaylistPathsForBook(widget.localBookId, jobId, segments);
+  }
+
+  Future<List<String>?> _collectLocalPlaylistPathsForBook(
+    String localBookId,
+    String jobId,
+    List<TtsSegmentItem> segments,
+  ) async {
     if (jobId.isEmpty || segments.isEmpty) {
       return null;
     }
     final paths = <String>[];
     for (final segment in segments) {
       final cached = await _packageRepository.getCachedAudioPath(
-        localBookId: widget.localBookId,
+        localBookId: localBookId,
         jobId: jobId,
         segmentIndex: segment.segmentIndex,
       );
@@ -350,6 +420,219 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       paths.add(cached);
     }
     return paths;
+  }
+
+  TtsJobItem? _findPlayableJobForPackage(MobileBookPackage package, TtsJobItem selectedJob) {
+    for (final job in package.ttsState.jobs) {
+      if (job.voiceId == selectedJob.voiceId &&
+          job.audioVariant == selectedJob.audioVariant &&
+          job.isReady) {
+        return job;
+      }
+    }
+    return null;
+  }
+
+  Future<LexoPlaybackRequest> _buildBackgroundPlaybackRequest({
+    required TtsJobItem selectedJob,
+    required List<TtsSegmentItem> localSegments,
+    required List<String> localAudioPaths,
+    ReaderPlaybackRepeatMode? repeatMode,
+    int initialIndex = 0,
+  }) async {
+    final effectiveRepeatMode = repeatMode ?? _effectivePlaybackRepeatMode;
+    final segments = <LexoPlaybackSegment>[
+      ..._buildPlaybackSegments(
+        localBookId: widget.localBookId,
+        title: _state.payload?.title ?? selectedJob.levelName,
+        job: selectedJob,
+        localSegments: localSegments,
+        localAudioPaths: localAudioPaths,
+      ),
+    ];
+
+    if (effectiveRepeatMode == ReaderPlaybackRepeatMode.playLibraryOnce) {
+      final queue = widget.libraryPlaybackQueue.where((id) => id.trim().isNotEmpty).toList();
+      final currentIndex = queue.indexOf(widget.localBookId);
+      final nextBookIds = currentIndex < 0
+          ? const <String>[]
+          : <String>[
+              ...queue.skip(currentIndex + 1),
+              ...queue.take(currentIndex),
+            ];
+      var hasQueuedFollowingBook = false;
+      for (final localBookId in nextBookIds) {
+        final package = await _packageRepository.readPackage(localBookId);
+        final job = _findPlayableJobForPackage(package, selectedJob);
+        if (job == null) {
+          continue;
+        }
+        final packageSegments = package.segmentsForJob(job.jobId);
+        final packageAudioPaths = await _collectLocalPlaylistPathsForBook(
+          localBookId,
+          job.jobId,
+          packageSegments,
+        );
+        if (packageAudioPaths == null || packageAudioPaths.length != packageSegments.length) {
+          continue;
+        }
+        if (!hasQueuedFollowingBook) {
+          segments.add(
+            _buildSilenceSegment(
+              localBookId: widget.localBookId,
+              selectedJob: selectedJob,
+              title: _state.payload?.title ?? selectedJob.levelName,
+            ),
+          );
+        } else {
+          segments.add(
+            _buildSilenceSegment(
+              localBookId: localBookId,
+              selectedJob: job,
+              title: package.meta.title,
+            ),
+          );
+        }
+        hasQueuedFollowingBook = true;
+        segments.addAll(
+          _buildPlaybackSegments(
+            localBookId: localBookId,
+            title: package.meta.title,
+            job: job,
+            localSegments: packageSegments,
+            localAudioPaths: packageAudioPaths,
+          ),
+        );
+      }
+    }
+    if (effectiveRepeatMode == ReaderPlaybackRepeatMode.repeatBook) {
+      segments.add(
+        _buildSilenceSegment(
+          localBookId: widget.localBookId,
+          selectedJob: selectedJob,
+          title: _state.payload?.title ?? selectedJob.levelName,
+        ),
+      );
+    }
+
+    return LexoPlaybackRequest(
+      playbackSpeed: _selectedPlaybackSpeed(),
+      repeatBook: effectiveRepeatMode == ReaderPlaybackRepeatMode.repeatBook,
+      segments: segments,
+      initialIndex: initialIndex,
+    );
+  }
+
+  LexoPlaybackSegment _buildSilenceSegment({
+    required String localBookId,
+    required TtsJobItem selectedJob,
+    required String title,
+  }) {
+    return LexoPlaybackSegment(
+      bookId: localBookId,
+      title: title,
+      jobId: selectedJob.jobId,
+      voiceId: selectedJob.voiceId,
+      levelId: selectedJob.levelId,
+      levelName: 'Пауза',
+      segmentIndex: -1,
+      segmentNumber: selectedJob.totalSegments,
+      totalSegments: selectedJob.totalSegments,
+      audioPath: '',
+      isSilence: true,
+      silenceDuration: const Duration(seconds: 5),
+    );
+  }
+
+  int _queueIndexForCurrentSegment(
+    TtsJobItem activeJob,
+    List<TtsSegmentItem> localSegments,
+  ) {
+    final currentSegmentIndex = activeJob.currentSegmentIndex;
+    for (var index = 0; index < localSegments.length; index += 1) {
+      if (localSegments[index].segmentIndex == currentSegmentIndex) {
+        return index;
+      }
+    }
+    return currentSegmentIndex.clamp(0, math.max(0, localSegments.length - 1)).toInt();
+  }
+
+  Future<void> _rebuildBackgroundQueueForActiveJob({
+    ReaderPlaybackRepeatMode? repeatMode,
+  }) async {
+    if (!_useLocalPlayback || _playingWordAudio) {
+      return;
+    }
+    final state = _state.ttsState;
+    final activeJob = state?.activeJob;
+    if (state == null || activeJob == null || state.activeSegments.isEmpty) {
+      return;
+    }
+    final localSegments = _localSegmentsByJobId[activeJob.jobId] ?? state.activeSegments;
+    final localAudioPaths = await _collectLocalPlaylistPaths(activeJob.jobId, localSegments);
+    if (!mounted ||
+        localSegments.isEmpty ||
+        localAudioPaths == null ||
+        localAudioPaths.length != localSegments.length) {
+      return;
+    }
+    final backgroundHandler = await LexoBackgroundAudio.ensureInitialized();
+    if (backgroundHandler == null) {
+      return;
+    }
+    final request = await _buildBackgroundPlaybackRequest(
+      selectedJob: activeJob,
+      localSegments: localSegments,
+      localAudioPaths: localAudioPaths,
+      repeatMode: repeatMode,
+      initialIndex: _queueIndexForCurrentSegment(activeJob, localSegments),
+    );
+    if (!mounted || request.segments.isEmpty) {
+      return;
+    }
+    final bookCount = request.segments.map((segment) => segment.bookId).toSet().length;
+    final queueBooks = <String>[];
+    for (final segment in request.segments) {
+      if (segment.isSilence) {
+        continue;
+      }
+      if (queueBooks.isEmpty || queueBooks.last != segment.bookId) {
+        queueBooks.add(segment.bookId);
+      }
+    }
+    developer.log(
+      'BACKGROUND_QUEUE_REBUILD mode=${repeatMode ?? _effectivePlaybackRepeatMode} '
+      'books=$bookCount segments=${request.segments.length} initial_index=${request.initialIndex} '
+      'queue_books=${queueBooks.join(',')}',
+      name: 'LEXO_UI',
+    );
+    await _audioPlayer.stop();
+    await _audioPlayer.setPlaylistMode(PlaylistMode.none);
+    await backgroundHandler.playBook(request);
+  }
+
+  List<LexoPlaybackSegment> _buildPlaybackSegments({
+    required String localBookId,
+    required String title,
+    required TtsJobItem job,
+    required List<TtsSegmentItem> localSegments,
+    required List<String> localAudioPaths,
+  }) {
+    return [
+      for (var i = 0; i < localSegments.length; i += 1)
+        LexoPlaybackSegment(
+          bookId: localBookId,
+          title: title,
+          jobId: job.jobId,
+          voiceId: job.voiceId,
+          levelId: job.levelId,
+          levelName: job.levelName,
+          segmentIndex: localSegments[i].segmentIndex,
+          segmentNumber: i + 1,
+          totalSegments: localSegments.length,
+          audioPath: localAudioPaths[i],
+        ),
+    ];
   }
 
   void _syncLocalPlaybackFromPlaylist(Playlist playlist) {
@@ -411,6 +694,128 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     });
   }
 
+  void _syncBackgroundMediaItem(audio_service.MediaItem? item) {
+    if (item == null) {
+      return;
+    }
+    final state = _state.ttsState;
+    if (state == null) {
+      _pendingBackgroundMediaItem = item;
+      return;
+    }
+    final extras = item.extras ?? const <String, dynamic>{};
+    if (extras['is_silence'] == true) {
+      return;
+    }
+    final mediaBookId = extras['book_id'] as String? ?? '';
+    final mediaJobId = extras['job_id'] as String? ?? '';
+    if (mediaBookId != widget.localBookId || mediaJobId.isEmpty) {
+      return;
+    }
+    var activeJob = state.activeJob;
+    var activeSegments = state.activeSegments;
+    if (activeJob == null || activeJob.jobId != mediaJobId || activeSegments.isEmpty) {
+      for (final job in state.jobs) {
+        if (job.jobId == mediaJobId) {
+          activeJob = _copyJob(job, playbackState: 'playing');
+          activeSegments = _localSegmentsByJobId[mediaJobId] ?? const <TtsSegmentItem>[];
+          break;
+        }
+      }
+    }
+    if (activeJob == null || activeSegments.isEmpty) {
+      _pendingBackgroundMediaItem = item;
+      return;
+    }
+    final segmentIndex = extras['segment_index'] as int? ?? activeJob.currentSegmentIndex;
+    final segmentNumber = extras['segment_number'] as int? ?? activeJob.currentSegmentNumber;
+    final totalSegments = extras['total_segments'] as int? ?? activeJob.totalSegments;
+    final nextJob = _copyJob(
+      activeJob,
+      currentSegmentIndex: segmentIndex,
+      currentSegmentNumber: segmentNumber,
+      playbackProgress: totalSegments > 0 ? segmentNumber / totalSegments : activeJob.playbackProgress,
+    );
+    if (nextJob.currentSegmentIndex == activeJob.currentSegmentIndex &&
+        nextJob.currentSegmentNumber == activeJob.currentSegmentNumber &&
+        nextJob.playbackProgress == activeJob.playbackProgress) {
+      return;
+    }
+    setState(() {
+      _state = _state.copyWith(
+        ttsState: TtsState(
+          jobs: state.jobs,
+          activeJob: nextJob,
+          activeSegments: activeSegments,
+        ),
+      );
+      _useLocalPlayback = true;
+    });
+  }
+
+  void _syncBackgroundPlaybackState(audio_service.PlaybackState playbackState) {
+    if (!_useLocalPlayback) {
+      return;
+    }
+    final state = _state.ttsState;
+    final activeJob = state?.activeJob;
+    if (state == null || activeJob == null || state.activeSegments.isEmpty) {
+      return;
+    }
+    if (playbackState.processingState == audio_service.AudioProcessingState.completed) {
+      if (!_handlingBackgroundCompletion) {
+        unawaited(_handleBackgroundBookCompleted());
+      }
+      return;
+    }
+    final nextPlaybackState = playbackState.playing ? 'playing' : 'paused';
+    if (activeJob.playbackState == nextPlaybackState) {
+      return;
+    }
+    setState(() {
+      _state = _state.copyWith(
+        ttsState: TtsState(
+          jobs: state.jobs,
+          activeJob: _copyJob(activeJob, playbackState: nextPlaybackState),
+          activeSegments: state.activeSegments,
+        ),
+      );
+    });
+  }
+
+  Future<void> _handleBackgroundBookCompleted() async {
+    final state = _state.ttsState;
+    final activeJob = state?.activeJob;
+    if (state == null || activeJob == null || state.activeSegments.isEmpty) {
+      return;
+    }
+    if (_effectivePlaybackRepeatMode == ReaderPlaybackRepeatMode.playLibraryOnce) {
+      await LexoBackgroundAudio.handler?.stop();
+      widget.onPlaybackRepeatModeChanged?.call(ReaderPlaybackRepeatMode.off);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _useLocalPlayback = false;
+        _localPlaybackRepeatMode = ReaderPlaybackRepeatMode.off;
+        _state = _state.copyWith(
+          ttsState: TtsState(
+            jobs: state.jobs,
+            activeJob: null,
+            activeSegments: const <TtsSegmentItem>[],
+          ),
+        );
+      });
+      return;
+    }
+    _handlingBackgroundCompletion = true;
+    try {
+      await _handleBookCompleted(activeJob, state.jobs);
+    } finally {
+      _handlingBackgroundCompletion = false;
+    }
+  }
+
   Future<void> _runGenerateVoice({required bool overwrite}) async {
     final selectedJob = _selectedJob();
     if (overwrite && selectedJob != null) {
@@ -470,8 +875,20 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
           ),
         );
       });
+      final backgroundHandler = await LexoBackgroundAudio.ensureInitialized();
+      if (backgroundHandler != null) {
+        await _audioPlayer.stop();
+        await _audioPlayer.setPlaylistMode(PlaylistMode.none);
+        final request = await _buildBackgroundPlaybackRequest(
+          selectedJob: selectedJob,
+          localSegments: localSegments,
+          localAudioPaths: localAudioPaths,
+        );
+        await backgroundHandler.playBook(request);
+        return;
+      }
       await _audioPlayer.stop();
-      await _audioPlayer.setPlaylistMode(PlaylistMode.none);
+      await _audioPlayer.setPlaylistMode(_nativePlaylistModeFor(_effectivePlaybackRepeatMode));
       await _audioPlayer.open(playlist, play: true);
       await _applyPlaybackSpeed();
       return;
@@ -489,16 +906,30 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       return;
     }
     if (_useLocalPlayback) {
-      if (action == 'pause') {
-        await _audioPlayer.pause();
-      } else if (action == 'resume') {
-        await _applyPlaybackSpeed();
-        await _audioPlayer.play();
-      } else if (action == 'next' || action == 'prev') {
-        if (action == 'next') {
-          await _audioPlayer.next();
-        } else {
-          await _audioPlayer.previous();
+      final backgroundHandler = LexoBackgroundAudio.handler;
+      if (backgroundHandler != null) {
+        if (action == 'pause') {
+          await backgroundHandler.pause();
+        } else if (action == 'resume') {
+          await backgroundHandler.setSpeed(_selectedPlaybackSpeed());
+          await backgroundHandler.play();
+        } else if (action == 'next') {
+          await backgroundHandler.skipToNext();
+        } else if (action == 'prev') {
+          await backgroundHandler.skipToPrevious();
+        }
+      } else {
+        if (action == 'pause') {
+          await _audioPlayer.pause();
+        } else if (action == 'resume') {
+          await _applyPlaybackSpeed();
+          await _audioPlayer.play();
+        } else if (action == 'next' || action == 'prev') {
+          if (action == 'next') {
+            await _audioPlayer.next();
+          } else {
+            await _audioPlayer.previous();
+          }
         }
       }
       return;
@@ -512,6 +943,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   Future<void> _stopJob(String jobId) async {
     _playbackCycleToken += 1;
+    await LexoBackgroundAudio.handler?.stop();
     await _audioPlayer.stop();
     final jobs = _state.ttsState?.jobs ?? const <TtsJobItem>[];
     if (!mounted) {
@@ -567,7 +999,12 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     TtsJobItem activeJob,
     List<TtsJobItem> jobs,
   ) async {
+    if (_effectivePlaybackRepeatMode == ReaderPlaybackRepeatMode.repeatBook) {
+      return;
+    }
+
     final cycleToken = ++_playbackCycleToken;
+    await LexoBackgroundAudio.handler?.stop();
     await _audioPlayer.stop();
     if (!mounted || cycleToken != _playbackCycleToken) {
       return;
@@ -736,7 +1173,9 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         throw Exception('Локальный word audio не найден. Выполните Синхронизацию книги.');
       }
       _playbackCycleToken += 1;
+      await LexoBackgroundAudio.handler?.stop();
       await _audioPlayer.stop();
+      await _audioPlayer.setPlaylistMode(PlaylistMode.none);
       _useLocalPlayback = false;
       _playingWordAudio = true;
       await _audioPlayer.open(Media(audioPath), play: true);
@@ -794,6 +1233,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   @override
   Widget build(BuildContext context) {
     final payload = _state.payload;
+    final playerBottomPadding = _playerExpanded ? 75.0 : 39.0;
     return Scaffold(
       appBar: AppBar(
         title: Text(payload?.title ?? 'Reader'),
@@ -831,6 +1271,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
                               selectedTapUnitId: _state.selectedTapUnitId,
                               onWordTap: _handleWordTap,
                               onWordLongPress: _handleWordLongPress,
+                              bottomContentPadding:
+                                  playerBottomPadding + MediaQuery.paddingOf(context).bottom,
                             ),
                           ),
                         ],

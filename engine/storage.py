@@ -998,8 +998,15 @@ class LexoStorage:
 
     def build_mobile_book_package(self, book_id: str) -> dict:
         reader_payload = self.get_paragraphs(book_id)
+        book_status = self.get_book_status(book_id)
+
         return {
-            "book": self.get_book_status(book_id),
+            "meta": {
+                "local_book_id": str(book_status.get("id") or ""),
+                "desktop_book_id": str(book_status.get("id") or ""),
+                "title": str(book_status.get("title") or ""),
+            },
+            "book": book_status,
             "reader": reader_payload,
             "detail_manifest": {},
             "dictionary_manifest": self._book_dictionary_manifest(book_id),
@@ -1012,6 +1019,7 @@ class LexoStorage:
         package = self.build_mobile_book_package(book_id)
         parts = self._build_mobile_book_package_parts(package)
         return {
+            "meta": package["meta"],
             "book": package["book"],
             "generated_at": package["generated_at"],
             "parts": [
@@ -1028,7 +1036,11 @@ class LexoStorage:
         package = self.build_mobile_book_package(book_id)
         for item in self._build_mobile_book_package_parts(package):
             if item["part_id"] == part_id:
-                return item["payload"]
+                return {
+                    "part_id": item["part_id"],
+                    "kind": item["kind"],
+                    "payload": item["payload"],
+                }
         raise ValueError(f"Unknown package part: {part_id}")
 
     def _build_mobile_book_package_parts(self, package: dict) -> list[dict]:
@@ -1829,7 +1841,24 @@ class LexoStorage:
         }
 
     def _build_mobile_word_audio_manifest(self, book_id: str) -> dict:
-        return {"book_id": book_id, "items": []}
+        with self._connect() as conn:
+            package_job = conn.execute(
+                """
+                SELECT voice_id FROM tts_package_jobs
+                WHERE book_id = ? AND status = 'done'
+                ORDER BY updated_at DESC, created_at DESC
+                LIMIT 1
+                """,
+                (book_id,),
+            ).fetchone()
+        voice_id = str(package_job["voice_id"] or "") if package_job is not None else ""
+        if not voice_id:
+            return {"book_id": book_id, "voice_id": "", "items": []}
+        return {
+            "book_id": book_id,
+            "voice_id": voice_id,
+            "items": self._collect_book_word_audio_entries(book_id),
+        }
 
     def _split_paragraphs(self, text: str) -> list[str]:
         return [item.strip() for item in re.split(r"\n\s*\n+", text) if item.strip()]

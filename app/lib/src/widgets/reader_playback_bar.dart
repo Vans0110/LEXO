@@ -90,7 +90,7 @@ class ReaderPlaybackBar extends StatelessWidget {
     final repeatActive = repeatMode != ReaderPlaybackRepeatMode.off;
     final repeatBackground = Colors.black.withValues(alpha: repeatEnabled ? 0.42 : 0.18);
     final repeatIconColor = repeatActive
-        ? theme.colorScheme.primary
+        ? Colors.white
         : Colors.white.withValues(alpha: repeatEnabled ? 0.72 : 0.35);
 
     return SafeArea(
@@ -237,6 +237,8 @@ class _RoundTextControlButton extends StatelessWidget {
           onTap: onPressed,
           onLongPress: onLongPress,
           customBorder: const StadiumBorder(),
+          splashColor: Colors.white.withValues(alpha: 0.08),
+          highlightColor: Colors.white.withValues(alpha: 0.04),
           child: SizedBox(
             height: size,
             child: Padding(
@@ -287,6 +289,8 @@ class _RoundControlButton extends StatelessWidget {
         child: InkWell(
           onTap: onPressed,
           customBorder: const CircleBorder(),
+          splashColor: Colors.white.withValues(alpha: 0.08),
+          highlightColor: Colors.white.withValues(alpha: 0.04),
           child: SizedBox(
             width: size,
             height: size,

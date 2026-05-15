@@ -15,6 +15,7 @@ class ReaderTextFlow extends StatelessWidget {
     required this.selectedTapUnitId,
     required this.onWordTap,
     required this.onWordLongPress,
+    this.bottomContentPadding = 0,
   });
 
   final ReaderPayload payload;
@@ -25,6 +26,7 @@ class ReaderTextFlow extends StatelessWidget {
   final String? selectedTapUnitId;
   final void Function(ParagraphItem item, ParagraphWordItem word) onWordTap;
   final void Function(ParagraphItem item, ParagraphWordItem word) onWordLongPress;
+  final double bottomContentPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +50,12 @@ class ReaderTextFlow extends StatelessWidget {
           const SizedBox(height: 20),
           Expanded(
             child: ListView.separated(
-              itemCount: payload.paragraphs.length,
+              itemCount: payload.paragraphs.length + 1,
               separatorBuilder: (_, __) => const SizedBox(height: 18),
               itemBuilder: (context, index) {
+                if (index == payload.paragraphs.length) {
+                  return SizedBox(height: bottomContentPadding);
+                }
                 final item = payload.paragraphs[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),

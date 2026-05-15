@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:audio_service/audio_service.dart' as audio_service;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../api/api_client.dart';
 import '../../../cards_models.dart';
 import '../../../mobile/mobile_cards_repository.dart';
+import '../../../mobile/mobile_audio_handler.dart';
 import '../../../mobile/mobile_package_models.dart';
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../mobile/mobile_settings_repository.dart';
@@ -43,6 +46,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
   String _syncDebugText = '';
   MobileAppSettings _appSettings = const MobileAppSettings();
   LibraryPayload? _library;
+  StreamSubscription<audio_service.MediaItem?>? _backgroundMediaSubscription;
   ReaderPlaybackRepeatMode _playbackRepeatMode = ReaderPlaybackRepeatMode.off;
   List<String> _libraryPlaybackQueue = const <String>[];
   String? _pendingAutoplayVoiceId;
@@ -57,7 +61,18 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     _settingsRepository = MobileSettingsRepository();
     _syncLogger = MobileSyncDebugLogger(widget.api);
     _syncDebugText = _syncLogger.debugReport;
+    _backgroundMediaSubscription = LexoBackgroundAudio.handler?.mediaItem.listen((item) {
+      if (item != null) {
+        unawaited(_syncActiveBookFromBackground(item));
+      }
+    });
     _loadSettings();
+  }
+
+  @override
+  void dispose() {
+    _backgroundMediaSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadSettings() async {
@@ -115,6 +130,42 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     setState(() {
       _activeBookId = item.id;
       _activeBookTitle = item.title;
+      _selectedIndex = 1;
+      _settingsError = null;
+      _pendingAutoplayVoiceId = null;
+      _pendingAutoplayLevelIds = const <int>{};
+    });
+  }
+
+  Future<void> _syncActiveBookFromBackground(audio_service.MediaItem item) async {
+    if (item.extras?['is_silence'] == true) {
+      return;
+    }
+    final localBookId = item.extras?['book_id'] as String? ?? '';
+    if (localBookId.isEmpty || localBookId == _activeBookId) {
+      return;
+    }
+    var title = item.title;
+    final library = _library;
+    if (library != null) {
+      for (final entry in library.items) {
+        if (entry.id == localBookId) {
+          title = entry.title;
+          break;
+        }
+      }
+    }
+    if (title.trim().isEmpty) {
+      try {
+        title = (await _packageRepository.readPackage(localBookId)).meta.title;
+      } catch (_) {}
+    }
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _activeBookId = localBookId;
+      _activeBookTitle = title;
       _selectedIndex = 1;
       _settingsError = null;
       _pendingAutoplayVoiceId = null;
@@ -663,6 +714,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
               cardsRepository: _cardsRepository,
               deviceId: _appSettings.deviceId ?? '',
               playbackRepeatMode: _playbackRepeatMode,
+              libraryPlaybackQueue: _libraryPlaybackQueue,
               onPlaybackRepeatModeChanged: _handlePlaybackRepeatModeChanged,
               onLibraryPlaybackCompleted: _handleLibraryPlaybackCompleted,
               autoplayVoiceId: _pendingAutoplayVoiceId,

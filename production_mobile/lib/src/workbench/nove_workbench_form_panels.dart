@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../models.dart';
+
 class NoveWorkbenchCoverPickerPanel extends StatelessWidget {
   const NoveWorkbenchCoverPickerPanel({
     super.key,
@@ -129,6 +131,66 @@ class NoveWorkbenchTranslationLanguagePanel extends StatelessWidget {
               dense: true,
               contentPadding: EdgeInsets.zero,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class NoveWorkbenchVoicePanel extends StatelessWidget {
+  const NoveWorkbenchVoicePanel({
+    super.key,
+    required this.voices,
+    required this.selectedVoiceIds,
+    required this.busy,
+    required this.onChanged,
+  });
+
+  final List<TtsProfile> voices;
+  final Set<String> selectedVoiceIds;
+  final bool busy;
+  final void Function(String voiceId, bool selected) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = voices.isEmpty
+        ? const [
+            TtsProfile(
+              id: 'kokoro_af_heart',
+              engineId: 'kokoro',
+              voiceId: 'af_heart',
+              displayName: 'Warm female',
+              lang: 'en',
+            ),
+          ]
+        : voices;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Kokoro voices',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 8),
+            for (final voice in items)
+              CheckboxListTile(
+                value: selectedVoiceIds.contains(voice.voiceId),
+                onChanged: busy
+                    ? null
+                    : (value) => onChanged(voice.voiceId, value ?? false),
+                title: Text(voice.displayName),
+                subtitle: Text(voice.voiceId),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
           ],
         ),
       ),

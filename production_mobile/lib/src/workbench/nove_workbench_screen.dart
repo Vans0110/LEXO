@@ -32,6 +32,7 @@ class _WorkbenchExportStatus {
     required this.dictionaries,
     required this.dictionarySources,
     required this.hasAudio,
+    required this.audioVoices,
     required this.hasCover,
   });
 
@@ -40,6 +41,7 @@ class _WorkbenchExportStatus {
   final Set<String> dictionaries;
   final Map<String, String> dictionarySources;
   final bool hasAudio;
+  final Set<String> audioVoices;
   final bool hasCover;
 
   bool hasLanguages(Iterable<String> targetLanguages) =>
@@ -49,6 +51,9 @@ class _WorkbenchExportStatus {
       targetLanguages.every((lang) =>
           dictionaries.contains(lang) &&
           dictionarySources[lang] == 'marian_en_$lang');
+
+  bool hasAudioFor(Iterable<String> voiceIds) =>
+      voiceIds.every(audioVoices.contains);
 }
 
 class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
@@ -69,6 +74,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   Map<String, String> _bookIdsByTargetLang = const {};
   Map<String, Map<String, dynamic>> _packagesByTargetLang = const {};
   String? _voiceId = _fallbackVoiceId;
+  Set<String> _voiceIds = {_fallbackVoiceId};
   bool _busy = false;
   String? _error;
   String? _outputPath;
@@ -100,7 +106,15 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       }
       setState(() {
         _voices = voices;
-        _voiceId = voices.isEmpty ? _fallbackVoiceId : voices.first.voiceId;
+        final availableVoiceIds = voices.map((voice) => voice.voiceId).toSet();
+        final defaultVoiceId = availableVoiceIds.contains(_fallbackVoiceId)
+            ? _fallbackVoiceId
+            : (voices.isEmpty ? _fallbackVoiceId : voices.first.voiceId);
+        _voiceId = defaultVoiceId;
+        _voiceIds = _voiceIds.intersection(availableVoiceIds);
+        if (_voiceIds.isEmpty) {
+          _voiceIds = {defaultVoiceId};
+        }
       });
     } catch (error) {
       _appendLog('Voice load failed: $error');
@@ -221,11 +235,8 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
 
   Future<void> _generatePackage() async {
     final bookId = _bookId;
-    final voiceId = _voiceId;
-    if (bookId == null ||
-        bookId.isEmpty ||
-        voiceId == null ||
-        voiceId.isEmpty) {
+    final selectedVoiceIds = _selectedVoiceIds();
+    if (bookId == null || bookId.isEmpty || selectedVoiceIds.isEmpty) {
       setState(() => _error = 'book_id and Kokoro voice are required.');
       return;
     }
@@ -234,7 +245,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       _error = null;
     });
     try {
-      await _generateCurrentPackage(waitForReady: false);
+      await _generateSelectedVoicePackages(waitForReady: false);
       _syncPolling();
     } catch (error) {
       if (!mounted) {
@@ -248,19 +259,34 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     }
   }
 
-  Future<void> _generateCurrentPackage({required bool waitForReady}) async {
+  Future<void> _generateSelectedVoicePackages({
+    required bool waitForReady,
+  }) async {
+    for (final voiceId in _selectedVoiceIds()) {
+      await _generateCurrentPackage(
+        voiceId: voiceId,
+        waitForReady: waitForReady,
+      );
+    }
+  }
+
+  Future<void> _generateCurrentPackage({
+    required String voiceId,
+    required bool waitForReady,
+  }) async {
     final bookId = _bookId;
-    final voiceId = _voiceId;
-    if (bookId == null ||
-        bookId.isEmpty ||
-        voiceId == null ||
-        voiceId.isEmpty) {
+    if (bookId == null || bookId.isEmpty || voiceId.isEmpty) {
       throw Exception('book_id and Kokoro voice are required.');
     }
     if (_voices.isEmpty) {
       await _loadVoices();
     }
     _appendLog('Generate Kokoro package: book_id=$bookId voice=$voiceId');
+    if (mounted) {
+      setState(() => _voiceId = voiceId);
+    } else {
+      _voiceId = voiceId;
+    }
     var state = await widget.api.generateTtsPackage(
       bookId: bookId,
       voiceId: voiceId,
@@ -455,6 +481,15 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     return selected.isEmpty ? const ['ru'] : selected;
   }
 
+  List<String> _selectedVoiceIds() {
+    final available = _voices.map((voice) => voice.voiceId).toSet();
+    final selected = [
+      for (final voiceId in _voiceIds)
+        if (available.isEmpty || available.contains(voiceId)) voiceId,
+    ]..sort();
+    return selected.isEmpty ? const [_fallbackVoiceId] : selected;
+  }
+
   void _toggleTargetLang(String lang, bool selected) {
     final next = Set<String>.of(_targetLangs);
     if (selected) {
@@ -469,6 +504,20 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       _packagesByTargetLang = const {};
       _packageState = null;
       _outputPath = null;
+    });
+  }
+
+  void _toggleVoice(String voiceId, bool selected) {
+    final next = Set<String>.of(_voiceIds);
+    if (selected) {
+      next.add(voiceId);
+    } else if (next.length > 1) {
+      next.remove(voiceId);
+    }
+    setState(() {
+      _voiceIds = next;
+      _voiceId = next.contains(_voiceId) ? _voiceId : next.first;
+      _packageState = null;
     });
   }
 
@@ -515,7 +564,8 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         final hasRequestedLanguages = currentStatus.hasLanguages(selectedLangs);
         final hasRequestedDictionaries =
             currentStatus.hasDictionaries(selectedLangs);
-        final hasAudio = currentStatus.hasAudio;
+        final selectedVoiceIds = _selectedVoiceIds();
+        final hasAudio = currentStatus.hasAudioFor(selectedVoiceIds);
         if (hasRequestedLanguages && hasRequestedDictionaries && hasAudio) {
           if (selection.coverPath.isNotEmpty && !currentStatus.hasCover) {
             _appendLog(
@@ -541,7 +591,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
           _appendLog(
               'Skip Kokoro package: ${selection.title} already has audio');
         } else {
-          await _generateCurrentPackage(waitForReady: true);
+          await _generateSelectedVoicePackages(waitForReady: true);
         }
         if (hasRequestedLanguages && hasAudio && !hasRequestedDictionaries) {
           final missingDictionaries = selectedLangs
@@ -613,6 +663,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     final languages = <String>{};
     final dictionaries = <String>{};
     final dictionarySources = <String, String>{};
+    final audioVoices = <String>{};
     var bookId = '';
     var hasAudio = false;
     if (outputDir != null) {
@@ -622,6 +673,14 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
           final manifest = jsonDecode(await manifestFile.readAsString())
               as Map<String, dynamic>;
           bookId = (manifest['book_id'] ?? '').toString();
+        } catch (_) {}
+      }
+      final ttsManifestFile = File('${outputDir.path}/tts_manifest.json');
+      if (ttsManifestFile.existsSync()) {
+        try {
+          final manifest = jsonDecode(await ttsManifestFile.readAsString())
+              as Map<String, dynamic>;
+          audioVoices.addAll(_readTtsVoiceIds(manifest));
         } catch (_) {}
       }
       for (final entity in outputDir.listSync(recursive: true)) {
@@ -652,10 +711,14 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     languages.addAll(zipStatus.languages);
     dictionaries.addAll(zipStatus.dictionaries);
     dictionarySources.addAll(zipStatus.dictionarySources);
+    audioVoices.addAll(zipStatus.audioVoices);
     if (bookId.isEmpty) {
       bookId = zipStatus.bookId;
     }
     hasAudio = hasAudio || zipStatus.hasAudio;
+    if (hasAudio && audioVoices.isEmpty) {
+      audioVoices.add(_fallbackVoiceId);
+    }
     final hasCover = await _hasOutputCover(outputDir) || zipStatus.hasCover;
     return _WorkbenchExportStatus(
       bookId: bookId,
@@ -663,6 +726,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       dictionaries: dictionaries,
       dictionarySources: dictionarySources,
       hasAudio: hasAudio,
+      audioVoices: audioVoices,
       hasCover: hasCover,
     );
   }
@@ -727,6 +791,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         dictionaries: <String>{},
         dictionarySources: <String, String>{},
         hasAudio: false,
+        audioVoices: <String>{},
         hasCover: false,
       );
     }
@@ -756,6 +821,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         final languages = <String>{};
         final dictionaries = <String>{};
         final dictionarySources = <String, String>{};
+        final audioVoices = <String>{};
         final bookId = (manifest['book_id'] ?? '').toString();
         for (final file in archive.files) {
           if (!file.isFile) {
@@ -775,11 +841,22 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
               file.content as List<int>,
             );
           }
+          if (file.name == 'tts_manifest.json') {
+            try {
+              final ttsManifest =
+                  jsonDecode(utf8.decode(file.content as List<int>))
+                      as Map<String, dynamic>;
+              audioVoices.addAll(_readTtsVoiceIds(ttsManifest));
+            } catch (_) {}
+          }
         }
         final hasAudio = archive.files.any((file) =>
             file.isFile &&
             file.name.startsWith('audio/segments/') &&
             file.name.endsWith('.mp3'));
+        if (hasAudio && audioVoices.isEmpty) {
+          audioVoices.add(_fallbackVoiceId);
+        }
         final hasCover = archive.files.any((file) =>
             file.isFile &&
             const ['cover.png', 'cover.jpg', 'cover.jpeg'].contains(file.name));
@@ -789,6 +866,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
           dictionaries: dictionaries,
           dictionarySources: dictionarySources,
           hasAudio: hasAudio,
+          audioVoices: audioVoices,
           hasCover: hasCover,
         );
       } catch (_) {
@@ -801,8 +879,28 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       dictionaries: <String>{},
       dictionarySources: <String, String>{},
       hasAudio: false,
+      audioVoices: <String>{},
       hasCover: false,
     );
+  }
+
+  Set<String> _readTtsVoiceIds(Map<String, dynamic> manifest) {
+    final result = <String>{};
+    final profiles = manifest['profiles'] as List<dynamic>? ?? const [];
+    for (final profile in profiles.whereType<Map>()) {
+      final voiceId = (profile['voice_id'] ?? '').toString();
+      if (voiceId.isNotEmpty) {
+        result.add(voiceId);
+      }
+    }
+    final jobs = manifest['jobs'] as List<dynamic>? ?? const [];
+    for (final job in jobs.whereType<Map>()) {
+      final voiceId = (job['voice_id'] ?? '').toString();
+      if (voiceId.isNotEmpty) {
+        result.add(voiceId);
+      }
+    }
+    return result;
   }
 
   Future<String> _readDictionarySource(File file) async {
@@ -849,7 +947,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     final canImport =
         !_busy && _sourceText.trim().isNotEmpty && _title.trim().isNotEmpty;
     final canGenerate =
-        !_busy && (_bookId ?? '').isNotEmpty && (_voiceId ?? '').isNotEmpty;
+        !_busy && (_bookId ?? '').isNotEmpty && _selectedVoiceIds().isNotEmpty;
     final canExport = !_busy && (_bookId ?? '').isNotEmpty;
     return Scaffold(
       appBar: AppBar(title: const Text('Nove Workbench')),
@@ -989,24 +1087,11 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
               onChanged: _toggleTargetLang,
             ),
             const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              value: _voiceId,
-              decoration: const InputDecoration(
-                  labelText: 'Kokoro voice', border: OutlineInputBorder()),
-              items: [
-                if (_voices.isEmpty)
-                  const DropdownMenuItem(
-                    value: _fallbackVoiceId,
-                    child: Text('Kokoro default (af_heart)'),
-                  ),
-                for (final voice in _voices)
-                  DropdownMenuItem(
-                    value: voice.voiceId,
-                    child: Text('${voice.displayName} (${voice.voiceId})'),
-                  ),
-              ],
-              onChanged:
-                  _busy ? null : (value) => setState(() => _voiceId = value),
+            NoveWorkbenchVoicePanel(
+              voices: _voices,
+              selectedVoiceIds: _voiceIds,
+              busy: _busy,
+              onChanged: _toggleVoice,
             ),
             const SizedBox(height: 18),
             NoveWorkbenchStatusPanel(

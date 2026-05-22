@@ -75,10 +75,34 @@ class KokoroProvider(TtsProvider):
                 "id": "kokoro_af_heart",
                 "engine_id": self.engine_id,
                 "voice_id": "af_heart",
-                "display_name": "Kokoro AF Heart",
+                "display_name": "Warm female",
                 "lang": "en",
                 "is_enabled": 1,
-            }
+            },
+            {
+                "id": "kokoro_af_nicole",
+                "engine_id": self.engine_id,
+                "voice_id": "af_nicole",
+                "display_name": "Clear female",
+                "lang": "en",
+                "is_enabled": 1,
+            },
+            {
+                "id": "kokoro_bm_george",
+                "engine_id": self.engine_id,
+                "voice_id": "bm_george",
+                "display_name": "British male",
+                "lang": "en",
+                "is_enabled": 1,
+            },
+            {
+                "id": "kokoro_am_michael",
+                "engine_id": self.engine_id,
+                "voice_id": "am_michael",
+                "display_name": "American male",
+                "lang": "en",
+                "is_enabled": 1,
+            },
         ]
 
     def synthesize(

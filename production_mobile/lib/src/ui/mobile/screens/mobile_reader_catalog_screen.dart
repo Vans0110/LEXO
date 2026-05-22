@@ -609,7 +609,10 @@ class _AllChaptersScreen extends StatelessWidget {
                   color: Theme.of(context).colorScheme.outlineVariant,
                 ),
               ),
-              leading: CircleAvatar(child: Text('${index + 1}')),
+              leading: _ChapterListImage(
+                chapter: chapter,
+                index: index + 1,
+              ),
               title: Text(chapter.title),
               subtitle: Text('$count books'),
               trailing: const Icon(Icons.chevron_right),
@@ -621,6 +624,70 @@ class _AllChaptersScreen extends StatelessWidget {
               },
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _ChapterListImage extends StatelessWidget {
+  const _ChapterListImage({
+    required this.chapter,
+    required this.index,
+  });
+
+  final NoveA1Chapter chapter;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final imageAssetPath = chapter.imageAssetPath;
+    return SizedBox(
+      width: 56,
+      height: 56,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: imageAssetPath == null
+            ? _ChapterNumberPlaceholder(
+                colorScheme: colorScheme,
+                index: index,
+              )
+            : Image.asset(
+                imageAssetPath,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    _ChapterNumberPlaceholder(
+                  colorScheme: colorScheme,
+                  index: index,
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+class _ChapterNumberPlaceholder extends StatelessWidget {
+  const _ChapterNumberPlaceholder({
+    required this.colorScheme,
+    required this.index,
+  });
+
+  final ColorScheme colorScheme;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: colorScheme.primaryContainer,
+      child: Center(
+        child: Text(
+          '$index',
+          style: TextStyle(
+            color: colorScheme.onPrimaryContainer,
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+          ),
         ),
       ),
     );

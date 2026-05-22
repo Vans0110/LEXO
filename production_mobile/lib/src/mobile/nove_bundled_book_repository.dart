@@ -6,6 +6,7 @@ import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'nove_a1_chapters.dart';
+import 'nove_download_options.dart';
 import 'mobile_settings_repository.dart';
 
 class NoveBundledBookInfo {
@@ -130,9 +131,14 @@ class NoveBundledBookRepository {
     return null;
   }
 
-  Future<String> importBook(NoveBundledBookInfo info) async {
+  Future<String> importBook(
+    NoveBundledBookInfo info, {
+    NoveDownloadOptions options = const NoveDownloadOptions(),
+  }) async {
     final settings = await MobileSettingsRepository().load();
-    final preferredTargetLang = settings.preferredTargetLang;
+    final preferredTargetLang = options.targetLang?.trim().isNotEmpty == true
+        ? options.targetLang!.trim()
+        : settings.preferredTargetLang;
     final bytes = info.isRemote
         ? await _downloadBytes(info.remoteZipUrl!)
         : throw Exception('Cloud zip URL is required.');
@@ -146,6 +152,15 @@ class NoveBundledBookRepository {
     final readerPayloads = _readReaderPayloads(files, manifest);
     final dictionaryManifest = _readDictionaryJson(files, preferredTargetLang);
     final dictionaryManifests = _readDictionaryPayloads(files, manifest);
+    final ttsManifest = _readOptionalJson(files, 'tts_manifest.json');
+    final wordAudioManifest =
+        _readOptionalJson(files, 'word_audio_manifest.json');
+    final selectedVoiceId = options.voiceId?.trim() ?? '';
+    if (selectedVoiceId.isNotEmpty &&
+        !_manifestContainsVoice(ttsManifest, selectedVoiceId)) {
+      throw Exception(
+          'Voice $selectedVoiceId is not available in this book package yet.');
+    }
     final coverPath = (manifest['cover'] ?? '').toString();
     final chapterId = (manifest['chapter_id'] ?? info.chapterId).toString();
     final chapterTitle =
@@ -175,6 +190,10 @@ class NoveBundledBookRepository {
         'current_paragraph_index': 0,
         'package_version': 1,
         'content_hash': info.assetPath,
+        'download_options': options.toJson(),
+        if (options.targetLang?.trim().isNotEmpty == true)
+          'selected_target_lang': options.targetLang!.trim(),
+        if (selectedVoiceId.isNotEmpty) 'selected_voice_id': selectedVoiceId,
         if (coverPath.isNotEmpty) 'cover': coverPath,
         'exported_at': manifest['generated_at'],
       },
@@ -184,9 +203,8 @@ class NoveBundledBookRepository {
       'dictionary_manifest': dictionaryManifest,
       'dictionary_manifests': dictionaryManifests,
       'detail_manifest': _readOptionalJson(files, 'detail_manifest.json'),
-      'tts_manifest': _readOptionalJson(files, 'tts_manifest.json'),
-      'word_audio_manifest':
-          _readOptionalJson(files, 'word_audio_manifest.json'),
+      'tts_manifest': ttsManifest,
+      'word_audio_manifest': wordAudioManifest,
       'word_to_word': _readOptionalJson(files, 'word_to_word.json'),
     };
     await File('${bookDir.path}/package.json').writeAsString(
@@ -195,8 +213,24 @@ class NoveBundledBookRepository {
       flush: true,
     );
     await _copyCover(files, bookDir, coverPath);
-    await _copyAudio(files, bookDir);
+    await _copyAudio(files, bookDir, wordAudioManifest: wordAudioManifest);
     return localBookId;
+  }
+
+  bool _manifestContainsVoice(Map<String, dynamic> manifest, String voiceId) {
+    final activeVoiceId = ((manifest['active_job'] as Map<String, dynamic>? ??
+            const {})['voice_id'] as String? ??
+        '');
+    if (activeVoiceId == voiceId) {
+      return true;
+    }
+    final profiles = manifest['profiles'] as List<dynamic>? ?? const [];
+    for (final item in profiles.whereType<Map<String, dynamic>>()) {
+      if ((item['voice_id'] ?? '').toString() == voiceId) {
+        return true;
+      }
+    }
+    return false;
   }
 
   Future<Uint8List> _downloadBytes(String url) async {
@@ -334,7 +368,12 @@ class NoveBundledBookRepository {
   }
 
   Future<void> _copyAudio(
-      Map<String, ArchiveFile> files, Directory bookDir) async {
+    Map<String, ArchiveFile> files,
+    Directory bookDir, {
+    required Map<String, dynamic> wordAudioManifest,
+  }) async {
+    final wordAudioVoiceId =
+        (wordAudioManifest['voice_id'] ?? 'af_heart').toString();
     for (final entry in files.entries) {
       final name = entry.key;
       if (name.startsWith('audio/segments/') && name.endsWith('.mp3')) {
@@ -354,7 +393,7 @@ class NoveBundledBookRepository {
         final fileName = name.split('/').last;
         final word = fileName.substring(0, fileName.length - 4);
         final target = File(
-            '${bookDir.path}/word_audio/af_heart/${_wordAudioKey(word)}.mp3');
+            '${bookDir.path}/word_audio/$wordAudioVoiceId/${_wordAudioKey(word)}.mp3');
         await target.parent.create(recursive: true);
         await target.writeAsBytes(entry.value.content as List<int>,
             flush: true);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../mobile/nove_a1_chapters.dart';
 import '../../../mobile/nove_bundled_book_repository.dart';
+import '../../../mobile/nove_download_options.dart';
 import '../../../mobile/nove_favorites_repository.dart';
 import '../../../models.dart';
 import '../widgets/nove_book_cover.dart';
@@ -107,8 +108,14 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
     }
   }
 
-  Future<LibraryBookItem?> _importBundledBook(NoveBundledBookInfo item) async {
-    final localBookId = await _bundledRepository.importBook(item);
+  Future<LibraryBookItem?> _importBundledBook(
+    NoveBundledBookInfo item, {
+    NoveDownloadOptions options = const NoveDownloadOptions(),
+  }) async {
+    final localBookId = await _bundledRepository.importBook(
+      item,
+      options: options,
+    );
     final nextLibrary = await _repository.listBooks();
     if (!mounted) {
       return null;
@@ -158,8 +165,8 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
           bundledBook: item,
           busy: false,
           onToggleFavorite: () => _toggleFavorite(item.assetPath),
-          onLoad: () async {
-            await _importBundledBook(item);
+          onLoad: (options) async {
+            await _importBundledBook(item, options: options);
           },
           onOpen: localBook == null ? null : () => _openBook(localBook),
           onDelete: localBook == null ? null : () => _deleteBook(localBook),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../../mobile/nove_download_options.dart';
 import '../../../mobile/nove_bundled_book_repository.dart';
 import '../../../models.dart';
 import '../widgets/nove_book_cover.dart';
 
 typedef NoveBookAction = Future<void> Function();
+typedef NoveBookLoadAction = Future<void> Function(NoveDownloadOptions options);
 
 class NoveBookDetailScreen extends StatefulWidget {
   const NoveBookDetailScreen({
@@ -30,7 +32,7 @@ class NoveBookDetailScreen extends StatefulWidget {
   final NoveBundledBookInfo? bundledBook;
   final bool busy;
   final NoveBookAction onToggleFavorite;
-  final NoveBookAction? onLoad;
+  final NoveBookLoadAction? onLoad;
   final NoveBookAction? onOpen;
   final NoveBookAction? onDelete;
 
@@ -60,6 +62,32 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
       if (closeAfter) {
         Navigator.of(context).pop(true);
       }
+    } finally {
+      if (mounted) {
+        setState(() => _actionBusy = false);
+      }
+    }
+  }
+
+  Future<void> _runLoadAction() async {
+    final action = widget.onLoad;
+    if (action == null || _actionBusy || widget.busy) {
+      return;
+    }
+    final options = await showDialog<NoveDownloadOptions>(
+      context: context,
+      builder: (_) => const _DownloadOptionsDialog(),
+    );
+    if (options == null) {
+      return;
+    }
+    setState(() => _actionBusy = true);
+    try {
+      await action(options);
+      if (!mounted) {
+        return;
+      }
+      setState(() => _installed = true);
     } finally {
       if (mounted) {
         setState(() => _actionBusy = false);
@@ -124,11 +152,12 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
             FilledButton.icon(
               onPressed: busy
                   ? null
-                  : () => _runAction(
-                        widget.installed ? widget.onOpen : widget.onLoad,
-                        closeAfter: _installed,
-                        markInstalled: !_installed,
-                      ),
+                  : _installed
+                      ? () => _runAction(
+                            widget.onOpen,
+                            closeAfter: true,
+                          )
+                      : _runLoadAction,
               icon: Icon(_installed
                   ? Icons.menu_book_outlined
                   : Icons.download_outlined),
@@ -152,6 +181,76 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _DownloadOptionsDialog extends StatefulWidget {
+  const _DownloadOptionsDialog();
+
+  @override
+  State<_DownloadOptionsDialog> createState() => _DownloadOptionsDialogState();
+}
+
+class _DownloadOptionsDialogState extends State<_DownloadOptionsDialog> {
+  String _targetLang = 'ru';
+  String _voiceId = 'af_heart';
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Download book'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DropdownButtonFormField<String>(
+            value: _targetLang,
+            decoration: const InputDecoration(
+              labelText: 'Translation',
+              border: OutlineInputBorder(),
+            ),
+            items: const [
+              DropdownMenuItem(value: 'ru', child: Text('Russian')),
+              DropdownMenuItem(value: 'uk', child: Text('Ukrainian')),
+              DropdownMenuItem(value: '', child: Text('All available')),
+            ],
+            onChanged: (value) => setState(() => _targetLang = value ?? 'ru'),
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            value: _voiceId,
+            decoration: const InputDecoration(
+              labelText: 'Voice',
+              border: OutlineInputBorder(),
+            ),
+            items: [
+              const DropdownMenuItem(value: '', child: Text('All available')),
+              for (final option in noveVoiceOptions)
+                DropdownMenuItem(
+                  value: option.voiceId,
+                  child: Text('${option.title} (${option.subtitle})'),
+                ),
+            ],
+            onChanged: (value) =>
+                setState(() => _voiceId = value ?? 'af_heart'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(
+            NoveDownloadOptions(
+              targetLang: _targetLang.isEmpty ? null : _targetLang,
+              voiceId: _voiceId.isEmpty ? null : _voiceId,
+            ),
+          ),
+          child: const Text('Download'),
+        ),
+      ],
     );
   }
 }

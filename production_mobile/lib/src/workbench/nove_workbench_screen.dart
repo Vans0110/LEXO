@@ -925,7 +925,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    initialValue: _level,
+                    value: _level,
                     decoration: const InputDecoration(
                         labelText: 'Level', border: OutlineInputBorder()),
                     items: const [
@@ -943,7 +943,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    initialValue: _section,
+                    value: _section,
                     decoration: const InputDecoration(
                         labelText: 'Section', border: OutlineInputBorder()),
                     items: const [
@@ -964,7 +964,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
             const SizedBox(height: 12),
             if (_section == 'chapters') ...[
               DropdownButtonFormField<String>(
-                initialValue: _chapterId,
+                value: _chapterId,
                 decoration: const InputDecoration(
                   labelText: 'A1 chapter',
                   border: OutlineInputBorder(),
@@ -990,7 +990,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              initialValue: _voiceId,
+              value: _voiceId,
               decoration: const InputDecoration(
                   labelText: 'Kokoro voice', border: OutlineInputBorder()),
               items: [

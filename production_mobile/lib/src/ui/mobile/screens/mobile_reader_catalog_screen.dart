@@ -1,0 +1,728 @@
+import 'package:flutter/material.dart';
+
+import '../../../mobile/mobile_package_repository.dart';
+import '../../../mobile/nove_a1_chapters.dart';
+import '../../../mobile/nove_bundled_book_repository.dart';
+import '../../../mobile/nove_favorites_repository.dart';
+import '../../../models.dart';
+import '../widgets/nove_book_cover.dart';
+import 'nove_book_detail_screen.dart';
+
+class MobileReaderCatalogScreen extends StatefulWidget {
+  const MobileReaderCatalogScreen({
+    super.key,
+    this.onBookOpened,
+    this.onLibraryLoaded,
+    this.reloadTick = 0,
+  });
+
+  final ValueChanged<LibraryBookItem>? onBookOpened;
+  final ValueChanged<LibraryPayload>? onLibraryLoaded;
+  final int reloadTick;
+
+  @override
+  State<MobileReaderCatalogScreen> createState() =>
+      _MobileReaderCatalogScreenState();
+}
+
+class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
+  static const _levels = ['a1', 'a2', 'b1', 'b2', 'c1'];
+
+  late final MobileBookPackageRepository _repository;
+  late final NoveBundledBookRepository _bundledRepository;
+  late final NoveFavoritesRepository _favoritesRepository;
+
+  bool _busy = true;
+  String? _error;
+  LibraryPayload? _library;
+  String _selectedLevel = _levels.first;
+  List<NoveBundledBookInfo> _chapterBooks = const [];
+  List<NoveBundledBookInfo> _moreStoriesBooks = const [];
+  Set<String> _favorites = const <String>{};
+  int _loadRequestId = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _repository = MobileBookPackageRepository();
+    _bundledRepository = NoveBundledBookRepository();
+    _favoritesRepository = NoveFavoritesRepository();
+    _loadLibrary();
+  }
+
+  @override
+  void didUpdateWidget(covariant MobileReaderCatalogScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.reloadTick != widget.reloadTick) {
+      _loadLibrary();
+    }
+  }
+
+  Future<void> _loadLibrary() async {
+    final requestId = ++_loadRequestId;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final nextLibrary = await _repository.listBooks();
+      final showChapters = _selectedLevel == 'a1';
+      final chapterBooks = showChapters
+          ? await _bundledRepository.listBooks(
+              level: _selectedLevel,
+              section: 'chapters',
+            )
+          : const <NoveBundledBookInfo>[];
+      final moreStoriesBooks = await _bundledRepository.listBooks(
+        level: _selectedLevel,
+        section: 'more_a1_stories',
+      );
+      final favorites = await _favoritesRepository.load();
+      if (!mounted || requestId != _loadRequestId) {
+        return;
+      }
+      setState(() {
+        _library = nextLibrary;
+        _chapterBooks = chapterBooks;
+        _moreStoriesBooks = moreStoriesBooks;
+        _favorites = favorites;
+      });
+      widget.onLibraryLoaded?.call(nextLibrary);
+    } catch (error) {
+      if (!mounted || requestId != _loadRequestId) {
+        return;
+      }
+      setState(() => _error = error.toString());
+    } finally {
+      if (mounted && requestId == _loadRequestId) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
+  Future<void> _toggleFavorite(String key) async {
+    final next = await _favoritesRepository.toggle(key);
+    if (mounted) {
+      setState(() => _favorites = next);
+    }
+  }
+
+  Future<LibraryBookItem?> _importBundledBook(NoveBundledBookInfo item) async {
+    final localBookId = await _bundledRepository.importBook(item);
+    final nextLibrary = await _repository.listBooks();
+    if (!mounted) {
+      return null;
+    }
+    setState(() => _library = nextLibrary);
+    widget.onLibraryLoaded?.call(nextLibrary);
+    for (final book in nextLibrary.items) {
+      if (book.id == localBookId) {
+        return book;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _openBook(LibraryBookItem item) async {
+    await _repository.markBookOpened(item.id);
+    widget.onBookOpened?.call(item);
+  }
+
+  Future<void> _deleteBook(LibraryBookItem item) async {
+    await _repository.deletePackage(item.id);
+    final favoriteKey = item.contentHash?.trim() ?? '';
+    if (favoriteKey.isNotEmpty) {
+      final nextFavorites = await _favoritesRepository.remove(favoriteKey);
+      if (mounted) {
+        setState(() => _favorites = nextFavorites);
+      }
+    }
+    await _loadLibrary();
+  }
+
+  Future<bool> _openBundledDetail(
+    NoveBundledBookInfo item, {
+    BuildContext? navigatorContext,
+    bool closeParentOnOpen = false,
+  }) async {
+    final localBook = _findInstalledBook(item);
+    final navContext = navigatorContext ?? context;
+    final opened = await Navigator.of(navContext).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => NoveBookDetailScreen(
+          title: item.title,
+          subtitle: '${item.level.toUpperCase()} / ${_sectionTitle(item)}',
+          favorite: localBook != null && _favorites.contains(item.assetPath),
+          installed: localBook != null,
+          localBook: localBook,
+          bundledBook: item,
+          busy: false,
+          onToggleFavorite: () => _toggleFavorite(item.assetPath),
+          onLoad: () async {
+            await _importBundledBook(item);
+          },
+          onOpen: localBook == null ? null : () => _openBook(localBook),
+          onDelete: localBook == null ? null : () => _deleteBook(localBook),
+        ),
+      ),
+    );
+    if (opened == true) {
+      if (closeParentOnOpen &&
+          navContext.mounted &&
+          Navigator.of(navContext).canPop()) {
+        Navigator.of(navContext).pop(true);
+      }
+      return true;
+    }
+    await _loadLibrary();
+    return false;
+  }
+
+  Future<bool> _openChapterBooks(NoveA1Chapter chapter) async {
+    final opened = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => _ChapterBooksScreen(
+          title: '${_selectedLevel.toUpperCase()} Books',
+          subtitle: chapter.title,
+          books: _booksForChapter(chapter.id),
+          coverBuilder: (context, item) => _bundledCover(
+            item,
+            navigatorContext: context,
+            closeParentOnOpen: true,
+          ),
+        ),
+      ),
+    );
+    if (opened == true) {
+      return true;
+    }
+    await _loadLibrary();
+    return false;
+  }
+
+  Future<void> _openAllChapterBooks() async {
+    final opened = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => _AllChaptersScreen(
+          title: '${_selectedLevel.toUpperCase()} Chapters',
+          books: _chapterBooks,
+          onSelected: _openChapterBooks,
+        ),
+      ),
+    );
+    if (opened == true) {
+      return;
+    }
+    await _loadLibrary();
+  }
+
+  LibraryBookItem? _findInstalledBook(NoveBundledBookInfo item) {
+    for (final book in _library?.items ?? const <LibraryBookItem>[]) {
+      if (book.id == item.bookId || book.contentHash == item.assetPath) {
+        return book;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bundledBooks = [..._chapterBooks, ..._moreStoriesBooks];
+    final favoriteBundledBooks = bundledBooks
+        .where((book) =>
+            _favorites.contains(book.assetPath) &&
+            _findInstalledBook(book) != null)
+        .toList();
+    final levelLabel = _selectedLevel.toUpperCase();
+    final showChapters = _selectedLevel == 'a1';
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Nove'),
+        actions: [
+          IconButton(
+            tooltip: 'Refresh',
+            onPressed: _busy ? null : _loadLibrary,
+            icon: const Icon(Icons.refresh_outlined),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _loadLibrary,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+            children: [
+              Text(
+                'Library',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineMedium
+                    ?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 12),
+              _LevelTabs(
+                levels: _levels,
+                selectedLevel: _selectedLevel,
+                onSelected: (level) {
+                  if (level == _selectedLevel) {
+                    return;
+                  }
+                  setState(() => _selectedLevel = level);
+                  _loadLibrary();
+                },
+              ),
+              const SizedBox(height: 18),
+              _ShelfSection(
+                title: 'Favorites',
+                icon: Icons.star_outline,
+                emptyText: 'No favorite books yet',
+                horizontal: true,
+                children: [
+                  for (final item in favoriteBundledBooks) _bundledCover(item),
+                ],
+              ),
+              const SizedBox(height: 14),
+              if (showChapters) ...[
+                _ChaptersCarousel(
+                  books: _chapterBooks,
+                  onSelected: _openChapterBooks,
+                  onAll: _openAllChapterBooks,
+                ),
+                const SizedBox(height: 14),
+              ],
+              _ShelfSection(
+                title: 'More $levelLabel Stories',
+                icon: Icons.auto_stories_outlined,
+                emptyText: 'No books yet. More coming soon.',
+                children: [
+                  for (final item in _moreStoriesBooks) _bundledCover(item),
+                ],
+              ),
+              if (_error != null) ...[
+                const SizedBox(height: 16),
+                Text(_error!,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error)),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _bundledCover(
+    NoveBundledBookInfo item, {
+    BuildContext? navigatorContext,
+    bool closeParentOnOpen = false,
+  }) {
+    final installed = _findInstalledBook(item) != null;
+    return NoveBookCoverCard(
+      title: item.title,
+      subtitle: installed
+          ? 'Loaded'
+          : '${item.level.toUpperCase()} / ${_sectionTitle(item)}',
+      favorite: installed && _favorites.contains(item.assetPath),
+      installed: installed,
+      coverBytes: item.coverBytes,
+      onTap: () => _openBundledDetail(
+        item,
+        navigatorContext: navigatorContext,
+        closeParentOnOpen: closeParentOnOpen,
+      ),
+    );
+  }
+
+  String _sectionTitle(NoveBundledBookInfo item) {
+    if (item.section == 'more_a1_stories') {
+      return 'More A1 Stories';
+    }
+    return item.chapterTitle.isEmpty ? 'Chapters' : item.chapterTitle;
+  }
+
+  List<NoveBundledBookInfo> _booksForChapter(String chapterId) {
+    return _chapterBooks.where((book) => book.chapterId == chapterId).toList();
+  }
+}
+
+class _LevelTabs extends StatelessWidget {
+  const _LevelTabs({
+    required this.levels,
+    required this.selectedLevel,
+    required this.onSelected,
+  });
+
+  final List<String> levels;
+  final String selectedLevel;
+  final ValueChanged<String>? onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (final level in levels) ...[
+            InkWell(
+              onTap: onSelected == null ? null : () => onSelected?.call(level),
+              borderRadius: BorderRadius.circular(18),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 140),
+                width: 62,
+                height: 36,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: level == selectedLevel
+                      ? colorScheme.primary
+                      : colorScheme.surface,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: level == selectedLevel
+                        ? colorScheme.primary
+                        : colorScheme.outlineVariant,
+                  ),
+                ),
+                child: Text(
+                  level.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: level == selectedLevel
+                        ? colorScheme.onPrimary
+                        : colorScheme.onSurface,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ChaptersCarousel extends StatelessWidget {
+  const _ChaptersCarousel({
+    required this.books,
+    required this.onSelected,
+    required this.onAll,
+  });
+
+  final List<NoveBundledBookInfo> books;
+  final ValueChanged<NoveA1Chapter> onSelected;
+  final VoidCallback onAll;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.bookmarks_outlined),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Text(
+                    'Chapters',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
+                ),
+                TextButton(
+                  onPressed: onAll,
+                  child: const Text('All'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: _ChapterCard.height,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (var index = 0; index < noveA1Chapters.length; index++)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: _ChapterCard(
+                          index: index + 1,
+                          chapter: noveA1Chapters[index],
+                          storyCount: _storyCount(noveA1Chapters[index].id),
+                          onTap: () => onSelected(noveA1Chapters[index]),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  int _storyCount(String chapterId) {
+    return books.where((book) => book.chapterId == chapterId).length;
+  }
+}
+
+class _ChapterCard extends StatelessWidget {
+  const _ChapterCard({
+    required this.index,
+    required this.chapter,
+    required this.storyCount,
+    required this.onTap,
+  });
+
+  final int index;
+  final NoveA1Chapter chapter;
+  final int storyCount;
+  final VoidCallback onTap;
+
+  static const double height = 224;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        width: 104,
+        height: height,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: colorScheme.outlineVariant,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Chapter $index',
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 6),
+            AspectRatio(
+              aspectRatio: 1,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.image_outlined,
+                  color: colorScheme.onPrimaryContainer,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _shortTitle(chapter.title),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+            ),
+            const Spacer(),
+            Text(
+              '$storyCount stories',
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant,
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _shortTitle(String title) {
+    final split = title.split('—');
+    return split.length > 1 ? split.last.trim() : title;
+  }
+}
+
+class _AllChaptersScreen extends StatelessWidget {
+  const _AllChaptersScreen({
+    required this.title,
+    required this.books,
+    required this.onSelected,
+  });
+
+  final String title;
+  final List<NoveBundledBookInfo> books;
+  final Future<bool> Function(NoveA1Chapter chapter) onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: SafeArea(
+        child: ListView.separated(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+          itemCount: noveA1Chapters.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          itemBuilder: (context, index) {
+            final chapter = noveA1Chapters[index];
+            final count =
+                books.where((book) => book.chapterId == chapter.id).length;
+            return ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+              ),
+              leading: CircleAvatar(child: Text('${index + 1}')),
+              title: Text(chapter.title),
+              subtitle: Text('$count books'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                final opened = await onSelected(chapter);
+                if (opened && context.mounted) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _ShelfSection extends StatelessWidget {
+  const _ShelfSection({
+    required this.title,
+    required this.icon,
+    required this.emptyText,
+    required this.children,
+    this.horizontal = false,
+  });
+
+  final String title;
+  final IconData icon;
+  final String emptyText;
+  final List<Widget> children;
+  final bool horizontal;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(icon),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (children.isEmpty)
+              Text(emptyText,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant))
+            else if (horizontal)
+              SizedBox(
+                height: 232,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (final child in children)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 14),
+                          child: child,
+                        ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Wrap(spacing: 14, runSpacing: 18, children: children),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ChapterBooksScreen extends StatelessWidget {
+  const _ChapterBooksScreen({
+    required this.title,
+    required this.subtitle,
+    required this.books,
+    required this.coverBuilder,
+  });
+
+  final String title;
+  final String subtitle;
+  final List<NoveBundledBookInfo> books;
+  final Widget Function(BuildContext context, NoveBundledBookInfo item)
+      coverBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+          children: [
+            Text(
+              subtitle,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 16),
+            if (books.isEmpty)
+              Text(
+                'No books yet. More coming soon.',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              )
+            else
+              Wrap(
+                spacing: 14,
+                runSpacing: 18,
+                children: [
+                  for (final book in books) coverBuilder(context, book),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}

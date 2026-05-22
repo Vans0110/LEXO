@@ -1,0 +1,303 @@
+import 'package:flutter/material.dart';
+import 'dart:ui';
+
+enum ReaderPlaybackRepeatMode {
+  off,
+  repeatBook,
+  playLibraryOnce,
+}
+
+extension ReaderPlaybackRepeatModeView on ReaderPlaybackRepeatMode {
+  ReaderPlaybackRepeatMode get next {
+    switch (this) {
+      case ReaderPlaybackRepeatMode.off:
+        return ReaderPlaybackRepeatMode.repeatBook;
+      case ReaderPlaybackRepeatMode.repeatBook:
+        return ReaderPlaybackRepeatMode.playLibraryOnce;
+      case ReaderPlaybackRepeatMode.playLibraryOnce:
+        return ReaderPlaybackRepeatMode.off;
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case ReaderPlaybackRepeatMode.off:
+        return Icons.repeat_rounded;
+      case ReaderPlaybackRepeatMode.repeatBook:
+        return Icons.repeat_one_rounded;
+      case ReaderPlaybackRepeatMode.playLibraryOnce:
+        return Icons.playlist_play_rounded;
+    }
+  }
+
+  String get tooltip {
+    switch (this) {
+      case ReaderPlaybackRepeatMode.off:
+        return 'Repeat off';
+      case ReaderPlaybackRepeatMode.repeatBook:
+        return 'Repeat current book';
+      case ReaderPlaybackRepeatMode.playLibraryOnce:
+        return 'Play library once';
+    }
+  }
+}
+
+class ReaderPlaybackBar extends StatelessWidget {
+  const ReaderPlaybackBar({
+    super.key,
+    required this.expanded,
+    required this.hasPlayableJob,
+    required this.isPlaying,
+    required this.isPaused,
+    required this.busy,
+    required this.onToggleExpand,
+    required this.onPlayPause,
+    required this.onStop,
+    required this.onPrev,
+    required this.onNext,
+    required this.onSpeedTap,
+    required this.onSpeedLongPress,
+    required this.onRepeatModeTap,
+    required this.speedLabel,
+    required this.repeatMode,
+  });
+
+  final bool expanded;
+  final bool hasPlayableJob;
+  final bool isPlaying;
+  final bool isPaused;
+  final bool busy;
+  final VoidCallback onToggleExpand;
+  final VoidCallback onPlayPause;
+  final VoidCallback onStop;
+  final VoidCallback onPrev;
+  final VoidCallback onNext;
+  final VoidCallback onSpeedTap;
+  final VoidCallback onSpeedLongPress;
+  final VoidCallback onRepeatModeTap;
+  final String speedLabel;
+  final ReaderPlaybackRepeatMode repeatMode;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final controlsEnabled = hasPlayableJob && !busy;
+    final playIcon = isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded;
+    final arrowIcon = expanded ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_up_rounded;
+    final buttonBackground = Colors.black.withValues(alpha: controlsEnabled ? 0.42 : 0.18);
+    final iconColor = Colors.white.withValues(alpha: controlsEnabled ? 0.95 : 0.45);
+    final repeatEnabled = !busy;
+    final repeatActive = repeatMode != ReaderPlaybackRepeatMode.off;
+    final repeatBackground = Colors.black.withValues(alpha: repeatEnabled ? 0.42 : 0.18);
+    final repeatIconColor = repeatActive
+        ? Colors.white
+        : Colors.white.withValues(alpha: repeatEnabled ? 0.72 : 0.35);
+
+    return SafeArea(
+      top: false,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 760),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 3.5, sigmaY: 3.5),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOutCubic,
+                margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                padding: expanded
+                    ? const EdgeInsets.fromLTRB(12, 8, 12, 12)
+                    : const EdgeInsets.fromLTRB(12, 4, 12, 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.08),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
+                      color: Colors.black.withValues(alpha: 0.10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                      onTap: onToggleExpand,
+                      borderRadius: BorderRadius.circular(999),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                        child: Icon(
+                          arrowIcon,
+                          size: 18,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.42),
+                        ),
+                      ),
+                    ),
+                    if (expanded) ...[
+                      const SizedBox(height: 2),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _RoundControlButton(
+                            onPressed: controlsEnabled ? onStop : null,
+                            icon: Icons.stop_rounded,
+                            tooltip: 'Stop',
+                            backgroundColor: buttonBackground,
+                            iconColor: iconColor,
+                          ),
+                          const SizedBox(width: 8),
+                          _RoundControlButton(
+                            onPressed: controlsEnabled ? onPrev : null,
+                            icon: Icons.skip_previous_rounded,
+                            tooltip: 'Prev segment',
+                            backgroundColor: buttonBackground,
+                            iconColor: iconColor,
+                          ),
+                          const SizedBox(width: 10),
+                          _RoundControlButton(
+                            onPressed: controlsEnabled ? onPlayPause : null,
+                            icon: playIcon,
+                            tooltip: 'Play pause',
+                            size: 56,
+                            iconSize: 30,
+                            backgroundColor: buttonBackground,
+                            iconColor: iconColor,
+                          ),
+                          const SizedBox(width: 10),
+                          _RoundControlButton(
+                            onPressed: controlsEnabled ? onNext : null,
+                            icon: Icons.skip_next_rounded,
+                            tooltip: 'Next segment',
+                            backgroundColor: buttonBackground,
+                            iconColor: iconColor,
+                          ),
+                          const SizedBox(width: 8),
+                          _RoundTextControlButton(
+                            onPressed: controlsEnabled ? onSpeedTap : null,
+                            onLongPress: controlsEnabled ? onSpeedLongPress : null,
+                            label: speedLabel,
+                            tooltip: 'Speed',
+                            backgroundColor: buttonBackground,
+                            textColor: iconColor,
+                          ),
+                          const SizedBox(width: 8),
+                          _RoundControlButton(
+                            onPressed: repeatEnabled ? onRepeatModeTap : null,
+                            icon: repeatMode.icon,
+                            tooltip: repeatMode.tooltip,
+                            backgroundColor: repeatBackground,
+                            iconColor: repeatIconColor,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RoundTextControlButton extends StatelessWidget {
+  const _RoundTextControlButton({
+    required this.onPressed,
+    required this.onLongPress,
+    required this.label,
+    required this.tooltip,
+    required this.backgroundColor,
+    required this.textColor,
+    this.size = 46,
+  });
+
+  final VoidCallback? onPressed;
+  final VoidCallback? onLongPress;
+  final String label;
+  final String tooltip;
+  final Color backgroundColor;
+  final Color textColor;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: backgroundColor,
+        shape: const StadiumBorder(),
+        child: InkWell(
+          onTap: onPressed,
+          onLongPress: onLongPress,
+          customBorder: const StadiumBorder(),
+          splashColor: Colors.white.withValues(alpha: 0.08),
+          highlightColor: Colors.white.withValues(alpha: 0.04),
+          child: SizedBox(
+            height: size,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Center(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: textColor,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RoundControlButton extends StatelessWidget {
+  const _RoundControlButton({
+    required this.onPressed,
+    required this.icon,
+    required this.tooltip,
+    required this.backgroundColor,
+    required this.iconColor,
+    this.size = 46,
+    this.iconSize = 24,
+  });
+
+  final VoidCallback? onPressed;
+  final IconData icon;
+  final String tooltip;
+  final Color backgroundColor;
+  final Color iconColor;
+  final double size;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: backgroundColor,
+        shape: const CircleBorder(),
+        child: InkWell(
+          onTap: onPressed,
+          customBorder: const CircleBorder(),
+          splashColor: Colors.white.withValues(alpha: 0.08),
+          highlightColor: Colors.white.withValues(alpha: 0.04),
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: Icon(icon, size: iconSize, color: iconColor),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -4,6 +4,26 @@
 
 ## Записи
 
+### 2026-05-22
+- Сессия: Перенос `Books/Icon.png` из UI-заглушки в Android launcher icon для Nove
+- Файл: [2026-05-22.md](/mnt/d/Programs/LEXO/history/2026-05-22.md)
+
+### 2026-05-21
+- Сессия: Тестовый украинский dictionary layer через Marian EN-UK и выбор словаря по языку книги/mobile settings
+- Файл: [2026-05-21.md](/mnt/d/Programs/LEXO/history/2026-05-21.md)
+
+### 2026-05-20
+- Сессия: Добавление Marian EN-UK, multi-language Workbench export (`reader_ru/reader_uk`) и мобильной настройки языка перевода книг
+- Файл: [2026-05-20.md](/mnt/d/Programs/LEXO/history/2026-05-20.md)
+
+### 2026-05-19
+- Сессия: Старт отдельного production mobile приложения `Nove`, mobile-only shell без Host Sync и Reader-каталог `Избранное / Главы / Книги`
+- Файл: [2026-05-19.md](/mnt/d/Programs/LEXO/history/2026-05-19.md)
+
+### 2026-05-18
+- Сессия: Подключение Argos Translate EN-RU для sentence-level segment translations без возврата word alignment
+- Файл: [2026-05-18.md](/mnt/d/Programs/LEXO/history/2026-05-18.md)
+
 ### 2026-05-15
 - Сессия: Fast-fix mobile sync chunked package contract для `local_book_id`; native loop + 5s silence для mobile `repeatBook`; этапы 1-4 background audio service; analyzer/widget test, Android compile fixes, active queue rebuild/wrap-around/current-segment preserve/silence для `playLibraryOnce`, mobile word-audio manifest, диагностика silence item, bottom padding под player, белая active repeat icon/splash, footer spacer, уменьшение mobile reader bottom spacer, iOS fallback для silence item
 - Файл: [2026-05-15.md](/mnt/d/Programs/LEXO/history/2026-05-15.md)
@@ -151,3 +171,11 @@
 ### 2026-05-13
 - Сессия: Backend снесён до source-only reader каркаса; translation/alignment/QA pipeline удалён, TTS оставлен; подключён read-only словарь на тап по `source_words`; dictionary output переведён на чистый список статей без выбора "лучшего" перевода
 - Файл: [2026-05-13.md](/mnt/d/Programs/LEXO/history/2026-05-13.md)
+
+### 2026-05-19
+- Сессия: Создано отдельное production mobile приложение Nove, Workbench для zip-книг и автономная Library с bundled zip import, обложками, деталями книги и ручным избранным
+- Файл: [2026-05-19.md](/mnt/d/Programs/LEXO/history/2026-05-19.md)
+
+### 2026-05-21
+- Сессия: Подготовлена облачная библиотека Nove через Cloudflare R2: Workbench sync-кнопка, генерация `library_index.json`, mobile cloud catalog fallback
+- Файл: [2026-05-21.md](/mnt/d/Programs/LEXO/history/2026-05-21.md)

@@ -1,0 +1,27 @@
+name: nove
+description: Nove offline mobile reader
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  archive: ^4.0.9
+  flutter:
+    sdk: flutter
+  audio_service: ^0.18.18
+  audio_session: ^0.2.3
+  file_selector: ^1.0.3
+  just_audio: ^0.10.5
+  media_kit: ^1.2.6
+  media_kit_libs_audio: ^1.0.7
+  path_provider: ^2.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.2
+
+flutter:
+  uses-material-design: true

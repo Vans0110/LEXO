@@ -29,6 +29,7 @@ class MobileReaderScreen extends StatefulWidget {
     this.libraryPlaybackQueue = const <String>[],
     this.onPlaybackRepeatModeChanged,
     this.onLibraryPlaybackCompleted,
+    this.preferredVoiceId = 'af_heart',
     this.autoplayVoiceId,
     this.autoplayLevelIds = const <int>{},
     this.autoplayToken = 0,
@@ -46,6 +47,7 @@ class MobileReaderScreen extends StatefulWidget {
     String? voiceId,
     required Set<int> selectedLevelIds,
   })? onLibraryPlaybackCompleted;
+  final String preferredVoiceId;
   final String? autoplayVoiceId;
   final Set<int> autoplayLevelIds;
   final int autoplayToken;
@@ -264,15 +266,25 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       var selectedLevelIds = _state.selectedLevelIds;
       final availableVoiceIds = profiles.map((item) => item.voiceId).toSet();
       final activeVoiceId = ttsState.activeJob?.voiceId;
-      if ((widget.autoplayVoiceId ?? '').isNotEmpty &&
-          availableVoiceIds.contains(widget.autoplayVoiceId)) {
-        selectedVoiceId = widget.autoplayVoiceId;
+      final requestedVoiceId = (widget.autoplayVoiceId ?? '').trim();
+      final preferredVoiceId = widget.preferredVoiceId.trim();
+      final packageVoiceId = (package.meta.selectedVoiceId ?? '').trim();
+      final previousVoiceId = (_state.selectedVoiceId ?? '').trim();
+      if (requestedVoiceId.isNotEmpty &&
+          availableVoiceIds.contains(requestedVoiceId)) {
+        selectedVoiceId = requestedVoiceId;
+      } else if (preferredVoiceId.isNotEmpty &&
+          availableVoiceIds.contains(preferredVoiceId)) {
+        selectedVoiceId = preferredVoiceId;
+      } else if (packageVoiceId.isNotEmpty &&
+          availableVoiceIds.contains(packageVoiceId)) {
+        selectedVoiceId = packageVoiceId;
+      } else if (previousVoiceId.isNotEmpty &&
+          availableVoiceIds.contains(previousVoiceId)) {
+        selectedVoiceId = previousVoiceId;
       } else if (activeVoiceId != null &&
           availableVoiceIds.contains(activeVoiceId)) {
         selectedVoiceId = activeVoiceId;
-      } else if (_state.selectedVoiceId != null &&
-          availableVoiceIds.contains(_state.selectedVoiceId)) {
-        selectedVoiceId = _state.selectedVoiceId;
       }
 
       if (widget.autoplayLevelIds.isNotEmpty) {
@@ -348,22 +360,6 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       return;
     }
     await _startPlayback(selectedJob.jobId);
-  }
-
-  Future<void> _generateVoice() async {
-    setState(() {
-      _state = _state.copyWith(
-        error: 'TTS generation is available only through host sync',
-      );
-    });
-  }
-
-  Future<void> _overwriteVoice() async {
-    setState(() {
-      _state = _state.copyWith(
-        error: 'TTS refresh is available only through host sync',
-      );
-    });
   }
 
   TtsJobItem? _selectedJob() {
@@ -853,24 +849,6 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     } finally {
       _handlingBackgroundCompletion = false;
     }
-  }
-
-  Future<void> _runGenerateVoice({required bool overwrite}) async {
-    final selectedJob = _selectedJob();
-    if (overwrite && selectedJob != null) {
-      await _packageRepository.deleteJobAudio(
-        localBookId: widget.localBookId,
-        jobId: selectedJob.jobId,
-      );
-    }
-    if (!mounted) {
-      return;
-    }
-    setState(() {
-      _state = _state.copyWith(
-        error: 'TTS generation is available only through host sync',
-      );
-    });
   }
 
   Future<void> _startPlayback(String jobId) async {

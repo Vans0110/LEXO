@@ -14,6 +14,7 @@ class MobileBookPackageMeta {
     required this.currentParagraphIndex,
     required this.packageVersion,
     required this.contentHash,
+    this.selectedVoiceId,
     this.exportedAt,
     this.lastOpenedAt,
   });
@@ -29,6 +30,7 @@ class MobileBookPackageMeta {
   final int currentParagraphIndex;
   final int packageVersion;
   final String contentHash;
+  final String? selectedVoiceId;
   final String? exportedAt;
   final String? lastOpenedAt;
 
@@ -45,6 +47,7 @@ class MobileBookPackageMeta {
       currentParagraphIndex: json['current_paragraph_index'] as int? ?? 0,
       packageVersion: json['package_version'] as int? ?? 1,
       contentHash: json['content_hash'] as String? ?? '',
+      selectedVoiceId: json['selected_voice_id'] as String?,
       exportedAt: json['exported_at'] as String?,
       lastOpenedAt: json['last_opened_at'] as String?,
     );
@@ -70,46 +73,54 @@ class MobileBookPackageMeta {
 class MobileBookPackage {
   MobileBookPackage(this.rawJson)
       : meta = MobileBookPackageMeta.fromJson(
-          (rawJson['meta'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+          (rawJson['meta'] as Map<String, dynamic>? ??
+              const <String, dynamic>{}),
         ),
         readerPayload = ReaderPayload.fromJson(
-          (rawJson['reader_payload'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+          (rawJson['reader_payload'] as Map<String, dynamic>? ??
+              const <String, dynamic>{}),
         ),
-        profiles = ((rawJson['tts_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{})['profiles']
-                    as List<dynamic>? ??
+        profiles = ((rawJson['tts_manifest'] as Map<String, dynamic>? ??
+                    const <String, dynamic>{})['profiles'] as List<dynamic>? ??
                 const [])
             .cast<Map<String, dynamic>>()
             .map(TtsProfile.fromJson)
             .toList(),
-        levels = ((rawJson['tts_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{})['levels']
-                    as List<dynamic>? ??
+        levels = ((rawJson['tts_manifest'] as Map<String, dynamic>? ??
+                    const <String, dynamic>{})['levels'] as List<dynamic>? ??
                 const [])
             .cast<Map<String, dynamic>>()
             .map(TtsLevel.fromJson)
             .toList(),
         ttsState = _buildTtsState(
-          (rawJson['tts_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+          (rawJson['tts_manifest'] as Map<String, dynamic>? ??
+              const <String, dynamic>{}),
         ),
         segmentsByJobId = _buildSegmentsByJobId(
-          (rawJson['tts_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+          (rawJson['tts_manifest'] as Map<String, dynamic>? ??
+              const <String, dynamic>{}),
         ),
-        wordAudioVoiceId = ((rawJson['word_audio_manifest'] as Map<String, dynamic>? ??
-                    const <String, dynamic>{})['voice_id']
-                as String? ??
-            ''),
-        wordAudioEntries = (((rawJson['word_audio_manifest'] as Map<String, dynamic>? ??
-                        const <String, dynamic>{})['items']
-                    as List<dynamic>? ??
-                const [])
-            .map((item) => item.toString())
-            .toSet())
+        wordAudioVoiceId =
+            ((rawJson['word_audio_manifest'] as Map<String, dynamic>? ??
+                    const <String, dynamic>{})['voice_id'] as String? ??
+                ''),
+        wordAudioEntries = (((rawJson['word_audio_manifest']
+                            as Map<String, dynamic>? ??
+                        const <String, dynamic>{})['items'] as List<dynamic>? ??
+                    const [])
+                .map((item) => item.toString())
+                .toSet())
             .toList(),
-        dictionaryManifest = rawJson['dictionary_manifest'] as Map<String, dynamic>? ??
-            const <String, dynamic>{},
+        dictionaryManifest =
+            rawJson['dictionary_manifest'] as Map<String, dynamic>? ??
+                const <String, dynamic>{},
         detailByWordId = _buildDetailByWordId(
-          rawJson['detail_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{},
-          rawJson['dictionary_manifest'] as Map<String, dynamic>? ?? const <String, dynamic>{},
-          rawJson['reader_payload'] as Map<String, dynamic>? ?? const <String, dynamic>{},
+          rawJson['detail_manifest'] as Map<String, dynamic>? ??
+              const <String, dynamic>{},
+          rawJson['dictionary_manifest'] as Map<String, dynamic>? ??
+              const <String, dynamic>{},
+          rawJson['reader_payload'] as Map<String, dynamic>? ??
+              const <String, dynamic>{},
         );
 
   final Map<String, dynamic> rawJson;
@@ -140,18 +151,21 @@ class MobileBookPackage {
         break;
       }
     }
-    final activeSegments = ((activeJobJson?['segments'] as List<dynamic>?) ?? const [])
-        .cast<Map<String, dynamic>>()
-        .map(TtsSegmentItem.fromJson)
-        .toList();
+    final activeSegments =
+        ((activeJobJson?['segments'] as List<dynamic>?) ?? const [])
+            .cast<Map<String, dynamic>>()
+            .map(TtsSegmentItem.fromJson)
+            .toList();
     return TtsState(
       jobs: jobs,
-      activeJob: activeJobJson != null ? TtsJobItem.fromJson(activeJobJson) : null,
+      activeJob:
+          activeJobJson != null ? TtsJobItem.fromJson(activeJobJson) : null,
       activeSegments: activeSegments,
     );
   }
 
-  static Map<String, List<TtsSegmentItem>> _buildSegmentsByJobId(Map<String, dynamic> manifest) {
+  static Map<String, List<TtsSegmentItem>> _buildSegmentsByJobId(
+      Map<String, dynamic> manifest) {
     final jobsJson = (manifest['jobs'] as List<dynamic>? ?? const [])
         .cast<Map<String, dynamic>>();
     final result = <String, List<TtsSegmentItem>>{};
@@ -179,9 +193,12 @@ class MobileBookPackage {
         result[key] = DetailSheetPayload.fromJson(value);
       }
     });
-    final dictionaryEntries = dictionaryManifest['entries'] as Map<String, dynamic>? ?? const <String, dynamic>{};
-    final paragraphs = (readerPayload['paragraphs'] as List<dynamic>? ?? const [])
-        .whereType<Map<String, dynamic>>();
+    final dictionaryEntries =
+        dictionaryManifest['entries'] as Map<String, dynamic>? ??
+            const <String, dynamic>{};
+    final paragraphs =
+        (readerPayload['paragraphs'] as List<dynamic>? ?? const [])
+            .whereType<Map<String, dynamic>>();
     for (final paragraph in paragraphs) {
       final sourceText = paragraph['source_text'] as String? ?? '';
       final words = (paragraph['words'] as List<dynamic>? ?? const [])
@@ -191,7 +208,10 @@ class MobileBookPackage {
         if (wordId.isEmpty || result.containsKey(wordId)) {
           continue;
         }
-        final lemma = ((word['lemma'] as String?) ?? (word['text'] as String?) ?? '').trim().toLowerCase();
+        final lemma =
+            ((word['lemma'] as String?) ?? (word['text'] as String?) ?? '')
+                .trim()
+                .toLowerCase();
         final pos = (word['pos'] as String? ?? '').trim().toUpperCase();
         final dictionaryKey = '$lemma|$pos';
         final dictionaryEntry = dictionaryEntries[dictionaryKey];
@@ -201,9 +221,12 @@ class MobileBookPackage {
         result[wordId] = DetailSheetPayload.fromJson({
           'word_id': wordId,
           'tap_unit_id': word['tap_unit_id'] as String? ?? wordId,
-          'sheet_source_text': (word['source_unit_text'] as String?) ?? (word['text'] as String?) ?? '',
+          'sheet_source_text': (word['source_unit_text'] as String?) ??
+              (word['text'] as String?) ??
+              '',
           'sheet_translation_text': '',
-          'example_source_text': word['segment_source_text'] as String? ?? sourceText,
+          'example_source_text':
+              word['segment_source_text'] as String? ?? sourceText,
           'example_translation_text': '',
           'source_first': null,
           'dictionary_entry': dictionaryEntry,

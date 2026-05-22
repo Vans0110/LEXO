@@ -358,12 +358,13 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
           ? const ReaderEmptyScreen()
           : MobileReaderScreen(
               key: ValueKey(
-                '${_activeBookId}_${_appSettings.preferredTargetLang}_$_readerReloadTick',
+                '${_activeBookId}_${_appSettings.preferredTargetLang}_${_appSettings.preferredVoiceId}_$_readerReloadTick',
               ),
               api: widget.api,
               localBookId: _activeBookId!,
               cardsRepository: _cardsRepository,
               deviceId: _appSettings.deviceId ?? '',
+              preferredVoiceId: _appSettings.preferredVoiceId,
               playbackRepeatMode: _playbackRepeatMode,
               libraryPlaybackQueue: _libraryPlaybackQueue,
               onPlaybackRepeatModeChanged: _handlePlaybackRepeatModeChanged,

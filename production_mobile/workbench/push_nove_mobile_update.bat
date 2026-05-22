@@ -24,11 +24,11 @@ echo.
 echo [NOVE] Auto commit message: %COMMIT_MSG%
 echo.
 echo [NOVE] Tracked changes before staging:
-git --no-pager diff --name-only -- production_mobile history
+git --no-pager diff --name-only -- .github production_mobile history
 echo.
 
 echo [NOVE] Staging tracked changes only...
-git add -u -- history
+git add -u -- .github history
 if errorlevel 1 (
   echo [NOVE] git add failed.
   pause
@@ -45,10 +45,12 @@ if exist "production_mobile\README.md" git add "production_mobile\README.md"
 if exist "production_mobile\run_nove_mobile_android.bat" git add "production_mobile\run_nove_mobile_android.bat"
 if exist "production_mobile\lib" git add "production_mobile\lib"
 if exist "production_mobile\android" git add "production_mobile\android"
+if exist "production_mobile\ios" git add "production_mobile\ios"
 if exist "production_mobile\test" git add "production_mobile\test"
 if exist "production_mobile\tool" git add "production_mobile\tool"
 if exist "production_mobile\workbench\README.md" git add "production_mobile\workbench\README.md"
 if exist "production_mobile\workbench\*.bat" git add "production_mobile\workbench\*.bat"
+if exist ".github\workflows\build-nove-ios.yml" git add ".github\workflows\build-nove-ios.yml"
 
 echo.
 echo [NOVE] Verifying there is something to commit...

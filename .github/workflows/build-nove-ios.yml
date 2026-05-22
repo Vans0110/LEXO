@@ -1,0 +1,49 @@
+name: build-nove-ios
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-nove-ios.yml"
+      - "production_mobile/**"
+
+jobs:
+  build-nove-ios:
+    runs-on: macos-14
+    defaults:
+      run:
+        working-directory: production_mobile
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.32.8
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Nove iOS app without codesign
+        run: >
+          flutter build ios --release --no-codesign
+          --dart-define=NOVE_MODE=mobile
+          --dart-define=NOVE_LIBRARY_BASE_URL=https://pub-05fee08c1a5741d6a9a57d087c327c96.r2.dev/nove/library
+
+      - name: Package unsigned IPA
+        run: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -R Runner.app Payload/Runner.app
+          ditto -c -k --sequesterRsrc --keepParent Payload NOVE.ipa
+
+      - name: Upload Nove iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nove-ios-ipa
+          path: production_mobile/build/ios/iphoneos/NOVE.ipa
+          if-no-files-found: error

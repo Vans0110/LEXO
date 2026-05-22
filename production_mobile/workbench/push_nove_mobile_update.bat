@@ -44,6 +44,7 @@ if exist "production_mobile\analysis_options.yaml" git add "production_mobile\an
 if exist "production_mobile\README.md" git add "production_mobile\README.md"
 if exist "production_mobile\run_nove_mobile_android.bat" git add "production_mobile\run_nove_mobile_android.bat"
 if exist "production_mobile\lib" git add "production_mobile\lib"
+if exist "production_mobile\assets\ui" git add "production_mobile\assets\ui"
 if exist "production_mobile\android" git add "production_mobile\android"
 if exist "production_mobile\ios" git add "production_mobile\ios"
 if exist "production_mobile\test" git add "production_mobile\test"

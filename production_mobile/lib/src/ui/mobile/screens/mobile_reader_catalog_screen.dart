@@ -517,15 +517,18 @@ class _ChapterCard extends StatelessWidget {
             const SizedBox(height: 6),
             AspectRatio(
               aspectRatio: 1,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.image_outlined,
-                  color: colorScheme.onPrimaryContainer,
-                ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: chapter.imageAssetPath == null
+                    ? _ChapterImagePlaceholder(colorScheme: colorScheme)
+                    : Image.asset(
+                        chapter.imageAssetPath!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            _ChapterImagePlaceholder(
+                          colorScheme: colorScheme,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 8),
@@ -552,6 +555,26 @@ class _ChapterCard extends StatelessWidget {
   String _shortTitle(String title) {
     final split = title.split('—');
     return split.length > 1 ? split.last.trim() : title;
+  }
+}
+
+class _ChapterImagePlaceholder extends StatelessWidget {
+  const _ChapterImagePlaceholder({required this.colorScheme});
+
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(
+        Icons.image_outlined,
+        color: colorScheme.onPrimaryContainer,
+      ),
+    );
   }
 }
 

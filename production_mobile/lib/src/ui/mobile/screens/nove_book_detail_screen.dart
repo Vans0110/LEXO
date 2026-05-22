@@ -18,6 +18,8 @@ class NoveBookDetailScreen extends StatefulWidget {
     this.localBook,
     this.bundledBook,
     required this.busy,
+    required this.preferredTargetLang,
+    required this.preferredVoiceId,
     required this.onToggleFavorite,
     required this.onLoad,
     required this.onOpen,
@@ -31,6 +33,8 @@ class NoveBookDetailScreen extends StatefulWidget {
   final LibraryBookItem? localBook;
   final NoveBundledBookInfo? bundledBook;
   final bool busy;
+  final String preferredTargetLang;
+  final String preferredVoiceId;
   final NoveBookAction onToggleFavorite;
   final NoveBookLoadAction? onLoad;
   final NoveBookAction? onOpen;
@@ -76,7 +80,10 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
     }
     final options = await showDialog<NoveDownloadOptions>(
       context: context,
-      builder: (_) => const _DownloadOptionsDialog(),
+      builder: (_) => _DownloadOptionsDialog(
+        preferredTargetLang: widget.preferredTargetLang,
+        preferredVoiceId: widget.preferredVoiceId,
+      ),
     );
     if (options == null) {
       return;
@@ -186,15 +193,26 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
 }
 
 class _DownloadOptionsDialog extends StatefulWidget {
-  const _DownloadOptionsDialog();
+  const _DownloadOptionsDialog({
+    required this.preferredTargetLang,
+    required this.preferredVoiceId,
+  });
+
+  final String preferredTargetLang;
+  final String preferredVoiceId;
 
   @override
   State<_DownloadOptionsDialog> createState() => _DownloadOptionsDialogState();
 }
 
 class _DownloadOptionsDialogState extends State<_DownloadOptionsDialog> {
-  String _targetLang = 'ru';
-  String _voiceId = 'af_heart';
+  late String _targetLang = widget.preferredTargetLang == 'uk' ? 'uk' : 'ru';
+  late String _voiceId = _normalizedVoiceId(widget.preferredVoiceId);
+
+  String _normalizedVoiceId(String voiceId) {
+    final supported = noveVoiceOptions.map((option) => option.voiceId).toSet();
+    return supported.contains(voiceId) ? voiceId : 'af_heart';
+  }
 
   @override
   Widget build(BuildContext context) {

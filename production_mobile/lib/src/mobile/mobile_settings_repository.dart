@@ -15,18 +15,21 @@ class MobileAppSettings {
     this.deviceId,
     this.lastSyncAt,
     this.preferredTargetLang = 'ru',
+    this.preferredVoiceId = 'af_heart',
   });
 
   final String? hostUrl;
   final String? deviceId;
   final String? lastSyncAt;
   final String preferredTargetLang;
+  final String preferredVoiceId;
 
   MobileAppSettings copyWith({
     String? hostUrl,
     String? deviceId,
     String? lastSyncAt,
     String? preferredTargetLang,
+    String? preferredVoiceId,
     bool clearHostUrl = false,
     bool clearLastSyncAt = false,
   }) {
@@ -35,6 +38,7 @@ class MobileAppSettings {
       deviceId: deviceId ?? this.deviceId,
       lastSyncAt: clearLastSyncAt ? null : (lastSyncAt ?? this.lastSyncAt),
       preferredTargetLang: preferredTargetLang ?? this.preferredTargetLang,
+      preferredVoiceId: preferredVoiceId ?? this.preferredVoiceId,
     );
   }
 
@@ -44,12 +48,15 @@ class MobileAppSettings {
       'device_id': deviceId,
       'last_sync_at': lastSyncAt,
       'preferred_target_lang': preferredTargetLang,
+      'preferred_voice_id': preferredVoiceId,
     };
   }
 
   factory MobileAppSettings.fromJson(Map<String, dynamic> json) {
     final preferredTargetLang =
         (json['preferred_target_lang'] as String? ?? 'ru').trim();
+    final preferredVoiceId =
+        (json['preferred_voice_id'] as String? ?? 'af_heart').trim();
     return MobileAppSettings(
       hostUrl: (json['host_url'] as String?)?.trim().isEmpty ?? true
           ? kDefaultMobileHostUrl
@@ -58,7 +65,18 @@ class MobileAppSettings {
       lastSyncAt: json['last_sync_at'] as String?,
       preferredTargetLang:
           preferredTargetLang == 'uk' ? preferredTargetLang : 'ru',
+      preferredVoiceId: _normalizeVoiceId(preferredVoiceId),
     );
+  }
+
+  static String _normalizeVoiceId(String voiceId) {
+    const supported = {
+      'af_heart',
+      'af_nicole',
+      'bm_george',
+      'am_michael',
+    };
+    return supported.contains(voiceId) ? voiceId : 'af_heart';
   }
 }
 

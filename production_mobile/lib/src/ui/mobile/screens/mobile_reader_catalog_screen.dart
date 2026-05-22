@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../mobile/mobile_package_repository.dart';
+import '../../../mobile/mobile_settings_repository.dart';
 import '../../../mobile/nove_a1_chapters.dart';
 import '../../../mobile/nove_bundled_book_repository.dart';
 import '../../../mobile/nove_download_options.dart';
@@ -15,11 +16,13 @@ class MobileReaderCatalogScreen extends StatefulWidget {
     this.onBookOpened,
     this.onLibraryLoaded,
     this.reloadTick = 0,
+    this.settings = const MobileAppSettings(),
   });
 
   final ValueChanged<LibraryBookItem>? onBookOpened;
   final ValueChanged<LibraryPayload>? onLibraryLoaded;
   final int reloadTick;
+  final MobileAppSettings settings;
 
   @override
   State<MobileReaderCatalogScreen> createState() =>
@@ -164,6 +167,8 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
           localBook: localBook,
           bundledBook: item,
           busy: false,
+          preferredTargetLang: widget.settings.preferredTargetLang,
+          preferredVoiceId: widget.settings.preferredVoiceId,
           onToggleFavorite: () => _toggleFavorite(item.assetPath),
           onLoad: (options) async {
             await _importBundledBook(item, options: options);

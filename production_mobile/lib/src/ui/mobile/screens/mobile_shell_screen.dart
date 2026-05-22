@@ -101,6 +101,20 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     await _refreshActiveBundledBookForLanguage();
   }
 
+  Future<void> _setPreferredVoice(String voiceId) async {
+    final next = await _settingsRepository.save(
+      _appSettings.copyWith(preferredVoiceId: voiceId),
+    );
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _appSettings = next;
+      _libraryReloadTick += 1;
+      _readerReloadTick += 1;
+    });
+  }
+
   Future<void> _refreshActiveBundledBookForLanguage() async {
     final activeBookId = _activeBookId;
     if (activeBookId == null || activeBookId.isEmpty) {
@@ -338,6 +352,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
         onBookOpened: _handleBookOpened,
         onLibraryLoaded: _handleLibraryLoaded,
         reloadTick: _libraryReloadTick,
+        settings: _appSettings,
       ),
       _activeBookId == null
           ? const ReaderEmptyScreen()
@@ -370,6 +385,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
       MobileSettingsScreen(
         settings: _appSettings,
         onPreferredTargetLangChanged: _setPreferredTargetLang,
+        onPreferredVoiceChanged: _setPreferredVoice,
       ),
     ];
 

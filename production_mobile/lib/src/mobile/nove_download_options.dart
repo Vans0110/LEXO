@@ -33,22 +33,27 @@ class NoveVoiceOption {
 const noveVoiceOptions = [
   NoveVoiceOption(
     voiceId: 'af_heart',
-    title: 'Warm female',
-    subtitle: 'af_heart',
+    title: 'Heart',
+    subtitle: '',
   ),
   NoveVoiceOption(
-    voiceId: 'af_nicole',
-    title: 'Clear female',
-    subtitle: 'af_nicole',
+    voiceId: 'af_bella',
+    title: 'Bella',
+    subtitle: '',
   ),
   NoveVoiceOption(
-    voiceId: 'bm_george',
-    title: 'British male',
-    subtitle: 'bm_george',
+    voiceId: 'af_sarah',
+    title: 'Sarah',
+    subtitle: '',
+  ),
+  NoveVoiceOption(
+    voiceId: 'am_adam',
+    title: 'Adam',
+    subtitle: '',
   ),
   NoveVoiceOption(
     voiceId: 'am_michael',
-    title: 'American male',
-    subtitle: 'am_michael',
+    title: 'Michael',
+    subtitle: '',
   ),
 ];

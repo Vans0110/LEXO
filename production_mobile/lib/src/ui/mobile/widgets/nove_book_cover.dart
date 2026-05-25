@@ -10,6 +10,7 @@ class NoveBookCoverCard extends StatelessWidget {
     required this.favorite,
     required this.installed,
     this.coverBytes,
+    this.coverUrl,
     required this.onTap,
   });
 
@@ -18,6 +19,7 @@ class NoveBookCoverCard extends StatelessWidget {
   final bool favorite;
   final bool installed;
   final Uint8List? coverBytes;
+  final String? coverUrl;
   final VoidCallback onTap;
 
   @override
@@ -35,6 +37,7 @@ class NoveBookCoverCard extends StatelessWidget {
               favorite: favorite,
               installed: installed,
               coverBytes: coverBytes,
+              coverUrl: coverUrl,
               height: 162,
             ),
             const SizedBox(height: 8),
@@ -68,6 +71,7 @@ class NoveCoverArt extends StatelessWidget {
     required this.favorite,
     required this.installed,
     this.coverBytes,
+    this.coverUrl,
     required this.height,
   });
 
@@ -75,12 +79,14 @@ class NoveCoverArt extends StatelessWidget {
   final bool favorite;
   final bool installed;
   final Uint8List? coverBytes;
+  final String? coverUrl;
   final double height;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final imageBytes = coverBytes;
+    final imageUrl = coverUrl?.trim() ?? '';
     return Container(
       height: height,
       width: double.infinity,
@@ -95,51 +101,26 @@ class NoveCoverArt extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: imageBytes == null
-                  ? Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Nove',
-                            style: TextStyle(
-                              color: colorScheme.onPrimaryContainer
-                                  .withValues(alpha: 0.74),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            title,
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: colorScheme.onPrimaryContainer,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
+                  ? (imageUrl.isEmpty
+                      ? _CoverPlaceholder(title: title)
+                      : Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            }
+                            return _CoverPlaceholder(title: title);
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return _CoverPlaceholder(title: title);
+                          },
+                        ))
                   : Image.memory(
                       imageBytes,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        return Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: Text(
-                            title,
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: colorScheme.onPrimaryContainer,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        );
+                        return _CoverPlaceholder(title: title);
                       },
                     ),
             ),
@@ -168,6 +149,44 @@ class NoveCoverArt extends StatelessWidget {
                   color: colorScheme.onSurface,
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CoverPlaceholder extends StatelessWidget {
+  const _CoverPlaceholder({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Nove',
+            style: TextStyle(
+              color: colorScheme.onPrimaryContainer.withValues(alpha: 0.74),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            title,
+            maxLines: 5,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: colorScheme.onPrimaryContainer,
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],

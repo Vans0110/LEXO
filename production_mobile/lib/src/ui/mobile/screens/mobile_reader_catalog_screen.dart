@@ -70,28 +70,38 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
     });
     try {
       final nextLibrary = await _repository.listBooks();
+      if (!mounted || requestId != _loadRequestId) {
+        return;
+      }
+      setState(() => _library = nextLibrary);
+      widget.onLibraryLoaded?.call(nextLibrary);
       final showChapters = _selectedLevel == 'a1';
-      final chapterBooks = showChapters
-          ? await _bundledRepository.listBooks(
-              level: _selectedLevel,
-              section: 'chapters',
-            )
-          : const <NoveBundledBookInfo>[];
-      final moreStoriesBooks = await _bundledRepository.listBooks(
-        level: _selectedLevel,
-        section: 'more_a1_stories',
-      );
-      final favorites = await _favoritesRepository.load();
+      final results = await Future.wait<Object>([
+        if (showChapters)
+          _bundledRepository.listBooks(
+            level: _selectedLevel,
+            section: 'chapters',
+          )
+        else
+          Future<List<NoveBundledBookInfo>>.value(
+              const <NoveBundledBookInfo>[]),
+        _bundledRepository.listBooks(
+          level: _selectedLevel,
+          section: 'more_a1_stories',
+        ),
+        _favoritesRepository.load(),
+      ]);
+      final chapterBooks = results[0] as List<NoveBundledBookInfo>;
+      final moreStoriesBooks = results[1] as List<NoveBundledBookInfo>;
+      final favorites = results[2] as Set<String>;
       if (!mounted || requestId != _loadRequestId) {
         return;
       }
       setState(() {
-        _library = nextLibrary;
         _chapterBooks = chapterBooks;
         _moreStoriesBooks = moreStoriesBooks;
         _favorites = favorites;
       });
-      widget.onLibraryLoaded?.call(nextLibrary);
     } catch (error) {
       if (!mounted || requestId != _loadRequestId) {
         return;
@@ -337,6 +347,7 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
       favorite: installed && _favorites.contains(item.assetPath),
       installed: installed,
       coverBytes: item.coverBytes,
+      coverUrl: item.coverUrl,
       onTap: () => _openBundledDetail(
         item,
         navigatorContext: navigatorContext,
@@ -371,45 +382,49 @@ class _LevelTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (final level in levels) ...[
-            InkWell(
-              onTap: onSelected == null ? null : () => onSelected?.call(level),
-              borderRadius: BorderRadius.circular(18),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 140),
-                width: 62,
-                height: 36,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: level == selectedLevel
-                      ? colorScheme.primary
-                      : colorScheme.surface,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
+    return Center(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final level in levels) ...[
+              InkWell(
+                onTap:
+                    onSelected == null ? null : () => onSelected?.call(level),
+                borderRadius: BorderRadius.circular(18),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 140),
+                  width: 62,
+                  height: 36,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
                     color: level == selectedLevel
                         ? colorScheme.primary
-                        : colorScheme.outlineVariant,
+                        : colorScheme.surface,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: level == selectedLevel
+                          ? colorScheme.primary
+                          : colorScheme.outlineVariant,
+                    ),
                   ),
-                ),
-                child: Text(
-                  level.toUpperCase(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: level == selectedLevel
-                        ? colorScheme.onPrimary
-                        : colorScheme.onSurface,
-                    fontWeight: FontWeight.w800,
+                  child: Text(
+                    level.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: level == selectedLevel
+                          ? colorScheme.onPrimary
+                          : colorScheme.onSurface,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
+              if (level != levels.last) const SizedBox(width: 8),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

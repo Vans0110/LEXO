@@ -20,6 +20,7 @@ class NoveBundledBookInfo {
     required this.chapterTitle,
     this.remoteZipUrl,
     this.coverPath,
+    this.coverUrl,
     this.coverBytes,
   });
 
@@ -32,6 +33,7 @@ class NoveBundledBookInfo {
   final String chapterTitle;
   final String? remoteZipUrl;
   final String? coverPath;
+  final String? coverUrl;
   final Uint8List? coverBytes;
 
   bool get isRemote => (remoteZipUrl ?? '').trim().isNotEmpty;
@@ -42,7 +44,7 @@ class NoveBundledBookRepository {
   static const _libraryDirName = 'mobile_library';
 
   Map<String, dynamic>? _cloudIndexCache;
-  final Map<String, Uint8List?> _coverCache = <String, Uint8List?>{};
+  Future<Map<String, dynamic>>? _cloudIndexInFlight;
 
   Future<List<NoveBundledBookInfo>> listBooks({
     String? level,
@@ -96,8 +98,8 @@ class NoveBundledBookRepository {
         ? (chapterId.isEmpty ? '' : noveA1ChapterTitle(chapterId))
         : (json['chapter_title'] ?? '').toString();
     final remoteZipUrl = '$baseUrl/${Uri.encodeFull(zipPath)}';
-    final coverBytes =
-        coverPath.isEmpty ? null : await _downloadCover(baseUrl, coverPath);
+    final coverUrl =
+        coverPath.isEmpty ? null : '$baseUrl/${Uri.encodeFull(coverPath)}';
     return NoveBundledBookInfo(
       assetPath: 'cloud:$zipPath',
       bookId: (json['book_id'] ?? '').toString(),
@@ -108,7 +110,7 @@ class NoveBundledBookRepository {
       chapterTitle: chapterTitle,
       remoteZipUrl: remoteZipUrl,
       coverPath: coverPath.isEmpty ? null : coverPath,
-      coverBytes: coverBytes,
+      coverUrl: coverUrl,
     );
   }
 
@@ -256,6 +258,21 @@ class NoveBundledBookRepository {
     if (cached != null) {
       return cached;
     }
+    final inFlight = _cloudIndexInFlight;
+    if (inFlight != null) {
+      return inFlight;
+    }
+    final loading = _loadCloudIndexFromNetwork(baseUrl);
+    _cloudIndexInFlight = loading;
+    try {
+      return await loading;
+    } finally {
+      _cloudIndexInFlight = null;
+    }
+  }
+
+  Future<Map<String, dynamic>> _loadCloudIndexFromNetwork(
+      String baseUrl) async {
     Object? lastError;
     for (var attempt = 0; attempt < 3; attempt++) {
       try {
@@ -272,24 +289,6 @@ class NoveBundledBookRepository {
       }
     }
     throw Exception('Cloud library index unavailable: $lastError');
-  }
-
-  Future<Uint8List?> _downloadCover(String baseUrl, String coverPath) async {
-    if (_coverCache.containsKey(coverPath)) {
-      return _coverCache[coverPath];
-    }
-    final bytes =
-        await _tryDownloadBytes('$baseUrl/${Uri.encodeFull(coverPath)}');
-    _coverCache[coverPath] = bytes;
-    return bytes;
-  }
-
-  Future<Uint8List?> _tryDownloadBytes(String url) async {
-    try {
-      return await _downloadBytes(url);
-    } catch (_) {
-      return null;
-    }
   }
 
   String _normalizedCloudBaseUrl() {

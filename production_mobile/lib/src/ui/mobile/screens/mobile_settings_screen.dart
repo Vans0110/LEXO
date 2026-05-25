@@ -70,7 +70,7 @@ class MobileSettingsScreen extends StatelessWidget {
                 for (final option in noveVoiceOptions)
                   DropdownMenuItem(
                     value: option.voiceId,
-                    child: Text('${option.title} (${option.subtitle})'),
+                    child: Text(option.title),
                   ),
               ],
               onChanged: (value) {

@@ -50,7 +50,7 @@ class _WorkbenchExportStatus {
   bool hasDictionaries(Iterable<String> targetLanguages) =>
       targetLanguages.every((lang) =>
           dictionaries.contains(lang) &&
-          dictionarySources[lang] == 'marian_en_$lang');
+          dictionarySources[lang] == 'nllb_en_$lang');
 
   bool hasAudioFor(Iterable<String> voiceIds) =>
       voiceIds.every(audioVoices.contains);
@@ -216,9 +216,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         throw Exception('Backend did not return book id for $targetLang.');
       }
       imported[targetLang] = bookId;
-      packages[targetLang] = readerOnly
-          ? package
-          : await widget.api.downloadMobileBookPackageChunked(bookId);
+      packages[targetLang] = package;
       _appendLog(readerOnly
           ? 'Text updated $targetLang book_id=$bookId'
           : 'Imported $targetLang book_id=$bookId');
@@ -601,7 +599,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
           final staleDictionaries = selectedLangs
               .where((lang) =>
                   currentStatus.dictionaries.contains(lang) &&
-                  currentStatus.dictionarySources[lang] != 'marian_en_$lang')
+                  currentStatus.dictionarySources[lang] != 'nllb_en_$lang')
               .map((lang) => 'dictionary_$lang.json')
               .toList();
           final reason = [
@@ -654,6 +652,83 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     }
   }
 
+  Future<void> _cleanCurrentBookArtifacts() async {
+    if (_title.trim().isEmpty) {
+      setState(() => _error = 'Select or load a book before cleaning.');
+      return;
+    }
+    final selection = NoveWorkbenchBookSelection(
+      level: _level,
+      section: _section,
+      chapterId: _section == 'chapters' ? _chapterId : '',
+      title: _title.trim(),
+      sourcePath: _sourcePath,
+      sourceText: _sourceText,
+      coverPath: _coverPath,
+      exportedLanguages: const <String>{},
+      hasAudio: false,
+    );
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final outputRoot = Directory(
+        '${Directory.current.path}/workbench/output/${selection.level}/${selection.section}',
+      );
+      final outputDir = await _findOutputDirForSelection(outputRoot, selection);
+      final status = await _readCurrentExportStatus(selection);
+      final bookIds = <String>{
+        if ((_bookId ?? '').isNotEmpty) _bookId!,
+        if (status.bookId.isNotEmpty) status.bookId,
+      };
+      if (outputDir != null && outputDir.existsSync()) {
+        final outputZip = File(
+            '${outputDir.parent.path}/${outputDir.uri.pathSegments.where((segment) => segment.isNotEmpty).last}.zip');
+        await outputDir.delete(recursive: true);
+        _appendLog('Clean output dir: ${outputDir.path}');
+        if (outputZip.existsSync()) {
+          await outputZip.delete();
+          _appendLog('Clean output zip: ${outputZip.path}');
+        }
+      } else {
+        _appendLog('Clean output dir: nothing found for ${selection.title}');
+      }
+      final deletedInstalledZips =
+          await _deleteInstalledZipsForSelection(selection);
+      for (final path in deletedInstalledZips) {
+        _appendLog('Clean installed zip: $path');
+      }
+      for (final bookId in bookIds) {
+        try {
+          await widget.api.deleteBook(bookId);
+          _appendLog('Clean backend book: $bookId');
+        } catch (error) {
+          _appendLog('Clean backend book skipped: $bookId ($error)');
+        }
+      }
+      if (mounted) {
+        setState(() {
+          if (bookIds.contains(_bookId)) {
+            _bookId = null;
+          }
+          _bookIdsByTargetLang = const {};
+          _packagesByTargetLang = const {};
+          _packageState = null;
+          _outputPath = null;
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
   Future<_WorkbenchExportStatus> _readCurrentExportStatus(
       NoveWorkbenchBookSelection selection) async {
     final outputRoot = Directory(
@@ -688,6 +763,9 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
           continue;
         }
         final normalized = entity.path.replaceAll('\\', '/');
+        if (_isChapterImagesPath(normalized)) {
+          continue;
+        }
         final fileName = normalized.split('/').last;
         final readerMatch =
             RegExp(r'^reader_([a-z]{2})\.json$').firstMatch(fileName);
@@ -827,6 +905,9 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
           if (!file.isFile) {
             continue;
           }
+          if (_isChapterImagesPath(file.name)) {
+            continue;
+          }
           final match =
               RegExp(r'^reader_([a-z]{2})\.json$').firstMatch(file.name);
           if (match != null) {
@@ -852,6 +933,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         }
         final hasAudio = archive.files.any((file) =>
             file.isFile &&
+            !_isChapterImagesPath(file.name) &&
             file.name.startsWith('audio/segments/') &&
             file.name.endsWith('.mp3'));
         if (hasAudio && audioVoices.isEmpty) {
@@ -859,6 +941,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         }
         final hasCover = archive.files.any((file) =>
             file.isFile &&
+            !_isChapterImagesPath(file.name) &&
             const ['cover.png', 'cover.jpg', 'cover.jpeg'].contains(file.name));
         return _WorkbenchExportStatus(
           bookId: bookId,
@@ -884,6 +967,48 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     );
   }
 
+  Future<List<String>> _deleteInstalledZipsForSelection(
+      NoveWorkbenchBookSelection selection) async {
+    final zipRoot = Directory(
+      '${Directory.current.path}/assets/library/${selection.level}/${selection.section}/books_zip',
+    );
+    if (!zipRoot.existsSync()) {
+      return const <String>[];
+    }
+    final deleted = <String>[];
+    for (final entity in zipRoot.listSync()) {
+      if (entity is! File || !entity.path.toLowerCase().endsWith('.zip')) {
+        continue;
+      }
+      try {
+        final archive = ZipDecoder().decodeBytes(await entity.readAsBytes());
+        final manifestFile = archive.files
+            .where((file) => file.isFile && file.name == 'manifest.json')
+            .firstOrNull;
+        if (manifestFile == null) {
+          continue;
+        }
+        final manifest = jsonDecode(
+          utf8.decode(manifestFile.content as List<int>),
+        ) as Map<String, dynamic>;
+        if ((manifest['title'] ?? '').toString().trim() != selection.title) {
+          continue;
+        }
+        if ((manifest['level'] ?? '').toString() != selection.level ||
+            (manifest['section'] ?? '').toString() != selection.section ||
+            (manifest['chapter_id'] ?? '').toString() != selection.chapterId) {
+          continue;
+        }
+        final path = entity.path;
+        await entity.delete();
+        deleted.add(path);
+      } catch (_) {
+        continue;
+      }
+    }
+    return deleted;
+  }
+
   Set<String> _readTtsVoiceIds(Map<String, dynamic> manifest) {
     final result = <String>{};
     final profiles = manifest['profiles'] as List<dynamic>? ?? const [];
@@ -901,6 +1026,13 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       }
     }
     return result;
+  }
+
+  bool _isChapterImagesPath(String path) {
+    final normalized = path.replaceAll('\\', '/').toLowerCase();
+    return normalized == 'chapter_images' ||
+        normalized.contains('/chapter_images/') ||
+        normalized.startsWith('chapter_images/');
   }
 
   Future<String> _readDictionarySource(File file) async {
@@ -949,6 +1081,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     final canGenerate =
         !_busy && (_bookId ?? '').isNotEmpty && _selectedVoiceIds().isNotEmpty;
     final canExport = !_busy && (_bookId ?? '').isNotEmpty;
+    final canClean = !_busy && _title.trim().isNotEmpty;
     return Scaffold(
       appBar: AppBar(title: const Text('Nove Workbench')),
       body: SafeArea(
@@ -991,6 +1124,11 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
                   onPressed: canImport ? _updateCurrentTextOnly : null,
                   icon: const Icon(Icons.article_outlined),
                   label: const Text('Update text only'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: canClean ? _cleanCurrentBookArtifacts : null,
+                  icon: const Icon(Icons.cleaning_services_outlined),
+                  label: const Text('Clean'),
                 ),
                 OutlinedButton.icon(
                   onPressed: _busy ? null : _syncLibraryToR2,

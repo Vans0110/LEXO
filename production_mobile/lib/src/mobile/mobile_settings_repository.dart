@@ -72,8 +72,9 @@ class MobileAppSettings {
   static String _normalizeVoiceId(String voiceId) {
     const supported = {
       'af_heart',
-      'af_nicole',
-      'bm_george',
+      'af_bella',
+      'af_sarah',
+      'am_adam',
       'am_michael',
     };
     return supported.contains(voiceId) ? voiceId : 'af_heart';

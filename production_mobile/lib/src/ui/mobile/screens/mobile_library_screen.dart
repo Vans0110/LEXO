@@ -239,6 +239,11 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
               settings.copyWith(preferredTargetLang: lang),
             );
           },
+          onPreferredVoiceChanged: (voiceId) async {
+            settings = await settingsRepository.save(
+              settings.copyWith(preferredVoiceId: voiceId),
+            );
+          },
         ),
       ),
     );

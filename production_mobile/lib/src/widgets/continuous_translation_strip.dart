@@ -59,10 +59,13 @@ class ContinuousTranslationStrip extends StatelessWidget {
 
     final window = _buildWindow(targetStream, selection);
     return SizedBox(
-      height: 72,
+      height: 94,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+          color: Theme.of(context)
+              .colorScheme
+              .surfaceContainerHighest
+              .withValues(alpha: 0.45),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
@@ -89,7 +92,7 @@ class ContinuousTranslationStrip extends StatelessWidget {
                 ],
               ),
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -122,7 +125,9 @@ class ContinuousTranslationStrip extends StatelessWidget {
   List<_TargetStreamToken> _buildTargetStream(ParagraphItem paragraph) {
     final tokens = <_TargetStreamToken>[];
     for (final segment in paragraph.segmentsV2) {
-      final rawTokens = (segment.segmentAlignment['target_tokens'] as List<dynamic>? ?? const []);
+      final rawTokens =
+          (segment.segmentAlignment['target_tokens'] as List<dynamic>? ??
+              const []);
       for (final rawToken in rawTokens) {
         final text = rawToken is String ? rawToken.trim() : '';
         if (text.isEmpty) {
@@ -188,10 +193,13 @@ class ContinuousTranslationStrip extends StatelessWidget {
   Widget _buildFallbackBar(BuildContext context, String text) {
     final trimmed = text.trim();
     return SizedBox(
-      height: 72,
+      height: 94,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+          color: Theme.of(context)
+              .colorScheme
+              .surfaceContainerHighest
+              .withValues(alpha: 0.45),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
@@ -204,7 +212,7 @@ class ContinuousTranslationStrip extends StatelessWidget {
                   )
                 : Text(
                     trimmed,
-                    maxLines: 2,
+                    maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                     style: TextStyle(

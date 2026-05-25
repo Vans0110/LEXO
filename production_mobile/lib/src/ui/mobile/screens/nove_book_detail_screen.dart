@@ -134,6 +134,7 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
                   favorite: _favorite,
                   installed: _installed,
                   coverBytes: widget.bundledBook?.coverBytes,
+                  coverUrl: widget.bundledBook?.coverUrl,
                   height: 300,
                 ),
               ),
@@ -246,7 +247,7 @@ class _DownloadOptionsDialogState extends State<_DownloadOptionsDialog> {
               for (final option in noveVoiceOptions)
                 DropdownMenuItem(
                   value: option.voiceId,
-                  child: Text('${option.title} (${option.subtitle})'),
+                  child: Text(option.title),
                 ),
             ],
             onChanged: (value) =>

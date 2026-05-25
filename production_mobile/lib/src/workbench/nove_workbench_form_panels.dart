@@ -160,7 +160,7 @@ class NoveWorkbenchVoicePanel extends StatelessWidget {
               id: 'kokoro_af_heart',
               engineId: 'kokoro',
               voiceId: 'af_heart',
-              displayName: 'Warm female',
+              displayName: 'Heart',
               lang: 'en',
             ),
           ]

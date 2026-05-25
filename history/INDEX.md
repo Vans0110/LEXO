@@ -4,6 +4,14 @@
 
 ## Записи
 
+### 2026-05-25
+- Сессия: Замена iOS AppIcon для Nove; ускорение mobile Library; POS-aware apostrophe/cleanup translation input; display names; UI tweaks; диагностика NLLB 3.3B EN-UK; switch Marian -> NLLB 3.3B; Workbench skip `chapter_images`; Clean button; NLLB speed/package cache fixes
+- Файл: [2026-05-25.md](/mnt/d/Programs/LEXO/history/2026-05-25.md)
+
+### 2026-05-24
+- Сессия: Тест американских Kokoro voices на первом абзаце `New Student`; обновление доступных голосов LEXO/Nove до `af_heart`, `af_bella`, `af_sarah`, `am_adam`, `am_michael`
+- Файл: [2026-05-24.md](/mnt/d/Programs/LEXO/history/2026-05-24.md)
+
 ### 2026-05-22
 - Сессия: Перенос `Books/Icon.png` из UI-заглушки в Android launcher icon для Nove
 - Файл: [2026-05-22.md](/mnt/d/Programs/LEXO/history/2026-05-22.md)

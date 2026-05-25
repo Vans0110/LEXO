@@ -73,6 +73,7 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
     final txtFiles = root
         .listSync(recursive: true)
         .whereType<File>()
+        .where((file) => !_isChapterImagesPath(file.path))
         .where((file) => file.path.toLowerCase().endsWith('.txt'))
         .where((file) => _isBookSource(root, file))
         .toList()
@@ -93,6 +94,13 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
       return false;
     }
     return true;
+  }
+
+  bool _isChapterImagesPath(String path) {
+    final normalized = path.replaceAll('\\', '/').toLowerCase();
+    return normalized == 'chapter_images' ||
+        normalized.contains('/chapter_images/') ||
+        normalized.startsWith('chapter_images/');
   }
 
   Future<Map<String, _ZipStatus>> _loadZipStatuses() async {

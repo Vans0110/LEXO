@@ -103,8 +103,8 @@ class MobileSettingsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               leading: const Icon(Icons.feedback_outlined),
-              title: const Text('Жалобы и предложения'),
-              subtitle: const Text('Сообщение, email для ответа и техинфо'),
+              title: const Text('Feedback'),
+              subtitle: const Text('Message and app details'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => showDialog<void>(
                 context: context,
@@ -129,13 +129,11 @@ class _FeedbackDialog extends StatefulWidget {
 
 class _FeedbackDialogState extends State<_FeedbackDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
   final _messageController = TextEditingController();
   bool _busy = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
     _messageController.dispose();
     super.dispose();
   }
@@ -163,7 +161,7 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
       if (launched) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Откройте почту и отправьте письмо')),
+          const SnackBar(content: Text('Open your email app to send it')),
         );
         return;
       }
@@ -188,20 +186,17 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Письмо скопировано в буфер')),
+      const SnackBar(content: Text('Email draft copied to clipboard')),
     );
   }
 
   String _buildFeedbackBody() {
-    final replyEmail = _emailController.text.trim();
     final message = _messageController.text.trim();
     final locale = Localizations.localeOf(context).toLanguageTag();
     final createdAt = DateTime.now().toUtc().toIso8601String();
     return [
       'Message:',
       message,
-      '',
-      'Reply email: ${replyEmail.isEmpty ? 'not provided' : replyEmail}',
       '',
       'Technical info:',
       'feedback_created_at_utc: $createdAt',
@@ -216,19 +211,10 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
     ].join('\n');
   }
 
-  String? _validateEmail(String? value) {
-    final email = value?.trim() ?? '';
-    if (email.isEmpty) {
-      return null;
-    }
-    final valid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
-    return valid ? null : 'Введите корректный email';
-  }
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Жалобы и предложения'),
+      title: const Text('Feedback'),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -236,35 +222,24 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email для ответа',
-                  helperText: 'Необязательно',
-                  border: OutlineInputBorder(),
-                ),
-                validator: _validateEmail,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
                 controller: _messageController,
                 minLines: 5,
                 maxLines: 8,
                 textInputAction: TextInputAction.newline,
                 decoration: const InputDecoration(
-                  labelText: 'Сообщение',
+                  labelText: 'Message',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if ((value ?? '').trim().isEmpty) {
-                    return 'Напишите сообщение';
+                    return 'Enter a message';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 10),
               Text(
-                'К письму будет добавлена техническая информация: install ID, версия, платформа, язык и голос.',
+                'App details will be added to the email: install ID, version, platform, language, and voice.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -276,7 +251,7 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
       actions: [
         TextButton(
           onPressed: _busy ? null : () => Navigator.of(context).pop(),
-          child: const Text('Отмена'),
+          child: const Text('Cancel'),
         ),
         FilledButton.icon(
           onPressed: _busy ? null : _sendFeedback,
@@ -286,7 +261,7 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Icon(Icons.mail_outline),
-          label: const Text('Отправить'),
+          label: const Text('Send'),
         ),
       ],
     );

@@ -515,7 +515,7 @@ class _ChapterCard extends StatelessWidget {
   final VoidCallback onTap;
 
   static const double width = 156;
-  static const double height = 272;
+  static const double height = 256;
 
   @override
   Widget build(BuildContext context) {
@@ -527,7 +527,7 @@ class _ChapterCard extends StatelessWidget {
         duration: const Duration(milliseconds: 160),
         width: width,
         height: height,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
@@ -542,7 +542,7 @@ class _ChapterCard extends StatelessWidget {
               'Chapter $index',
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
             ),
-            const SizedBox(height: 9),
+            const SizedBox(height: 7),
             SizedBox.square(
               dimension: 122,
               child: ClipRRect(
@@ -559,7 +559,7 @@ class _ChapterCard extends StatelessWidget {
                       ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             SizedBox(
               height: 36,
               child: Text(
@@ -570,7 +570,7 @@ class _ChapterCard extends StatelessWidget {
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               '$storyCount stories',
               style: TextStyle(

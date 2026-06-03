@@ -4,8 +4,20 @@
 
 ## Записи
 
+### 2026-06-03
+- Сессия: Nove mobile UX fixes — Open сразу после Load, увеличенная drag-зона reader detail sheet, copy word/segment, упрощённый dictionary UI и удаление карточек только свайпом; добавлен UK Wiktionary dictionary layer без NLLB fallback; chapter cards сжаты по нижнему пустому полю; в Settings добавлена feedback-форма через email; word audio переведён на multi-voice формат пакета и Workbench status; import stable-книг больше не сносит готовый segment audio при неизменном тексте
+- Файл: [2026-06-03.md](/mnt/d/Programs/LEXO/history/2026-06-03.md)
+
+### 2026-06-02
+- Сессия: Workbench получил подсветку обработанных книг, карточки с секциями TXT/Dictionary/Voice, диагностику player voices/missing voices, refresh одной книги и refresh dictionaries по книге; запуск верстака теперь автостартует backend; из library data удалён устаревший mock TTS profile; backend import получил стабильный book_id для Nove Workbench; удалены старые zip-архивы и output-пакеты книг; RU dictionary manifest переключён на context resolver Wiktionary+FreeDict
+- Файл: [2026-06-02.md](/mnt/d/Programs/LEXO/history/2026-06-02.md)
+
+### 2026-05-26
+- Сессия: Smoke-test segment-local dictionary QA rerank на коротких RU/UK cases и in-memory прогон `New Student`; structural target rerank без словаря через Stanza RU/UK; перенос Stanza resources на `D:`; semantic E5 rerank и hybrid experiment; required POS bucket counts; интеграция rerank modes в backend build и перенос HF cache на `D:`
+- Файл: [2026-05-26.md](/mnt/d/Programs/LEXO/history/2026-05-26.md)
+
 ### 2026-05-25
-- Сессия: Замена iOS AppIcon для Nove; ускорение mobile Library; POS-aware apostrophe/cleanup translation input; display names; UI tweaks; диагностика NLLB 3.3B EN-UK; switch Marian -> NLLB 3.3B; Workbench skip `chapter_images`; Clean button; NLLB speed/package cache fixes
+- Сессия: Замена iOS AppIcon для Nove; ускорение mobile Library; POS-aware apostrophe/cleanup translation input; display names; UI tweaks; диагностика NLLB 3.3B EN-UK; switch Marian -> NLLB 3.3B; Workbench skip `chapter_images`; Clean button; NLLB speed/package cache fixes; chapter cards 1.5x; Kokoro voice ready-check; segment-local dictionary QA rerank
 - Файл: [2026-05-25.md](/mnt/d/Programs/LEXO/history/2026-05-25.md)
 
 ### 2026-05-24

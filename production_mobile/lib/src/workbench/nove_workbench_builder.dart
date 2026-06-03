@@ -122,6 +122,55 @@ class NoveWorkbenchBuilder {
     return outputDir;
   }
 
+  Future<Directory> refreshDictionaries({
+    required String bookId,
+    required String fallbackTitle,
+    required Iterable<String> languages,
+  }) async {
+    final normalizedLangs = languages
+        .map((lang) => lang.trim().toLowerCase())
+        .where((lang) => lang.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort();
+    if (normalizedLangs.isEmpty) {
+      throw Exception('No dictionary languages selected.');
+    }
+    log('Refresh dictionaries: $bookId (${normalizedLangs.join(', ')})');
+    final outputDir = await _findExistingOutputDir(bookId, fallbackTitle);
+    if (outputDir == null) {
+      throw Exception('Output package not found for $fallbackTitle.');
+    }
+    final loadManifestFile = File('${outputDir.path}/load_manifest.json');
+    final loadManifest = await _readJsonObject(loadManifestFile);
+    final packageByLang = <String, Map<String, dynamic>>{};
+    for (final lang in normalizedLangs) {
+      final langBookId = bookIdsByTargetLang[lang] ??
+          (lang == normalizedLangs.first ? bookId : '');
+      if (langBookId.trim().isEmpty) {
+        log('Skip $lang dictionary refresh: missing book_id');
+        continue;
+      }
+      packageByLang[lang] =
+          await api.downloadMobileBookPackageChunked(langBookId);
+    }
+    for (final entry in packageByLang.entries) {
+      await _writeJson(outputDir, 'dictionary_${entry.key}.json',
+          _dictionaryManifestForLang(entry.key, entry.value));
+    }
+    await _writeJson(
+      outputDir,
+      'load_manifest.json',
+      _loadManifestWithDictionaries(loadManifest, packageByLang.keys),
+    );
+    await _createAndInstallZip(outputDir);
+    await NoveLibraryIndexBuilder(
+      libraryDir: Directory('${Directory.current.path}/assets/library'),
+      log: log,
+    ).rebuild();
+    return outputDir;
+  }
+
   Map<String, dynamic> _initialPackageFor(String bookId) {
     final package = packagesByTargetLang.values.firstWhere(
       (item) {
@@ -195,26 +244,74 @@ class NoveWorkbenchBuilder {
       Directory outputDir, Map<String, dynamic> package) async {
     final manifest = package['word_audio_manifest'] as Map<String, dynamic>? ??
         const <String, dynamic>{};
-    final voiceId = (manifest['voice_id'] ?? '').toString();
-    final items = (manifest['items'] as List<dynamic>? ?? const [])
-        .map((item) => item.toString().trim())
-        .where((item) => item.isNotEmpty)
-        .toList();
-    if (voiceId.isEmpty || items.isEmpty) {
+    final voices = _wordAudioVoicesFromManifest(manifest);
+    if (voices.isEmpty) {
       log('Word audio skipped: empty manifest');
       return;
     }
+    final wordsRoot = Directory('${outputDir.path}/audio/words');
+    if (wordsRoot.existsSync()) {
+      await wordsRoot.delete(recursive: true);
+    }
+    await wordsRoot.create(recursive: true);
     var count = 0;
-    for (final word in items) {
-      final file = File('${outputDir.path}/audio/words/${_safeName(word)}.mp3');
-      if (file.existsSync()) {
-        continue;
+    for (final entry in voices.entries) {
+      final voiceId = entry.key;
+      final voiceDir = Directory('${wordsRoot.path}/$voiceId');
+      await voiceDir.create(recursive: true);
+      for (final word in entry.value) {
+        final file = File('${voiceDir.path}/${_safeName(word)}.mp3');
+        if (file.existsSync()) {
+          continue;
+        }
+        final bytes = await api.downloadWordAudio(word, voiceId: voiceId);
+        await file.writeAsBytes(bytes, flush: true);
+        count += 1;
       }
-      final bytes = await api.downloadWordAudio(word, voiceId: voiceId);
-      await file.writeAsBytes(bytes, flush: true);
-      count += 1;
     }
     log('Word audio exported: $count files');
+  }
+
+  Map<String, List<String>> _wordAudioVoicesFromManifest(
+      Map<String, dynamic> manifest) {
+    final result = <String, List<String>>{};
+    final voices = manifest['voices'];
+    if (voices is Map<String, dynamic>) {
+      for (final entry in voices.entries) {
+        final voiceId = entry.key.trim();
+        if (voiceId.isEmpty) {
+          continue;
+        }
+        final payload = entry.value;
+        final items = payload is Map<String, dynamic>
+            ? payload['items'] as List<dynamic>? ?? const []
+            : payload is List<dynamic>
+                ? payload
+                : const [];
+        final words = items
+            .map((item) => item.toString().trim())
+            .where((item) => item.isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
+        if (words.isNotEmpty) {
+          result[voiceId] = words;
+        }
+      }
+    }
+    final legacyVoiceId = (manifest['voice_id'] ?? '').toString().trim();
+    if (legacyVoiceId.isNotEmpty && !result.containsKey(legacyVoiceId)) {
+      final words = (manifest['items'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString().trim())
+          .where((item) => item.isNotEmpty)
+          .toSet()
+          .toList()
+        ..sort();
+      if (words.isNotEmpty) {
+        result[legacyVoiceId] = words;
+      }
+    }
+    return result;
   }
 
   Future<String> _copyCover(Directory outputDir) async {
@@ -354,6 +451,24 @@ class NoveWorkbenchBuilder {
     }
     return package['dictionary_manifest'] as Map<String, dynamic>? ??
         const <String, dynamic>{};
+  }
+
+  Map<String, dynamic> _loadManifestWithDictionaries(
+    Map<String, dynamic> loadManifest,
+    Iterable<String> languages,
+  ) {
+    final next = Map<String, dynamic>.from(loadManifest);
+    final files = Map<String, dynamic>.from(
+        next['files'] as Map<String, dynamic>? ?? const <String, dynamic>{});
+    final dictionaries = Map<String, dynamic>.from(
+        files['dictionaries'] as Map<String, dynamic>? ??
+            const <String, dynamic>{});
+    for (final lang in languages) {
+      dictionaries[lang] = 'dictionary_$lang.json';
+    }
+    files['dictionaries'] = dictionaries;
+    next['files'] = files;
+    return next;
   }
 
   Map<String, dynamic> _readerPayload(Map<String, dynamic> package) {
@@ -553,6 +668,47 @@ class NoveWorkbenchBuilder {
     final file = File('${dir.path}/$name');
     await file.writeAsString(_jsonEncoder.convert(value),
         encoding: utf8, flush: true);
+  }
+
+  Future<Map<String, dynamic>> _readJsonObject(File file) async {
+    if (!file.existsSync()) {
+      return <String, dynamic>{};
+    }
+    try {
+      final payload = jsonDecode(await file.readAsString());
+      return payload is Map<String, dynamic> ? payload : <String, dynamic>{};
+    } catch (_) {
+      return <String, dynamic>{};
+    }
+  }
+
+  Future<Directory?> _findExistingOutputDir(
+    String bookId,
+    String fallbackTitle,
+  ) async {
+    final root =
+        Directory('${Directory.current.path}/workbench/output/$level/$section');
+    final reusable = await _findReusableOutputDir(root, fallbackTitle);
+    if (reusable != null) {
+      return reusable;
+    }
+    if (!root.existsSync()) {
+      return null;
+    }
+    for (final entity in root.listSync()) {
+      if (entity is! Directory) {
+        continue;
+      }
+      final manifestFile = File('${entity.path}/manifest.json');
+      if (!manifestFile.existsSync()) {
+        continue;
+      }
+      final manifest = await _readJsonObject(manifestFile);
+      if ((manifest['book_id'] ?? '').toString() == bookId) {
+        return entity;
+      }
+    }
+    return null;
   }
 
   Future<Set<String>> _existingReaderLangs(Directory outputDir) async {

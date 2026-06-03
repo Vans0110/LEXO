@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
 
 import '../mobile/nove_a1_chapters.dart';
+import 'nove_workbench_book_status.dart';
+import 'nove_workbench_book_tile.dart';
 
 class NoveWorkbenchBookSelection {
   const NoveWorkbenchBookSelection({
@@ -38,12 +38,18 @@ class NoveWorkbenchBookLibrary extends StatefulWidget {
     super.key,
     required this.busy,
     required this.onSelected,
+    required this.onRefreshBook,
+    required this.onRefreshDictionary,
     required this.onProcessAll,
     required this.onUpdateTextOnly,
   });
 
   final bool busy;
   final ValueChanged<NoveWorkbenchBookSelection> onSelected;
+  final Future<void> Function(NoveWorkbenchBookSelection selection)
+      onRefreshBook;
+  final Future<void> Function(NoveWorkbenchBookSelection selection)
+      onRefreshDictionary;
   final ValueChanged<List<NoveWorkbenchBookSelection>> onProcessAll;
   final ValueChanged<List<NoveWorkbenchBookSelection>> onUpdateTextOnly;
 
@@ -78,9 +84,11 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
         .where((file) => _isBookSource(root, file))
         .toList()
       ..sort((a, b) => a.path.compareTo(b.path));
-    final zipStatuses = await _loadZipStatuses();
+    final statuses = await NoveWorkbenchBookStatusLoader(
+      appRoot: Directory.current.path,
+    ).loadStatuses();
     return [
-      for (final file in txtFiles) _buildItem(root, file, zipStatuses),
+      for (final file in txtFiles) _buildItem(root, file, statuses),
     ];
   }
 
@@ -103,71 +111,10 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
         normalized.startsWith('chapter_images/');
   }
 
-  Future<Map<String, _ZipStatus>> _loadZipStatuses() async {
-    final result = <String, _ZipStatus>{};
-    final assetsRoot = Directory('${Directory.current.path}/assets/library');
-    if (!assetsRoot.existsSync()) {
-      return result;
-    }
-    final zipFiles = assetsRoot
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((file) => file.path.toLowerCase().endsWith('.zip'));
-    for (final file in zipFiles) {
-      try {
-        final archive = ZipDecoder().decodeBytes(await file.readAsBytes());
-        final manifestFile = archive.files
-            .where((item) => item.isFile && item.name == 'manifest.json')
-            .firstOrNull;
-        if (manifestFile == null) {
-          continue;
-        }
-        final manifest = jsonDecode(
-          utf8.decode(manifestFile.content as List<int>),
-        ) as Map<String, dynamic>;
-        final title = (manifest['title'] ?? '').toString().trim();
-        final level = (manifest['level'] ?? '').toString();
-        final chapterId = (manifest['chapter_id'] ?? '').toString();
-        if (title.isEmpty || level.isEmpty) {
-          continue;
-        }
-        final langs = (manifest['available_target_langs'] as List<dynamic>? ??
-                [manifest['target_lang'] ?? 'ru'])
-            .map((item) => item.toString())
-            .where((item) => item.trim().isNotEmpty)
-            .toSet();
-        final dictionaries = <String>{};
-        for (final item in archive.files) {
-          if (!item.isFile) {
-            continue;
-          }
-          final match =
-              RegExp(r'^dictionary_([a-z]{2})\.json$').firstMatch(item.name);
-          if (match != null) {
-            dictionaries.add(match.group(1)!);
-          }
-        }
-        final hasAudio = archive.files.any((item) =>
-            item.isFile &&
-            item.name.startsWith('audio/segments/') &&
-            item.name.endsWith('.mp3'));
-        result[_statusKey(level, chapterId, title)] = _ZipStatus(
-          zipPath: file.path,
-          languages: langs,
-          dictionaries: dictionaries,
-          hasAudio: hasAudio,
-        );
-      } catch (_) {
-        continue;
-      }
-    }
-    return result;
-  }
-
   _WorkbenchBookItem _buildItem(
     Directory booksRoot,
     File source,
-    Map<String, _ZipStatus> zipStatuses,
+    Map<String, NoveWorkbenchBookStatus> statuses,
   ) {
     final relativeParts = _relativeParts(booksRoot.path, source.path);
     final rawLevel = relativeParts.isNotEmpty ? relativeParts.first : 'a1';
@@ -176,7 +123,8 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
     final title = _basenameWithoutExtension(source.path);
     final chapterId = _chapterIdFromFolder(rawChapter);
     final coverPath = _findCoverPath(source);
-    final zipStatus = zipStatuses[_statusKey(level, chapterId, title)];
+    final status =
+        statuses[noveWorkbenchBookStatusKey(level, chapterId, title)];
     return _WorkbenchBookItem(
       level: level,
       section: 'chapters',
@@ -186,7 +134,7 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
       title: title,
       sourcePath: source.path,
       coverPath: coverPath,
-      zipStatus: zipStatus,
+      status: status,
     );
   }
 
@@ -228,6 +176,30 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
     widget.onSelected(selection);
   }
 
+  Future<void> _refreshBook(_WorkbenchBookItem item) async {
+    final selection = await _selectionFor(item);
+    if (!mounted) {
+      return;
+    }
+    await widget.onRefreshBook(selection);
+    if (!mounted) {
+      return;
+    }
+    _refresh();
+  }
+
+  Future<void> _refreshDictionary(_WorkbenchBookItem item) async {
+    final selection = await _selectionFor(item);
+    if (!mounted) {
+      return;
+    }
+    await widget.onRefreshDictionary(selection);
+    if (!mounted) {
+      return;
+    }
+    _refresh();
+  }
+
   Future<NoveWorkbenchBookSelection> _selectionFor(
       _WorkbenchBookItem item) async {
     final text = await File(item.sourcePath).readAsString();
@@ -239,8 +211,8 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
       sourcePath: item.sourcePath,
       sourceText: text,
       coverPath: item.coverPath,
-      exportedLanguages: item.zipStatus?.languages ?? const <String>{},
-      hasAudio: item.zipStatus?.hasAudio ?? false,
+      exportedLanguages: item.status?.languages ?? const <String>{},
+      hasAudio: item.status?.hasAudio ?? false,
     );
   }
 
@@ -341,10 +313,16 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
                     ),
                     const SizedBox(height: 8),
                     for (final item in items)
-                      _WorkbenchBookTile(
-                        item: item,
+                      NoveWorkbenchBookTile(
+                        title: item.title,
+                        level: item.level,
+                        chapterTitle: item.chapterTitle,
+                        coverPath: item.coverPath,
+                        status: item.status,
                         busy: widget.busy,
                         onSelected: () => _selectBook(item),
+                        onRefresh: () => _refreshBook(item),
+                        onRefreshDictionary: () => _refreshDictionary(item),
                       ),
                   ],
                 );
@@ -357,57 +335,6 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
   }
 }
 
-class _WorkbenchBookTile extends StatelessWidget {
-  const _WorkbenchBookTile({
-    required this.item,
-    required this.busy,
-    required this.onSelected,
-  });
-
-  final _WorkbenchBookItem item;
-  final bool busy;
-  final VoidCallback onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final status = item.zipStatus;
-    final colorScheme = Theme.of(context).colorScheme;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(
-        status == null ? Icons.download_outlined : Icons.inventory_2_outlined,
-      ),
-      title: Text(item.title),
-      subtitle: Text(
-        '${item.level.toUpperCase()} / ${item.chapterTitle}\n${_statusText(status)}',
-      ),
-      isThreeLine: true,
-      trailing: FilledButton(
-        onPressed: busy ? null : onSelected,
-        child: const Text('Use'),
-      ),
-      iconColor: status == null ? colorScheme.error : colorScheme.primary,
-    );
-  }
-
-  String _statusText(_ZipStatus? status) {
-    if (status == null) {
-      return item.coverPath.isEmpty ? 'Not exported, no cover' : 'Not exported';
-    }
-    final langs = status.languages.toList()..sort();
-    final missingDictionaries = langs
-        .where((lang) => !status.dictionaries.contains(lang))
-        .map((lang) => 'dictionary_$lang.json')
-        .toList();
-    final dictionary = missingDictionaries.isEmpty
-        ? 'dictionary ready'
-        : 'missing ${missingDictionaries.join(', ')}';
-    final audio = status.hasAudio ? 'audio ready' : 'no audio';
-    final cover = item.coverPath.isEmpty ? 'no cover' : 'cover ready';
-    return 'Zip installed, ${langs.join('+').toUpperCase()}, $dictionary, $audio, $cover';
-  }
-}
-
 class _WorkbenchBookItem {
   const _WorkbenchBookItem({
     required this.level,
@@ -417,7 +344,7 @@ class _WorkbenchBookItem {
     required this.title,
     required this.sourcePath,
     required this.coverPath,
-    required this.zipStatus,
+    required this.status,
   });
 
   final String level;
@@ -427,25 +354,8 @@ class _WorkbenchBookItem {
   final String title;
   final String sourcePath;
   final String coverPath;
-  final _ZipStatus? zipStatus;
+  final NoveWorkbenchBookStatus? status;
 }
-
-class _ZipStatus {
-  const _ZipStatus({
-    required this.zipPath,
-    required this.languages,
-    required this.dictionaries,
-    required this.hasAudio,
-  });
-
-  final String zipPath;
-  final Set<String> languages;
-  final Set<String> dictionaries;
-  final bool hasAudio;
-}
-
-String _statusKey(String level, String chapterId, String title) =>
-    '${level.toLowerCase()}|$chapterId|${title.trim().toLowerCase()}';
 
 String _basename(String path) =>
     path.replaceAll('\\', '/').split('/').where((part) => part.isNotEmpty).last;

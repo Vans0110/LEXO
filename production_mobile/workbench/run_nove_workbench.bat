@@ -4,6 +4,8 @@ chcp 65001 >nul
 
 set "WORKBENCH_DIR=%~dp0"
 set "APP_DIR=%WORKBENCH_DIR%.."
+set "PROJECT_ROOT=%APP_DIR%\.."
+set "BACKEND_BAT=%PROJECT_ROOT%\run_lexo_engine_lan.bat"
 cd /d "%APP_DIR%"
 
 set "FLUTTER_CMD=C:\src\flutter\bin\flutter.bat"
@@ -85,6 +87,42 @@ if defined NEEDS_PUB_GET (
   )
 )
 
+call :ensure_backend
+if errorlevel 1 exit /b 1
+
 echo [NOVE WORKBENCH] Starting Flutter Windows Workbench...
 call "%FLUTTER_CMD%" run --no-pub -d windows --dart-define=NOVE_MODE=workbench
+exit /b %ERRORLEVEL%
+
+:ensure_backend
+call :is_backend_running
+if not errorlevel 1 (
+  echo [NOVE WORKBENCH] Backend already running on 127.0.0.1:8765.
+  exit /b 0
+)
+
+if not exist "%BACKEND_BAT%" (
+  echo [NOVE WORKBENCH] Backend launcher not found:
+  echo [NOVE WORKBENCH]   %BACKEND_BAT%
+  exit /b 1
+)
+
+echo [NOVE WORKBENCH] Starting backend...
+start "LEXO Backend" cmd /c ""%BACKEND_BAT%""
+
+for /l %%I in (1,1,20) do (
+  timeout /t 1 /nobreak >nul
+  call :is_backend_running
+  if not errorlevel 1 (
+    echo [NOVE WORKBENCH] Backend is ready on 127.0.0.1:8765.
+    exit /b 0
+  )
+)
+
+echo [NOVE WORKBENCH] Backend start requested, but port 8765 is not ready yet.
+echo [NOVE WORKBENCH] Continuing; backend may still be loading.
+exit /b 0
+
+:is_backend_running
+powershell -NoProfile -Command "$c=New-Object Net.Sockets.TcpClient; try { $iar=$c.BeginConnect('127.0.0.1',8765,$null,$null); if(-not $iar.AsyncWaitHandle.WaitOne(300)){ exit 1 }; $c.EndConnect($iar); exit 0 } catch { exit 1 } finally { $c.Close() }"
 exit /b %ERRORLEVEL%

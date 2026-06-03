@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../detail_sheet_models.dart';
 
@@ -20,21 +21,10 @@ class ReaderDetailSheet extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
         child: ListView(
           shrinkWrap: true,
           children: [
-            Center(
-              child: Container(
-                width: 48,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -46,8 +36,13 @@ class ReaderDetailSheet extends StatelessWidget {
                         ),
                   ),
                 ),
+                IconButton(
+                  tooltip: 'Copy word',
+                  onPressed: () => _copyText(
+                      context, payload.sheetSourceText, 'Word copied'),
+                  icon: const Icon(Icons.copy_outlined),
+                ),
                 if (onPlayWordAudio != null) ...[
-                  const SizedBox(width: 8),
                   IconButton(
                     tooltip: 'Play word audio',
                     onPressed: onPlayWordAudio,
@@ -76,11 +71,30 @@ class ReaderDetailSheet extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      payload.exampleSourceText,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            payload.exampleSourceText,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
+                        ),
+                        IconButton(
+                          tooltip: 'Copy segment',
+                          onPressed: () => _copyText(
+                            context,
+                            payload.exampleSourceText,
+                            'Segment copied',
+                          ),
+                          icon: const Icon(Icons.copy_outlined),
+                        ),
+                      ],
                     ),
                     if (payload.exampleTranslationText.trim().isNotEmpty) ...[
                       const SizedBox(height: 4),
@@ -112,6 +126,21 @@ class ReaderDetailSheet extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _copyText(
+      BuildContext context, String text, String message) async {
+    final value = text.trim();
+    if (value.isEmpty) {
+      return;
+    }
+    await Clipboard.setData(ClipboardData(text: value));
+    if (!context.mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 }
 
 class _DictionaryBlock extends StatelessWidget {
@@ -126,8 +155,6 @@ class _DictionaryBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final wordEntry = entry.wordEntry;
-    final verbForms = entry.verbForms;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -139,14 +166,6 @@ class _DictionaryBlock extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Dictionary',
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: colorScheme.tertiary,
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-          const SizedBox(height: 8),
           if (entry.query.trim().isNotEmpty)
             Text(
               entry.query,
@@ -170,61 +189,8 @@ class _DictionaryBlock extends StatelessWidget {
               _DictionaryArticleBlock(article: entry.entries[index]),
             ],
           ],
-          if (wordEntry != null && wordEntry.transcript.trim().isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              wordEntry.transcript,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-            ),
-          ],
-          if (verbForms != null &&
-              (verbForms.present.trim().isNotEmpty ||
-                  verbForms.past.trim().isNotEmpty ||
-                  verbForms.participle.trim().isNotEmpty)) ...[
-            const SizedBox(height: 10),
-            Text(
-              'Verb forms',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-            if (verbForms.present.trim().isNotEmpty)
-              Text('Present: ${verbForms.present}'),
-            if (verbForms.past.trim().isNotEmpty)
-              Text('Past: ${verbForms.past}'),
-            if (verbForms.participle.trim().isNotEmpty)
-              Text('Participle: ${verbForms.participle}'),
-          ],
-          if (entry.inflectedForms.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Text(
-              'Forms: ${entry.inflectedForms.join(', ')}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ],
-          if (wordEntry != null && wordEntry.similar.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Related: ${wordEntry.similar.join(', ')}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ],
           if (entry.phrasals.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(
-              'Phrasal verbs',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-            const SizedBox(height: 6),
             for (final phrasal in entry.phrasals) ...[
               Text(
                 phrasal.word,
@@ -232,14 +198,6 @@ class _DictionaryBlock extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
               ),
-              if (phrasal.transcript.trim().isNotEmpty)
-                Text(
-                  phrasal.transcript,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontStyle: FontStyle.italic,
-                      ),
-                ),
               if (phrasal.translation.trim().isNotEmpty)
                 Text(
                   phrasal.translation,
@@ -247,11 +205,6 @@ class _DictionaryBlock extends StatelessWidget {
                         color: colorScheme.primary,
                         fontWeight: FontWeight.w600,
                       ),
-                ),
-              for (final definition in phrasal.definitions.take(3))
-                Text(
-                  '• $definition',
-                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               const SizedBox(height: 8),
             ],
@@ -446,9 +399,6 @@ class _DictionaryArticleBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final titleParts = [
-      if (article.partOfSpeech.trim().isNotEmpty) article.partOfSpeech,
-    ];
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(10),
@@ -460,30 +410,11 @@ class _DictionaryArticleBlock extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (titleParts.isNotEmpty)
-            Text(
-              titleParts.join(' · '),
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
           if (article.lemma.trim().isNotEmpty) ...[
-            const SizedBox(height: 4),
             Text(
               article.lemma,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w700,
-                  ),
-            ),
-          ],
-          if (article.transcript.trim().isNotEmpty) ...[
-            const SizedBox(height: 3),
-            Text(
-              article.transcript,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
                   ),
             ),
           ],
@@ -495,16 +426,6 @@ class _DictionaryArticleBlock extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: colorScheme.primary,
                       fontWeight: FontWeight.w600,
-                    ),
-              ),
-          ],
-          if (article.definitions.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            for (final definition in article.definitions.take(2))
-              Text(
-                '• $definition',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
                     ),
               ),
           ],

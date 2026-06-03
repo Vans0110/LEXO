@@ -100,17 +100,14 @@ class MobileBookPackage {
           (rawJson['tts_manifest'] as Map<String, dynamic>? ??
               const <String, dynamic>{}),
         ),
-        wordAudioVoiceId =
-            ((rawJson['word_audio_manifest'] as Map<String, dynamic>? ??
-                    const <String, dynamic>{})['voice_id'] as String? ??
-                ''),
-        wordAudioEntries = (((rawJson['word_audio_manifest']
-                            as Map<String, dynamic>? ??
-                        const <String, dynamic>{})['items'] as List<dynamic>? ??
-                    const [])
-                .map((item) => item.toString())
-                .toSet())
-            .toList(),
+        wordAudioVoiceIds = _buildWordAudioVoiceIds(
+          rawJson['word_audio_manifest'] as Map<String, dynamic>? ??
+              const <String, dynamic>{},
+        ),
+        wordAudioEntriesByVoice = _buildWordAudioEntriesByVoice(
+          rawJson['word_audio_manifest'] as Map<String, dynamic>? ??
+              const <String, dynamic>{},
+        ),
         dictionaryManifest =
             rawJson['dictionary_manifest'] as Map<String, dynamic>? ??
                 const <String, dynamic>{},
@@ -130,14 +127,31 @@ class MobileBookPackage {
   final List<TtsLevel> levels;
   final TtsState ttsState;
   final Map<String, List<TtsSegmentItem>> segmentsByJobId;
-  final String wordAudioVoiceId;
-  final List<String> wordAudioEntries;
+  final List<String> wordAudioVoiceIds;
+  final Map<String, List<String>> wordAudioEntriesByVoice;
   final Map<String, dynamic> dictionaryManifest;
   final Map<String, DetailSheetPayload> detailByWordId;
 
   List<TtsSegmentItem> segmentsForJob(String jobId) {
     return segmentsByJobId[jobId] ?? const <TtsSegmentItem>[];
   }
+
+  String get wordAudioVoiceId =>
+      wordAudioVoiceIds.isEmpty ? '' : wordAudioVoiceIds.first;
+
+  List<String> get wordAudioEntries {
+    final result = <String>{};
+    for (final entries in wordAudioEntriesByVoice.values) {
+      result.addAll(entries);
+    }
+    return result.toList();
+  }
+
+  bool hasWordAudioVoice(String voiceId) =>
+      wordAudioEntriesByVoice.containsKey(voiceId.trim());
+
+  List<String> wordAudioEntriesForVoice(String voiceId) =>
+      wordAudioEntriesByVoice[voiceId.trim()] ?? const <String>[];
 
   static TtsState _buildTtsState(Map<String, dynamic> manifest) {
     final jobsJson = (manifest['jobs'] as List<dynamic>? ?? const [])
@@ -178,6 +192,58 @@ class MobileBookPackage {
           .cast<Map<String, dynamic>>()
           .map(TtsSegmentItem.fromJson)
           .toList();
+    }
+    return result;
+  }
+
+  static List<String> _buildWordAudioVoiceIds(Map<String, dynamic> manifest) {
+    final voices = _buildWordAudioEntriesByVoice(manifest).keys.toList()
+      ..sort();
+    final legacyVoiceId = (manifest['voice_id'] ?? '').toString().trim();
+    if (legacyVoiceId.isNotEmpty && voices.remove(legacyVoiceId)) {
+      voices.insert(0, legacyVoiceId);
+    }
+    return voices;
+  }
+
+  static Map<String, List<String>> _buildWordAudioEntriesByVoice(
+      Map<String, dynamic> manifest) {
+    final result = <String, List<String>>{};
+    final voices = manifest['voices'];
+    if (voices is Map<String, dynamic>) {
+      for (final entry in voices.entries) {
+        final voiceId = entry.key.trim();
+        if (voiceId.isEmpty) {
+          continue;
+        }
+        final payload = entry.value;
+        final items = payload is Map<String, dynamic>
+            ? payload['items'] as List<dynamic>? ?? const []
+            : payload is List<dynamic>
+                ? payload
+                : const [];
+        final words = items
+            .map((item) => item.toString().trim())
+            .where((item) => item.isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
+        if (words.isNotEmpty) {
+          result[voiceId] = words;
+        }
+      }
+    }
+    final legacyVoiceId = (manifest['voice_id'] ?? '').toString().trim();
+    if (legacyVoiceId.isNotEmpty && !result.containsKey(legacyVoiceId)) {
+      final words = (manifest['items'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString().trim())
+          .where((item) => item.isNotEmpty)
+          .toSet()
+          .toList()
+        ..sort();
+      if (words.isNotEmpty) {
+        result[legacyVoiceId] = words;
+      }
     }
     return result;
   }

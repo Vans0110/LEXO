@@ -181,10 +181,10 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
           preferredVoiceId: widget.settings.preferredVoiceId,
           onToggleFavorite: () => _toggleFavorite(item.assetPath),
           onLoad: (options) async {
-            await _importBundledBook(item, options: options);
+            return _importBundledBook(item, options: options);
           },
-          onOpen: localBook == null ? null : () => _openBook(localBook),
-          onDelete: localBook == null ? null : () => _deleteBook(localBook),
+          onOpen: _openBook,
+          onDelete: _deleteBook,
         ),
       ),
     );
@@ -478,7 +478,7 @@ class _ChaptersCarousel extends StatelessWidget {
                   children: [
                     for (var index = 0; index < noveA1Chapters.length; index++)
                       Padding(
-                        padding: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.only(right: 18),
                         child: _ChapterCard(
                           index: index + 1,
                           chapter: noveA1Chapters[index],
@@ -514,7 +514,8 @@ class _ChapterCard extends StatelessWidget {
   final int storyCount;
   final VoidCallback onTap;
 
-  static const double height = 224;
+  static const double width = 156;
+  static const double height = 272;
 
   @override
   Widget build(BuildContext context) {
@@ -524,9 +525,9 @@ class _ChapterCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
-        width: 104,
+        width: width,
         height: height,
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
@@ -539,11 +540,11 @@ class _ChapterCard extends StatelessWidget {
           children: [
             Text(
               'Chapter $index',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
             ),
-            const SizedBox(height: 6),
-            AspectRatio(
-              aspectRatio: 1,
+            const SizedBox(height: 9),
+            SizedBox.square(
+              dimension: 122,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: chapter.imageAssetPath == null
@@ -558,19 +559,23 @@ class _ChapterCard extends StatelessWidget {
                       ),
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              _shortTitle(chapter.title),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 36,
+              child: Text(
+                _shortTitle(chapter.title),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+              ),
             ),
-            const Spacer(),
+            const SizedBox(height: 4),
             Text(
               '$storyCount stories',
               style: TextStyle(
                 color: colorScheme.onSurfaceVariant,
-                fontSize: 11,
+                fontSize: 13,
               ),
             ),
           ],

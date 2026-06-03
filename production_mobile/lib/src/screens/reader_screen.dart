@@ -705,7 +705,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      showDragHandle: false,
+      showDragHandle: true,
       builder: (_) => FractionallySizedBox(
         heightFactor: 0.72,
         child: ReaderDetailSheet(

@@ -1160,7 +1160,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      showDragHandle: false,
+      showDragHandle: true,
       builder: (_) => FractionallySizedBox(
         heightFactor: 0.78,
         child: ReaderDetailSheet(
@@ -1184,8 +1184,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   Future<String?> _resolveDetailWordAudioPath(
       DetailSheetPayload payload) async {
-    final package = await _packageRepository.readPackage(widget.localBookId);
-    final voiceId = package.wordAudioVoiceId.trim();
+    final voiceId = (_state.selectedVoiceId ?? widget.preferredVoiceId).trim();
     if (voiceId.isEmpty) {
       return null;
     }

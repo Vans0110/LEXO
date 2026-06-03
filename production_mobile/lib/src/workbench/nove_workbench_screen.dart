@@ -16,6 +16,12 @@ import 'nove_workbench_form_panels.dart';
 import 'nove_library_index_builder.dart';
 import 'nove_workbench_status_panel.dart';
 
+const _ruContextDictionarySource = 'wiktionary_freedict_en_ru_context_v1';
+const _ukContextDictionarySource = 'wiktionary_en_uk_context_v1';
+
+String _expectedDictionarySource(String lang) =>
+    lang == 'uk' ? _ukContextDictionarySource : _ruContextDictionarySource;
+
 class NoveWorkbenchScreen extends StatefulWidget {
   const NoveWorkbenchScreen({super.key, required this.api});
 
@@ -33,6 +39,7 @@ class _WorkbenchExportStatus {
     required this.dictionarySources,
     required this.hasAudio,
     required this.audioVoices,
+    required this.profileVoices,
     required this.hasCover,
   });
 
@@ -42,6 +49,7 @@ class _WorkbenchExportStatus {
   final Map<String, String> dictionarySources;
   final bool hasAudio;
   final Set<String> audioVoices;
+  final Set<String> profileVoices;
   final bool hasCover;
 
   bool hasLanguages(Iterable<String> targetLanguages) =>
@@ -50,10 +58,18 @@ class _WorkbenchExportStatus {
   bool hasDictionaries(Iterable<String> targetLanguages) =>
       targetLanguages.every((lang) =>
           dictionaries.contains(lang) &&
-          dictionarySources[lang] == 'nllb_en_$lang');
+          dictionarySources[lang] == _expectedDictionarySource(lang));
 
   bool hasAudioFor(Iterable<String> voiceIds) =>
       voiceIds.every(audioVoices.contains);
+
+  Set<String> missingProfileVoicesFor(Iterable<String> availableVoiceIds) {
+    final available = availableVoiceIds.toSet();
+    return profileVoices
+        .difference(audioVoices)
+        .where(available.contains)
+        .toSet();
+  }
 }
 
 class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
@@ -207,6 +223,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         sourceText: _sourceText,
         targetLang: targetLang,
         readerOnly: readerOnly,
+        stableBookKey: _stableBookKey(),
       );
       final meta =
           package['meta'] as Map<String, dynamic>? ?? const <String, dynamic>{};
@@ -260,7 +277,23 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   Future<void> _generateSelectedVoicePackages({
     required bool waitForReady,
   }) async {
-    for (final voiceId in _selectedVoiceIds()) {
+    await _generateVoicePackages(
+      voiceIds: _selectedVoiceIds(),
+      waitForReady: waitForReady,
+    );
+  }
+
+  Future<void> _generateVoicePackages({
+    required Iterable<String> voiceIds,
+    required bool waitForReady,
+  }) async {
+    final normalizedVoiceIds = voiceIds
+        .map((voiceId) => voiceId.trim())
+        .where((voiceId) => voiceId.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort();
+    for (final voiceId in normalizedVoiceIds) {
       await _generateCurrentPackage(
         voiceId: voiceId,
         waitForReady: waitForReady,
@@ -417,6 +450,55 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     _appendLog('Export done: ${outputDir.path}');
   }
 
+  Future<void> _refreshBookDictionaries(
+      NoveWorkbenchBookSelection selection) async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      _applyLibrarySelection(selection);
+      await _importCurrentBookToBackend(readerOnly: true);
+      final bookId = _bookId;
+      if (bookId == null || bookId.isEmpty) {
+        throw Exception('Import the book to backend first.');
+      }
+      final selectedLangs = _selectedTargetLangs();
+      final outputDir = await NoveWorkbenchBuilder(
+        api: widget.api,
+        level: _level,
+        section: _section,
+        chapterId: _section == 'chapters' ? _chapterId : '',
+        chapterTitle:
+            _section == 'chapters' ? noveA1ChapterTitle(_chapterId) : '',
+        sourcePath: _sourcePath,
+        coverPath: _coverPath,
+        log: _appendLog,
+        targetLangs: selectedLangs,
+        bookIdsByTargetLang: _bookIdsByTargetLang,
+        packagesByTargetLang: _packagesByTargetLang,
+      ).refreshDictionaries(
+        bookId: bookId,
+        fallbackTitle: _title,
+        languages: selectedLangs,
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() => _outputPath = outputDir.path);
+      _appendLog('Dictionary refresh done: ${outputDir.path}');
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _error = error.toString());
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
   Future<void> _syncLibraryToR2() async {
     setState(() {
       _busy = true;
@@ -477,6 +559,17 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         if (_targetLangs.contains(lang)) lang,
     ];
     return selected.isEmpty ? const ['ru'] : selected;
+  }
+
+  String _stableBookKey() {
+    final chapterKey = _section == 'chapters' ? _chapterId : '';
+    return [
+      'nove',
+      _level.trim().toLowerCase(),
+      _section.trim().toLowerCase(),
+      chapterKey.trim().toLowerCase(),
+      _title.trim().toLowerCase(),
+    ].join('|');
   }
 
   List<String> _selectedVoiceIds() {
@@ -544,7 +637,9 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   }
 
   Future<void> _processLibraryBooks(
-      List<NoveWorkbenchBookSelection> selections) async {
+    List<NoveWorkbenchBookSelection> selections, {
+    bool includeMissingProfileVoices = false,
+  }) async {
     if (selections.isEmpty) {
       return;
     }
@@ -563,8 +658,16 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         final hasRequestedDictionaries =
             currentStatus.hasDictionaries(selectedLangs);
         final selectedVoiceIds = _selectedVoiceIds();
-        final hasAudio = currentStatus.hasAudioFor(selectedVoiceIds);
-        if (hasRequestedLanguages && hasRequestedDictionaries && hasAudio) {
+        final availableVoiceIds = _voices.map((voice) => voice.voiceId);
+        final targetVoiceIds = {
+          ...selectedVoiceIds,
+          if (includeMissingProfileVoices)
+            ...currentStatus.missingProfileVoicesFor(availableVoiceIds),
+        };
+        final hasRequestedAudio = currentStatus.hasAudioFor(targetVoiceIds);
+        if (hasRequestedLanguages &&
+            hasRequestedDictionaries &&
+            hasRequestedAudio) {
           if (selection.coverPath.isNotEmpty && !currentStatus.hasCover) {
             _appendLog(
               'Repack ready book: ${selection.title} (add cover, no audio generation)',
@@ -585,13 +688,29 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         }
         _applyLibrarySelection(selection);
         await _importCurrentBookToBackend();
-        if (hasAudio) {
+        final backendAudioVoices =
+            _backendAudioVoicesForSelectedLangs(selectedLangs);
+        final backendHasRequestedAudio =
+            targetVoiceIds.every(backendAudioVoices.contains);
+        if (backendHasRequestedAudio) {
           _appendLog(
               'Skip Kokoro package: ${selection.title} already has audio');
         } else {
-          await _generateSelectedVoicePackages(waitForReady: true);
+          final missingVoiceIds = targetVoiceIds
+              .where((voiceId) => !backendAudioVoices.contains(voiceId))
+              .toList()
+            ..sort();
+          _appendLog(
+            'Generate Kokoro package: ${selection.title} (${missingVoiceIds.join(', ')})',
+          );
+          await _generateVoicePackages(
+            voiceIds: missingVoiceIds,
+            waitForReady: true,
+          );
         }
-        if (hasRequestedLanguages && hasAudio && !hasRequestedDictionaries) {
+        if (hasRequestedLanguages &&
+            hasRequestedAudio &&
+            !hasRequestedDictionaries) {
           final missingDictionaries = selectedLangs
               .where((lang) => !currentStatus.dictionaries.contains(lang))
               .map((lang) => 'dictionary_$lang.json')
@@ -599,7 +718,8 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
           final staleDictionaries = selectedLangs
               .where((lang) =>
                   currentStatus.dictionaries.contains(lang) &&
-                  currentStatus.dictionarySources[lang] != 'nllb_en_$lang')
+                  currentStatus.dictionarySources[lang] !=
+                      _expectedDictionarySource(lang))
               .map((lang) => 'dictionary_$lang.json')
               .toList();
           final reason = [
@@ -650,6 +770,18 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         setState(() => _busy = false);
       }
     }
+  }
+
+  Set<String> _backendAudioVoicesForSelectedLangs(Iterable<String> langs) {
+    final result = <String>{};
+    for (final lang in langs) {
+      final package = _packagesByTargetLang[lang];
+      final manifest = package?['tts_manifest'];
+      if (manifest is Map<String, dynamic>) {
+        result.addAll(_readTtsVoiceIds(manifest));
+      }
+    }
+    return result;
   }
 
   Future<void> _cleanCurrentBookArtifacts() async {
@@ -739,6 +871,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     final dictionaries = <String>{};
     final dictionarySources = <String, String>{};
     final audioVoices = <String>{};
+    final profileVoices = <String>{};
     var bookId = '';
     var hasAudio = false;
     if (outputDir != null) {
@@ -756,6 +889,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
           final manifest = jsonDecode(await ttsManifestFile.readAsString())
               as Map<String, dynamic>;
           audioVoices.addAll(_readTtsVoiceIds(manifest));
+          profileVoices.addAll(_readTtsProfileVoiceIds(manifest));
         } catch (_) {}
       }
       for (final entity in outputDir.listSync(recursive: true)) {
@@ -790,6 +924,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     dictionaries.addAll(zipStatus.dictionaries);
     dictionarySources.addAll(zipStatus.dictionarySources);
     audioVoices.addAll(zipStatus.audioVoices);
+    profileVoices.addAll(zipStatus.profileVoices);
     if (bookId.isEmpty) {
       bookId = zipStatus.bookId;
     }
@@ -805,6 +940,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       dictionarySources: dictionarySources,
       hasAudio: hasAudio,
       audioVoices: audioVoices,
+      profileVoices: profileVoices,
       hasCover: hasCover,
     );
   }
@@ -870,6 +1006,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         dictionarySources: <String, String>{},
         hasAudio: false,
         audioVoices: <String>{},
+        profileVoices: <String>{},
         hasCover: false,
       );
     }
@@ -900,6 +1037,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         final dictionaries = <String>{};
         final dictionarySources = <String, String>{};
         final audioVoices = <String>{};
+        final profileVoices = <String>{};
         final bookId = (manifest['book_id'] ?? '').toString();
         for (final file in archive.files) {
           if (!file.isFile) {
@@ -928,6 +1066,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
                   jsonDecode(utf8.decode(file.content as List<int>))
                       as Map<String, dynamic>;
               audioVoices.addAll(_readTtsVoiceIds(ttsManifest));
+              profileVoices.addAll(_readTtsProfileVoiceIds(ttsManifest));
             } catch (_) {}
           }
         }
@@ -950,6 +1089,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
           dictionarySources: dictionarySources,
           hasAudio: hasAudio,
           audioVoices: audioVoices,
+          profileVoices: profileVoices,
           hasCover: hasCover,
         );
       } catch (_) {
@@ -963,6 +1103,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       dictionarySources: <String, String>{},
       hasAudio: false,
       audioVoices: <String>{},
+      profileVoices: <String>{},
       hasCover: false,
     );
   }
@@ -1011,16 +1152,24 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
 
   Set<String> _readTtsVoiceIds(Map<String, dynamic> manifest) {
     final result = <String>{};
-    final profiles = manifest['profiles'] as List<dynamic>? ?? const [];
-    for (final profile in profiles.whereType<Map>()) {
-      final voiceId = (profile['voice_id'] ?? '').toString();
+    final jobs = manifest['jobs'] as List<dynamic>? ?? const [];
+    for (final job in jobs.whereType<Map>()) {
+      if ((job['status'] ?? '').toString() != 'ready') {
+        continue;
+      }
+      final voiceId = (job['voice_id'] ?? '').toString();
       if (voiceId.isNotEmpty) {
         result.add(voiceId);
       }
     }
-    final jobs = manifest['jobs'] as List<dynamic>? ?? const [];
-    for (final job in jobs.whereType<Map>()) {
-      final voiceId = (job['voice_id'] ?? '').toString();
+    return result;
+  }
+
+  Set<String> _readTtsProfileVoiceIds(Map<String, dynamic> manifest) {
+    final result = <String>{};
+    final profiles = manifest['profiles'] as List<dynamic>? ?? const [];
+    for (final profile in profiles.whereType<Map>()) {
+      final voiceId = (profile['voice_id'] ?? '').toString();
       if (voiceId.isNotEmpty) {
         result.add(voiceId);
       }
@@ -1091,6 +1240,11 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
             NoveWorkbenchBookLibrary(
               busy: _busy,
               onSelected: _selectLibraryBook,
+              onRefreshBook: (selection) => _processLibraryBooks(
+                [selection],
+                includeMissingProfileVoices: true,
+              ),
+              onRefreshDictionary: _refreshBookDictionaries,
               onProcessAll: _processLibraryBooks,
               onUpdateTextOnly: _updateLibraryTextOnly,
             ),

@@ -75,6 +75,7 @@ class LexoApiClient {
     String sourceLang = 'en',
     String targetLang = 'ru',
     bool readerOnly = false,
+    String? stableBookKey,
   }) async {
     return _post(
       '/mobile/books/import-text',
@@ -83,6 +84,8 @@ class LexoApiClient {
         'source_text': sourceText,
         'source_lang': sourceLang,
         'target_lang': targetLang,
+        if ((stableBookKey ?? '').trim().isNotEmpty)
+          'stable_book_key': stableBookKey!.trim(),
         if (readerOnly) 'package_kind': 'reader_only',
       },
     );

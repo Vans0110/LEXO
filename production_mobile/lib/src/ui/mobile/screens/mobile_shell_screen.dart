@@ -312,7 +312,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     if (package == null) {
       return null;
     }
-    final voiceId = package.wordAudioVoiceId.trim();
+    final voiceId = _appSettings.preferredVoiceId.trim();
     if (voiceId.isEmpty) {
       return null;
     }

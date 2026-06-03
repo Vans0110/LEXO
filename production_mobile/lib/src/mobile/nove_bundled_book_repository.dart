@@ -220,15 +220,12 @@ class NoveBundledBookRepository {
   }
 
   bool _manifestContainsVoice(Map<String, dynamic> manifest, String voiceId) {
-    final activeVoiceId = ((manifest['active_job'] as Map<String, dynamic>? ??
-            const {})['voice_id'] as String? ??
-        '');
-    if (activeVoiceId == voiceId) {
-      return true;
-    }
-    final profiles = manifest['profiles'] as List<dynamic>? ?? const [];
-    for (final item in profiles.whereType<Map<String, dynamic>>()) {
-      if ((item['voice_id'] ?? '').toString() == voiceId) {
+    final jobs = manifest['jobs'] as List<dynamic>? ?? const [];
+    for (final item in jobs.whereType<Map<String, dynamic>>()) {
+      final jobVoiceId = (item['voice_id'] ?? '').toString();
+      final status = (item['status'] ?? '').toString();
+      final segments = item['segments'] as List<dynamic>? ?? const [];
+      if (jobVoiceId == voiceId && status == 'ready' && segments.isNotEmpty) {
         return true;
       }
     }
@@ -371,8 +368,8 @@ class NoveBundledBookRepository {
     Directory bookDir, {
     required Map<String, dynamic> wordAudioManifest,
   }) async {
-    final wordAudioVoiceId =
-        (wordAudioManifest['voice_id'] ?? 'af_heart').toString();
+    final legacyWordAudioVoiceId =
+        (wordAudioManifest['voice_id'] ?? '').toString().trim();
     for (final entry in files.entries) {
       final name = entry.key;
       if (name.startsWith('audio/segments/') && name.endsWith('.mp3')) {
@@ -389,8 +386,18 @@ class NoveBundledBookRepository {
             flush: true);
       }
       if (name.startsWith('audio/words/') && name.endsWith('.mp3')) {
-        final fileName = name.split('/').last;
+        final parts = name.split('/');
+        if (parts.length < 3) {
+          continue;
+        }
+        final fileName = parts.last;
         final word = fileName.substring(0, fileName.length - 4);
+        final nestedVoiceId = parts.length >= 4 ? parts[2].trim() : '';
+        final wordAudioVoiceId =
+            nestedVoiceId.isNotEmpty ? nestedVoiceId : legacyWordAudioVoiceId;
+        if (wordAudioVoiceId.isEmpty) {
+          continue;
+        }
         final target = File(
             '${bookDir.path}/word_audio/$wordAudioVoiceId/${_wordAudioKey(word)}.mp3');
         await target.parent.create(recursive: true);

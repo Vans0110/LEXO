@@ -171,27 +171,6 @@ class _CardsListScreenState extends State<CardsListScreen> {
     await _audioPlayer.open(Media(audioPath), play: true);
   }
 
-  Future<bool> _confirmDelete(SavedCardItem item) async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete card?'),
-        content: Text('Card "${item.headText}" will be removed from the list.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-    return result ?? false;
-  }
-
   @override
   Widget build(BuildContext context) {
     final payload = _payload;
@@ -264,14 +243,6 @@ class _CardsListScreenState extends State<CardsListScreen> {
                                           );
                                         }
                                       },
-                                      onLongPress: () async {
-                                        final confirmed =
-                                            await _confirmDelete(item);
-                                        if (!confirmed) {
-                                          return;
-                                        }
-                                        await _deleteCard(item);
-                                      },
                                     ),
                                   );
                                 },
@@ -289,19 +260,16 @@ class _CardListTile extends StatelessWidget {
   const _CardListTile({
     required this.item,
     this.onPlayAudio,
-    this.onLongPress,
   });
 
   final SavedCardItem item;
   final VoidCallback? onPlayAudio;
-  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.zero,
       child: InkWell(
-        onLongPress: onLongPress,
         borderRadius: BorderRadius.circular(12),
         child: ListTile(
           contentPadding:

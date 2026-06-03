@@ -6,7 +6,9 @@ import '../../../models.dart';
 import '../widgets/nove_book_cover.dart';
 
 typedef NoveBookAction = Future<void> Function();
-typedef NoveBookLoadAction = Future<void> Function(NoveDownloadOptions options);
+typedef NoveBookItemAction = Future<void> Function(LibraryBookItem item);
+typedef NoveBookLoadAction = Future<LibraryBookItem?> Function(
+    NoveDownloadOptions options);
 
 class NoveBookDetailScreen extends StatefulWidget {
   const NoveBookDetailScreen({
@@ -37,8 +39,8 @@ class NoveBookDetailScreen extends StatefulWidget {
   final String preferredVoiceId;
   final NoveBookAction onToggleFavorite;
   final NoveBookLoadAction? onLoad;
-  final NoveBookAction? onOpen;
-  final NoveBookAction? onDelete;
+  final NoveBookItemAction? onOpen;
+  final NoveBookItemAction? onDelete;
 
   @override
   State<NoveBookDetailScreen> createState() => _NoveBookDetailScreenState();
@@ -47,6 +49,7 @@ class NoveBookDetailScreen extends StatefulWidget {
 class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
   late bool _favorite = widget.favorite;
   late bool _installed = widget.installed;
+  late LibraryBookItem? _localBook = widget.localBook;
   bool _actionBusy = false;
 
   Future<void> _runAction(NoveBookAction? action,
@@ -90,16 +93,47 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
     }
     setState(() => _actionBusy = true);
     try {
-      await action(options);
+      final localBook = await action(options);
       if (!mounted) {
         return;
       }
-      setState(() => _installed = true);
+      setState(() {
+        _localBook = localBook;
+        _installed = localBook != null;
+      });
     } finally {
       if (mounted) {
         setState(() => _actionBusy = false);
       }
     }
+  }
+
+  Future<void> _openLocalBook() async {
+    final localBook = _localBook;
+    final action = widget.onOpen;
+    if (localBook == null || action == null || _actionBusy || widget.busy) {
+      return;
+    }
+    await _runAction(
+      () async {
+        await action(localBook);
+      },
+      closeAfter: true,
+    );
+  }
+
+  Future<void> _deleteLocalBook() async {
+    final localBook = _localBook;
+    final action = widget.onDelete;
+    if (localBook == null || action == null || _actionBusy || widget.busy) {
+      return;
+    }
+    await _runAction(
+      () async {
+        await action(localBook);
+      },
+      closeAfter: true,
+    );
   }
 
   Future<void> _toggleFavorite() async {
@@ -161,10 +195,7 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
               onPressed: busy
                   ? null
                   : _installed
-                      ? () => _runAction(
-                            widget.onOpen,
-                            closeAfter: true,
-                          )
+                      ? _openLocalBook
                       : _runLoadAction,
               icon: Icon(_installed
                   ? Icons.menu_book_outlined
@@ -180,9 +211,7 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
-              onPressed: busy || !_installed
-                  ? null
-                  : () => _runAction(widget.onDelete, closeAfter: true),
+              onPressed: busy || !_installed ? null : _deleteLocalBook,
               icon: const Icon(Icons.delete_outline),
               label: const Text('Delete book'),
             ),

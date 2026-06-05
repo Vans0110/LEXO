@@ -13,7 +13,8 @@ class MobileCardsRepository {
     final normalizedStatus = (status ?? '').trim().toLowerCase();
     final filtered = items
         .where((item) => !item.isDeleted)
-        .where((item) => normalizedStatus.isEmpty || item.status == normalizedStatus)
+        .where((item) =>
+            normalizedStatus.isEmpty || item.status == normalizedStatus)
         .toList()
       ..sort((left, right) => right.updatedAt.compareTo(left.updatedAt));
     return SavedCardsPayload(
@@ -26,7 +27,8 @@ class MobileCardsRepository {
     final items = await _readCards();
     final filtered = items
         .where((item) => !item.isDeleted)
-        .where((item) => item.cardType == 'lexical' || item.cardType == 'phrase')
+        .where(
+            (item) => item.cardType == 'lexical' || item.cardType == 'phrase')
         .toList()
       ..sort((left, right) {
         final scoreCompare = left.progressScore.compareTo(right.progressScore);
@@ -222,7 +224,9 @@ class MobileCardsRepository {
     final now = DateTime.now().toUtc().toIso8601String();
     final nextScore = direction == 'right'
         ? min(7, current.progressScore + 1)
-        : (current.progressScore > 1 ? max(0, current.progressScore - 1) : current.progressScore);
+        : (current.progressScore > 1
+            ? max(0, current.progressScore - 1)
+            : current.progressScore);
     final updated = SavedCardItem(
       id: current.id,
       deviceId: current.deviceId,
@@ -241,7 +245,8 @@ class MobileCardsRepository {
       createdAt: current.createdAt,
       updatedAt: now,
       deletedAt: current.deletedAt,
-      syncState: current.syncState == 'local_new' ? 'local_new' : 'local_modified',
+      syncState:
+          current.syncState == 'local_new' ? 'local_new' : 'local_modified',
       status: _statusForScore(nextScore),
       progressScore: nextScore,
       reviewCount: current.reviewCount + 1,
@@ -317,8 +322,12 @@ class MobileCardsRepository {
         .toList();
   }
 
-  Future<void> replaceWithMergedCards(List<Map<String, dynamic>> mergedCards) async {
-    final items = mergedCards.map(SavedCardItem.fromJson).map(_markSynced).toList()
+  Future<void> replaceWithMergedCards(
+      List<Map<String, dynamic>> mergedCards) async {
+    final items = mergedCards
+        .map(SavedCardItem.fromJson)
+        .map(_markSynced)
+        .toList()
       ..sort((left, right) => right.updatedAt.compareTo(left.updatedAt));
     await _writeCards(items);
   }
@@ -452,7 +461,8 @@ class MobileCardsRepository {
     final bytes = List<int>.generate(16, (_) => random.nextInt(256));
     bytes[6] = (bytes[6] & 0x0f) | 0x40;
     bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    final hex = bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+    final hex =
+        bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
     return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-'
         '${hex.substring(16, 20)}-${hex.substring(20, 32)}';
   }

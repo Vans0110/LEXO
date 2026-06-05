@@ -34,6 +34,7 @@ class MobileReaderScreen extends StatefulWidget {
     this.autoplayLevelIds = const <int>{},
     this.autoplayToken = 0,
     this.onCardsChanged,
+    this.preferredPlaybackSpeed = 0.8,
   });
 
   final LexoApiClient api;
@@ -48,6 +49,7 @@ class MobileReaderScreen extends StatefulWidget {
     required Set<int> selectedLevelIds,
   })? onLibraryPlaybackCompleted;
   final String preferredVoiceId;
+  final double preferredPlaybackSpeed;
   final String? autoplayVoiceId;
   final Set<int> autoplayLevelIds;
   final int autoplayToken;
@@ -83,7 +85,16 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   double _selectedPlaybackSpeed() {
     final selectedLevel = _selectedLevel();
-    return selectedLevel?.effectivePlaybackSpeed ?? 1.0;
+    return selectedLevel == null
+        ? widget.preferredPlaybackSpeed
+        : _playbackSpeedForLevel(selectedLevel);
+  }
+
+  double _playbackSpeedForLevel(TtsLevel level) {
+    if (level.playbackSpeed < 0.95) {
+      return 0.8;
+    }
+    return level.effectivePlaybackSpeed;
   }
 
   TtsLevel? _selectedLevel() {
@@ -301,10 +312,11 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
       );
       if (levels.isNotEmpty &&
           (!hasSelectedLevel || selectedLevelIds.isEmpty)) {
-        final normal = levels.where((item) => item.name == 'Normal');
-        selectedLevelIds = {
-          normal.isNotEmpty ? normal.first.id : levels.first.id
-        };
+        final preferredLevel = _closestLevelForSpeed(
+          levels,
+          widget.preferredPlaybackSpeed,
+        );
+        selectedLevelIds = {preferredLevel.id};
       }
 
       if (!mounted) {
@@ -1083,7 +1095,24 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
 
   String _speedLabel() {
     final selectedLevel = _selectedLevel();
-    return _formatSpeed(selectedLevel?.playbackSpeed ?? 1.0);
+    return _formatSpeed(
+      selectedLevel == null
+          ? widget.preferredPlaybackSpeed
+          : _playbackSpeedForLevel(selectedLevel),
+    );
+  }
+
+  TtsLevel _closestLevelForSpeed(List<TtsLevel> levels, double speed) {
+    var best = levels.first;
+    var bestDelta = (_playbackSpeedForLevel(best) - speed).abs();
+    for (final level in levels.skip(1)) {
+      final delta = (_playbackSpeedForLevel(level) - speed).abs();
+      if (delta < bestDelta) {
+        best = level;
+        bestDelta = delta;
+      }
+    }
+    return best;
   }
 
   Future<void> _showSpeedPicker() async {
@@ -1099,8 +1128,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
           children: [
             for (final level in _state.ttsLevels)
               ListTile(
-                title:
-                    Text('${level.name} ${_formatSpeed(level.playbackSpeed)}'),
+                title: Text(
+                    '${level.name} ${_formatSpeed(_playbackSpeedForLevel(level))}'),
                 trailing: level.id == _selectedLevel()?.id
                     ? const Icon(Icons.check)
                     : null,
@@ -1275,12 +1304,6 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(payload?.title ?? 'Reader'),
-        actions: [
-          IconButton(
-            onPressed: _state.loading || _state.actionBusy ? null : _load,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
       ),
       body: _state.loading
           ? const Center(child: CircularProgressIndicator())

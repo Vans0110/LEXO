@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../../../mobile/nove_download_options.dart';
-import '../../../mobile/nove_bundled_book_repository.dart';
+import '../../../mobile/virgil_download_options.dart';
+import '../../../mobile/virgil_bundled_book_repository.dart';
 import '../../../models.dart';
-import '../widgets/nove_book_cover.dart';
+import '../widgets/virgil_book_cover.dart';
 
-typedef NoveBookAction = Future<void> Function();
-typedef NoveBookItemAction = Future<void> Function(LibraryBookItem item);
-typedef NoveBookLoadAction = Future<LibraryBookItem?> Function(
-    NoveDownloadOptions options);
+typedef VirgilBookAction = Future<void> Function();
+typedef VirgilBookItemAction = Future<void> Function(LibraryBookItem item);
+typedef VirgilBookLoadAction = Future<LibraryBookItem?> Function(
+    VirgilDownloadOptions options);
 
-class NoveBookDetailScreen extends StatefulWidget {
-  const NoveBookDetailScreen({
+class VirgilBookDetailScreen extends StatefulWidget {
+  const VirgilBookDetailScreen({
     super.key,
     required this.title,
     required this.subtitle,
@@ -33,26 +33,26 @@ class NoveBookDetailScreen extends StatefulWidget {
   final bool favorite;
   final bool installed;
   final LibraryBookItem? localBook;
-  final NoveBundledBookInfo? bundledBook;
+  final VirgilBundledBookInfo? bundledBook;
   final bool busy;
   final String preferredTargetLang;
   final String preferredVoiceId;
-  final NoveBookAction onToggleFavorite;
-  final NoveBookLoadAction? onLoad;
-  final NoveBookItemAction? onOpen;
-  final NoveBookItemAction? onDelete;
+  final VirgilBookAction onToggleFavorite;
+  final VirgilBookLoadAction? onLoad;
+  final VirgilBookItemAction? onOpen;
+  final VirgilBookItemAction? onDelete;
 
   @override
-  State<NoveBookDetailScreen> createState() => _NoveBookDetailScreenState();
+  State<VirgilBookDetailScreen> createState() => _VirgilBookDetailScreenState();
 }
 
-class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
+class _VirgilBookDetailScreenState extends State<VirgilBookDetailScreen> {
   late bool _favorite = widget.favorite;
   late bool _installed = widget.installed;
   late LibraryBookItem? _localBook = widget.localBook;
   bool _actionBusy = false;
 
-  Future<void> _runAction(NoveBookAction? action,
+  Future<void> _runAction(VirgilBookAction? action,
       {required bool closeAfter, bool markInstalled = false}) async {
     if (action == null || _actionBusy || widget.busy) {
       return;
@@ -81,7 +81,7 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
     if (action == null || _actionBusy || widget.busy) {
       return;
     }
-    final options = await showDialog<NoveDownloadOptions>(
+    final options = await showDialog<VirgilDownloadOptions>(
       context: context,
       builder: (_) => _DownloadOptionsDialog(
         preferredTargetLang: widget.preferredTargetLang,
@@ -163,12 +163,13 @@ class _NoveBookDetailScreenState extends State<NoveBookDetailScreen> {
             Center(
               child: SizedBox(
                 width: 210,
-                child: NoveCoverArt(
+                child: VirgilCoverArt(
                   title: widget.title,
                   favorite: _favorite,
                   installed: _installed,
                   coverBytes: widget.bundledBook?.coverBytes,
                   coverUrl: widget.bundledBook?.coverUrl,
+                  coverFilePath: widget.localBook?.coverFilePath,
                   height: 300,
                 ),
               ),
@@ -240,7 +241,8 @@ class _DownloadOptionsDialogState extends State<_DownloadOptionsDialog> {
   late String _voiceId = _normalizedVoiceId(widget.preferredVoiceId);
 
   String _normalizedVoiceId(String voiceId) {
-    final supported = noveVoiceOptions.map((option) => option.voiceId).toSet();
+    final supported =
+        virgilVoiceOptions.map((option) => option.voiceId).toSet();
     return supported.contains(voiceId) ? voiceId : 'af_heart';
   }
 
@@ -273,7 +275,7 @@ class _DownloadOptionsDialogState extends State<_DownloadOptionsDialog> {
             ),
             items: [
               const DropdownMenuItem(value: '', child: Text('All available')),
-              for (final option in noveVoiceOptions)
+              for (final option in virgilVoiceOptions)
                 DropdownMenuItem(
                   value: option.voiceId,
                   child: Text(option.title),
@@ -291,7 +293,7 @@ class _DownloadOptionsDialogState extends State<_DownloadOptionsDialog> {
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(
-            NoveDownloadOptions(
+            VirgilDownloadOptions(
               targetLang: _targetLang.isEmpty ? null : _targetLang,
               voiceId: _voiceId.isEmpty ? null : _voiceId,
             ),

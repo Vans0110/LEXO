@@ -25,7 +25,8 @@ class ReaderTextFlow extends StatelessWidget {
   final int? selectedParagraphIndex;
   final String? selectedTapUnitId;
   final void Function(ParagraphItem item, ParagraphWordItem word) onWordTap;
-  final void Function(ParagraphItem item, ParagraphWordItem word) onWordLongPress;
+  final void Function(ParagraphItem item, ParagraphWordItem word)
+      onWordLongPress;
   final double bottomContentPadding;
 
   @override

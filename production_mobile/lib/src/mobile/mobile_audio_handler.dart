@@ -92,9 +92,8 @@ class LexoAudioHandler extends audio_service.BaseAudioHandler
         ),
     ];
     queue.add(_mediaItems);
-    final initialIndex = request.initialIndex
-        .clamp(0, _mediaItems.length - 1)
-        .toInt();
+    final initialIndex =
+        request.initialIndex.clamp(0, _mediaItems.length - 1).toInt();
     mediaItem.add(_mediaItems[initialIndex]);
     await _player.stop();
     final audioSources = <just_audio.AudioSource>[];
@@ -228,7 +227,9 @@ class LexoAudioHandler extends audio_service.BaseAudioHandler
       playbackState.value.copyWith(
         controls: [
           audio_service.MediaControl.skipToPrevious,
-          state.playing ? audio_service.MediaControl.pause : audio_service.MediaControl.play,
+          state.playing
+              ? audio_service.MediaControl.pause
+              : audio_service.MediaControl.play,
           audio_service.MediaControl.stop,
           audio_service.MediaControl.skipToNext,
         ],
@@ -289,7 +290,7 @@ class LexoBackgroundAudio {
       },
       config: const audio_service.AudioServiceConfig(
         androidNotificationChannelId: 'lexo.mobile.playback',
-        androidNotificationChannelName: 'LEXO playback',
+        androidNotificationChannelName: 'Virgil playback',
         androidNotificationOngoing: true,
         androidStopForegroundOnPause: true,
       ),

@@ -14,6 +14,7 @@ class MobileBookPackageMeta {
     required this.currentParagraphIndex,
     required this.packageVersion,
     required this.contentHash,
+    this.coverPath,
     this.selectedVoiceId,
     this.exportedAt,
     this.lastOpenedAt,
@@ -30,6 +31,7 @@ class MobileBookPackageMeta {
   final int currentParagraphIndex;
   final int packageVersion;
   final String contentHash;
+  final String? coverPath;
   final String? selectedVoiceId;
   final String? exportedAt;
   final String? lastOpenedAt;
@@ -47,13 +49,17 @@ class MobileBookPackageMeta {
       currentParagraphIndex: json['current_paragraph_index'] as int? ?? 0,
       packageVersion: json['package_version'] as int? ?? 1,
       contentHash: json['content_hash'] as String? ?? '',
+      coverPath: json['cover'] as String?,
       selectedVoiceId: json['selected_voice_id'] as String?,
       exportedAt: json['exported_at'] as String?,
       lastOpenedAt: json['last_opened_at'] as String?,
     );
   }
 
-  LibraryBookItem toLibraryItem({required bool isActive}) {
+  LibraryBookItem toLibraryItem({
+    required bool isActive,
+    String? coverFilePath,
+  }) {
     return LibraryBookItem(
       id: localBookId,
       title: title,
@@ -66,6 +72,7 @@ class MobileBookPackageMeta {
       isActive: isActive,
       desktopBookId: desktopBookId,
       contentHash: contentHash,
+      coverFilePath: coverFilePath,
     );
   }
 }

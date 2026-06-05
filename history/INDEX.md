@@ -4,6 +4,13 @@
 
 ## Записи
 
+### 2026-06-05
+- Сессия: два этапа полного аудита и безопасной очистки workspace; удалены отсоединённые модели, старые окружения/ML-кэши, MVP, logs, backup/build/tmp, сырые словарные дампы, 2Books/IPA и дубли Workbench ZIP; рабочие NLLB CT2, Kokoro, E5, Stanza, словари и актуальные книги сохранены
+- Production mobile переименован в Virgil; удалены пользовательские кнопки обновления, обновлены Android/iOS IDs, Workbench, launch scripts, workflow и облачный путь
+- Реализован полный локальный каталог: `Downloaded Books`, офлайн-избранное, восстановление активной книги и потоковая атомарная установка ZIP
+- Версии книг переведены на SHA-256 ZIP в `content_hash`; сопоставление и избранное используют стабильный `book_id`
+- Файл: [2026-06-05.md](/mnt/d/Programs/LEXO/history/2026-06-05.md)
+
 ### 2026-06-03
 - Сессия: Nove mobile UX fixes — Open сразу после Load, увеличенная drag-зона reader detail sheet, copy word/segment, упрощённый dictionary UI и удаление карточек только свайпом; добавлен UK Wiktionary dictionary layer без NLLB fallback; chapter cards сжаты по нижнему пустому полю; в Settings добавлена feedback-форма через email; word audio переведён на multi-voice формат пакета и Workbench status; import stable-книг больше не сносит готовый segment audio при неизменном тексте
 - Файл: [2026-06-03.md](/mnt/d/Programs/LEXO/history/2026-06-03.md)

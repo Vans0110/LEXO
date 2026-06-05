@@ -1,5 +1,5 @@
-name: nove
-description: Nove offline mobile reader
+name: virgil
+description: Virgil offline mobile reader
 publish_to: "none"
 version: 0.1.0+1
 
@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   archive: ^4.0.9
+  crypto: ^3.0.7
   flutter:
     sdk: flutter
   audio_service: ^0.18.18

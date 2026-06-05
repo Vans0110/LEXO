@@ -2,35 +2,35 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'nove_a1_chapters.dart';
-import 'nove_download_options.dart';
+import 'virgil_a1_chapters.dart';
+import 'virgil_download_options.dart';
 import 'mobile_settings_repository.dart';
 
-class NoveBundledBookInfo {
-  const NoveBundledBookInfo({
-    required this.assetPath,
+class VirgilBundledBookInfo {
+  const VirgilBundledBookInfo({
     required this.bookId,
     required this.title,
     required this.level,
     required this.section,
     required this.chapterId,
     required this.chapterTitle,
+    required this.contentHash,
     this.remoteZipUrl,
     this.coverPath,
     this.coverUrl,
     this.coverBytes,
   });
 
-  final String assetPath;
   final String bookId;
   final String title;
   final String level;
   final String section;
   final String chapterId;
   final String chapterTitle;
+  final String contentHash;
   final String? remoteZipUrl;
   final String? coverPath;
   final String? coverUrl;
@@ -39,32 +39,33 @@ class NoveBundledBookInfo {
   bool get isRemote => (remoteZipUrl ?? '').trim().isNotEmpty;
 }
 
-class NoveBundledBookRepository {
-  static const _cloudBaseUrl = String.fromEnvironment('NOVE_LIBRARY_BASE_URL');
+class VirgilBundledBookRepository {
+  static const _cloudBaseUrl =
+      String.fromEnvironment('VIRGIL_LIBRARY_BASE_URL');
   static const _libraryDirName = 'mobile_library';
 
   Map<String, dynamic>? _cloudIndexCache;
   Future<Map<String, dynamic>>? _cloudIndexInFlight;
 
-  Future<List<NoveBundledBookInfo>> listBooks({
+  Future<List<VirgilBundledBookInfo>> listBooks({
     String? level,
     String? section,
   }) async {
     return _listCloudBooks(level: level, section: section);
   }
 
-  Future<List<NoveBundledBookInfo>> _listCloudBooks({
+  Future<List<VirgilBundledBookInfo>> _listCloudBooks({
     String? level,
     String? section,
   }) async {
     final baseUrl = _normalizedCloudBaseUrl();
     if (baseUrl.isEmpty) {
-      throw Exception('NOVE_LIBRARY_BASE_URL is required for cloud library.');
+      throw Exception('VIRGIL_LIBRARY_BASE_URL is required for cloud library.');
     }
     final payload = await _loadCloudIndex(baseUrl);
     final books = (payload['books'] as List<dynamic>? ?? const [])
         .whereType<Map<String, dynamic>>();
-    final result = <NoveBundledBookInfo>[];
+    final result = <VirgilBundledBookInfo>[];
     for (final item in books) {
       final title = (item['title'] ?? '').toString();
       if (_isPlanTitle(title)) {
@@ -83,7 +84,7 @@ class NoveBundledBookRepository {
     return result;
   }
 
-  Future<NoveBundledBookInfo> _cloudInfoFromJson(
+  Future<VirgilBundledBookInfo> _cloudInfoFromJson(
     String baseUrl,
     Map<String, dynamic> json,
   ) async {
@@ -92,22 +93,22 @@ class NoveBundledBookRepository {
     final section = (json['section'] ?? '').toString();
     final rawChapterId = (json['chapter_id'] ?? '').toString();
     final chapterId = section == 'chapters' && rawChapterId.isEmpty
-        ? noveDefaultA1ChapterId
+        ? virgilDefaultA1ChapterId
         : rawChapterId;
     final chapterTitle = (json['chapter_title'] ?? '').toString().isEmpty
-        ? (chapterId.isEmpty ? '' : noveA1ChapterTitle(chapterId))
+        ? (chapterId.isEmpty ? '' : virgilA1ChapterTitle(chapterId))
         : (json['chapter_title'] ?? '').toString();
     final remoteZipUrl = '$baseUrl/${Uri.encodeFull(zipPath)}';
     final coverUrl =
         coverPath.isEmpty ? null : '$baseUrl/${Uri.encodeFull(coverPath)}';
-    return NoveBundledBookInfo(
-      assetPath: 'cloud:$zipPath',
+    return VirgilBundledBookInfo(
       bookId: (json['book_id'] ?? '').toString(),
       title: (json['title'] ?? zipPath.split('/').last).toString(),
       level: (json['level'] ?? '').toString(),
       section: section,
       chapterId: chapterId,
       chapterTitle: chapterTitle,
+      contentHash: (json['content_hash'] ?? '').toString(),
       remoteZipUrl: remoteZipUrl,
       coverPath: coverPath.isEmpty ? null : coverPath,
       coverUrl: coverUrl,
@@ -120,13 +121,13 @@ class NoveBundledBookRepository {
         normalized.contains('\u043f\u043b\u0430\u043d');
   }
 
-  Future<NoveBundledBookInfo?> findBookByAssetPath(String assetPath) async {
-    if (assetPath.trim().isEmpty) {
+  Future<VirgilBundledBookInfo?> findBookById(String bookId) async {
+    if (bookId.trim().isEmpty) {
       return null;
     }
     final books = await listBooks();
     for (final book in books) {
-      if (book.assetPath == assetPath) {
+      if (book.bookId == bookId) {
         return book;
       }
     }
@@ -134,89 +135,191 @@ class NoveBundledBookRepository {
   }
 
   Future<String> importBook(
-    NoveBundledBookInfo info, {
-    NoveDownloadOptions options = const NoveDownloadOptions(),
+    VirgilBundledBookInfo info, {
+    VirgilDownloadOptions options = const VirgilDownloadOptions(),
   }) async {
     final settings = await MobileSettingsRepository().load();
     final preferredTargetLang = options.targetLang?.trim().isNotEmpty == true
         ? options.targetLang!.trim()
         : settings.preferredTargetLang;
-    final bytes = info.isRemote
-        ? await _downloadBytes(info.remoteZipUrl!)
-        : throw Exception('Cloud zip URL is required.');
-    final archive = ZipDecoder().decodeBytes(bytes);
-    final files = <String, ArchiveFile>{
-      for (final file in archive.files)
-        if (file.isFile) file.name.replaceAll('\\', '/'): file,
-    };
-    final manifest = _readJson(files, 'manifest.json');
-    final reader = _readReaderJson(files, preferredTargetLang);
-    final readerPayloads = _readReaderPayloads(files, manifest);
-    final dictionaryManifest = _readDictionaryJson(files, preferredTargetLang);
-    final dictionaryManifests = _readDictionaryPayloads(files, manifest);
-    final ttsManifest = _readOptionalJson(files, 'tts_manifest.json');
-    final wordAudioManifest =
-        _readOptionalJson(files, 'word_audio_manifest.json');
-    final selectedVoiceId = options.voiceId?.trim() ?? '';
-    if (selectedVoiceId.isNotEmpty &&
-        !_manifestContainsVoice(ttsManifest, selectedVoiceId)) {
-      throw Exception(
-          'Voice $selectedVoiceId is not available in this book package yet.');
+    if (!info.isRemote) {
+      throw Exception('Cloud zip URL is required.');
     }
-    final coverPath = (manifest['cover'] ?? '').toString();
-    final chapterId = (manifest['chapter_id'] ?? info.chapterId).toString();
-    final chapterTitle =
-        (manifest['chapter_title'] ?? info.chapterTitle).toString();
-    final localBookId = (manifest['book_id'] ?? info.bookId).toString();
-    if (localBookId.isEmpty) {
-      throw Exception('Bundled book does not contain book_id');
-    }
-    final bookDir = await _bookDir(localBookId);
-    if (bookDir.existsSync()) {
-      await bookDir.delete(recursive: true);
-    }
-    await bookDir.create(recursive: true);
+    final tempRoot = await getTemporaryDirectory();
+    final stamp = DateTime.now().microsecondsSinceEpoch;
+    final zipFile = File('${tempRoot.path}/virgil_book_$stamp.zip');
+    InputFileStream? zipInput;
+    Directory? stagingDir;
+    Directory? backupDir;
+    Directory? bookDir;
+    try {
+      await _downloadToFile(info.remoteZipUrl!, zipFile);
+      zipInput = InputFileStream(zipFile.path);
+      final archive = ZipDecoder().decodeStream(zipInput);
+      final files = <String, ArchiveFile>{
+        for (final file in archive.files)
+          if (file.isFile) file.name.replaceAll('\\', '/'): file,
+      };
+      final manifest = _readJson(files, 'manifest.json');
+      final reader = _readReaderJson(files, preferredTargetLang);
+      final readerPayloads = _readReaderPayloads(files, manifest);
+      final dictionaryManifest =
+          _readDictionaryJson(files, preferredTargetLang);
+      final dictionaryManifests = _readDictionaryPayloads(files, manifest);
+      final ttsManifest = _readOptionalJson(files, 'tts_manifest.json');
+      final wordAudioManifest =
+          _readOptionalJson(files, 'word_audio_manifest.json');
+      final selectedVoiceId = options.voiceId?.trim() ?? '';
+      if (selectedVoiceId.isNotEmpty &&
+          !_manifestContainsVoice(ttsManifest, selectedVoiceId)) {
+        throw Exception(
+            'Voice $selectedVoiceId is not available in this book package yet.');
+      }
+      final coverPath =
+          _safeRelativePath((manifest['cover'] ?? '').toString()) ?? '';
+      final chapterId = (manifest['chapter_id'] ?? info.chapterId).toString();
+      final chapterTitle =
+          (manifest['chapter_title'] ?? info.chapterTitle).toString();
+      final localBookId = (manifest['book_id'] ?? info.bookId).toString();
+      if (!_isSafeLocalBookId(localBookId)) {
+        throw Exception('Bundled book does not contain book_id');
+      }
 
-    final package = {
-      'meta': {
-        'local_book_id': localBookId,
-        'desktop_book_id': localBookId,
-        'title': (manifest['title'] ?? info.title).toString(),
-        'source_name': info.section,
-        if (chapterId.isNotEmpty) 'chapter_id': chapterId,
-        if (chapterTitle.isNotEmpty) 'chapter_title': chapterTitle,
-        'source_lang': manifest['source_lang'] ?? 'en',
-        'target_lang': reader['target_lang'] ?? manifest['target_lang'] ?? 'ru',
-        'model_name': 'nove_bundle',
-        'status': 'ready',
-        'current_paragraph_index': 0,
-        'package_version': 1,
-        'content_hash': info.assetPath,
-        'download_options': options.toJson(),
-        if (options.targetLang?.trim().isNotEmpty == true)
-          'selected_target_lang': options.targetLang!.trim(),
-        if (selectedVoiceId.isNotEmpty) 'selected_voice_id': selectedVoiceId,
-        if (coverPath.isNotEmpty) 'cover': coverPath,
-        'exported_at': manifest['generated_at'],
-      },
-      'source_text': '',
-      'reader_payload': reader,
-      'reader_payloads': readerPayloads,
-      'dictionary_manifest': dictionaryManifest,
-      'dictionary_manifests': dictionaryManifests,
-      'detail_manifest': _readOptionalJson(files, 'detail_manifest.json'),
-      'tts_manifest': ttsManifest,
-      'word_audio_manifest': wordAudioManifest,
-      'word_to_word': _readOptionalJson(files, 'word_to_word.json'),
-    };
-    await File('${bookDir.path}/package.json').writeAsString(
-      const JsonEncoder.withIndent('  ').convert(package),
-      encoding: utf8,
-      flush: true,
-    );
-    await _copyCover(files, bookDir, coverPath);
-    await _copyAudio(files, bookDir, wordAudioManifest: wordAudioManifest);
-    return localBookId;
+      bookDir = await _bookDir(localBookId);
+      stagingDir = Directory('${bookDir.path}.install-$stamp');
+      backupDir = Directory('${bookDir.path}.backup-$stamp');
+      await stagingDir.create(recursive: true);
+      final previousMeta = await _readExistingMeta(bookDir);
+      final package = {
+        'meta': {
+          'local_book_id': localBookId,
+          'desktop_book_id': localBookId,
+          'title': (manifest['title'] ?? info.title).toString(),
+          'source_name': info.section,
+          if (chapterId.isNotEmpty) 'chapter_id': chapterId,
+          if (chapterTitle.isNotEmpty) 'chapter_title': chapterTitle,
+          'source_lang': manifest['source_lang'] ?? 'en',
+          'target_lang':
+              reader['target_lang'] ?? manifest['target_lang'] ?? 'ru',
+          'model_name': 'virgil_bundle',
+          'status': 'ready',
+          'current_paragraph_index':
+              previousMeta?['current_paragraph_index'] ?? 0,
+          'package_version': 1,
+          'content_hash': info.contentHash,
+          'download_options': options.toJson(),
+          if (options.targetLang?.trim().isNotEmpty == true)
+            'selected_target_lang': options.targetLang!.trim(),
+          if (selectedVoiceId.isNotEmpty) 'selected_voice_id': selectedVoiceId,
+          if (coverPath.isNotEmpty) 'cover': coverPath,
+          'exported_at': manifest['generated_at'],
+          if (previousMeta?['last_opened_at'] != null)
+            'last_opened_at': previousMeta!['last_opened_at'],
+        },
+        'source_text': '',
+        'reader_payload': {
+          ...reader,
+          'current_paragraph_index':
+              previousMeta?['current_paragraph_index'] ?? 0,
+        },
+        'reader_payloads': readerPayloads,
+        'dictionary_manifest': dictionaryManifest,
+        'dictionary_manifests': dictionaryManifests,
+        'detail_manifest': _readOptionalJson(files, 'detail_manifest.json'),
+        'tts_manifest': ttsManifest,
+        'word_audio_manifest': wordAudioManifest,
+        'word_to_word': _readOptionalJson(files, 'word_to_word.json'),
+      };
+      await File('${stagingDir.path}/package.json').writeAsString(
+        const JsonEncoder.withIndent('  ').convert(package),
+        encoding: utf8,
+        flush: true,
+      );
+      await _copyCover(files, stagingDir, coverPath);
+      await _copyAudio(files, stagingDir, wordAudioManifest: wordAudioManifest);
+      await _installStagedBook(
+        bookDir: bookDir,
+        stagingDir: stagingDir,
+        backupDir: backupDir,
+      );
+      stagingDir = null;
+      backupDir = null;
+      return localBookId;
+    } finally {
+      await zipInput?.close();
+      if (zipFile.existsSync()) {
+        await zipFile.delete();
+      }
+      if (stagingDir?.existsSync() == true) {
+        await stagingDir!.delete(recursive: true);
+      }
+      if (backupDir?.existsSync() == true) {
+        if (bookDir?.existsSync() == true) {
+          await backupDir!.delete(recursive: true);
+        } else {
+          await backupDir!.rename(bookDir!.path);
+        }
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>?> _readExistingMeta(Directory bookDir) async {
+    final packageFile = File('${bookDir.path}/package.json');
+    if (!packageFile.existsSync()) {
+      return null;
+    }
+    try {
+      final package =
+          jsonDecode(await packageFile.readAsString()) as Map<String, dynamic>;
+      return package['meta'] as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _installStagedBook({
+    required Directory bookDir,
+    required Directory stagingDir,
+    required Directory backupDir,
+  }) async {
+    if (!File('${stagingDir.path}/package.json').existsSync()) {
+      throw Exception('Downloaded book package is incomplete.');
+    }
+    if (bookDir.existsSync()) {
+      await bookDir.rename(backupDir.path);
+    }
+    try {
+      await stagingDir.rename(bookDir.path);
+    } catch (_) {
+      if (!bookDir.existsSync() && backupDir.existsSync()) {
+        await backupDir.rename(bookDir.path);
+      }
+      rethrow;
+    }
+    if (backupDir.existsSync()) {
+      await backupDir.delete(recursive: true);
+    }
+  }
+
+  Future<void> _downloadToFile(String url, File target) async {
+    final client = HttpClient();
+    IOSink? sink;
+    try {
+      final request = await client.getUrl(Uri.parse(url));
+      final response = await request.close();
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw HttpException('GET $url failed: ${response.statusCode}');
+      }
+      await target.parent.create(recursive: true);
+      sink = target.openWrite();
+      await sink.addStream(response);
+      await sink.flush();
+      await sink.close();
+      sink = null;
+    } finally {
+      await sink?.close();
+      client.close(force: true);
+    }
   }
 
   bool _manifestContainsVoice(Map<String, dynamic> manifest, String voiceId) {
@@ -382,8 +485,7 @@ class NoveBundledBookRepository {
         final segment = fileName.substring(splitAt + 1, fileName.length - 4);
         final target = File('${bookDir.path}/audio/$jobId/$segment.mp3');
         await target.parent.create(recursive: true);
-        await target.writeAsBytes(entry.value.content as List<int>,
-            flush: true);
+        await _writeArchiveFile(entry.value, target);
       }
       if (name.startsWith('audio/words/') && name.endsWith('.mp3')) {
         final parts = name.split('/');
@@ -401,29 +503,58 @@ class NoveBundledBookRepository {
         final target = File(
             '${bookDir.path}/word_audio/$wordAudioVoiceId/${_wordAudioKey(word)}.mp3');
         await target.parent.create(recursive: true);
-        await target.writeAsBytes(entry.value.content as List<int>,
-            flush: true);
+        await _writeArchiveFile(entry.value, target);
       }
     }
   }
 
   Future<void> _copyCover(Map<String, ArchiveFile> files, Directory bookDir,
       String coverPath) async {
-    if (coverPath.trim().isEmpty) {
+    final safeCoverPath = _safeRelativePath(coverPath);
+    if (safeCoverPath == null) {
       return;
     }
-    final coverFile = files[coverPath];
+    final coverFile = files[safeCoverPath];
     if (coverFile == null) {
       return;
     }
-    final target = File('${bookDir.path}/$coverPath');
+    final target = File('${bookDir.path}/$safeCoverPath');
     await target.parent.create(recursive: true);
-    await target.writeAsBytes(coverFile.content as List<int>, flush: true);
+    await _writeArchiveFile(coverFile, target);
+  }
+
+  Future<void> _writeArchiveFile(ArchiveFile source, File target) async {
+    final output = OutputFileStream(target.path);
+    try {
+      source.writeContent(output);
+    } finally {
+      await output.close();
+    }
   }
 
   Future<Directory> _bookDir(String localBookId) async {
     final root = await getApplicationDocumentsDirectory();
     return Directory('${root.path}/$_libraryDirName/$localBookId');
+  }
+
+  String? _safeRelativePath(String value) {
+    final normalized = value.trim().replaceAll('\\', '/');
+    if (normalized.isEmpty ||
+        normalized.startsWith('/') ||
+        RegExp(r'^[a-zA-Z]:/').hasMatch(normalized) ||
+        normalized.split('/').contains('..')) {
+      return null;
+    }
+    return normalized;
+  }
+
+  bool _isSafeLocalBookId(String value) {
+    final normalized = value.trim();
+    return normalized.isNotEmpty &&
+        !normalized.contains('/') &&
+        !normalized.contains('\\') &&
+        normalized != '.' &&
+        normalized != '..';
   }
 
   String _wordAudioKey(String word) {

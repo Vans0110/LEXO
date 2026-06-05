@@ -257,19 +257,6 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
     }
   }
 
-  void _refreshLibrary() {
-    _uiTrace(
-      'DESKTOP_REFRESH_LIBRARY_CLICK selectedIndex=$_selectedIndex '
-      'libraryReloadTick=$_libraryReloadTick activeBookId=${_activeBookId ?? ''}',
-    );
-    setState(() {
-      _libraryReloadTick += 1;
-      _settingsError = null;
-    });
-    _uiTrace(
-        'DESKTOP_REFRESH_LIBRARY_APPLIED libraryReloadTick=$_libraryReloadTick');
-  }
-
   @override
   Widget build(BuildContext context) {
     final screens = [
@@ -301,7 +288,6 @@ class _DesktopShellScreenState extends State<DesktopShellScreen> {
         busy: _settingsBusy,
         errorText: _settingsError,
         onImportBook: _pickAndImport,
-        onRefreshLibrary: _refreshLibrary,
       ),
     ];
 

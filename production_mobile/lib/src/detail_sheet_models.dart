@@ -1,6 +1,17 @@
 import 'models.dart';
 
-const _sourceFirstPunctuationUnits = {'"', "'", '.', ',', '!', '?', ':', ';', '(', ')'};
+const _sourceFirstPunctuationUnits = {
+  '"',
+  "'",
+  '.',
+  ',',
+  '!',
+  '?',
+  ':',
+  ';',
+  '(',
+  ')'
+};
 
 bool _isSourceFirstPunctuationUnit(Map<String, dynamic> unit) {
   final sourceText = (unit['source_text'] as String? ?? '').trim();
@@ -11,8 +22,11 @@ Map<String, dynamic>? _selectSourceFirstCompactedUnit({
   required List<Map<String, dynamic>> analysisUnits,
   required ParagraphWordItem word,
 }) {
-  final visibleUnits = analysisUnits.where((unit) => !_isSourceFirstPunctuationUnit(unit)).toList();
-  if (word.orderIndexInSegment < 0 || word.orderIndexInSegment >= visibleUnits.length) {
+  final visibleUnits = analysisUnits
+      .where((unit) => !_isSourceFirstPunctuationUnit(unit))
+      .toList();
+  if (word.orderIndexInSegment < 0 ||
+      word.orderIndexInSegment >= visibleUnits.length) {
     return null;
   }
   return visibleUnits[word.orderIndexInSegment];
@@ -37,8 +51,8 @@ Map<String, dynamic>? _selectSourceFirstTimeUnit({
     final leftStart = left['token_start'] as int? ?? 0;
     final rightStart = right['token_start'] as int? ?? 0;
     return (leftStart - word.orderIndexInSegment).abs().compareTo(
-      (rightStart - word.orderIndexInSegment).abs(),
-    );
+          (rightStart - word.orderIndexInSegment).abs(),
+        );
   });
   return candidates.first;
 }
@@ -48,9 +62,10 @@ ParagraphSegmentV2Item? _findSourceFirstSegment({
   required ParagraphWordItem word,
 }) {
   for (final entry in item.segmentsV2) {
-    final matchesSegmentId = (word.segmentId ?? '').isNotEmpty && entry.id == word.segmentId;
-    final matchesSourceText =
-        (word.segmentId ?? '').isEmpty && entry.sourceText == (word.segmentSourceText ?? '');
+    final matchesSegmentId =
+        (word.segmentId ?? '').isNotEmpty && entry.id == word.segmentId;
+    final matchesSourceText = (word.segmentId ?? '').isEmpty &&
+        entry.sourceText == (word.segmentSourceText ?? '');
     if (matchesSegmentId || matchesSourceText) {
       return entry;
     }
@@ -62,8 +77,9 @@ Map<String, dynamic>? _selectSourceFirstUnit({
   required ParagraphSegmentV2Item segment,
   required ParagraphWordItem word,
 }) {
-  final analysisUnits = (segment.sourceAnalysis['units'] as List<dynamic>? ?? const [])
-      .cast<Map<String, dynamic>>();
+  final analysisUnits =
+      (segment.sourceAnalysis['units'] as List<dynamic>? ?? const [])
+          .cast<Map<String, dynamic>>();
   if (analysisUnits.isEmpty) {
     return null;
   }
@@ -79,7 +95,8 @@ Map<String, dynamic>? _selectSourceFirstUnit({
   final normalizedWord = word.text.trim().toLowerCase();
   if (normalizedWord.isNotEmpty) {
     for (final unit in analysisUnits) {
-      if ((unit['source_text'] as String? ?? '').trim().toLowerCase() == normalizedWord) {
+      if ((unit['source_text'] as String? ?? '').trim().toLowerCase() ==
+          normalizedWord) {
         return unit;
       }
     }
@@ -98,13 +115,17 @@ Map<String, dynamic>? _selectSourceFirstUnit({
     final end = unit['token_end'] as int? ?? -1;
     return word.orderIndexInSegment >= start && word.orderIndexInSegment <= end;
   }).toList();
-  final exactNonPunctuation = exactTokenUnits.where((unit) => !_isSourceFirstPunctuationUnit(unit)).toList();
+  final exactNonPunctuation = exactTokenUnits
+      .where((unit) => !_isSourceFirstPunctuationUnit(unit))
+      .toList();
   if (exactNonPunctuation.isNotEmpty) {
     exactNonPunctuation.sort((left, right) {
-      final leftWidth = (left['token_end'] as int? ?? left['token_start'] as int? ?? 0) -
-          (left['token_start'] as int? ?? 0);
-      final rightWidth = (right['token_end'] as int? ?? right['token_start'] as int? ?? 0) -
-          (right['token_start'] as int? ?? 0);
+      final leftWidth =
+          (left['token_end'] as int? ?? left['token_start'] as int? ?? 0) -
+              (left['token_start'] as int? ?? 0);
+      final rightWidth =
+          (right['token_end'] as int? ?? right['token_start'] as int? ?? 0) -
+              (right['token_start'] as int? ?? 0);
       if (leftWidth != rightWidth) {
         return leftWidth.compareTo(rightWidth);
       }
@@ -116,10 +137,12 @@ Map<String, dynamic>? _selectSourceFirstUnit({
   }
   if (exactTokenUnits.isNotEmpty) {
     exactTokenUnits.sort((left, right) {
-      final leftWidth = (left['token_end'] as int? ?? left['token_start'] as int? ?? 0) -
-          (left['token_start'] as int? ?? 0);
-      final rightWidth = (right['token_end'] as int? ?? right['token_start'] as int? ?? 0) -
-          (right['token_start'] as int? ?? 0);
+      final leftWidth =
+          (left['token_end'] as int? ?? left['token_start'] as int? ?? 0) -
+              (left['token_start'] as int? ?? 0);
+      final rightWidth =
+          (right['token_end'] as int? ?? right['token_start'] as int? ?? 0) -
+              (right['token_start'] as int? ?? 0);
       if (leftWidth != rightWidth) {
         return leftWidth.compareTo(rightWidth);
       }
@@ -150,7 +173,8 @@ Map<String, dynamic>? _sourceFirstCoverageForUnit({
   if (unit == null) {
     return null;
   }
-  final coverageUnits = segment.sourceCoverage['units'] as Map<String, dynamic>? ?? const {};
+  final coverageUnits =
+      segment.sourceCoverage['units'] as Map<String, dynamic>? ?? const {};
   return coverageUnits[unit['unit_id']] as Map<String, dynamic>?;
 }
 
@@ -162,9 +186,11 @@ Map<String, dynamic>? _sourceFirstGroupForUnit({
   if (unit == null) {
     return null;
   }
-  final groups = (segment.sourceAnalysis['groups'] as List<dynamic>? ?? const [])
-      .cast<Map<String, dynamic>>();
-  final groupCoverages = segment.sourceCoverage['groups'] as Map<String, dynamic>? ?? const {};
+  final groups =
+      (segment.sourceAnalysis['groups'] as List<dynamic>? ?? const [])
+          .cast<Map<String, dynamic>>();
+  final groupCoverages =
+      segment.sourceCoverage['groups'] as Map<String, dynamic>? ?? const {};
   final ownerGroupId = coverage?['owner_unit_id'] as String? ?? '';
 
   Map<String, dynamic>? baseGroup;
@@ -178,7 +204,8 @@ Map<String, dynamic>? _sourceFirstGroupForUnit({
   }
   if (baseGroup == null) {
     for (final group in groups) {
-      if (((group['unit_ids'] as List<dynamic>? ?? const [])).contains(unit['unit_id'])) {
+      if (((group['unit_ids'] as List<dynamic>? ?? const []))
+          .contains(unit['unit_id'])) {
         baseGroup = group;
         break;
       }
@@ -202,24 +229,29 @@ DetailSheetSourceFirstPayload? buildLocalSourceFirstPayload({
     return null;
   }
   final selectedUnit = _selectSourceFirstUnit(segment: segment, word: word);
-  final coverage = _sourceFirstCoverageForUnit(segment: segment, unit: selectedUnit);
+  final coverage =
+      _sourceFirstCoverageForUnit(segment: segment, unit: selectedUnit);
   final selectedGroup = _sourceFirstGroupForUnit(
     segment: segment,
     unit: selectedUnit,
     coverage: coverage,
   );
-  final runtimeEffectiveUnits = segment.sourceEffective['units'] as Map<String, dynamic>? ?? const {};
-  final runtimeEffectiveCoverage =
-      selectedUnit == null ? null : runtimeEffectiveUnits[selectedUnit['unit_id']] as Map<String, dynamic>?;
+  final runtimeEffectiveUnits =
+      segment.sourceEffective['units'] as Map<String, dynamic>? ?? const {};
+  final runtimeEffectiveCoverage = selectedUnit == null
+      ? null
+      : runtimeEffectiveUnits[selectedUnit['unit_id']] as Map<String, dynamic>?;
   final effectiveCoverage = runtimeEffectiveCoverage ??
-      ((coverage != null && (coverage['target_text'] as String? ?? '').trim().isNotEmpty)
+      ((coverage != null &&
+              (coverage['target_text'] as String? ?? '').trim().isNotEmpty)
           ? {
               ...coverage,
             }
           : (selectedGroup == null
               ? coverage
               : {
-                  ...(selectedGroup['coverage'] as Map<String, dynamic>? ?? const <String, dynamic>{}),
+                  ...(selectedGroup['coverage'] as Map<String, dynamic>? ??
+                      const <String, dynamic>{}),
                   'effective_source': 'owner_group',
                   'derived_from_group_id': selectedGroup['group_id'],
                 }));
@@ -265,26 +297,30 @@ DetailSheetSourceFirstPayload? buildLocalSourceFirstPayload({
   final payload = buildLocalSourceFirstPayload(item: item, word: word);
   final selectedUnit = payload?.selectedUnit;
   final selectedGroup = payload?.selectedGroup;
-  final coverage = selectedUnit?['effective_coverage'] as Map<String, dynamic>? ??
-      selectedUnit?['coverage'] as Map<String, dynamic>? ??
-      const <String, dynamic>{};
+  final coverage =
+      selectedUnit?['effective_coverage'] as Map<String, dynamic>? ??
+          selectedUnit?['coverage'] as Map<String, dynamic>? ??
+          const <String, dynamic>{};
   if (payload == null || selectedUnit == null) {
     return null;
   }
   final segment = _findSourceFirstSegment(item: item, word: word);
-  final targetTokens = ((segment?.sourceCoverage['target_tokens']) as List<dynamic>? ?? const [])
-      .cast<Map<String, dynamic>>();
+  final targetTokens =
+      ((segment?.sourceCoverage['target_tokens']) as List<dynamic>? ?? const [])
+          .cast<Map<String, dynamic>>();
   final start = coverage['target_token_start'] as int?;
   final end = coverage['target_token_end'] as int?;
   final coverageText = coverage['target_text'] as String? ?? '';
   if (start == null || end == null || targetTokens.isEmpty) {
-    final groupCoverage = selectedGroup?['coverage'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+    final groupCoverage = selectedGroup?['coverage'] as Map<String, dynamic>? ??
+        const <String, dynamic>{};
     final groupText = groupCoverage['target_text'] as String? ?? '';
     final groupStart = groupCoverage['target_token_start'] as int?;
     final groupEnd = groupCoverage['target_token_end'] as int?;
     if (groupStart != null && groupEnd != null && targetTokens.isNotEmpty) {
       final safeGroupStart = groupStart.clamp(0, targetTokens.length - 1);
-      final safeGroupEnd = groupEnd.clamp(safeGroupStart, targetTokens.length - 1);
+      final safeGroupEnd =
+          groupEnd.clamp(safeGroupStart, targetTokens.length - 1);
       final left = targetTokens
           .sublist(safeGroupStart > 3 ? safeGroupStart - 3 : 0, safeGroupStart)
           .map((token) => token['text'] as String? ?? '')
@@ -298,12 +334,18 @@ DetailSheetSourceFirstPayload? buildLocalSourceFirstPayload({
       final right = targetTokens
           .sublist(
             safeGroupEnd + 1,
-            (safeGroupEnd + 4) <= targetTokens.length ? safeGroupEnd + 4 : targetTokens.length,
+            (safeGroupEnd + 4) <= targetTokens.length
+                ? safeGroupEnd + 4
+                : targetTokens.length,
           )
           .map((token) => token['text'] as String? ?? '')
           .where((text) => text.isNotEmpty)
           .join(' ');
-      return (left: left, focus: focus.isNotEmpty ? focus : groupText, right: right);
+      return (
+        left: left,
+        focus: focus.isNotEmpty ? focus : groupText,
+        right: right
+      );
     }
     if (groupText.trim().isNotEmpty) {
       return (left: '', focus: groupText, right: '');
@@ -326,11 +368,19 @@ DetailSheetSourceFirstPayload? buildLocalSourceFirstPayload({
       .where((text) => text.isNotEmpty)
       .join(' ');
   final right = targetTokens
-      .sublist(safeEnd + 1, (safeEnd + 4) <= targetTokens.length ? safeEnd + 4 : targetTokens.length)
+      .sublist(
+          safeEnd + 1,
+          (safeEnd + 4) <= targetTokens.length
+              ? safeEnd + 4
+              : targetTokens.length)
       .map((token) => token['text'] as String? ?? '')
       .where((text) => text.isNotEmpty)
       .join(' ');
-  return (left: left, focus: focus.isNotEmpty ? focus : coverageText, right: right);
+  return (
+    left: left,
+    focus: focus.isNotEmpty ? focus : coverageText,
+    right: right
+  );
 }
 
 ({String left, String focus, String right})? buildPreferredSourceFirstFocus({
@@ -373,11 +423,14 @@ class DetailSheetPayload {
       exampleSourceText: json['example_source_text'] as String? ?? '',
       exampleTranslationText: json['example_translation_text'] as String? ?? '',
       sourceFirst: (json['source_first'] as Map<String, dynamic>?) != null
-          ? DetailSheetSourceFirstPayload.fromJson(json['source_first'] as Map<String, dynamic>)
+          ? DetailSheetSourceFirstPayload.fromJson(
+              json['source_first'] as Map<String, dynamic>)
           : null,
-      dictionaryEntry: (json['dictionary_entry'] as Map<String, dynamic>?) != null
-          ? DetailSheetDictionaryEntry.fromJson(json['dictionary_entry'] as Map<String, dynamic>)
-          : null,
+      dictionaryEntry:
+          (json['dictionary_entry'] as Map<String, dynamic>?) != null
+              ? DetailSheetDictionaryEntry.fromJson(
+                  json['dictionary_entry'] as Map<String, dynamic>)
+              : null,
       units: (json['units'] as List<dynamic>? ?? const [])
           .cast<Map<String, dynamic>>()
           .map(DetailSheetUnitItem.fromJson)
@@ -390,7 +443,8 @@ class DetailSheetPayload {
     required ParagraphWordItem word,
   }) {
     final sourceFirst = buildLocalSourceFirstPayload(item: item, word: word);
-    final sourceFirstCoverage = sourceFirst?.selectedUnit?['effective_coverage'] as Map<String, dynamic>? ??
+    final sourceFirstCoverage = sourceFirst?.selectedUnit?['effective_coverage']
+            as Map<String, dynamic>? ??
         sourceFirst?.selectedUnit?['coverage'] as Map<String, dynamic>? ??
         const <String, dynamic>{};
     final selectedWords = item.words
@@ -409,14 +463,17 @@ class DetailSheetPayload {
           : (current.grammarHint?.isNotEmpty == true ? 'GRAMMAR' : 'LEXICAL');
       final grouped = <ParagraphWordItem>[current];
       while (index + grouped.length < selectedWords.length &&
-          selectedWords[index + grouped.length].lexicalUnitId == lexicalUnitId) {
+          selectedWords[index + grouped.length].lexicalUnitId ==
+              lexicalUnitId) {
         grouped.add(selectedWords[index + grouped.length]);
       }
       final surfaceText = grouped.map((entry) => entry.text).join(' ');
       final lemmaText = grouped
-          .map((entry) => (entry.lemma?.isNotEmpty == true ? entry.lemma! : entry.text))
+          .map((entry) =>
+              (entry.lemma?.isNotEmpty == true ? entry.lemma! : entry.text))
           .join(' ');
-      final displayText = lexicalUnitType == 'GRAMMAR' ? surfaceText : lemmaText;
+      final displayText =
+          lexicalUnitType == 'GRAMMAR' ? surfaceText : lemmaText;
       final translation = grouped
           .map((entry) => entry.effectiveTranslationText?.trim() ?? '')
           .where((entry) => entry.isNotEmpty)
@@ -438,7 +495,8 @@ class DetailSheetPayload {
               .firstWhere((entry) => entry.isNotEmpty, orElse: () => ''),
           isPrimary: lexicalUnitType != 'GRAMMAR',
           exampleSourceText: grouped.first.segmentSourceText ?? item.sourceText,
-          exampleTranslationText: grouped.first.segmentTargetText ?? item.targetText,
+          exampleTranslationText:
+              grouped.first.segmentTargetText ?? item.targetText,
         ),
       );
       index += grouped.length;
@@ -447,11 +505,14 @@ class DetailSheetPayload {
       wordId: word.id,
       tapUnitId: word.tapUnitId,
       sheetSourceText: word.sourceUnitText,
-      sheetTranslationText: (word.effectiveTranslationText?.trim().isNotEmpty == true)
-          ? (word.effectiveTranslationText ?? '')
-          : ((sourceFirstCoverage['target_text'] as String? ?? '').trim().isNotEmpty
-              ? (sourceFirstCoverage['target_text'] as String? ?? '')
-              : ''),
+      sheetTranslationText:
+          (word.effectiveTranslationText?.trim().isNotEmpty == true)
+              ? (word.effectiveTranslationText ?? '')
+              : ((sourceFirstCoverage['target_text'] as String? ?? '')
+                      .trim()
+                      .isNotEmpty
+                  ? (sourceFirstCoverage['target_text'] as String? ?? '')
+                  : ''),
       exampleSourceText: word.segmentSourceText ?? item.sourceText,
       exampleTranslationText: word.segmentTargetText ?? item.targetText,
       sourceFirst: sourceFirst,
@@ -495,19 +556,31 @@ class DetailSheetDictionaryEntry {
   final String note;
 
   factory DetailSheetDictionaryEntry.fromJson(Map<String, dynamic> json) {
-    final wordEntryJson = json['word_entry'] as Map<String, dynamic>? ?? const <String, dynamic>{};
-    final verbFormsJson = json['verb_forms'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+    final wordEntryJson = json['word_entry'] as Map<String, dynamic>? ??
+        const <String, dynamic>{};
+    final verbFormsJson = json['verb_forms'] as Map<String, dynamic>? ??
+        const <String, dynamic>{};
     return DetailSheetDictionaryEntry(
       query: json['query'] as String? ?? '',
       lemma: json['lemma'] as String? ?? '',
       transcript: json['transcript'] as String? ?? '',
       wordFound: json['word_found'] as bool? ?? false,
-      wordEntry: wordEntryJson.isEmpty ? null : DetailSheetDictionaryWordEntry.fromJson(wordEntryJson),
-      translations: (json['translations'] as List<dynamic>? ?? const []).map((item) => item.toString()).toList(),
+      wordEntry: wordEntryJson.isEmpty
+          ? null
+          : DetailSheetDictionaryWordEntry.fromJson(wordEntryJson),
+      translations: (json['translations'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString())
+          .toList(),
       partOfSpeech: json['part_of_speech'] as String? ?? '',
-      definitions: (json['definitions'] as List<dynamic>? ?? const []).map((item) => item.toString()).toList(),
-      inflectedForms: (json['inflected_forms'] as List<dynamic>? ?? const []).map((item) => item.toString()).toList(),
-      verbForms: verbFormsJson.isEmpty ? null : DetailSheetDictionaryVerbForms.fromJson(verbFormsJson),
+      definitions: (json['definitions'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString())
+          .toList(),
+      inflectedForms: (json['inflected_forms'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString())
+          .toList(),
+      verbForms: verbFormsJson.isEmpty
+          ? null
+          : DetailSheetDictionaryVerbForms.fromJson(verbFormsJson),
       phrasals: (json['phrasals'] as List<dynamic>? ?? const [])
           .cast<Map<String, dynamic>>()
           .map(DetailSheetDictionaryPhrasalItem.fromJson)
@@ -545,8 +618,12 @@ class DetailSheetDictionaryArticle {
       lemma: json['lemma'] as String? ?? '',
       partOfSpeech: json['part_of_speech'] as String? ?? '',
       transcript: json['transcript'] as String? ?? '',
-      translations: (json['translations'] as List<dynamic>? ?? const []).map((item) => item.toString()).toList(),
-      definitions: (json['definitions'] as List<dynamic>? ?? const []).map((item) => item.toString()).toList(),
+      translations: (json['translations'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString())
+          .toList(),
+      definitions: (json['definitions'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString())
+          .toList(),
     );
   }
 }
@@ -581,7 +658,9 @@ class DetailSheetDictionaryWordEntry {
       ngslRank: json['ngsl_rank'] as int? ?? 0,
       ngslRankRef: json['ngsl_rank_ref'] as String? ?? '',
       enTranslate: json['en_translate'] as bool? ?? false,
-      similar: (json['similar'] as List<dynamic>? ?? const []).map((item) => item.toString()).toList(),
+      similar: (json['similar'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString())
+          .toList(),
     );
   }
 }
@@ -629,8 +708,12 @@ class DetailSheetDictionaryPhrasalItem {
       word: json['word'] as String? ?? '',
       transcript: json['transcript'] as String? ?? '',
       translation: json['translation'] as String? ?? '',
-      definitions: (json['definitions'] as List<dynamic>? ?? const []).map((item) => item.toString()).toList(),
-      linkWords: (json['link_words'] as List<dynamic>? ?? const []).map((item) => item.toString()).toList(),
+      definitions: (json['definitions'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString())
+          .toList(),
+      linkWords: (json['link_words'] as List<dynamic>? ?? const [])
+          .map((item) => item.toString())
+          .toList(),
     );
   }
 }

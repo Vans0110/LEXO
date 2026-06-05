@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:crypto/crypto.dart';
 
-class NoveLibraryIndexBuilder {
-  const NoveLibraryIndexBuilder({
+class VirgilLibraryIndexBuilder {
+  const VirgilLibraryIndexBuilder({
     required this.libraryDir,
     this.log,
   });
@@ -32,7 +33,7 @@ class NoveLibraryIndexBuilder {
     final payload = {
       'version': 1,
       'updated_at': DateTime.now().toUtc().toIso8601String(),
-      'base_path': 'nove/library',
+      'base_path': 'virgil/library',
       'books': books,
     };
     final indexFile = File('${libraryDir.path}/library_index.json');
@@ -58,6 +59,7 @@ class NoveLibraryIndexBuilder {
         utf8.decode(manifestFile.content as List<int>),
       ) as Map<String, dynamic>;
       final relativeZipPath = _relativePath(zipFile);
+      final contentHash = await _sha256File(zipFile);
       final coverPath = await _extractCover(
         archive: archive,
         manifest: manifest,
@@ -78,6 +80,7 @@ class NoveLibraryIndexBuilder {
         'available_target_langs':
             manifest['available_target_langs'] as List<dynamic>? ?? const [],
         'zip_path': relativeZipPath,
+        'content_hash': contentHash,
         if (coverPath.isNotEmpty) 'cover_path': coverPath,
         'size_bytes': await zipFile.length(),
         'updated_at': (manifest['generated_at'] ?? '').toString(),
@@ -86,6 +89,11 @@ class NoveLibraryIndexBuilder {
       log?.call('Skip index entry for ${zipFile.path}: $error');
       return null;
     }
+  }
+
+  Future<String> _sha256File(File file) async {
+    final digest = await sha256.bind(file.openRead()).first;
+    return digest.toString();
   }
 
   Future<String> _extractCover({

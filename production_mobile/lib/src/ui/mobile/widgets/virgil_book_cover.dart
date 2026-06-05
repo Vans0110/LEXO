@@ -1,9 +1,10 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-class NoveBookCoverCard extends StatelessWidget {
-  const NoveBookCoverCard({
+class VirgilBookCoverCard extends StatelessWidget {
+  const VirgilBookCoverCard({
     super.key,
     required this.title,
     required this.subtitle,
@@ -11,6 +12,7 @@ class NoveBookCoverCard extends StatelessWidget {
     required this.installed,
     this.coverBytes,
     this.coverUrl,
+    this.coverFilePath,
     required this.onTap,
   });
 
@@ -20,6 +22,7 @@ class NoveBookCoverCard extends StatelessWidget {
   final bool installed;
   final Uint8List? coverBytes;
   final String? coverUrl;
+  final String? coverFilePath;
   final VoidCallback onTap;
 
   @override
@@ -32,12 +35,13 @@ class NoveBookCoverCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            NoveCoverArt(
+            VirgilCoverArt(
               title: title,
               favorite: favorite,
               installed: installed,
               coverBytes: coverBytes,
               coverUrl: coverUrl,
+              coverFilePath: coverFilePath,
               height: 162,
             ),
             const SizedBox(height: 8),
@@ -64,14 +68,15 @@ class NoveBookCoverCard extends StatelessWidget {
   }
 }
 
-class NoveCoverArt extends StatelessWidget {
-  const NoveCoverArt({
+class VirgilCoverArt extends StatelessWidget {
+  const VirgilCoverArt({
     super.key,
     required this.title,
     required this.favorite,
     required this.installed,
     this.coverBytes,
     this.coverUrl,
+    this.coverFilePath,
     required this.height,
   });
 
@@ -80,6 +85,7 @@ class NoveCoverArt extends StatelessWidget {
   final bool installed;
   final Uint8List? coverBytes;
   final String? coverUrl;
+  final String? coverFilePath;
   final double height;
 
   @override
@@ -87,6 +93,7 @@ class NoveCoverArt extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final imageBytes = coverBytes;
     final imageUrl = coverUrl?.trim() ?? '';
+    final imageFilePath = coverFilePath?.trim() ?? '';
     return Container(
       height: height,
       width: double.infinity,
@@ -100,29 +107,38 @@ class NoveCoverArt extends StatelessWidget {
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: imageBytes == null
-                  ? (imageUrl.isEmpty
-                      ? _CoverPlaceholder(title: title)
-                      : Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            }
-                            return _CoverPlaceholder(title: title);
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return _CoverPlaceholder(title: title);
-                          },
-                        ))
-                  : Image.memory(
+              child: imageBytes != null
+                  ? Image.memory(
                       imageBytes,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return _CoverPlaceholder(title: title);
                       },
-                    ),
+                    )
+                  : imageFilePath.isNotEmpty
+                      ? Image.file(
+                          File(imageFilePath),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return _CoverPlaceholder(title: title);
+                          },
+                        )
+                      : imageUrl.isNotEmpty
+                          ? Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+                                return _CoverPlaceholder(title: title);
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return _CoverPlaceholder(title: title);
+                              },
+                            )
+                          : _CoverPlaceholder(title: title),
             ),
           ),
           if (favorite)
@@ -171,7 +187,7 @@ class _CoverPlaceholder extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Nove',
+            'Virgil',
             style: TextStyle(
               color: colorScheme.onPrimaryContainer.withValues(alpha: 0.74),
               fontSize: 12,

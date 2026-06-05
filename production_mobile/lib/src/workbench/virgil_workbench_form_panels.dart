@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../models.dart';
 
-class NoveWorkbenchCoverPickerPanel extends StatelessWidget {
-  const NoveWorkbenchCoverPickerPanel({
+class VirgilWorkbenchCoverPickerPanel extends StatelessWidget {
+  const VirgilWorkbenchCoverPickerPanel({
     super.key,
     required this.coverPath,
     required this.busy,
@@ -86,8 +86,8 @@ class NoveWorkbenchCoverPickerPanel extends StatelessWidget {
   }
 }
 
-class NoveWorkbenchTranslationLanguagePanel extends StatelessWidget {
-  const NoveWorkbenchTranslationLanguagePanel({
+class VirgilWorkbenchTranslationLanguagePanel extends StatelessWidget {
+  const VirgilWorkbenchTranslationLanguagePanel({
     super.key,
     required this.selectedLangs,
     required this.busy,
@@ -138,8 +138,8 @@ class NoveWorkbenchTranslationLanguagePanel extends StatelessWidget {
   }
 }
 
-class NoveWorkbenchVoicePanel extends StatelessWidget {
-  const NoveWorkbenchVoicePanel({
+class VirgilWorkbenchVoicePanel extends StatelessWidget {
+  const VirgilWorkbenchVoicePanel({
     super.key,
     required this.voices,
     required this.selectedVoiceIds,

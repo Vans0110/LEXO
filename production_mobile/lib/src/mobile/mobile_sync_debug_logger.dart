@@ -15,7 +15,8 @@ class MobileSyncDebugLogger {
 
   String get debugReport {
     final parts = <String>[
-      if (_lastRemoteError != null && _lastRemoteError!.trim().isNotEmpty) _lastRemoteError!,
+      if (_lastRemoteError != null && _lastRemoteError!.trim().isNotEmpty)
+        _lastRemoteError!,
       ..._recentLines,
     ];
     return parts.join('\n');

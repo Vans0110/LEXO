@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:nove/src/workbench/nove_library_index_builder.dart';
+import 'package:virgil/src/workbench/virgil_library_index_builder.dart';
 
 Future<void> main() async {
-  final indexFile = await NoveLibraryIndexBuilder(
+  final indexFile = await VirgilLibraryIndexBuilder(
     libraryDir: Directory('assets/library'),
     log: stdout.writeln,
   ).rebuild();

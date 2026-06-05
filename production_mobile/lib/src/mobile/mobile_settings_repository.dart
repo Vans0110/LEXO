@@ -16,6 +16,7 @@ class MobileAppSettings {
     this.lastSyncAt,
     this.preferredTargetLang = 'ru',
     this.preferredVoiceId = 'af_heart',
+    this.preferredPlaybackSpeed = 0.8,
   });
 
   final String? hostUrl;
@@ -23,6 +24,7 @@ class MobileAppSettings {
   final String? lastSyncAt;
   final String preferredTargetLang;
   final String preferredVoiceId;
+  final double preferredPlaybackSpeed;
 
   MobileAppSettings copyWith({
     String? hostUrl,
@@ -30,6 +32,7 @@ class MobileAppSettings {
     String? lastSyncAt,
     String? preferredTargetLang,
     String? preferredVoiceId,
+    double? preferredPlaybackSpeed,
     bool clearHostUrl = false,
     bool clearLastSyncAt = false,
   }) {
@@ -39,6 +42,8 @@ class MobileAppSettings {
       lastSyncAt: clearLastSyncAt ? null : (lastSyncAt ?? this.lastSyncAt),
       preferredTargetLang: preferredTargetLang ?? this.preferredTargetLang,
       preferredVoiceId: preferredVoiceId ?? this.preferredVoiceId,
+      preferredPlaybackSpeed:
+          preferredPlaybackSpeed ?? this.preferredPlaybackSpeed,
     );
   }
 
@@ -49,6 +54,7 @@ class MobileAppSettings {
       'last_sync_at': lastSyncAt,
       'preferred_target_lang': preferredTargetLang,
       'preferred_voice_id': preferredVoiceId,
+      'preferred_playback_speed': preferredPlaybackSpeed,
     };
   }
 
@@ -57,6 +63,8 @@ class MobileAppSettings {
         (json['preferred_target_lang'] as String? ?? 'ru').trim();
     final preferredVoiceId =
         (json['preferred_voice_id'] as String? ?? 'af_heart').trim();
+    final preferredPlaybackSpeed =
+        (json['preferred_playback_speed'] as num?)?.toDouble() ?? 0.8;
     return MobileAppSettings(
       hostUrl: (json['host_url'] as String?)?.trim().isEmpty ?? true
           ? kDefaultMobileHostUrl
@@ -66,6 +74,7 @@ class MobileAppSettings {
       preferredTargetLang:
           preferredTargetLang == 'uk' ? preferredTargetLang : 'ru',
       preferredVoiceId: _normalizeVoiceId(preferredVoiceId),
+      preferredPlaybackSpeed: _normalizePlaybackSpeed(preferredPlaybackSpeed),
     );
   }
 
@@ -78,6 +87,16 @@ class MobileAppSettings {
       'am_michael',
     };
     return supported.contains(voiceId) ? voiceId : 'af_heart';
+  }
+
+  static double _normalizePlaybackSpeed(double speed) {
+    const supported = [0.8, 1.0, 1.15];
+    for (final item in supported) {
+      if ((speed - item).abs() < 0.01) {
+        return item;
+      }
+    }
+    return 0.8;
   }
 }
 

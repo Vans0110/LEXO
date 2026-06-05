@@ -1,6 +1,6 @@
-# Nove Workbench
+# Virgil Workbench
 
-Верстак для сборки автономного контента Nove через текущий backend LEXO.
+Верстак для сборки автономного контента Virgil через текущий backend LEXO.
 
 ## Папки
 
@@ -11,7 +11,7 @@
 ## Первый сценарий
 
 1. Запустить backend LEXO.
-2. Запустить `run_nove_workbench.bat`.
+2. Запустить `run_virgil_workbench.bat`.
 3. Выбрать TXT.
 4. Нажать `Import to backend`.
 5. Нажать `Generate Kokoro package`.
@@ -43,5 +43,5 @@ assets/library/a1/<section>/books_zip/
 Если Flutter снова выдаст CMake cache error после перемещения папок, запустить:
 
 ```text
-run_nove_workbench_clean.bat
+run_virgil_workbench_clean.bat
 ```

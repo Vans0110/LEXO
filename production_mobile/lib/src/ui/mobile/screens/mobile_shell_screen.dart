@@ -11,7 +11,7 @@ import '../../../mobile/mobile_cards_repository.dart';
 import '../../../mobile/mobile_package_models.dart';
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../mobile/mobile_settings_repository.dart';
-import '../../../mobile/nove_bundled_book_repository.dart';
+import '../../../mobile/virgil_bundled_book_repository.dart';
 import '../../../models.dart';
 import '../../../screens/cards_list_screen.dart';
 import '../../../widgets/reader_playback_bar.dart';
@@ -33,7 +33,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
   late final MobileCardsRepository _cardsRepository;
   late final MobileBookPackageRepository _packageRepository;
   late final MobileSettingsRepository _settingsRepository;
-  late final NoveBundledBookRepository _bundledRepository;
+  late final VirgilBundledBookRepository _bundledRepository;
 
   int _selectedIndex = 0;
   int _libraryReloadTick = 0;
@@ -55,7 +55,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     _cardsRepository = MobileCardsRepository();
     _packageRepository = MobileBookPackageRepository();
     _settingsRepository = MobileSettingsRepository();
-    _bundledRepository = NoveBundledBookRepository();
+    _bundledRepository = VirgilBundledBookRepository();
     _backgroundMediaSubscription =
         LexoBackgroundAudio.handler?.mediaItem.listen((item) {
       if (item != null) {
@@ -115,6 +115,19 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     });
   }
 
+  Future<void> _setPreferredPlaybackSpeed(double speed) async {
+    final next = await _settingsRepository.save(
+      _appSettings.copyWith(preferredPlaybackSpeed: speed),
+    );
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _appSettings = next;
+      _readerReloadTick += 1;
+    });
+  }
+
   Future<void> _refreshActiveBundledBookForLanguage() async {
     final activeBookId = _activeBookId;
     if (activeBookId == null || activeBookId.isEmpty) {
@@ -122,12 +135,9 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     }
     try {
       final package = await _packageRepository.readPackage(activeBookId);
-      final assetPath = package.meta.contentHash;
-      if (!assetPath.startsWith('cloud:') || !assetPath.endsWith('.zip')) {
-        return;
-      }
-      final bundledBook =
-          await _bundledRepository.findBookByAssetPath(assetPath);
+      final bundledBook = await _bundledRepository.findBookById(
+        package.meta.localBookId,
+      );
       if (bundledBook == null) {
         return;
       }
@@ -143,7 +153,20 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
   }
 
   void _handleLibraryLoaded(LibraryPayload payload) {
-    _library = payload;
+    final currentBookId = _activeBookId;
+    final currentBookExists = currentBookId != null &&
+        payload.items.any((item) => item.id == currentBookId);
+    final nextActiveBookId =
+        currentBookExists ? currentBookId : payload.activeBookId;
+    if (!mounted) {
+      _library = payload;
+      _activeBookId = nextActiveBookId;
+      return;
+    }
+    setState(() {
+      _library = payload;
+      _activeBookId = nextActiveBookId;
+    });
   }
 
   void _handleBookOpened(LibraryBookItem item) {
@@ -365,6 +388,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
               cardsRepository: _cardsRepository,
               deviceId: _appSettings.deviceId ?? '',
               preferredVoiceId: _appSettings.preferredVoiceId,
+              preferredPlaybackSpeed: _appSettings.preferredPlaybackSpeed,
               playbackRepeatMode: _playbackRepeatMode,
               libraryPlaybackQueue: _libraryPlaybackQueue,
               onPlaybackRepeatModeChanged: _handlePlaybackRepeatModeChanged,
@@ -387,6 +411,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
         settings: _appSettings,
         onPreferredTargetLangChanged: _setPreferredTargetLang,
         onPreferredVoiceChanged: _setPreferredVoice,
+        onPreferredPlaybackSpeedChanged: _setPreferredPlaybackSpeed,
       ),
     ];
 

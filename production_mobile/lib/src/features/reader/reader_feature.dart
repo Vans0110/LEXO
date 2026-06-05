@@ -69,8 +69,10 @@ class ReaderFeatureState {
       loading: loading ?? this.loading,
       actionBusy: actionBusy ?? this.actionBusy,
       error: clearError ? null : (error ?? this.error),
-      lastSavedParagraphIndex: lastSavedParagraphIndex ?? this.lastSavedParagraphIndex,
-      selectedParagraphIndex: selectedParagraphIndex ?? this.selectedParagraphIndex,
+      lastSavedParagraphIndex:
+          lastSavedParagraphIndex ?? this.lastSavedParagraphIndex,
+      selectedParagraphIndex:
+          selectedParagraphIndex ?? this.selectedParagraphIndex,
       selectedTapUnitId: selectedTapUnitId ?? this.selectedTapUnitId,
       translationLeftText: translationLeftText ?? this.translationLeftText,
       translationFocusText: translationFocusText ?? this.translationFocusText,
@@ -119,7 +121,8 @@ class ReaderFeatureController {
     final profiles = await _api.getTtsProfiles();
     final levels = await _api.getTtsLevels();
     final ttsState = await _api.getTtsState(bookId);
-    final voiceId = ttsState.activeJob?.voiceId ?? (profiles.isNotEmpty ? profiles.first.voiceId : '');
+    final voiceId = ttsState.activeJob?.voiceId ??
+        (profiles.isNotEmpty ? profiles.first.voiceId : '');
     final ttsPackageState = voiceId.isEmpty
         ? null
         : await _api.getTtsPackageState(bookId: bookId, voiceId: voiceId);
@@ -136,7 +139,8 @@ class ReaderFeatureController {
     final profiles = await _api.getTtsProfiles();
     final levels = await _api.getTtsLevels();
     final ttsState = await _api.getTtsState(bookId);
-    final voiceId = ttsState.activeJob?.voiceId ?? (profiles.isNotEmpty ? profiles.first.voiceId : '');
+    final voiceId = ttsState.activeJob?.voiceId ??
+        (profiles.isNotEmpty ? profiles.first.voiceId : '');
     final ttsPackageState = voiceId.isEmpty
         ? null
         : await _api.getTtsPackageState(bookId: bookId, voiceId: voiceId);
@@ -172,7 +176,8 @@ class ReaderFeatureController {
     required String wordId,
     required List<String> translations,
   }) {
-    return _api.saveDictionaryCard(bookId: bookId, wordId: wordId, translations: translations);
+    return _api.saveDictionaryCard(
+        bookId: bookId, wordId: wordId, translations: translations);
   }
 
   Future<TtsState> refreshTtsState(String bookId) async {

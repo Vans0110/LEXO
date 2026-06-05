@@ -55,6 +55,7 @@ class LibraryBookItem {
     required this.isActive,
     this.desktopBookId,
     this.contentHash,
+    this.coverFilePath,
     this.errorMessage,
   });
 
@@ -69,6 +70,7 @@ class LibraryBookItem {
   final bool isActive;
   final String? desktopBookId;
   final String? contentHash;
+  final String? coverFilePath;
   final String? errorMessage;
 
   factory LibraryBookItem.fromJson(Map<String, dynamic> json) {
@@ -84,6 +86,7 @@ class LibraryBookItem {
       isActive: json['is_active'] as bool? ?? false,
       desktopBookId: json['desktop_book_id'] as String?,
       contentHash: json['content_hash'] as String?,
+      coverFilePath: json['cover_file_path'] as String?,
       errorMessage: json['error_message'] as String?,
     );
   }

@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../mobile/nove_a1_chapters.dart';
-import 'nove_workbench_book_status.dart';
-import 'nove_workbench_book_tile.dart';
+import '../mobile/virgil_a1_chapters.dart';
+import 'virgil_workbench_book_status.dart';
+import 'virgil_workbench_book_tile.dart';
 
-class NoveWorkbenchBookSelection {
-  const NoveWorkbenchBookSelection({
+class VirgilWorkbenchBookSelection {
+  const VirgilWorkbenchBookSelection({
     required this.level,
     required this.section,
     required this.chapterId,
@@ -33,8 +33,8 @@ class NoveWorkbenchBookSelection {
       languages.every(exportedLanguages.contains);
 }
 
-class NoveWorkbenchBookLibrary extends StatefulWidget {
-  const NoveWorkbenchBookLibrary({
+class VirgilWorkbenchBookLibrary extends StatefulWidget {
+  const VirgilWorkbenchBookLibrary({
     super.key,
     required this.busy,
     required this.onSelected,
@@ -45,20 +45,21 @@ class NoveWorkbenchBookLibrary extends StatefulWidget {
   });
 
   final bool busy;
-  final ValueChanged<NoveWorkbenchBookSelection> onSelected;
-  final Future<void> Function(NoveWorkbenchBookSelection selection)
+  final ValueChanged<VirgilWorkbenchBookSelection> onSelected;
+  final Future<void> Function(VirgilWorkbenchBookSelection selection)
       onRefreshBook;
-  final Future<void> Function(NoveWorkbenchBookSelection selection)
+  final Future<void> Function(VirgilWorkbenchBookSelection selection)
       onRefreshDictionary;
-  final ValueChanged<List<NoveWorkbenchBookSelection>> onProcessAll;
-  final ValueChanged<List<NoveWorkbenchBookSelection>> onUpdateTextOnly;
+  final ValueChanged<List<VirgilWorkbenchBookSelection>> onProcessAll;
+  final ValueChanged<List<VirgilWorkbenchBookSelection>> onUpdateTextOnly;
 
   @override
-  State<NoveWorkbenchBookLibrary> createState() =>
-      _NoveWorkbenchBookLibraryState();
+  State<VirgilWorkbenchBookLibrary> createState() =>
+      _VirgilWorkbenchBookLibraryState();
 }
 
-class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
+class _VirgilWorkbenchBookLibraryState
+    extends State<VirgilWorkbenchBookLibrary> {
   late Future<List<_WorkbenchBookItem>> _future;
 
   @override
@@ -84,7 +85,7 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
         .where((file) => _isBookSource(root, file))
         .toList()
       ..sort((a, b) => a.path.compareTo(b.path));
-    final statuses = await NoveWorkbenchBookStatusLoader(
+    final statuses = await VirgilWorkbenchBookStatusLoader(
       appRoot: Directory.current.path,
     ).loadStatuses();
     return [
@@ -114,7 +115,7 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
   _WorkbenchBookItem _buildItem(
     Directory booksRoot,
     File source,
-    Map<String, NoveWorkbenchBookStatus> statuses,
+    Map<String, VirgilWorkbenchBookStatus> statuses,
   ) {
     final relativeParts = _relativeParts(booksRoot.path, source.path);
     final rawLevel = relativeParts.isNotEmpty ? relativeParts.first : 'a1';
@@ -124,13 +125,13 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
     final chapterId = _chapterIdFromFolder(rawChapter);
     final coverPath = _findCoverPath(source);
     final status =
-        statuses[noveWorkbenchBookStatusKey(level, chapterId, title)];
+        statuses[virgilWorkbenchBookStatusKey(level, chapterId, title)];
     return _WorkbenchBookItem(
       level: level,
       section: 'chapters',
       chapterId: chapterId,
       chapterTitle:
-          chapterId.isEmpty ? rawChapter : noveA1ChapterTitle(chapterId),
+          chapterId.isEmpty ? rawChapter : virgilA1ChapterTitle(chapterId),
       title: title,
       sourcePath: source.path,
       coverPath: coverPath,
@@ -151,10 +152,10 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
       return '';
     }
     final number = int.tryParse(match.group(1) ?? '');
-    if (number == null || number < 1 || number > noveA1Chapters.length) {
+    if (number == null || number < 1 || number > virgilA1Chapters.length) {
       return '';
     }
-    return noveA1Chapters[number - 1].id;
+    return virgilA1Chapters[number - 1].id;
   }
 
   String _findCoverPath(File source) {
@@ -200,10 +201,10 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
     _refresh();
   }
 
-  Future<NoveWorkbenchBookSelection> _selectionFor(
+  Future<VirgilWorkbenchBookSelection> _selectionFor(
       _WorkbenchBookItem item) async {
     final text = await File(item.sourcePath).readAsString();
-    return NoveWorkbenchBookSelection(
+    return VirgilWorkbenchBookSelection(
       level: item.level,
       section: item.section,
       chapterId: item.chapterId,
@@ -217,7 +218,7 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
   }
 
   Future<void> _processAll(List<_WorkbenchBookItem> items) async {
-    final selections = <NoveWorkbenchBookSelection>[];
+    final selections = <VirgilWorkbenchBookSelection>[];
     for (final item in items) {
       selections.add(await _selectionFor(item));
     }
@@ -228,7 +229,7 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
   }
 
   Future<void> _updateTextOnly(List<_WorkbenchBookItem> items) async {
-    final selections = <NoveWorkbenchBookSelection>[];
+    final selections = <VirgilWorkbenchBookSelection>[];
     for (final item in items) {
       selections.add(await _selectionFor(item));
     }
@@ -313,7 +314,7 @@ class _NoveWorkbenchBookLibraryState extends State<NoveWorkbenchBookLibrary> {
                     ),
                     const SizedBox(height: 8),
                     for (final item in items)
-                      NoveWorkbenchBookTile(
+                      VirgilWorkbenchBookTile(
                         title: item.title,
                         level: item.level,
                         chapterTitle: item.chapterTitle,
@@ -354,7 +355,7 @@ class _WorkbenchBookItem {
   final String title;
   final String sourcePath;
   final String coverPath;
-  final NoveWorkbenchBookStatus? status;
+  final VirgilWorkbenchBookStatus? status;
 }
 
 String _basename(String path) =>

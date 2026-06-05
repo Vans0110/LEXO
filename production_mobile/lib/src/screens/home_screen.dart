@@ -185,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final library = _state.library;
     return Scaffold(
-      appBar: AppBar(title: const Text('LEXO')),
+      appBar: AppBar(title: const Text('Virgil')),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 860),

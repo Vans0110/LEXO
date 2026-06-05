@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../api/api_client.dart';
-import 'nove_library_index_builder.dart';
+import 'virgil_library_index_builder.dart';
 
-class NoveWorkbenchBuilder {
-  const NoveWorkbenchBuilder({
+class VirgilWorkbenchBuilder {
+  const VirgilWorkbenchBuilder({
     required this.api,
     required this.level,
     required this.section,
@@ -115,7 +115,7 @@ class NoveWorkbenchBuilder {
       await _downloadWordAudio(outputDir, package);
     }
     await _createAndInstallZip(outputDir);
-    await NoveLibraryIndexBuilder(
+    await VirgilLibraryIndexBuilder(
       libraryDir: Directory('${Directory.current.path}/assets/library'),
       log: log,
     ).rebuild();
@@ -164,7 +164,7 @@ class NoveWorkbenchBuilder {
       _loadManifestWithDictionaries(loadManifest, packageByLang.keys),
     );
     await _createAndInstallZip(outputDir);
-    await NoveLibraryIndexBuilder(
+    await VirgilLibraryIndexBuilder(
       libraryDir: Directory('${Directory.current.path}/assets/library'),
       log: log,
     ).rebuild();
@@ -768,11 +768,11 @@ class NoveWorkbenchBuilder {
       [
         '-NoProfile',
         '-Command',
-        r'Compress-Archive -Path (Join-Path $env:NOVE_ZIP_SOURCE "*") -DestinationPath $env:NOVE_ZIP_DESTINATION -Force',
+        r'Compress-Archive -Path (Join-Path $env:VIRGIL_ZIP_SOURCE "*") -DestinationPath $env:VIRGIL_ZIP_DESTINATION -Force',
       ],
       environment: {
-        'NOVE_ZIP_SOURCE': outputDir.path,
-        'NOVE_ZIP_DESTINATION': outputZip.path,
+        'VIRGIL_ZIP_SOURCE': outputDir.path,
+        'VIRGIL_ZIP_DESTINATION': outputZip.path,
       },
     );
     if (result.exitCode != 0) {

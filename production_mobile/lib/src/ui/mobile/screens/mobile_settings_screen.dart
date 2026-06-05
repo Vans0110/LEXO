@@ -1,14 +1,17 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../mobile/mobile_settings_repository.dart';
-import '../../../mobile/nove_download_options.dart';
+import '../../../mobile/virgil_download_options.dart';
 
 const _feedbackEmail = 'ivan.kurtinov@gmail.com';
-const _appVersion = '0.1.0+1';
+
+const _playbackSpeedOptions = [
+  0.8,
+  1.0,
+  1.15,
+];
 
 class MobileSettingsScreen extends StatelessWidget {
   const MobileSettingsScreen({
@@ -16,11 +19,13 @@ class MobileSettingsScreen extends StatelessWidget {
     required this.settings,
     required this.onPreferredTargetLangChanged,
     required this.onPreferredVoiceChanged,
+    required this.onPreferredPlaybackSpeedChanged,
   });
 
   final MobileAppSettings settings;
   final ValueChanged<String> onPreferredTargetLangChanged;
   final ValueChanged<String> onPreferredVoiceChanged;
+  final ValueChanged<double> onPreferredPlaybackSpeedChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +46,13 @@ class MobileSettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: settings.preferredTargetLang,
+              initialValue: settings.preferredTargetLang,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               ),
-              items: [
+              items: const [
                 DropdownMenuItem(value: 'ru', child: Text('Russian')),
                 DropdownMenuItem(value: 'uk', child: Text('Ukrainian')),
               ],
@@ -67,14 +72,14 @@ class MobileSettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: settings.preferredVoiceId,
+              initialValue: settings.preferredVoiceId,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               ),
               items: [
-                for (final option in noveVoiceOptions)
+                for (final option in virgilVoiceOptions)
                   DropdownMenuItem(
                     value: option.voiceId,
                     child: Text(option.title),
@@ -83,6 +88,35 @@ class MobileSettingsScreen extends StatelessWidget {
               onChanged: (value) {
                 if (value != null && value != settings.preferredVoiceId) {
                   onPreferredVoiceChanged(value);
+                }
+              },
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Reading speed',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<double>(
+              initialValue: settings.preferredPlaybackSpeed,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              ),
+              items: [
+                for (final speed in _playbackSpeedOptions)
+                  DropdownMenuItem(
+                    value: speed,
+                    child: Text(_formatSpeed(speed)),
+                  ),
+              ],
+              onChanged: (value) {
+                if (value != null && value != settings.preferredPlaybackSpeed) {
+                  onPreferredPlaybackSpeedChanged(value);
                 }
               },
             ),
@@ -104,11 +138,11 @@ class MobileSettingsScreen extends StatelessWidget {
               ),
               leading: const Icon(Icons.feedback_outlined),
               title: const Text('Feedback'),
-              subtitle: const Text('Message and app details'),
+              subtitle: const Text('Message'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => showDialog<void>(
                 context: context,
-                builder: (_) => _FeedbackDialog(settings: settings),
+                builder: (_) => const _FeedbackDialog(),
               ),
             ),
           ],
@@ -116,12 +150,20 @@ class MobileSettingsScreen extends StatelessWidget {
       ),
     );
   }
+
+  static String _formatSpeed(double speed) {
+    if (speed == speed.roundToDouble()) {
+      return '${speed.toStringAsFixed(0)}x';
+    }
+    if ((speed * 10).round() == speed * 10) {
+      return '${speed.toStringAsFixed(1)}x';
+    }
+    return '${speed.toStringAsFixed(2)}x';
+  }
 }
 
 class _FeedbackDialog extends StatefulWidget {
-  const _FeedbackDialog({required this.settings});
-
-  final MobileAppSettings settings;
+  const _FeedbackDialog();
 
   @override
   State<_FeedbackDialog> createState() => _FeedbackDialogState();
@@ -148,7 +190,7 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
       scheme: 'mailto',
       path: _feedbackEmail,
       queryParameters: {
-        'subject': 'Nove feedback',
+        'subject': 'Virgil feedback',
         'body': body,
       },
     );
@@ -180,7 +222,7 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
   Future<void> _copyFeedback(String body) async {
     await Clipboard.setData(
       ClipboardData(
-          text: 'To: $_feedbackEmail\nSubject: Nove feedback\n\n$body'),
+          text: 'To: $_feedbackEmail\nSubject: Virgil feedback\n\n$body'),
     );
     if (!mounted) {
       return;
@@ -192,22 +234,8 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
 
   String _buildFeedbackBody() {
     final message = _messageController.text.trim();
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    final createdAt = DateTime.now().toUtc().toIso8601String();
     return [
-      'Message:',
       message,
-      '',
-      'Technical info:',
-      'feedback_created_at_utc: $createdAt',
-      'install_id: ${widget.settings.deviceId?.trim().isNotEmpty == true ? widget.settings.deviceId : 'not set'}',
-      'app: Nove',
-      'app_version: $_appVersion',
-      'platform: ${Platform.operatingSystem}',
-      'platform_version: ${Platform.operatingSystemVersion}',
-      'locale: $locale',
-      'preferred_target_lang: ${widget.settings.preferredTargetLang}',
-      'preferred_voice_id: ${widget.settings.preferredVoiceId}',
     ].join('\n');
   }
 
@@ -236,13 +264,6 @@ class _FeedbackDialogState extends State<_FeedbackDialog> {
                   }
                   return null;
                 },
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'App details will be added to the email: install ID, version, platform, language, and voice.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
               ),
             ],
           ),

@@ -179,12 +179,6 @@ class _CardsListScreenState extends State<CardsListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cards'),
-        actions: [
-          IconButton(
-            onPressed: _busy ? null : _load,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),

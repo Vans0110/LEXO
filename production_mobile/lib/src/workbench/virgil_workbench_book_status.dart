@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 
-class NoveWorkbenchBookStatus {
-  const NoveWorkbenchBookStatus({
+class VirgilWorkbenchBookStatus {
+  const VirgilWorkbenchBookStatus({
     required this.title,
     required this.level,
     required this.chapterId,
@@ -70,8 +70,8 @@ class NoveWorkbenchBookStatus {
 
   bool hasDictionary(String language) => dictionaries.contains(language);
 
-  NoveWorkbenchBookStatus merge(NoveWorkbenchBookStatus other) {
-    return NoveWorkbenchBookStatus(
+  VirgilWorkbenchBookStatus merge(VirgilWorkbenchBookStatus other) {
+    return VirgilWorkbenchBookStatus(
       title: title.isNotEmpty ? title : other.title,
       level: level.isNotEmpty ? level : other.level,
       chapterId: chapterId.isNotEmpty ? chapterId : other.chapterId,
@@ -138,20 +138,20 @@ class NoveWorkbenchBookStatus {
   }
 }
 
-class NoveWorkbenchBookStatusLoader {
-  const NoveWorkbenchBookStatusLoader({required this.appRoot});
+class VirgilWorkbenchBookStatusLoader {
+  const VirgilWorkbenchBookStatusLoader({required this.appRoot});
 
   final String appRoot;
 
-  Future<Map<String, NoveWorkbenchBookStatus>> loadStatuses() async {
-    final result = <String, NoveWorkbenchBookStatus>{};
+  Future<Map<String, VirgilWorkbenchBookStatus>> loadStatuses() async {
+    final result = <String, VirgilWorkbenchBookStatus>{};
     await _loadOutputStatuses(result);
     await _loadInstalledZipStatuses(result);
     return result;
   }
 
   Future<void> _loadOutputStatuses(
-    Map<String, NoveWorkbenchBookStatus> result,
+    Map<String, VirgilWorkbenchBookStatus> result,
   ) async {
     final outputRoot = Directory('$appRoot/workbench/output');
     if (!outputRoot.existsSync()) {
@@ -185,7 +185,7 @@ class NoveWorkbenchBookStatusLoader {
     }
   }
 
-  NoveWorkbenchBookStatus _readOutputDirectoryStatus({
+  VirgilWorkbenchBookStatus _readOutputDirectoryStatus({
     required Directory outputDir,
     required String title,
     required String level,
@@ -267,7 +267,7 @@ class NoveWorkbenchBookStatusLoader {
         coverPath = entity.path;
       }
     }
-    return NoveWorkbenchBookStatus(
+    return VirgilWorkbenchBookStatus(
       title: title,
       level: level,
       chapterId: chapterId,
@@ -289,7 +289,7 @@ class NoveWorkbenchBookStatusLoader {
   }
 
   Future<void> _loadInstalledZipStatuses(
-    Map<String, NoveWorkbenchBookStatus> result,
+    Map<String, VirgilWorkbenchBookStatus> result,
   ) async {
     final assetsRoot = Directory('$appRoot/assets/library');
     if (!assetsRoot.existsSync()) {
@@ -395,7 +395,7 @@ class NoveWorkbenchBookStatusLoader {
         }
         _merge(
           result,
-          NoveWorkbenchBookStatus(
+          VirgilWorkbenchBookStatus(
             title: title,
             level: level,
             chapterId: chapterId,
@@ -458,10 +458,10 @@ class NoveWorkbenchBookStatusLoader {
   }
 
   void _merge(
-    Map<String, NoveWorkbenchBookStatus> result,
-    NoveWorkbenchBookStatus status,
+    Map<String, VirgilWorkbenchBookStatus> result,
+    VirgilWorkbenchBookStatus status,
   ) {
-    final key = noveWorkbenchBookStatusKey(
+    final key = virgilWorkbenchBookStatusKey(
       status.level,
       status.chapterId,
       status.title,
@@ -508,7 +508,7 @@ class NoveWorkbenchBookStatusLoader {
   }
 }
 
-String noveWorkbenchBookStatusKey(
+String virgilWorkbenchBookStatusKey(
         String level, String chapterId, String title) =>
     '${level.toLowerCase()}|$chapterId|${title.trim().toLowerCase()}';
 

@@ -83,12 +83,17 @@ class ReaderPlaybackBar extends StatelessWidget {
     final theme = Theme.of(context);
     final controlsEnabled = hasPlayableJob && !busy;
     final playIcon = isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded;
-    final arrowIcon = expanded ? Icons.keyboard_arrow_down_rounded : Icons.keyboard_arrow_up_rounded;
-    final buttonBackground = Colors.black.withValues(alpha: controlsEnabled ? 0.42 : 0.18);
-    final iconColor = Colors.white.withValues(alpha: controlsEnabled ? 0.95 : 0.45);
+    final arrowIcon = expanded
+        ? Icons.keyboard_arrow_down_rounded
+        : Icons.keyboard_arrow_up_rounded;
+    final buttonBackground =
+        Colors.black.withValues(alpha: controlsEnabled ? 0.42 : 0.18);
+    final iconColor =
+        Colors.white.withValues(alpha: controlsEnabled ? 0.95 : 0.45);
     final repeatEnabled = !busy;
     final repeatActive = repeatMode != ReaderPlaybackRepeatMode.off;
-    final repeatBackground = Colors.black.withValues(alpha: repeatEnabled ? 0.42 : 0.18);
+    final repeatBackground =
+        Colors.black.withValues(alpha: repeatEnabled ? 0.42 : 0.18);
     final repeatIconColor = repeatActive
         ? Colors.white
         : Colors.white.withValues(alpha: repeatEnabled ? 0.72 : 0.35);
@@ -130,11 +135,13 @@ class ReaderPlaybackBar extends StatelessWidget {
                       onTap: onToggleExpand,
                       borderRadius: BorderRadius.circular(999),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 2),
                         child: Icon(
                           arrowIcon,
                           size: 18,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.42),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.42),
                         ),
                       ),
                     ),
@@ -179,7 +186,8 @@ class ReaderPlaybackBar extends StatelessWidget {
                           const SizedBox(width: 8),
                           _RoundTextControlButton(
                             onPressed: controlsEnabled ? onSpeedTap : null,
-                            onLongPress: controlsEnabled ? onSpeedLongPress : null,
+                            onLongPress:
+                                controlsEnabled ? onSpeedLongPress : null,
                             label: speedLabel,
                             tooltip: 'Speed',
                             backgroundColor: buttonBackground,

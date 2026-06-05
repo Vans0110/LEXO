@@ -809,12 +809,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(payload?.title ?? 'Reader'),
-        actions: [
-          IconButton(
-            onPressed: _state.loading || _state.actionBusy ? null : _load,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
       ),
       body: _state.loading
           ? const Center(child: CircularProgressIndicator())

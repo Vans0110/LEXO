@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models.dart';
 
-class NoveWorkbenchStatusPanel extends StatelessWidget {
-  const NoveWorkbenchStatusPanel({
+class VirgilWorkbenchStatusPanel extends StatelessWidget {
+  const VirgilWorkbenchStatusPanel({
     super.key,
     required this.sourcePath,
     required this.coverPath,

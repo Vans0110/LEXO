@@ -161,9 +161,26 @@ class MobileBookPackageRepository {
       items: [
         for (final package in packages)
           package.meta.toLibraryItem(
-              isActive: package.meta.localBookId == activeBookId),
+            isActive: package.meta.localBookId == activeBookId,
+            coverFilePath: _coverFilePath(package),
+          ),
       ],
     );
+  }
+
+  String? _coverFilePath(MobileBookPackage package) {
+    final coverPath = package.meta.coverPath?.trim() ?? '';
+    final bookDir = package.rawJson['_book_dir']?.toString() ?? '';
+    if (coverPath.isEmpty || bookDir.isEmpty) {
+      return null;
+    }
+    final normalized = coverPath.replaceAll('\\', '/');
+    if (normalized.startsWith('/') ||
+        RegExp(r'^[a-zA-Z]:/').hasMatch(normalized) ||
+        normalized.split('/').contains('..')) {
+      return null;
+    }
+    return '$bookDir/$normalized';
   }
 
   Future<List<MobileBookPackage>> listPackages() async {
@@ -180,6 +197,7 @@ class MobileBookPackageRepository {
       final raw = _normalizePackageJson(
         jsonDecode(packageFile.readAsStringSync()) as Map<String, dynamic>,
       );
+      raw['_book_dir'] = entity.path;
       packages.add(MobileBookPackage(raw));
     }
     return packages;

@@ -244,6 +244,11 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
               settings.copyWith(preferredVoiceId: voiceId),
             );
           },
+          onPreferredPlaybackSpeedChanged: (speed) async {
+            settings = await settingsRepository.save(
+              settings.copyWith(preferredPlaybackSpeed: speed),
+            );
+          },
         ),
       ),
     );
@@ -258,7 +263,7 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
     final library = _library;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LEXO'),
+        title: const Text('Virgil'),
         actions: [
           if (widget.onBookOpened == null)
             IconButton(

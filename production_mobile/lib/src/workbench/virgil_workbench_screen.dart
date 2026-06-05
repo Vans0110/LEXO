@@ -8,13 +8,13 @@ import 'package:flutter/material.dart';
 
 import '../api/api_client.dart';
 import '../models.dart';
-import '../mobile/nove_a1_chapters.dart';
+import '../mobile/virgil_a1_chapters.dart';
 import '../platform/desktop_txt_picker.dart';
-import 'nove_workbench_book_library.dart';
-import 'nove_workbench_builder.dart';
-import 'nove_workbench_form_panels.dart';
-import 'nove_library_index_builder.dart';
-import 'nove_workbench_status_panel.dart';
+import 'virgil_workbench_book_library.dart';
+import 'virgil_workbench_builder.dart';
+import 'virgil_workbench_form_panels.dart';
+import 'virgil_library_index_builder.dart';
+import 'virgil_workbench_status_panel.dart';
 
 const _ruContextDictionarySource = 'wiktionary_freedict_en_ru_context_v1';
 const _ukContextDictionarySource = 'wiktionary_en_uk_context_v1';
@@ -22,13 +22,13 @@ const _ukContextDictionarySource = 'wiktionary_en_uk_context_v1';
 String _expectedDictionarySource(String lang) =>
     lang == 'uk' ? _ukContextDictionarySource : _ruContextDictionarySource;
 
-class NoveWorkbenchScreen extends StatefulWidget {
-  const NoveWorkbenchScreen({super.key, required this.api});
+class VirgilWorkbenchScreen extends StatefulWidget {
+  const VirgilWorkbenchScreen({super.key, required this.api});
 
   final LexoApiClient api;
 
   @override
-  State<NoveWorkbenchScreen> createState() => _NoveWorkbenchScreenState();
+  State<VirgilWorkbenchScreen> createState() => _VirgilWorkbenchScreenState();
 }
 
 class _WorkbenchExportStatus {
@@ -72,7 +72,7 @@ class _WorkbenchExportStatus {
   }
 }
 
-class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
+class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
   static const _levels = ['a1', 'a2', 'b1', 'b2', 'c1'];
   static const _sections = ['chapters', 'more_a1_stories'];
   static const _translationLangs = ['ru', 'uk'];
@@ -80,7 +80,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
 
   String _level = _levels.first;
   String _section = _sections.first;
-  String _chapterId = noveDefaultA1ChapterId;
+  String _chapterId = virgilDefaultA1ChapterId;
   Set<String> _targetLangs = {'ru'};
   String _title = '';
   String _sourceText = '';
@@ -425,13 +425,13 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     if (bookId == null || bookId.isEmpty) {
       throw Exception('Import the book to backend first.');
     }
-    final outputDir = await NoveWorkbenchBuilder(
+    final outputDir = await VirgilWorkbenchBuilder(
       api: widget.api,
       level: _level,
       section: _section,
       chapterId: _section == 'chapters' ? _chapterId : '',
       chapterTitle:
-          _section == 'chapters' ? noveA1ChapterTitle(_chapterId) : '',
+          _section == 'chapters' ? virgilA1ChapterTitle(_chapterId) : '',
       sourcePath: _sourcePath,
       coverPath: _coverPath,
       log: _appendLog,
@@ -451,7 +451,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   }
 
   Future<void> _refreshBookDictionaries(
-      NoveWorkbenchBookSelection selection) async {
+      VirgilWorkbenchBookSelection selection) async {
     setState(() {
       _busy = true;
       _error = null;
@@ -464,13 +464,13 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
         throw Exception('Import the book to backend first.');
       }
       final selectedLangs = _selectedTargetLangs();
-      final outputDir = await NoveWorkbenchBuilder(
+      final outputDir = await VirgilWorkbenchBuilder(
         api: widget.api,
         level: _level,
         section: _section,
         chapterId: _section == 'chapters' ? _chapterId : '',
         chapterTitle:
-            _section == 'chapters' ? noveA1ChapterTitle(_chapterId) : '',
+            _section == 'chapters' ? virgilA1ChapterTitle(_chapterId) : '',
         sourcePath: _sourcePath,
         coverPath: _coverPath,
         log: _appendLog,
@@ -505,17 +505,17 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       _error = null;
     });
     try {
-      await NoveLibraryIndexBuilder(
+      await VirgilLibraryIndexBuilder(
         libraryDir: Directory('${Directory.current.path}/assets/library'),
         log: _appendLog,
       ).rebuild();
-      _appendLog('Sync to R2: r2books:books/nove/library');
+      _appendLog('Sync to R2: r2books:books/virgil/library');
       final result = await Process.run(
         'rclone',
         [
           'sync',
           '${Directory.current.path}\\assets\\library',
-          'r2books:books/nove/library',
+          'r2books:books/virgil/library',
           '--progress',
         ],
       );
@@ -564,7 +564,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   String _stableBookKey() {
     final chapterKey = _section == 'chapters' ? _chapterId : '';
     return [
-      'nove',
+      'virgil',
       _level.trim().toLowerCase(),
       _section.trim().toLowerCase(),
       chapterKey.trim().toLowerCase(),
@@ -612,7 +612,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     });
   }
 
-  void _selectLibraryBook(NoveWorkbenchBookSelection selection) {
+  void _selectLibraryBook(VirgilWorkbenchBookSelection selection) {
     setState(() {
       _level = selection.level;
       _section = selection.section;
@@ -637,7 +637,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   }
 
   Future<void> _processLibraryBooks(
-    List<NoveWorkbenchBookSelection> selections, {
+    List<VirgilWorkbenchBookSelection> selections, {
     bool includeMissingProfileVoices = false,
   }) async {
     if (selections.isEmpty) {
@@ -744,7 +744,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   }
 
   Future<void> _updateLibraryTextOnly(
-      List<NoveWorkbenchBookSelection> selections) async {
+      List<VirgilWorkbenchBookSelection> selections) async {
     if (selections.isEmpty) {
       return;
     }
@@ -789,7 +789,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
       setState(() => _error = 'Select or load a book before cleaning.');
       return;
     }
-    final selection = NoveWorkbenchBookSelection(
+    final selection = VirgilWorkbenchBookSelection(
       level: _level,
       section: _section,
       chapterId: _section == 'chapters' ? _chapterId : '',
@@ -862,7 +862,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   }
 
   Future<_WorkbenchExportStatus> _readCurrentExportStatus(
-      NoveWorkbenchBookSelection selection) async {
+      VirgilWorkbenchBookSelection selection) async {
     final outputRoot = Directory(
       '${Directory.current.path}/workbench/output/${selection.level}/${selection.section}',
     );
@@ -959,7 +959,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
 
   Future<Directory?> _findOutputDirForSelection(
     Directory outputRoot,
-    NoveWorkbenchBookSelection selection,
+    VirgilWorkbenchBookSelection selection,
   ) async {
     if (!outputRoot.existsSync()) {
       return null;
@@ -994,7 +994,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   }
 
   Future<_WorkbenchExportStatus> _readInstalledZipStatus(
-      NoveWorkbenchBookSelection selection) async {
+      VirgilWorkbenchBookSelection selection) async {
     final zipRoot = Directory(
       '${Directory.current.path}/assets/library/${selection.level}/${selection.section}/books_zip',
     );
@@ -1109,7 +1109,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
   }
 
   Future<List<String>> _deleteInstalledZipsForSelection(
-      NoveWorkbenchBookSelection selection) async {
+      VirgilWorkbenchBookSelection selection) async {
     final zipRoot = Directory(
       '${Directory.current.path}/assets/library/${selection.level}/${selection.section}/books_zip',
     );
@@ -1201,7 +1201,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     }
   }
 
-  void _applyLibrarySelection(NoveWorkbenchBookSelection selection) {
+  void _applyLibrarySelection(VirgilWorkbenchBookSelection selection) {
     _level = selection.level;
     _section = selection.section;
     if (selection.chapterId.isNotEmpty) {
@@ -1232,12 +1232,12 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
     final canExport = !_busy && (_bookId ?? '').isNotEmpty;
     final canClean = !_busy && _title.trim().isNotEmpty;
     return Scaffold(
-      appBar: AppBar(title: const Text('Nove Workbench')),
+      appBar: AppBar(title: const Text('Virgil Workbench')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            NoveWorkbenchBookLibrary(
+            VirgilWorkbenchBookLibrary(
               busy: _busy,
               onSelected: _selectLibraryBook,
               onRefreshBook: (selection) => _processLibraryBooks(
@@ -1302,7 +1302,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
               onChanged: (value) => _title = value,
             ),
             const SizedBox(height: 12),
-            NoveWorkbenchCoverPickerPanel(
+            VirgilWorkbenchCoverPickerPanel(
               coverPath: _coverPath,
               busy: _busy,
               onPickCover: _pickCover,
@@ -1360,7 +1360,7 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
                   border: OutlineInputBorder(),
                 ),
                 items: [
-                  for (final chapter in noveA1Chapters)
+                  for (final chapter in virgilA1Chapters)
                     DropdownMenuItem(
                       value: chapter.id,
                       child: Text(chapter.title),
@@ -1373,20 +1373,20 @@ class _NoveWorkbenchScreenState extends State<NoveWorkbenchScreen> {
               ),
               const SizedBox(height: 12),
             ],
-            NoveWorkbenchTranslationLanguagePanel(
+            VirgilWorkbenchTranslationLanguagePanel(
               selectedLangs: _targetLangs,
               busy: _busy,
               onChanged: _toggleTargetLang,
             ),
             const SizedBox(height: 12),
-            NoveWorkbenchVoicePanel(
+            VirgilWorkbenchVoicePanel(
               voices: _voices,
               selectedVoiceIds: _voiceIds,
               busy: _busy,
               onChanged: _toggleVoice,
             ),
             const SizedBox(height: 18),
-            NoveWorkbenchStatusPanel(
+            VirgilWorkbenchStatusPanel(
               sourcePath: _sourcePath,
               coverPath: _coverPath,
               bookId: _bookId,

@@ -7,14 +7,12 @@ class DesktopSettingsScreen extends StatelessWidget {
     this.busy = false,
     this.errorText,
     this.onImportBook,
-    this.onRefreshLibrary,
   });
 
   final String? currentBookTitle;
   final bool busy;
   final String? errorText;
   final VoidCallback? onImportBook;
-  final VoidCallback? onRefreshLibrary;
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +52,6 @@ class DesktopSettingsScreen extends StatelessWidget {
                         onPressed: busy ? null : onImportBook,
                         icon: const Icon(Icons.upload_file_outlined),
                         label: const Text('Load TXT'),
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: busy ? null : onRefreshLibrary,
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Refresh Library'),
                       ),
                     ],
                   ),

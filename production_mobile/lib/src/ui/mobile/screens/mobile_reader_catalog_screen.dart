@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../mobile/mobile_settings_repository.dart';
-import '../../../mobile/nove_a1_chapters.dart';
-import '../../../mobile/nove_bundled_book_repository.dart';
-import '../../../mobile/nove_download_options.dart';
-import '../../../mobile/nove_favorites_repository.dart';
+import '../../../mobile/virgil_a1_chapters.dart';
+import '../../../mobile/virgil_bundled_book_repository.dart';
+import '../../../mobile/virgil_download_options.dart';
+import '../../../mobile/virgil_favorites_repository.dart';
 import '../../../models.dart';
-import '../widgets/nove_book_cover.dart';
-import 'nove_book_detail_screen.dart';
+import '../widgets/virgil_book_cover.dart';
+import 'virgil_book_detail_screen.dart';
 
 class MobileReaderCatalogScreen extends StatefulWidget {
   const MobileReaderCatalogScreen({
@@ -33,15 +33,15 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
   static const _levels = ['a1', 'a2', 'b1', 'b2', 'c1'];
 
   late final MobileBookPackageRepository _repository;
-  late final NoveBundledBookRepository _bundledRepository;
-  late final NoveFavoritesRepository _favoritesRepository;
+  late final VirgilBundledBookRepository _bundledRepository;
+  late final VirgilFavoritesRepository _favoritesRepository;
 
-  bool _busy = true;
   String? _error;
   LibraryPayload? _library;
   String _selectedLevel = _levels.first;
-  List<NoveBundledBookInfo> _chapterBooks = const [];
-  List<NoveBundledBookInfo> _moreStoriesBooks = const [];
+  List<VirgilBundledBookInfo> _chapterBooks = const [];
+  List<VirgilBundledBookInfo> _moreStoriesBooks = const [];
+  List<VirgilBundledBookInfo> _remoteBooks = const [];
   Set<String> _favorites = const <String>{};
   int _loadRequestId = 0;
 
@@ -49,8 +49,8 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
   void initState() {
     super.initState();
     _repository = MobileBookPackageRepository();
-    _bundledRepository = NoveBundledBookRepository();
-    _favoritesRepository = NoveFavoritesRepository();
+    _bundledRepository = VirgilBundledBookRepository();
+    _favoritesRepository = VirgilFavoritesRepository();
     _loadLibrary();
   }
 
@@ -64,53 +64,49 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
 
   Future<void> _loadLibrary() async {
     final requestId = ++_loadRequestId;
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
+    setState(() => _error = null);
     try {
-      final nextLibrary = await _repository.listBooks();
-      if (!mounted || requestId != _loadRequestId) {
-        return;
-      }
-      setState(() => _library = nextLibrary);
-      widget.onLibraryLoaded?.call(nextLibrary);
-      final showChapters = _selectedLevel == 'a1';
-      final results = await Future.wait<Object>([
-        if (showChapters)
-          _bundledRepository.listBooks(
-            level: _selectedLevel,
-            section: 'chapters',
-          )
-        else
-          Future<List<NoveBundledBookInfo>>.value(
-              const <NoveBundledBookInfo>[]),
-        _bundledRepository.listBooks(
-          level: _selectedLevel,
-          section: 'more_a1_stories',
-        ),
+      final localResults = await Future.wait<Object>([
+        _repository.listBooks(),
         _favoritesRepository.load(),
       ]);
-      final chapterBooks = results[0] as List<NoveBundledBookInfo>;
-      final moreStoriesBooks = results[1] as List<NoveBundledBookInfo>;
-      final favorites = results[2] as Set<String>;
+      final nextLibrary = localResults[0] as LibraryPayload;
+      final favorites = localResults[1] as Set<String>;
       if (!mounted || requestId != _loadRequestId) {
         return;
       }
       setState(() {
-        _chapterBooks = chapterBooks;
-        _moreStoriesBooks = moreStoriesBooks;
+        _library = nextLibrary;
         _favorites = favorites;
+      });
+      widget.onLibraryLoaded?.call(nextLibrary);
+    } catch (error) {
+      if (!mounted || requestId != _loadRequestId) {
+        return;
+      }
+      setState(() => _error = 'Local library unavailable: $error');
+      return;
+    }
+
+    try {
+      final remoteBooks = await _bundledRepository.listBooks();
+      if (!mounted || requestId != _loadRequestId) {
+        return;
+      }
+      setState(() {
+        _remoteBooks = remoteBooks;
+        _applySelectedLevelBooks();
       });
     } catch (error) {
       if (!mounted || requestId != _loadRequestId) {
         return;
       }
-      setState(() => _error = error.toString());
-    } finally {
-      if (mounted && requestId == _loadRequestId) {
-        setState(() => _busy = false);
-      }
+      setState(() {
+        _chapterBooks = const [];
+        _moreStoriesBooks = const [];
+        _remoteBooks = const [];
+        _error = 'Online library unavailable. Downloaded books are ready.';
+      });
     }
   }
 
@@ -122,8 +118,8 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
   }
 
   Future<LibraryBookItem?> _importBundledBook(
-    NoveBundledBookInfo item, {
-    NoveDownloadOptions options = const NoveDownloadOptions(),
+    VirgilBundledBookInfo item, {
+    VirgilDownloadOptions options = const VirgilDownloadOptions(),
   }) async {
     final localBookId = await _bundledRepository.importBook(
       item,
@@ -150,18 +146,48 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
 
   Future<void> _deleteBook(LibraryBookItem item) async {
     await _repository.deletePackage(item.id);
-    final favoriteKey = item.contentHash?.trim() ?? '';
-    if (favoriteKey.isNotEmpty) {
-      final nextFavorites = await _favoritesRepository.remove(favoriteKey);
-      if (mounted) {
-        setState(() => _favorites = nextFavorites);
-      }
+    final nextFavorites = await _favoritesRepository.remove(item.id);
+    if (mounted) {
+      setState(() => _favorites = nextFavorites);
     }
     await _loadLibrary();
   }
 
+  Future<bool> _openLocalDetail(
+    LibraryBookItem item, {
+    BuildContext? navigatorContext,
+  }) async {
+    final navContext = navigatorContext ?? context;
+    final favoriteKey = item.id;
+    final updateAvailable = _updateAvailable(item);
+    final opened = await Navigator.of(navContext).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => VirgilBookDetailScreen(
+          title: item.title,
+          subtitle: updateAvailable ? 'Update available' : 'Downloaded',
+          favorite: _favorites.contains(favoriteKey),
+          installed: true,
+          localBook: item,
+          bundledBook: null,
+          busy: false,
+          preferredTargetLang: widget.settings.preferredTargetLang,
+          preferredVoiceId: widget.settings.preferredVoiceId,
+          onToggleFavorite: () => _toggleFavorite(favoriteKey),
+          onLoad: null,
+          onOpen: _openBook,
+          onDelete: _deleteBook,
+        ),
+      ),
+    );
+    if (opened == true) {
+      return true;
+    }
+    await _loadLibrary();
+    return false;
+  }
+
   Future<bool> _openBundledDetail(
-    NoveBundledBookInfo item, {
+    VirgilBundledBookInfo item, {
     BuildContext? navigatorContext,
     bool closeParentOnOpen = false,
   }) async {
@@ -169,17 +195,17 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
     final navContext = navigatorContext ?? context;
     final opened = await Navigator.of(navContext).push<bool>(
       MaterialPageRoute(
-        builder: (_) => NoveBookDetailScreen(
+        builder: (_) => VirgilBookDetailScreen(
           title: item.title,
           subtitle: '${item.level.toUpperCase()} / ${_sectionTitle(item)}',
-          favorite: localBook != null && _favorites.contains(item.assetPath),
+          favorite: localBook != null && _favorites.contains(item.bookId),
           installed: localBook != null,
           localBook: localBook,
           bundledBook: item,
           busy: false,
           preferredTargetLang: widget.settings.preferredTargetLang,
           preferredVoiceId: widget.settings.preferredVoiceId,
-          onToggleFavorite: () => _toggleFavorite(item.assetPath),
+          onToggleFavorite: () => _toggleFavorite(item.bookId),
           onLoad: (options) async {
             return _importBundledBook(item, options: options);
           },
@@ -200,7 +226,7 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
     return false;
   }
 
-  Future<bool> _openChapterBooks(NoveA1Chapter chapter) async {
+  Future<bool> _openChapterBooks(VirgilA1Chapter chapter) async {
     final opened = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (_) => _ChapterBooksScreen(
@@ -238,9 +264,9 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
     await _loadLibrary();
   }
 
-  LibraryBookItem? _findInstalledBook(NoveBundledBookInfo item) {
+  LibraryBookItem? _findInstalledBook(VirgilBundledBookInfo item) {
     for (final book in _library?.items ?? const <LibraryBookItem>[]) {
-      if (book.id == item.bookId || book.contentHash == item.assetPath) {
+      if (book.id == item.bookId) {
         return book;
       }
     }
@@ -249,24 +275,14 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bundledBooks = [..._chapterBooks, ..._moreStoriesBooks];
-    final favoriteBundledBooks = bundledBooks
-        .where((book) =>
-            _favorites.contains(book.assetPath) &&
-            _findInstalledBook(book) != null)
-        .toList();
+    final downloadedBooks = _library?.items ?? const <LibraryBookItem>[];
+    final favoriteDownloadedBooks =
+        downloadedBooks.where((book) => _favorites.contains(book.id)).toList();
     final levelLabel = _selectedLevel.toUpperCase();
     final showChapters = _selectedLevel == 'a1';
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nove'),
-        actions: [
-          IconButton(
-            tooltip: 'Refresh',
-            onPressed: _busy ? null : _loadLibrary,
-            icon: const Icon(Icons.refresh_outlined),
-          ),
-        ],
+        title: const Text('Virgil'),
       ),
       body: SafeArea(
         child: RefreshIndicator(
@@ -289,8 +305,10 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
                   if (level == _selectedLevel) {
                     return;
                   }
-                  setState(() => _selectedLevel = level);
-                  _loadLibrary();
+                  setState(() {
+                    _selectedLevel = level;
+                    _applySelectedLevelBooks();
+                  });
                 },
               ),
               const SizedBox(height: 18),
@@ -300,7 +318,17 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
                 emptyText: 'No favorite books yet',
                 horizontal: true,
                 children: [
-                  for (final item in favoriteBundledBooks) _bundledCover(item),
+                  for (final item in favoriteDownloadedBooks) _localCover(item),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _ShelfSection(
+                title: 'Downloaded Books',
+                icon: Icons.download_done_outlined,
+                emptyText: 'No downloaded books yet',
+                horizontal: true,
+                children: [
+                  for (final item in downloadedBooks) _localCover(item),
                 ],
               ),
               const SizedBox(height: 14),
@@ -334,17 +362,17 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
   }
 
   Widget _bundledCover(
-    NoveBundledBookInfo item, {
+    VirgilBundledBookInfo item, {
     BuildContext? navigatorContext,
     bool closeParentOnOpen = false,
   }) {
     final installed = _findInstalledBook(item) != null;
-    return NoveBookCoverCard(
+    return VirgilBookCoverCard(
       title: item.title,
       subtitle: installed
           ? 'Loaded'
           : '${item.level.toUpperCase()} / ${_sectionTitle(item)}',
-      favorite: installed && _favorites.contains(item.assetPath),
+      favorite: installed && _favorites.contains(item.bookId),
       installed: installed,
       coverBytes: item.coverBytes,
       coverUrl: item.coverUrl,
@@ -356,14 +384,57 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
     );
   }
 
-  String _sectionTitle(NoveBundledBookInfo item) {
+  Widget _localCover(LibraryBookItem item) {
+    final updateAvailable = _updateAvailable(item);
+    return VirgilBookCoverCard(
+      title: item.title,
+      subtitle: updateAvailable ? 'Update available' : 'Downloaded',
+      favorite: _favorites.contains(item.id),
+      installed: true,
+      coverFilePath: item.coverFilePath,
+      onTap: () => _openLocalDetail(item),
+    );
+  }
+
+  bool _updateAvailable(LibraryBookItem item) {
+    final remoteBook = _remoteBookById(item.id);
+    if (remoteBook == null || remoteBook.contentHash.isEmpty) {
+      return false;
+    }
+    final localHash = item.contentHash?.trim() ?? '';
+    return localHash.isEmpty || localHash != remoteBook.contentHash;
+  }
+
+  VirgilBundledBookInfo? _remoteBookById(String bookId) {
+    for (final book in _remoteBooks) {
+      if (book.bookId == bookId) {
+        return book;
+      }
+    }
+    return null;
+  }
+
+  void _applySelectedLevelBooks() {
+    _chapterBooks = _selectedLevel == 'a1'
+        ? _remoteBooks
+            .where((book) =>
+                book.level == _selectedLevel && book.section == 'chapters')
+            .toList()
+        : const [];
+    _moreStoriesBooks = _remoteBooks
+        .where((book) =>
+            book.level == _selectedLevel && book.section == 'more_a1_stories')
+        .toList();
+  }
+
+  String _sectionTitle(VirgilBundledBookInfo item) {
     if (item.section == 'more_a1_stories') {
       return 'More A1 Stories';
     }
     return item.chapterTitle.isEmpty ? 'Chapters' : item.chapterTitle;
   }
 
-  List<NoveBundledBookInfo> _booksForChapter(String chapterId) {
+  List<VirgilBundledBookInfo> _booksForChapter(String chapterId) {
     return _chapterBooks.where((book) => book.chapterId == chapterId).toList();
   }
 }
@@ -437,8 +508,8 @@ class _ChaptersCarousel extends StatelessWidget {
     required this.onAll,
   });
 
-  final List<NoveBundledBookInfo> books;
-  final ValueChanged<NoveA1Chapter> onSelected;
+  final List<VirgilBundledBookInfo> books;
+  final ValueChanged<VirgilA1Chapter> onSelected;
   final VoidCallback onAll;
 
   @override
@@ -476,14 +547,16 @@ class _ChaptersCarousel extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    for (var index = 0; index < noveA1Chapters.length; index++)
+                    for (var index = 0;
+                        index < virgilA1Chapters.length;
+                        index++)
                       Padding(
                         padding: const EdgeInsets.only(right: 18),
                         child: _ChapterCard(
                           index: index + 1,
-                          chapter: noveA1Chapters[index],
-                          storyCount: _storyCount(noveA1Chapters[index].id),
-                          onTap: () => onSelected(noveA1Chapters[index]),
+                          chapter: virgilA1Chapters[index],
+                          storyCount: _storyCount(virgilA1Chapters[index].id),
+                          onTap: () => onSelected(virgilA1Chapters[index]),
                         ),
                       ),
                   ],
@@ -510,7 +583,7 @@ class _ChapterCard extends StatelessWidget {
   });
 
   final int index;
-  final NoveA1Chapter chapter;
+  final VirgilA1Chapter chapter;
   final int storyCount;
   final VoidCallback onTap;
 
@@ -618,8 +691,8 @@ class _AllChaptersScreen extends StatelessWidget {
   });
 
   final String title;
-  final List<NoveBundledBookInfo> books;
-  final Future<bool> Function(NoveA1Chapter chapter) onSelected;
+  final List<VirgilBundledBookInfo> books;
+  final Future<bool> Function(VirgilA1Chapter chapter) onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -628,10 +701,10 @@ class _AllChaptersScreen extends StatelessWidget {
       body: SafeArea(
         child: ListView.separated(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-          itemCount: noveA1Chapters.length,
+          itemCount: virgilA1Chapters.length,
           separatorBuilder: (_, __) => const SizedBox(height: 10),
           itemBuilder: (context, index) {
-            final chapter = noveA1Chapters[index];
+            final chapter = virgilA1Chapters[index];
             final count =
                 books.where((book) => book.chapterId == chapter.id).length;
             return ListTile(
@@ -668,7 +741,7 @@ class _ChapterListImage extends StatelessWidget {
     required this.index,
   });
 
-  final NoveA1Chapter chapter;
+  final VirgilA1Chapter chapter;
   final int index;
 
   @override
@@ -807,8 +880,8 @@ class _ChapterBooksScreen extends StatelessWidget {
 
   final String title;
   final String subtitle;
-  final List<NoveBundledBookInfo> books;
-  final Widget Function(BuildContext context, NoveBundledBookInfo item)
+  final List<VirgilBundledBookInfo> books;
+  final Widget Function(BuildContext context, VirgilBundledBookInfo item)
       coverBuilder;
 
   @override

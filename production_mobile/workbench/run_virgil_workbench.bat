@@ -14,33 +14,33 @@ set "LOG_DIR=%WORKBENCH_DIR%logs"
 
 if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
 
-set "NOVE_WORKBENCH_TS="
-for /f "usebackq delims=" %%I in (`powershell -NoProfile -Command "Get-Date -Format 'yyyy-MM-dd_HHmmss'"`) do set "NOVE_WORKBENCH_TS=%%I"
-if not defined NOVE_WORKBENCH_TS set "NOVE_WORKBENCH_TS=latest"
-set "NOVE_WORKBENCH_LOG_FILE=%LOG_DIR%\run_nove_workbench_%NOVE_WORKBENCH_TS%.log"
+set "VIRGIL_WORKBENCH_TS="
+for /f "usebackq delims=" %%I in (`powershell -NoProfile -Command "Get-Date -Format 'yyyy-MM-dd_HHmmss'"`) do set "VIRGIL_WORKBENCH_TS=%%I"
+if not defined VIRGIL_WORKBENCH_TS set "VIRGIL_WORKBENCH_TS=latest"
+set "VIRGIL_WORKBENCH_LOG_FILE=%LOG_DIR%\run_virgil_workbench_%VIRGIL_WORKBENCH_TS%.log"
 
-echo [NOVE WORKBENCH] Writing log to:
-echo [NOVE WORKBENCH]   %NOVE_WORKBENCH_LOG_FILE%
+echo [VIRGIL WORKBENCH] Writing log to:
+echo [VIRGIL WORKBENCH]   %VIRGIL_WORKBENCH_LOG_FILE%
 
-echo [NOVE WORKBENCH] Live output is shown in this window.
-echo [NOVE WORKBENCH] Log file is reserved for future crash copies.
+echo [VIRGIL WORKBENCH] Live output is shown in this window.
+echo [VIRGIL WORKBENCH] Log file is reserved for future crash copies.
 
 call :run
-set "NOVE_WORKBENCH_EXIT=%ERRORLEVEL%"
+set "VIRGIL_WORKBENCH_EXIT=%ERRORLEVEL%"
 
-echo [NOVE WORKBENCH] Exit code: %NOVE_WORKBENCH_EXIT%
+echo [VIRGIL WORKBENCH] Exit code: %VIRGIL_WORKBENCH_EXIT%
 
-if not "%NOVE_WORKBENCH_EXIT%"=="0" (
-  echo [NOVE WORKBENCH] Launch failed. Log file:
-  echo [NOVE WORKBENCH]   %NOVE_WORKBENCH_LOG_FILE%
+if not "%VIRGIL_WORKBENCH_EXIT%"=="0" (
+  echo [VIRGIL WORKBENCH] Launch failed. Log file:
+  echo [VIRGIL WORKBENCH]   %VIRGIL_WORKBENCH_LOG_FILE%
 )
 
-echo [NOVE WORKBENCH] Press any key to close this window.
+echo [VIRGIL WORKBENCH] Press any key to close this window.
 pause >nul
-exit /b %NOVE_WORKBENCH_EXIT%
+exit /b %VIRGIL_WORKBENCH_EXIT%
 
 :run
-echo [NOVE WORKBENCH] App dir: %APP_DIR%
+echo [VIRGIL WORKBENCH] App dir: %APP_DIR%
 
 if not exist "%FLUTTER_CMD%" (
   where flutter.bat >nul 2>nul
@@ -53,7 +53,7 @@ if not exist "%FLUTTER_CMD%" (
 )
 
 if not defined FLUTTER_CMD (
-  echo [NOVE WORKBENCH] Flutter not found.
+  echo [VIRGIL WORKBENCH] Flutter not found.
   exit /b 1
 )
 
@@ -64,7 +64,7 @@ if not defined JAVA_HOME (
 if defined JAVA_HOME set "PATH=%JAVA_HOME%\bin;%PATH%"
 
 if not exist "%APP_DIR%\windows" (
-  echo [NOVE WORKBENCH] windows folder is missing.
+  echo [VIRGIL WORKBENCH] windows folder is missing.
   exit /b 1
 )
 
@@ -79,10 +79,10 @@ if not defined NEEDS_PUB_GET (
 )
 
 if defined NEEDS_PUB_GET (
-  echo [NOVE WORKBENCH] Dependencies changed or missing. Executing flutter pub get...
+  echo [VIRGIL WORKBENCH] Dependencies changed or missing. Executing flutter pub get...
   call "%FLUTTER_CMD%" pub get
   if errorlevel 1 (
-    echo [NOVE WORKBENCH] Error during flutter pub get.
+    echo [VIRGIL WORKBENCH] Error during flutter pub get.
     exit /b 1
   )
 )
@@ -90,37 +90,37 @@ if defined NEEDS_PUB_GET (
 call :ensure_backend
 if errorlevel 1 exit /b 1
 
-echo [NOVE WORKBENCH] Starting Flutter Windows Workbench...
-call "%FLUTTER_CMD%" run --no-pub -d windows --dart-define=NOVE_MODE=workbench
+echo [VIRGIL WORKBENCH] Starting Flutter Windows Workbench...
+call "%FLUTTER_CMD%" run --no-pub -d windows --dart-define=VIRGIL_MODE=workbench
 exit /b %ERRORLEVEL%
 
 :ensure_backend
 call :is_backend_running
 if not errorlevel 1 (
-  echo [NOVE WORKBENCH] Backend already running on 127.0.0.1:8765.
+  echo [VIRGIL WORKBENCH] Backend already running on 127.0.0.1:8765.
   exit /b 0
 )
 
 if not exist "%BACKEND_BAT%" (
-  echo [NOVE WORKBENCH] Backend launcher not found:
-  echo [NOVE WORKBENCH]   %BACKEND_BAT%
+  echo [VIRGIL WORKBENCH] Backend launcher not found:
+  echo [VIRGIL WORKBENCH]   %BACKEND_BAT%
   exit /b 1
 )
 
-echo [NOVE WORKBENCH] Starting backend...
+echo [VIRGIL WORKBENCH] Starting backend...
 start "LEXO Backend" cmd /c ""%BACKEND_BAT%""
 
 for /l %%I in (1,1,20) do (
   timeout /t 1 /nobreak >nul
   call :is_backend_running
   if not errorlevel 1 (
-    echo [NOVE WORKBENCH] Backend is ready on 127.0.0.1:8765.
+    echo [VIRGIL WORKBENCH] Backend is ready on 127.0.0.1:8765.
     exit /b 0
   )
 )
 
-echo [NOVE WORKBENCH] Backend start requested, but port 8765 is not ready yet.
-echo [NOVE WORKBENCH] Continuing; backend may still be loading.
+echo [VIRGIL WORKBENCH] Backend start requested, but port 8765 is not ready yet.
+echo [VIRGIL WORKBENCH] Continuing; backend may still be loading.
 exit /b 0
 
 :is_backend_running

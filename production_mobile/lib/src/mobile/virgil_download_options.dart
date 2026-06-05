@@ -1,5 +1,5 @@
-class NoveDownloadOptions {
-  const NoveDownloadOptions({
+class VirgilDownloadOptions {
+  const VirgilDownloadOptions({
     this.targetLang,
     this.voiceId,
   });
@@ -18,8 +18,8 @@ class NoveDownloadOptions {
   }
 }
 
-class NoveVoiceOption {
-  const NoveVoiceOption({
+class VirgilVoiceOption {
+  const VirgilVoiceOption({
     required this.voiceId,
     required this.title,
     required this.subtitle,
@@ -30,28 +30,28 @@ class NoveVoiceOption {
   final String subtitle;
 }
 
-const noveVoiceOptions = [
-  NoveVoiceOption(
+const virgilVoiceOptions = [
+  VirgilVoiceOption(
     voiceId: 'af_heart',
     title: 'Heart',
     subtitle: '',
   ),
-  NoveVoiceOption(
+  VirgilVoiceOption(
     voiceId: 'af_bella',
     title: 'Bella',
     subtitle: '',
   ),
-  NoveVoiceOption(
+  VirgilVoiceOption(
     voiceId: 'af_sarah',
     title: 'Sarah',
     subtitle: '',
   ),
-  NoveVoiceOption(
+  VirgilVoiceOption(
     voiceId: 'am_adam',
     title: 'Adam',
     subtitle: '',
   ),
-  NoveVoiceOption(
+  VirgilVoiceOption(
     voiceId: 'am_michael',
     title: 'Michael',
     subtitle: '',

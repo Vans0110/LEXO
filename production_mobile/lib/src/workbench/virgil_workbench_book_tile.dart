@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'nove_workbench_book_status.dart';
+import 'virgil_workbench_book_status.dart';
 
-class NoveWorkbenchBookTile extends StatelessWidget {
-  const NoveWorkbenchBookTile({
+class VirgilWorkbenchBookTile extends StatelessWidget {
+  const VirgilWorkbenchBookTile({
     super.key,
     required this.title,
     required this.level,
@@ -22,7 +22,7 @@ class NoveWorkbenchBookTile extends StatelessWidget {
   final String level;
   final String chapterTitle;
   final String coverPath;
-  final NoveWorkbenchBookStatus? status;
+  final VirgilWorkbenchBookStatus? status;
   final bool busy;
   final VoidCallback onSelected;
   final VoidCallback onRefresh;
@@ -116,7 +116,7 @@ class NoveWorkbenchBookTile extends StatelessWidget {
 class _BookStatusBody extends StatelessWidget {
   const _BookStatusBody({required this.tile});
 
-  final NoveWorkbenchBookTile tile;
+  final VirgilWorkbenchBookTile tile;
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +187,7 @@ class _BookStatusBody extends StatelessWidget {
     );
   }
 
-  List<Widget> _voiceRows(NoveWorkbenchBookStatus? status) {
+  List<Widget> _voiceRows(VirgilWorkbenchBookStatus? status) {
     if (status == null) {
       return const [
         _StatusRow(label: 'Player audio', ready: false),

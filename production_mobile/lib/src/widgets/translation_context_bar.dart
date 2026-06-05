@@ -14,8 +14,7 @@ class TranslationContextBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasSelection =
-        focusText != null &&
+    final hasSelection = focusText != null &&
         focusText!.trim().isNotEmpty &&
         (leftText != null || rightText != null);
 
@@ -23,7 +22,10 @@ class TranslationContextBar extends StatelessWidget {
       height: 72,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.45),
+          color: Theme.of(context)
+              .colorScheme
+              .surfaceContainerHighest
+              .withOpacity(0.45),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(

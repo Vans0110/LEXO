@@ -21,9 +21,11 @@ class InteractiveParagraphText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseStyle = const TextStyle(fontSize: 18, height: 1.7);
-    final highlightColor = Theme.of(context).colorScheme.primary.withOpacity(0.18);
+    final highlightColor =
+        Theme.of(context).colorScheme.primary.withOpacity(0.18);
     final defaultColor = Theme.of(context).colorScheme.onSurface;
-    const wordHighlightPadding = EdgeInsets.symmetric(horizontal: 2, vertical: 1);
+    const wordHighlightPadding =
+        EdgeInsets.symmetric(horizontal: 2, vertical: 1);
     final wordById = {for (final word in words) word.id: word};
     final unitWordById = <String, ParagraphWordItem>{};
     for (final word in words) {
@@ -47,12 +49,15 @@ class InteractiveParagraphText extends StatelessWidget {
             () {
               final token = tokens[index];
               final word = token.wordId == null ? null : wordById[token.wordId];
-              final unitWord = token.tapUnitId == null ? null : unitWordById[token.tapUnitId!];
-              final isSelected = token.tapUnitId != null && token.tapUnitId == selectedTapUnitId;
-              final isFirstInUnit =
-                  token.tapUnitId != null && firstTokenIndexByUnit[token.tapUnitId] == index;
-              final isLastInUnit =
-                  token.tapUnitId != null && lastTokenIndexByUnit[token.tapUnitId] == index;
+              final unitWord = token.tapUnitId == null
+                  ? null
+                  : unitWordById[token.tapUnitId!];
+              final isSelected = token.tapUnitId != null &&
+                  token.tapUnitId == selectedTapUnitId;
+              final isFirstInUnit = token.tapUnitId != null &&
+                  firstTokenIndexByUnit[token.tapUnitId] == index;
+              final isLastInUnit = token.tapUnitId != null &&
+                  lastTokenIndexByUnit[token.tapUnitId] == index;
               final style = baseStyle.copyWith(
                 color: defaultColor,
                 fontWeight: FontWeight.w400,
@@ -61,8 +66,12 @@ class InteractiveParagraphText extends StatelessWidget {
                   ? BoxDecoration(
                       color: highlightColor,
                       borderRadius: BorderRadius.horizontal(
-                        left: isFirstInUnit ? const Radius.circular(6) : Radius.zero,
-                        right: isLastInUnit ? const Radius.circular(6) : Radius.zero,
+                        left: isFirstInUnit
+                            ? const Radius.circular(6)
+                            : Radius.zero,
+                        right: isLastInUnit
+                            ? const Radius.circular(6)
+                            : Radius.zero,
                       ),
                     )
                   : null;
@@ -84,10 +93,12 @@ class InteractiveParagraphText extends StatelessWidget {
                     }
                     onWordTap(tapWord);
                   },
-                  onLongPress: word == null ? null : () => onWordLongPress(word),
+                  onLongPress:
+                      word == null ? null : () => onWordLongPress(word),
                   child: Container(
                     padding: wordHighlightPadding,
-                    decoration: decoration ?? const BoxDecoration(color: Colors.transparent),
+                    decoration: decoration ??
+                        const BoxDecoration(color: Colors.transparent),
                     child: Text(
                       token.text,
                       style: style,

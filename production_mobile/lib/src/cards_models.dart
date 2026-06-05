@@ -145,7 +145,8 @@ class SavedCardItem {
       sourceBookId: json['source_book_id'] as String? ?? '',
       sourceUnitId: json['source_unit_id'] as String? ?? '',
       createdAt: json['created_at'] as String? ?? '',
-      updatedAt: json['updated_at'] as String? ?? (json['created_at'] as String? ?? ''),
+      updatedAt: json['updated_at'] as String? ??
+          (json['created_at'] as String? ?? ''),
       deletedAt: json['deleted_at'] as String? ?? '',
       syncState: json['sync_state'] as String? ?? 'synced',
       status: json['status'] as String? ?? 'new',

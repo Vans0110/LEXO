@@ -1,4 +1,4 @@
-package com.nove.reader
+package com.virgil.reader
 
 import io.flutter.embedding.android.FlutterActivity
 

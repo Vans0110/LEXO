@@ -25,7 +25,8 @@ class LibraryFeatureState {
     return LibraryFeatureState(
       library: library ?? this.library,
       busy: busy ?? this.busy,
-      openingBookId: clearOpeningBookId ? null : (openingBookId ?? this.openingBookId),
+      openingBookId:
+          clearOpeningBookId ? null : (openingBookId ?? this.openingBookId),
       error: clearError ? null : (error ?? this.error),
     );
   }

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
-class NoveFavoritesRepository {
+class VirgilFavoritesRepository {
   Future<Set<String>> load() async {
     final file = await _file();
     if (!file.existsSync()) {
@@ -47,6 +47,6 @@ class NoveFavoritesRepository {
 
   Future<File> _file() async {
     final root = await getApplicationDocumentsDirectory();
-    return File('${root.path}/nove_favorites.json');
+    return File('${root.path}/virgil_favorites.json');
   }
 }

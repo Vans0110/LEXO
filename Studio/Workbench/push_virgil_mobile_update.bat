@@ -28,7 +28,7 @@ git --no-pager diff --name-only -- .github Virgil Studio/Workbench Docs/History
 echo.
 
 echo [VIRGIL] Staging tracked changes only...
-git add -u -- .github production_mobile history
+git add -u -- .github Virgil Studio/Workbench Docs/History
 if errorlevel 1 (
   echo [VIRGIL] git add failed.
   pause

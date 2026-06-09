@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "book_id": "a1_chapters_example",
+  "source_lang": "en",
+  "target_lang": "ru",
+  "entries": [
+    {
+      "word_id": "p001_s001_w001",
+      "segment_id": "p001_s001",
+      "surface": "I",
+      "lemma": "I",
+      "pos": "PRON",
+      "translation": "я",
+      "note": ""
+    },
+    {
+      "word_id": "p001_s001_w002",
+      "segment_id": "p001_s001",
+      "surface": "like",
+      "lemma": "like",
+      "pos": "VERB",
+      "translation": "нравиться",
+      "note": "I like = мне нравится"
+    }
+  ],
+  "phrases": [
+    {
+      "unit_id": "p001_s001_u001",
+      "segment_id": "p001_s001",
+      "source": "I like",
+      "translation": "мне нравится",
+      "word_ids": ["p001_s001_w001", "p001_s001_w002"],
+      "type": "phrase"
+    }
+  ]
+}

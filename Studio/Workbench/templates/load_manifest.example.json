@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "book_id": "a1_chapters_example",
+  "title": "Example Book",
+  "level": "a1",
+  "section": "chapters",
+  "files": {
+    "reader": "reader.json",
+    "dictionary": "dictionary.json",
+    "detail_manifest": "detail_manifest.json",
+    "word_to_word": "word_to_word.json",
+    "tts": "tts_manifest.json",
+    "word_audio": "word_audio_manifest.json"
+  },
+  "audio": {
+    "segments": "audio/segments",
+    "words": "audio/words"
+  }
+}

@@ -7,14 +7,14 @@ on:
       - main
     paths:
       - ".github/workflows/build-virgil-ios.yml"
-      - "production_mobile/**"
+      - "Virgil/App/**"
 
 jobs:
   build-virgil-ios:
     runs-on: macos-14
     defaults:
       run:
-        working-directory: production_mobile
+        working-directory: Virgil/App
 
     steps:
       - name: Checkout
@@ -45,5 +45,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: virgil-ios-ipa
-          path: production_mobile/build/ios/iphoneos/VIRGIL.ipa
+          path: Virgil/App/build/ios/iphoneos/VIRGIL.ipa
           if-no-files-found: error

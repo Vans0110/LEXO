@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
 
+import 'virgil_workbench_book_status.dart';
 import 'virgil_workbench_library_models.dart';
 
 class VirgilLibraryIndexBuilder {
@@ -17,26 +18,37 @@ class VirgilLibraryIndexBuilder {
   final Directory libraryDir;
   final void Function(String message)? log;
 
-  Future<int> removeBooksMissingFrom(Directory sourceBooksDir) async {
+  Future<int> removeBooksMissingFrom(
+    Directory sourceBooksDir, {
+    required Map<String, VirgilWorkbenchBookStatus> outputStatuses,
+  }) async {
     await libraryDir.create(recursive: true);
     if (!sourceBooksDir.existsSync()) {
       throw StateError(
         'Workbench books directory does not exist: ${sourceBooksDir.path}',
       );
     }
-    final sourceKeys = sourceBooksDir
+    final sourceFiles = sourceBooksDir
         .listSync(recursive: true)
         .whereType<File>()
         .where((file) => file.path.toLowerCase().endsWith('.txt'))
         .where((file) => !_isChapterImagesPath(file.path))
-        .map((file) => _sourceBookKey(sourceBooksDir, file))
-        .where((key) => key.isNotEmpty)
-        .toSet();
-    if (sourceKeys.isEmpty) {
+        .toList();
+    if (sourceFiles.isEmpty) {
       throw StateError(
         'No Workbench TXT books found; refusing to clean CloudLibrary.',
       );
     }
+    final publishableKeys = sourceFiles
+        .where(
+          (file) =>
+              outputStatuses[_sourceStatusKey(sourceBooksDir, file)]
+                  ?.isOutputFullyBuilt ??
+              false,
+        )
+        .map((file) => _sourceBookKey(sourceBooksDir, file))
+        .where((key) => key.isNotEmpty)
+        .toSet();
 
     var removed = 0;
     final zipFiles = libraryDir
@@ -50,7 +62,7 @@ class VirgilLibraryIndexBuilder {
         continue;
       }
       final key = _manifestBookKey(manifest);
-      if (key.isEmpty || sourceKeys.contains(key)) {
+      if (key.isEmpty || publishableKeys.contains(key)) {
         continue;
       }
       await _deleteExtractedCover(zipFile, manifest);
@@ -167,6 +179,18 @@ class VirgilLibraryIndexBuilder {
     final chapterId = virgilWorkbenchChapterId(parts[1]);
     final title = _basenameWithoutExtension(parts.last);
     return _bookKey(level, 'chapters', chapterId, title);
+  }
+
+  String _sourceStatusKey(Directory sourceBooksDir, File file) {
+    final parts = _relativeParts(sourceBooksDir.path, file.path);
+    if (parts.length < 3) {
+      return '';
+    }
+    return virgilWorkbenchBookStatusKey(
+      virgilWorkbenchNormalizeLevel(parts.first),
+      virgilWorkbenchChapterId(parts[1]),
+      _basenameWithoutExtension(parts.last),
+    );
   }
 
   String _manifestBookKey(Map<String, dynamic> manifest) {

@@ -6,6 +6,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:virgil/src/mobile/virgil_bundled_book_repository.dart';
 import 'package:virgil/src/workbench/virgil_library_index_builder.dart';
+import 'package:virgil/src/workbench/virgil_workbench_book_status.dart';
 
 void main() {
   test('library index stores the ZIP SHA-256 as content_hash', () async {
@@ -102,7 +103,16 @@ void main() {
       await staleCover.writeAsBytes([2]);
 
       final builder = VirgilLibraryIndexBuilder(libraryDir: libraryDir);
-      final removed = await builder.removeBooksMissingFrom(booksDir);
+      final removed = await builder.removeBooksMissingFrom(
+        booksDir,
+        outputStatuses: {
+          virgilWorkbenchBookStatusKey(
+            'a1',
+            'chapter_01_introduction',
+            'Current Book',
+          ): _readyOutputStatus('Current Book'),
+        },
+      );
       final indexFile = await builder.rebuild();
       final payload =
           jsonDecode(await indexFile.readAsString()) as Map<String, dynamic>;
@@ -119,6 +129,59 @@ void main() {
       await tempDir.delete(recursive: true);
     }
   });
+
+  test('cleanup removes ZIP when TXT exists but output is not fully built',
+      () async {
+    final tempDir =
+        await Directory.systemTemp.createTemp('virgil_unbuilt_cleanup_test_');
+    final libraryDir = Directory('${tempDir.path}/library');
+    final booksDir = Directory('${tempDir.path}/books');
+    try {
+      final chapterDir = Directory(
+        '${booksDir.path}/A1/Chapter 1 - Introduction',
+      );
+      await chapterDir.create(recursive: true);
+      await File('${chapterDir.path}/Unbuilt Book.txt').writeAsString('Text');
+      final staleZip = await _writeBookZip(
+        libraryDir,
+        fileName: 'book_unbuilt_unbuilt_book.zip',
+        bookId: 'book_unbuilt',
+        title: 'Unbuilt Book',
+      );
+
+      final removed = await VirgilLibraryIndexBuilder(libraryDir: libraryDir)
+          .removeBooksMissingFrom(booksDir, outputStatuses: const {});
+
+      expect(removed, 1);
+      expect(staleZip.existsSync(), isFalse);
+    } finally {
+      await tempDir.delete(recursive: true);
+    }
+  });
+}
+
+VirgilWorkbenchBookStatus _readyOutputStatus(String title) {
+  return VirgilWorkbenchBookStatus(
+    title: title,
+    level: 'a1',
+    chapterId: 'chapter_01_introduction',
+    languages: const {'ru', 'uk'},
+    dictionaries: const {'ru', 'uk'},
+    hasAudio: true,
+    hasCover: true,
+    hasOutput: true,
+    hasInstalledZip: false,
+    coverPath: 'cover.png',
+    audioVoiceIds: const {'voice'},
+    profileVoiceIds: const {'voice'},
+    playerLevelsByVoice: const {
+      'voice': {'Normal'},
+    },
+    wordAudioVoiceId: 'voice',
+    wordAudioCountsByVoice: const {'voice': 1},
+    segmentAudioCount: 1,
+    wordAudioCount: 1,
+  );
 }
 
 Future<File> _writeBookZip(

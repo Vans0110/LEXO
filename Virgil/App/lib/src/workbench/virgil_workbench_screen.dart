@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../models.dart';
 import '../mobile/virgil_a1_chapters.dart';
+import 'virgil_workbench_book_status.dart';
 import 'virgil_workbench_book_library.dart';
 import 'virgil_workbench_library_models.dart';
 import 'virgil_workbench_builder.dart';
@@ -323,7 +324,13 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         libraryDir: VirgilWorkbenchPaths.cloudLibrary,
         log: _appendLog,
       );
-      await indexBuilder.removeBooksMissingFrom(VirgilWorkbenchPaths.books);
+      final outputStatuses = await VirgilWorkbenchBookStatusLoader(
+        appRoot: VirgilWorkbenchPaths.workspaceRoot,
+      ).loadOutputStatuses();
+      await indexBuilder.removeBooksMissingFrom(
+        VirgilWorkbenchPaths.books,
+        outputStatuses: outputStatuses,
+      );
       await indexBuilder.rebuild();
       _appendLog('Upload book files to R2 (index excluded)');
       final filesResult = await Process.run(

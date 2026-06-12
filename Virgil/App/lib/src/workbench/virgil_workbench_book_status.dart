@@ -66,8 +66,8 @@ class VirgilWorkbenchBookStatus {
       dictionaries.isNotEmpty ||
       hasAudio;
 
-  bool get isFullyBuilt =>
-      hasInstalledZip &&
+  bool get isOutputFullyBuilt =>
+      hasOutput &&
       hasCover &&
       hasLanguage('ru') &&
       hasLanguage('uk') &&
@@ -77,6 +77,8 @@ class VirgilWorkbenchBookStatus {
       missingPlayerVoiceIds.isEmpty &&
       wordAudioCount > 0 &&
       missingWordAudioVoiceIds.isEmpty;
+
+  bool get isFullyBuilt => hasInstalledZip && isOutputFullyBuilt;
 
   bool hasLanguage(String language) => languages.contains(language);
 
@@ -156,9 +158,14 @@ class VirgilWorkbenchBookStatusLoader {
   final String appRoot;
 
   Future<Map<String, VirgilWorkbenchBookStatus>> loadStatuses() async {
+    final result = await loadOutputStatuses();
+    await _loadInstalledZipStatuses(result);
+    return result;
+  }
+
+  Future<Map<String, VirgilWorkbenchBookStatus>> loadOutputStatuses() async {
     final result = <String, VirgilWorkbenchBookStatus>{};
     await _loadOutputStatuses(result);
-    await _loadInstalledZipStatuses(result);
     return result;
   }
 

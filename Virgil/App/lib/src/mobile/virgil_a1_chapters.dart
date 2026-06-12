@@ -37,21 +37,40 @@ const virgilA1Chapters = [
     imageAssetPath: 'assets/ui/chapters/a1/chapter_05_work_study.png',
   ),
   VirgilA1Chapter(
-      id: 'chapter_06_daily_routine_time',
-      title: 'Chapter 6 — Daily Routine & Time'),
+    id: 'chapter_06_daily_routine_time',
+    title: 'Chapter 6 — Daily Routine & Time',
+    imageAssetPath: 'assets/ui/chapters/a1/chapter_06_daily_routine_time.png',
+  ),
   VirgilA1Chapter(
-      id: 'chapter_07_clothes_shopping',
-      title: 'Chapter 7 — Clothes & Shopping'),
+    id: 'chapter_07_clothes_shopping',
+    title: 'Chapter 7 — Clothes & Shopping',
+    imageAssetPath: 'assets/ui/chapters/a1/chapter_07_clothes_shopping.png',
+  ),
   VirgilA1Chapter(
-      id: 'chapter_08_city_transport', title: 'Chapter 8 — City & Transport'),
+    id: 'chapter_08_city_transport',
+    title: 'Chapter 8 — City & Transport',
+    imageAssetPath: 'assets/ui/chapters/a1/chapter_08_city_transport.png',
+  ),
   VirgilA1Chapter(
-      id: 'chapter_09_weather_nature', title: 'Chapter 9 — Weather & Nature'),
+    id: 'chapter_09_weather_nature',
+    title: 'Chapter 9 — Weather & Nature',
+    imageAssetPath: 'assets/ui/chapters/a1/chapter_09_weather_nature.png',
+  ),
   VirgilA1Chapter(
-      id: 'chapter_10_numbers_money', title: 'Chapter 10 — Numbers & Money'),
+    id: 'chapter_10_numbers_money',
+    title: 'Chapter 10 — Numbers & Money',
+    imageAssetPath: 'assets/ui/chapters/a1/chapter_10_numbers_money.png',
+  ),
   VirgilA1Chapter(
-      id: 'chapter_11_health_body', title: 'Chapter 11 — Health & Body'),
+    id: 'chapter_11_health_body',
+    title: 'Chapter 11 — Health & Body',
+    imageAssetPath: 'assets/ui/chapters/a1/chapter_11_health_body.png',
+  ),
   VirgilA1Chapter(
-      id: 'chapter_12_travel_plans', title: 'Chapter 12 — Travel & Plans'),
+    id: 'chapter_12_travel_plans',
+    title: 'Chapter 12 — Travel & Plans',
+    imageAssetPath: 'assets/ui/chapters/a1/chapter_12_travel_plans.png',
+  ),
 ];
 
 const virgilDefaultA1ChapterId = 'chapter_01_introduction';

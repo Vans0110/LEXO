@@ -66,6 +66,18 @@ class VirgilWorkbenchBookStatus {
       dictionaries.isNotEmpty ||
       hasAudio;
 
+  bool get isFullyBuilt =>
+      hasInstalledZip &&
+      hasCover &&
+      hasLanguage('ru') &&
+      hasLanguage('uk') &&
+      hasDictionary('ru') &&
+      hasDictionary('uk') &&
+      hasPlayerReadyVoice &&
+      missingPlayerVoiceIds.isEmpty &&
+      wordAudioCount > 0 &&
+      missingWordAudioVoiceIds.isEmpty;
+
   bool hasLanguage(String language) => languages.contains(language);
 
   bool hasDictionary(String language) => dictionaries.contains(language);

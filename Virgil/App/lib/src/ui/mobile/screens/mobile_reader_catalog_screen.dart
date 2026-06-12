@@ -927,9 +927,7 @@ class _ChapterBooksScreen extends StatelessWidget {
                 ),
               )
             else
-              Wrap(
-                spacing: 14,
-                runSpacing: 18,
+              _AdaptiveBookGrid(
                 children: [
                   for (final book in books) coverBuilder(context, book),
                 ],
@@ -937,6 +935,45 @@ class _ChapterBooksScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AdaptiveBookGrid extends StatelessWidget {
+  const _AdaptiveBookGrid({required this.children});
+
+  static const _cardWidth = 116.0;
+  static const _minimumGap = 12.0;
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const threeColumnsWidth = (_cardWidth * 3) + (_minimumGap * 2);
+        final columnCount = constraints.maxWidth >= threeColumnsWidth ? 3 : 2;
+        final rows = <Widget>[];
+
+        for (var start = 0; start < children.length; start += columnCount) {
+          final end = start + columnCount < children.length
+              ? start + columnCount
+              : children.length;
+          if (rows.isNotEmpty) {
+            rows.add(const SizedBox(height: 18));
+          }
+          rows.add(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: children.sublist(start, end),
+            ),
+          );
+        }
+
+        return Column(
+          children: rows,
+        );
+      },
     );
   }
 }

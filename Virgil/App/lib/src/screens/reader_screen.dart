@@ -87,7 +87,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     if (speed == speed.roundToDouble()) {
       return '${speed.toStringAsFixed(0)}x';
     }
-    if ((speed * 10) % 10 == 0) {
+    if ((speed * 10).round() == speed * 10) {
       return '${speed.toStringAsFixed(1)}x';
     }
     return '${speed.toStringAsFixed(2)}x';

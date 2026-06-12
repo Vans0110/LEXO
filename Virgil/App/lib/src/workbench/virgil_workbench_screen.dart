@@ -3,22 +3,21 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 
 import '../api/api_client.dart';
 import '../models.dart';
 import '../mobile/virgil_a1_chapters.dart';
-import '../platform/desktop_txt_picker.dart';
 import 'virgil_workbench_book_library.dart';
+import 'virgil_workbench_library_models.dart';
 import 'virgil_workbench_builder.dart';
 import 'virgil_workbench_paths.dart';
 import 'virgil_workbench_form_panels.dart';
 import 'virgil_library_index_builder.dart';
 import 'virgil_workbench_status_panel.dart';
 
-const _ruContextDictionarySource = 'wiktionary_freedict_en_ru_context_v1';
-const _ukContextDictionarySource = 'wiktionary_en_uk_context_v1';
+const _ruContextDictionarySource = 'wiktionary_freedict_nllb_en_ru_context_v3';
+const _ukContextDictionarySource = 'wiktionary_nllb_en_uk_context_v3';
 
 String _expectedDictionarySource(String lang) =>
     lang == 'uk' ? _ukContextDictionarySource : _ruContextDictionarySource;
@@ -98,20 +97,15 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
   String _log = '';
   List<TtsProfile> _voices = const [];
   TtsPackageState? _packageState;
-  Timer? _pollTimer;
-  late final TextEditingController _titleController;
 
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController();
     unawaited(_loadVoices());
   }
 
   @override
   void dispose() {
-    _pollTimer?.cancel();
-    _titleController.dispose();
     super.dispose();
   }
 
@@ -139,75 +133,6 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         return;
       }
       setState(() => _voiceId ??= _fallbackVoiceId);
-    }
-  }
-
-  Future<void> _pickTxt() async {
-    final picked = await DesktopTxtPicker.pickTxtFile();
-    if (picked == null) {
-      return;
-    }
-    final text = await File(picked.path).readAsString();
-    if (!mounted) {
-      return;
-    }
-    setState(() {
-      _title = picked.titleCandidate;
-      _titleController.text = _title;
-      _sourcePath = picked.path;
-      _sourceText = text;
-      _bookId = null;
-      _bookIdsByTargetLang = const {};
-      _packagesByTargetLang = const {};
-      _packageState = null;
-      _outputPath = null;
-      _error = null;
-    });
-    _appendLog('Loaded TXT: ${picked.path} (${text.length} chars)');
-  }
-
-  Future<void> _pickCover() async {
-    const imageGroup = XTypeGroup(
-      label: 'Book cover',
-      extensions: ['jpg', 'jpeg', 'png'],
-      mimeTypes: ['image/jpeg', 'image/png'],
-    );
-    final picked = await openFile(acceptedTypeGroups: const [imageGroup]);
-    if (picked == null) {
-      return;
-    }
-    final path = picked.path;
-    if (path.trim().isEmpty) {
-      setState(() => _error = 'Could not read the cover path.');
-      return;
-    }
-    setState(() {
-      _coverPath = path;
-      _error = null;
-    });
-    _appendLog('Cover selected: $path');
-  }
-
-  Future<void> _importToBackend() async {
-    if (_sourceText.trim().isEmpty || _title.trim().isEmpty) {
-      setState(() => _error = 'TXT and book title are required.');
-      return;
-    }
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-    try {
-      await _importCurrentBookToBackend();
-    } catch (error) {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _error = error.toString());
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
     }
   }
 
@@ -247,41 +172,6 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       _packagesByTargetLang = packages;
       _bookId = imported[selectedLangs.first];
     });
-  }
-
-  Future<void> _generatePackage() async {
-    final bookId = _bookId;
-    final selectedVoiceIds = _selectedVoiceIds();
-    if (bookId == null || bookId.isEmpty || selectedVoiceIds.isEmpty) {
-      setState(() => _error = 'book_id and Kokoro voice are required.');
-      return;
-    }
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-    try {
-      await _generateSelectedVoicePackages(waitForReady: false);
-      _syncPolling();
-    } catch (error) {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _error = error.toString());
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
-    }
-  }
-
-  Future<void> _generateSelectedVoicePackages({
-    required bool waitForReady,
-  }) async {
-    await _generateVoicePackages(
-      voiceIds: _selectedVoiceIds(),
-      waitForReady: waitForReady,
-    );
   }
 
   Future<void> _generateVoicePackages({
@@ -342,83 +232,6 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       }
     }
     _appendLog('TTS package status: ${state.status}');
-  }
-
-  void _syncPolling() {
-    _pollTimer?.cancel();
-    final state = _packageState;
-    if (state == null || !state.isRunning) {
-      return;
-    }
-    _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) async {
-      final bookId = _bookId;
-      final voiceId = _voiceId;
-      if (bookId == null || voiceId == null) {
-        return;
-      }
-      try {
-        final next = await widget.api
-            .getTtsPackageState(bookId: bookId, voiceId: voiceId);
-        if (!mounted) {
-          return;
-        }
-        setState(() => _packageState = next);
-        if (!next.isRunning) {
-          _pollTimer?.cancel();
-          _appendLog('TTS package status: ${next.status}');
-        }
-      } catch (error) {
-        _appendLog('Package polling failed: $error');
-      }
-    });
-  }
-
-  Future<void> _exportFiles() async {
-    final bookId = _bookId;
-    if (bookId == null || bookId.isEmpty) {
-      setState(() => _error = 'Import the book to backend first.');
-      return;
-    }
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-    try {
-      await _exportCurrentFiles();
-    } catch (error) {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _error = error.toString());
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
-    }
-  }
-
-  Future<void> _updateCurrentTextOnly() async {
-    if (_sourceText.trim().isEmpty || _title.trim().isEmpty) {
-      setState(() => _error = 'TXT and book title are required.');
-      return;
-    }
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-    try {
-      await _importCurrentBookToBackend(readerOnly: true);
-      await _exportCurrentFiles(textOnly: true);
-    } catch (error) {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _error = error.toString());
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
-    }
   }
 
   Future<void> _exportCurrentFiles({bool textOnly = false}) async {
@@ -506,10 +319,12 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       _error = null;
     });
     try {
-      await VirgilLibraryIndexBuilder(
+      final indexBuilder = VirgilLibraryIndexBuilder(
         libraryDir: VirgilWorkbenchPaths.cloudLibrary,
         log: _appendLog,
-      ).rebuild();
+      );
+      await indexBuilder.removeBooksMissingFrom(VirgilWorkbenchPaths.books);
+      await indexBuilder.rebuild();
       _appendLog('Upload book files to R2 (index excluded)');
       final filesResult = await Process.run(
         'rclone',
@@ -675,7 +490,6 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         _chapterId = selection.chapterId;
       }
       _title = selection.title;
-      _titleController.text = selection.title;
       _sourcePath = selection.sourcePath;
       _sourceText = selection.sourceText;
       _coverPath = selection.coverPath;
@@ -1317,7 +1131,6 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       _chapterId = selection.chapterId;
     }
     _title = selection.title;
-    _titleController.text = selection.title;
     _sourcePath = selection.sourcePath;
     _sourceText = selection.sourceText;
     _coverPath = selection.coverPath;
@@ -1334,13 +1147,6 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final canImport =
-        !_busy && _sourceText.trim().isNotEmpty && _title.trim().isNotEmpty;
-    final canGenerate =
-        !_busy && (_bookId ?? '').isNotEmpty && _selectedVoiceIds().isNotEmpty;
-    final canExport = !_busy && (_bookId ?? '').isNotEmpty;
-    final canClean = !_busy &&
-        (_selectedLibraryBooks.isNotEmpty || _title.trim().isNotEmpty);
     return Scaffold(
       appBar: AppBar(title: const Text('Virgil Workbench')),
       body: SafeArea(
@@ -1357,139 +1163,13 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
               onRefreshDictionary: _refreshBookDictionaries,
               onProcessAll: _processLibraryBooks,
               onUpdateTextOnly: _updateLibraryTextOnly,
+              onClean: _cleanCurrentBookArtifacts,
+              onSyncToR2: _syncLibraryToR2,
               onSelectionChanged: (selections) =>
                   setState(() => _selectedLibraryBooks = selections),
               refreshRevision: _libraryRefreshRevision,
             ),
             const SizedBox(height: 18),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                FilledButton.icon(
-                  onPressed: _busy ? null : _pickTxt,
-                  icon: const Icon(Icons.text_snippet_outlined),
-                  label: const Text('Load TXT'),
-                ),
-                FilledButton.icon(
-                  onPressed: canImport ? _importToBackend : null,
-                  icon: const Icon(Icons.cloud_upload_outlined),
-                  label: const Text('Import to backend'),
-                ),
-                FilledButton.icon(
-                  onPressed: canGenerate ? _generatePackage : null,
-                  icon: const Icon(Icons.record_voice_over_outlined),
-                  label: const Text('Generate Kokoro package'),
-                ),
-                FilledButton.icon(
-                  onPressed: canExport ? _exportFiles : null,
-                  icon: const Icon(Icons.folder_copy_outlined),
-                  label: const Text('Export files'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: canImport ? _updateCurrentTextOnly : null,
-                  icon: const Icon(Icons.article_outlined),
-                  label: const Text('Update text only'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: canClean ? _cleanCurrentBookArtifacts : null,
-                  icon: const Icon(Icons.cleaning_services_outlined),
-                  label: Text(
-                    _selectedLibraryBooks.isEmpty
-                        ? 'Clean'
-                        : 'Clean selected (${_selectedLibraryBooks.length})',
-                  ),
-                ),
-                OutlinedButton.icon(
-                  onPressed: _busy ? null : _syncLibraryToR2,
-                  icon: const Icon(Icons.cloud_sync_outlined),
-                  label: const Text('Sync to R2'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            TextField(
-              controller: _titleController,
-              enabled: !_busy,
-              decoration: const InputDecoration(
-                labelText: 'Book title',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) => _title = value,
-            ),
-            const SizedBox(height: 12),
-            VirgilWorkbenchCoverPickerPanel(
-              coverPath: _coverPath,
-              busy: _busy,
-              onPickCover: _pickCover,
-              onClearCover: _coverPath.isEmpty
-                  ? null
-                  : () => setState(() => _coverPath = ''),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: _level,
-                    decoration: const InputDecoration(
-                        labelText: 'Level', border: OutlineInputBorder()),
-                    items: const [
-                      DropdownMenuItem(value: 'a1', child: Text('A1')),
-                      DropdownMenuItem(value: 'a2', child: Text('A2')),
-                      DropdownMenuItem(value: 'b1', child: Text('B1')),
-                      DropdownMenuItem(value: 'b2', child: Text('B2')),
-                      DropdownMenuItem(value: 'c1', child: Text('C1')),
-                    ],
-                    onChanged: _busy
-                        ? null
-                        : (value) => setState(() => _level = value ?? _level),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: _section,
-                    decoration: const InputDecoration(
-                        labelText: 'Section', border: OutlineInputBorder()),
-                    items: const [
-                      DropdownMenuItem(
-                          value: 'chapters', child: Text('Chapters')),
-                      DropdownMenuItem(
-                          value: 'more_a1_stories',
-                          child: Text('More A1 Stories')),
-                    ],
-                    onChanged: _busy
-                        ? null
-                        : (value) =>
-                            setState(() => _section = value ?? _section),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            if (_section == 'chapters') ...[
-              DropdownButtonFormField<String>(
-                value: _chapterId,
-                decoration: const InputDecoration(
-                  labelText: 'A1 chapter',
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  for (final chapter in virgilA1Chapters)
-                    DropdownMenuItem(
-                      value: chapter.id,
-                      child: Text(chapter.title),
-                    ),
-                ],
-                onChanged: _busy
-                    ? null
-                    : (value) =>
-                        setState(() => _chapterId = value ?? _chapterId),
-              ),
-              const SizedBox(height: 12),
-            ],
             VirgilWorkbenchTranslationLanguagePanel(
               selectedLangs: _targetLangs,
               busy: _busy,

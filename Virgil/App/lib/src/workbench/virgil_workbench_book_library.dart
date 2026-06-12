@@ -2,37 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../mobile/virgil_a1_chapters.dart';
+import 'virgil_workbench_library_filters.dart';
+import 'virgil_workbench_library_models.dart';
 import 'virgil_workbench_book_status.dart';
 import 'virgil_workbench_paths.dart';
 import 'virgil_workbench_book_tile.dart';
-
-class VirgilWorkbenchBookSelection {
-  const VirgilWorkbenchBookSelection({
-    required this.level,
-    required this.section,
-    required this.chapterId,
-    required this.title,
-    required this.sourcePath,
-    required this.sourceText,
-    required this.coverPath,
-    required this.exportedLanguages,
-    required this.hasAudio,
-  });
-
-  final String level;
-  final String section;
-  final String chapterId;
-  final String title;
-  final String sourcePath;
-  final String sourceText;
-  final String coverPath;
-  final Set<String> exportedLanguages;
-  final bool hasAudio;
-
-  bool hasLanguages(Iterable<String> languages) =>
-      languages.every(exportedLanguages.contains);
-}
 
 class VirgilWorkbenchBookLibrary extends StatefulWidget {
   const VirgilWorkbenchBookLibrary({
@@ -43,6 +17,8 @@ class VirgilWorkbenchBookLibrary extends StatefulWidget {
     required this.onRefreshDictionary,
     required this.onProcessAll,
     required this.onUpdateTextOnly,
+    required this.onClean,
+    required this.onSyncToR2,
     required this.onSelectionChanged,
     required this.refreshRevision,
   });
@@ -55,6 +31,8 @@ class VirgilWorkbenchBookLibrary extends StatefulWidget {
       onRefreshDictionary;
   final ValueChanged<List<VirgilWorkbenchBookSelection>> onProcessAll;
   final ValueChanged<List<VirgilWorkbenchBookSelection>> onUpdateTextOnly;
+  final VoidCallback onClean;
+  final VoidCallback onSyncToR2;
   final ValueChanged<List<VirgilWorkbenchBookSelection>> onSelectionChanged;
   final int refreshRevision;
 
@@ -65,8 +43,16 @@ class VirgilWorkbenchBookLibrary extends StatefulWidget {
 
 class _VirgilWorkbenchBookLibraryState
     extends State<VirgilWorkbenchBookLibrary> {
-  late Future<List<_WorkbenchBookItem>> _future;
+  late Future<List<VirgilWorkbenchBookItem>> _future;
+  List<VirgilWorkbenchBookItem> _cachedItems = const [];
   final Set<String> _selectedSourcePaths = <String>{};
+  String _levelFilter = '';
+  String _chapterFilter = '';
+  VirgilWorkbenchReadyFilter _readyFilter = VirgilWorkbenchReadyFilter.all;
+  String _pendingLevelFilter = '';
+  String _pendingChapterFilter = '';
+  VirgilWorkbenchReadyFilter _pendingReadyFilter =
+      VirgilWorkbenchReadyFilter.all;
 
   @override
   void initState() {
@@ -87,9 +73,10 @@ class _VirgilWorkbenchBookLibraryState
     setState(() => _future = _loadBooks());
   }
 
-  Future<List<_WorkbenchBookItem>> _loadBooks() async {
+  Future<List<VirgilWorkbenchBookItem>> _loadBooks() async {
     final root = VirgilWorkbenchPaths.books;
     if (!root.existsSync()) {
+      _cachedItems = const [];
       return const [];
     }
     final txtFiles = root
@@ -103,17 +90,20 @@ class _VirgilWorkbenchBookLibraryState
     final statuses = await VirgilWorkbenchBookStatusLoader(
       appRoot: VirgilWorkbenchPaths.workspaceRoot,
     ).loadStatuses();
-    return [
+    final items = [
       for (final file in txtFiles) _buildItem(root, file, statuses),
     ];
+    _cachedItems = items;
+    return items;
   }
 
   bool _isBookSource(Directory booksRoot, File file) {
-    final parts = _relativeParts(booksRoot.path, file.path);
+    final parts = virgilWorkbenchRelativeParts(booksRoot.path, file.path);
     if (parts.length < 3) {
       return false;
     }
-    final title = _basenameWithoutExtension(file.path).trim().toLowerCase();
+    final title =
+        virgilWorkbenchBasenameWithoutExtension(file.path).trim().toLowerCase();
     if (title.contains('plan')) {
       return false;
     }
@@ -127,50 +117,32 @@ class _VirgilWorkbenchBookLibraryState
         normalized.startsWith('chapter_images/');
   }
 
-  _WorkbenchBookItem _buildItem(
+  VirgilWorkbenchBookItem _buildItem(
     Directory booksRoot,
     File source,
     Map<String, VirgilWorkbenchBookStatus> statuses,
   ) {
-    final relativeParts = _relativeParts(booksRoot.path, source.path);
+    final relativeParts =
+        virgilWorkbenchRelativeParts(booksRoot.path, source.path);
     final rawLevel = relativeParts.isNotEmpty ? relativeParts.first : 'a1';
     final rawChapter = relativeParts.length >= 2 ? relativeParts[1] : '';
-    final level = _normalizeLevel(rawLevel);
-    final title = _basenameWithoutExtension(source.path);
-    final chapterId = _chapterIdFromFolder(rawChapter);
+    final level = virgilWorkbenchNormalizeLevel(rawLevel);
+    final title = virgilWorkbenchBasenameWithoutExtension(source.path);
+    final chapterId = virgilWorkbenchChapterId(rawChapter);
     final coverPath = _findCoverPath(source);
     final status =
         statuses[virgilWorkbenchBookStatusKey(level, chapterId, title)];
-    return _WorkbenchBookItem(
+    return VirgilWorkbenchBookItem(
       level: level,
       section: 'chapters',
       chapterId: chapterId,
-      chapterTitle:
-          chapterId.isEmpty ? rawChapter : virgilA1ChapterTitle(chapterId),
+      chapterTitle: virgilWorkbenchChapterTitle(rawChapter),
+      chapterNumber: virgilWorkbenchChapterNumber(rawChapter),
       title: title,
       sourcePath: source.path,
       coverPath: coverPath,
       status: status,
     );
-  }
-
-  String _normalizeLevel(String value) {
-    final level = value.trim().toLowerCase();
-    return const {'a1', 'a2', 'b1', 'b2', 'c1'}.contains(level) ? level : 'a1';
-  }
-
-  String _chapterIdFromFolder(String folderName) {
-    final match = RegExp(r'(?:chapter|\u0433\u043b\u0430\u0432\u0430)\s*(\d+)',
-            caseSensitive: false)
-        .firstMatch(folderName);
-    if (match == null) {
-      return '';
-    }
-    final number = int.tryParse(match.group(1) ?? '');
-    if (number == null || number < 1 || number > virgilA1Chapters.length) {
-      return '';
-    }
-    return virgilA1Chapters[number - 1].id;
   }
 
   String _findCoverPath(File source) {
@@ -184,7 +156,7 @@ class _VirgilWorkbenchBookLibraryState
     return '';
   }
 
-  Future<void> _selectBook(_WorkbenchBookItem item) async {
+  Future<void> _selectBook(VirgilWorkbenchBookItem item) async {
     final selection = await _selectionFor(item);
     if (!mounted) {
       return;
@@ -192,7 +164,7 @@ class _VirgilWorkbenchBookLibraryState
     widget.onSelected(selection);
   }
 
-  Future<void> _refreshBook(_WorkbenchBookItem item) async {
+  Future<void> _refreshBook(VirgilWorkbenchBookItem item) async {
     final selection = await _selectionFor(item);
     if (!mounted) {
       return;
@@ -204,7 +176,7 @@ class _VirgilWorkbenchBookLibraryState
     _refresh();
   }
 
-  Future<void> _refreshDictionary(_WorkbenchBookItem item) async {
+  Future<void> _refreshDictionary(VirgilWorkbenchBookItem item) async {
     final selection = await _selectionFor(item);
     if (!mounted) {
       return;
@@ -217,7 +189,7 @@ class _VirgilWorkbenchBookLibraryState
   }
 
   Future<VirgilWorkbenchBookSelection> _selectionFor(
-      _WorkbenchBookItem item) async {
+      VirgilWorkbenchBookItem item) async {
     final text = await File(item.sourcePath).readAsString();
     return VirgilWorkbenchBookSelection(
       level: item.level,
@@ -232,7 +204,8 @@ class _VirgilWorkbenchBookLibraryState
     );
   }
 
-  VirgilWorkbenchBookSelection _selectionMetadataFor(_WorkbenchBookItem item) {
+  VirgilWorkbenchBookSelection _selectionMetadataFor(
+      VirgilWorkbenchBookItem item) {
     return VirgilWorkbenchBookSelection(
       level: item.level,
       section: item.section,
@@ -247,8 +220,8 @@ class _VirgilWorkbenchBookLibraryState
   }
 
   void _setSelected(
-    List<_WorkbenchBookItem> items,
-    _WorkbenchBookItem item,
+    List<VirgilWorkbenchBookItem> items,
+    VirgilWorkbenchBookItem item,
     bool selected,
   ) {
     setState(() {
@@ -261,17 +234,25 @@ class _VirgilWorkbenchBookLibraryState
     _notifySelectionChanged(items);
   }
 
-  void _setAllSelected(List<_WorkbenchBookItem> items, bool selected) {
+  void _setAllSelected(List<VirgilWorkbenchBookItem> items, bool selected) {
     setState(() {
-      _selectedSourcePaths.clear();
       if (selected) {
         _selectedSourcePaths.addAll(items.map((item) => item.sourcePath));
+      } else {
+        _selectedSourcePaths.removeAll(items.map((item) => item.sourcePath));
       }
     });
-    _notifySelectionChanged(items);
   }
 
-  void _notifySelectionChanged(List<_WorkbenchBookItem> items) {
+  List<VirgilWorkbenchBookItem> _selectedItems(
+      List<VirgilWorkbenchBookItem> items) {
+    return [
+      for (final item in items)
+        if (_selectedSourcePaths.contains(item.sourcePath)) item,
+    ];
+  }
+
+  void _notifySelectionChanged(List<VirgilWorkbenchBookItem> items) {
     widget.onSelectionChanged([
       for (final item in items)
         if (_selectedSourcePaths.contains(item.sourcePath))
@@ -279,7 +260,7 @@ class _VirgilWorkbenchBookLibraryState
     ]);
   }
 
-  Future<void> _processAll(List<_WorkbenchBookItem> items) async {
+  Future<void> _processAll(List<VirgilWorkbenchBookItem> items) async {
     final selections = <VirgilWorkbenchBookSelection>[];
     for (final item in items) {
       selections.add(await _selectionFor(item));
@@ -290,7 +271,7 @@ class _VirgilWorkbenchBookLibraryState
     widget.onProcessAll(selections);
   }
 
-  Future<void> _updateTextOnly(List<_WorkbenchBookItem> items) async {
+  Future<void> _updateTextOnly(List<VirgilWorkbenchBookItem> items) async {
     final selections = <VirgilWorkbenchBookSelection>[];
     for (final item in items) {
       selections.add(await _selectionFor(item));
@@ -331,11 +312,13 @@ class _VirgilWorkbenchBookLibraryState
               ],
             ),
             const SizedBox(height: 10),
-            FutureBuilder<List<_WorkbenchBookItem>>(
+            FutureBuilder<List<VirgilWorkbenchBookItem>>(
               future: _future,
               builder: (context, snapshot) {
-                final items = snapshot.data ?? const <_WorkbenchBookItem>[];
-                if (snapshot.connectionState != ConnectionState.done) {
+                final items = snapshot.data ?? _cachedItems;
+                final loading =
+                    snapshot.connectionState != ConnectionState.done;
+                if (loading && items.isEmpty) {
                   return const Padding(
                     padding: EdgeInsets.all(18),
                     child: Center(child: CircularProgressIndicator()),
@@ -349,28 +332,78 @@ class _VirgilWorkbenchBookLibraryState
                     ),
                   );
                 }
+                final visibleItems = virgilWorkbenchVisibleBooks(
+                  items: items,
+                  level: _levelFilter,
+                  chapter: _chapterFilter,
+                  readyFilter: _readyFilter,
+                );
+                final selectedItems = _selectedItems(items);
+                final visibleSelectedCount = visibleItems
+                    .where(
+                      (item) => _selectedSourcePaths.contains(item.sourcePath),
+                    )
+                    .length;
+                final allVisibleSelected = visibleItems.isNotEmpty &&
+                    visibleSelectedCount == visibleItems.length;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if (loading) ...[
+                      const LinearProgressIndicator(),
+                      const SizedBox(height: 10),
+                    ],
+                    VirgilWorkbenchLibraryFilters(
+                      level: _pendingLevelFilter,
+                      chapter: _pendingChapterFilter,
+                      readyFilter: _pendingReadyFilter,
+                      levels: virgilWorkbenchLevels(items),
+                      chapters:
+                          virgilWorkbenchChapters(items, _pendingLevelFilter),
+                      busy: widget.busy,
+                      onLevelChanged: (value) {
+                        setState(() {
+                          _pendingLevelFilter = value;
+                          _pendingChapterFilter = '';
+                        });
+                      },
+                      onChapterChanged: (value) =>
+                          setState(() => _pendingChapterFilter = value),
+                      onReadyFilterChanged: (value) =>
+                          setState(() => _pendingReadyFilter = value),
+                      hasPendingChanges: _pendingLevelFilter != _levelFilter ||
+                          _pendingChapterFilter != _chapterFilter ||
+                          _pendingReadyFilter != _readyFilter,
+                      onApply: () {
+                        setState(() {
+                          _levelFilter = _pendingLevelFilter;
+                          _chapterFilter = _pendingChapterFilter;
+                          _readyFilter = _pendingReadyFilter;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Checkbox(
                           tristate: true,
-                          value: _selectedSourcePaths.isEmpty
+                          value: visibleSelectedCount == 0
                               ? false
-                              : (_selectedSourcePaths.length == items.length
-                                  ? true
-                                  : null),
-                          onChanged: widget.busy
+                              : (allVisibleSelected ? true : null),
+                          onChanged: widget.busy || visibleItems.isEmpty
                               ? null
-                              : (value) => _setAllSelected(
-                                    items,
+                              : (value) {
+                                  _setAllSelected(
+                                    visibleItems,
                                     value ?? true,
-                                  ),
+                                  );
+                                  _notifySelectionChanged(items);
+                                },
                         ),
                         Text(
-                          'All (${_selectedSourcePaths.length}/${items.length})',
+                          'Visible ($visibleSelectedCount/${visibleItems.length})'
+                          ' · Selected ${selectedItems.length}',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                         const Spacer(),
@@ -379,11 +412,30 @@ class _VirgilWorkbenchBookLibraryState
                           runSpacing: 10,
                           children: [
                             OutlinedButton.icon(
-                              onPressed: widget.busy
+                              onPressed: widget.busy ||
+                                      (selectedItems.isEmpty &&
+                                          visibleItems.isEmpty)
                                   ? null
-                                  : () => _updateTextOnly(items),
+                                  : () => _updateTextOnly(
+                                        selectedItems.isEmpty
+                                            ? visibleItems
+                                            : selectedItems,
+                                      ),
                               icon: const Icon(Icons.article_outlined),
-                              label: const Text('Update text only'),
+                              label: Text(
+                                selectedItems.isEmpty
+                                    ? 'Update visible text'
+                                    : 'Update selected text',
+                              ),
+                            ),
+                            FilledButton.tonalIcon(
+                              onPressed: widget.busy || selectedItems.isEmpty
+                                  ? null
+                                  : () => _processAll(selectedItems),
+                              icon: const Icon(Icons.checklist_outlined),
+                              label: Text(
+                                'Process selected (${selectedItems.length})',
+                              ),
                             ),
                             FilledButton.icon(
                               onPressed:
@@ -391,12 +443,39 @@ class _VirgilWorkbenchBookLibraryState
                               icon: const Icon(Icons.cloud_upload_outlined),
                               label: const Text('Process all'),
                             ),
+                            OutlinedButton.icon(
+                              onPressed: widget.busy || selectedItems.isEmpty
+                                  ? null
+                                  : widget.onClean,
+                              icon:
+                                  const Icon(Icons.cleaning_services_outlined),
+                              label: Text(
+                                'Clean selected (${selectedItems.length})',
+                              ),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: widget.busy ? null : widget.onSyncToR2,
+                              icon: const Icon(Icons.cloud_sync_outlined),
+                              label: const Text('Sync to R2'),
+                            ),
                           ],
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    for (final item in items)
+                    if (visibleItems.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Text(
+                          'No books match the selected filters.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    for (final item in visibleItems)
                       VirgilWorkbenchBookTile(
                         title: item.title,
                         level: item.level,
@@ -421,43 +500,4 @@ class _VirgilWorkbenchBookLibraryState
       ),
     );
   }
-}
-
-class _WorkbenchBookItem {
-  const _WorkbenchBookItem({
-    required this.level,
-    required this.section,
-    required this.chapterId,
-    required this.chapterTitle,
-    required this.title,
-    required this.sourcePath,
-    required this.coverPath,
-    required this.status,
-  });
-
-  final String level;
-  final String section;
-  final String chapterId;
-  final String chapterTitle;
-  final String title;
-  final String sourcePath;
-  final String coverPath;
-  final VirgilWorkbenchBookStatus? status;
-}
-
-String _basename(String path) =>
-    path.replaceAll('\\', '/').split('/').where((part) => part.isNotEmpty).last;
-
-String _basenameWithoutExtension(String path) {
-  final name = _basename(path);
-  final dot = name.lastIndexOf('.');
-  return dot <= 0 ? name : name.substring(0, dot);
-}
-
-List<String> _relativeParts(String rootPath, String filePath) {
-  final root = rootPath.replaceAll('\\', '/').replaceAll(RegExp(r'/+$'), '');
-  final file = filePath.replaceAll('\\', '/');
-  final relative =
-      file.startsWith('$root/') ? file.substring(root.length + 1) : file;
-  return relative.split('/').where((part) => part.isNotEmpty).toList();
 }

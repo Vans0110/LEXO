@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
 
+import 'virgil_workbench_library_models.dart';
+
 class VirgilLibraryIndexBuilder {
   const VirgilLibraryIndexBuilder({
     required this.libraryDir,
@@ -14,6 +16,54 @@ class VirgilLibraryIndexBuilder {
 
   final Directory libraryDir;
   final void Function(String message)? log;
+
+  Future<int> removeBooksMissingFrom(Directory sourceBooksDir) async {
+    await libraryDir.create(recursive: true);
+    if (!sourceBooksDir.existsSync()) {
+      throw StateError(
+        'Workbench books directory does not exist: ${sourceBooksDir.path}',
+      );
+    }
+    final sourceKeys = sourceBooksDir
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) => file.path.toLowerCase().endsWith('.txt'))
+        .where((file) => !_isChapterImagesPath(file.path))
+        .map((file) => _sourceBookKey(sourceBooksDir, file))
+        .where((key) => key.isNotEmpty)
+        .toSet();
+    if (sourceKeys.isEmpty) {
+      throw StateError(
+        'No Workbench TXT books found; refusing to clean CloudLibrary.',
+      );
+    }
+
+    var removed = 0;
+    final zipFiles = libraryDir
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) => file.path.toLowerCase().endsWith('.zip'))
+        .toList();
+    for (final zipFile in zipFiles) {
+      final manifest = await _manifestForZip(zipFile);
+      if (manifest == null) {
+        continue;
+      }
+      final key = _manifestBookKey(manifest);
+      if (key.isEmpty || sourceKeys.contains(key)) {
+        continue;
+      }
+      await _deleteExtractedCover(zipFile, manifest);
+      await zipFile.delete();
+      removed++;
+      log?.call(
+        'Remove stale local library book: '
+        '${(manifest['title'] ?? zipFile.path).toString()}',
+      );
+    }
+    log?.call('CloudLibrary cleanup: removed $removed stale books');
+    return removed;
+  }
 
   Future<File> rebuild() async {
     await libraryDir.create(recursive: true);
@@ -49,15 +99,10 @@ class VirgilLibraryIndexBuilder {
   Future<Map<String, dynamic>?> _entryForZip(File zipFile) async {
     try {
       final archive = ZipDecoder().decodeBytes(await zipFile.readAsBytes());
-      final manifestFile = archive.files
-          .where((file) => file.isFile && file.name == 'manifest.json')
-          .firstOrNull;
-      if (manifestFile == null) {
+      final manifest = _manifestFromArchive(archive);
+      if (manifest == null) {
         return null;
       }
-      final manifest = jsonDecode(
-        utf8.decode(manifestFile.content as List<int>),
-      ) as Map<String, dynamic>;
       final relativeZipPath = _relativePath(zipFile);
       final contentHash = await _sha256File(zipFile);
       final coverPath = await _extractCover(
@@ -89,6 +134,115 @@ class VirgilLibraryIndexBuilder {
       log?.call('Skip index entry for ${zipFile.path}: $error');
       return null;
     }
+  }
+
+  Future<Map<String, dynamic>?> _manifestForZip(File zipFile) async {
+    try {
+      final archive = ZipDecoder().decodeBytes(await zipFile.readAsBytes());
+      return _manifestFromArchive(archive);
+    } catch (error) {
+      log?.call('Skip stale check for ${zipFile.path}: $error');
+      return null;
+    }
+  }
+
+  Map<String, dynamic>? _manifestFromArchive(Archive archive) {
+    final manifestFile = archive.files
+        .where((file) => file.isFile && file.name == 'manifest.json')
+        .firstOrNull;
+    if (manifestFile == null) {
+      return null;
+    }
+    return jsonDecode(
+      utf8.decode(manifestFile.content as List<int>),
+    ) as Map<String, dynamic>;
+  }
+
+  String _sourceBookKey(Directory sourceBooksDir, File file) {
+    final parts = _relativeParts(sourceBooksDir.path, file.path);
+    if (parts.length < 3) {
+      return '';
+    }
+    final level = virgilWorkbenchNormalizeLevel(parts.first);
+    final chapterId = virgilWorkbenchChapterId(parts[1]);
+    final title = _basenameWithoutExtension(parts.last);
+    return _bookKey(level, 'chapters', chapterId, title);
+  }
+
+  String _manifestBookKey(Map<String, dynamic> manifest) {
+    return _bookKey(
+      (manifest['level'] ?? '').toString(),
+      (manifest['section'] ?? '').toString(),
+      (manifest['chapter_id'] ?? '').toString(),
+      (manifest['title'] ?? '').toString(),
+    );
+  }
+
+  String _bookKey(
+    String level,
+    String section,
+    String chapterId,
+    String title,
+  ) {
+    final normalizedTitle = title
+        .trim()
+        .toLowerCase()
+        .replaceAll('\u2019', "'")
+        .replaceAll(RegExp(r'\s+'), ' ');
+    if (level.trim().isEmpty ||
+        section.trim().isEmpty ||
+        normalizedTitle.isEmpty) {
+      return '';
+    }
+    return [
+      level.trim().toLowerCase(),
+      section.trim().toLowerCase(),
+      chapterId.trim().toLowerCase(),
+      normalizedTitle,
+    ].join('|');
+  }
+
+  Future<void> _deleteExtractedCover(
+    File zipFile,
+    Map<String, dynamic> manifest,
+  ) async {
+    final coverName = (manifest['cover'] ?? '').toString();
+    final extension =
+        _extension(coverName).isEmpty ? '.png' : _extension(coverName);
+    final relativeZipPath = _relativePath(zipFile);
+    final parts = relativeZipPath.split('/');
+    if (parts.length < 3) {
+      return;
+    }
+    final zipName = parts.last;
+    final baseName = zipName.toLowerCase().endsWith('.zip')
+        ? zipName.substring(0, zipName.length - 4)
+        : zipName;
+    final cover = File(
+      '${libraryDir.path}/${parts[0]}/${parts[1]}/covers/'
+      '$baseName$extension',
+    );
+    if (cover.existsSync()) {
+      await cover.delete();
+    }
+  }
+
+  bool _isChapterImagesPath(String path) {
+    final normalized = path.replaceAll('\\', '/').toLowerCase();
+    return normalized.contains('/chapter_images/');
+  }
+
+  List<String> _relativeParts(String rootPath, String filePath) {
+    final root = rootPath.replaceAll('\\', '/').replaceAll(RegExp(r'/+$'), '');
+    final file = filePath.replaceAll('\\', '/');
+    final relative =
+        file.startsWith('$root/') ? file.substring(root.length + 1) : file;
+    return relative.split('/').where((part) => part.isNotEmpty).toList();
+  }
+
+  String _basenameWithoutExtension(String path) {
+    final dot = path.lastIndexOf('.');
+    return dot <= 0 ? path : path.substring(0, dot);
   }
 
   Future<String> _sha256File(File file) async {

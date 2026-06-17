@@ -112,6 +112,38 @@ void main() {
       expect(_status(ready: false).isFullyBuilt, isFalse);
     },
   );
+
+  test('output is fully built with one selected voice', () {
+    const status = VirgilWorkbenchBookStatus(
+      title: 'Book',
+      level: 'a1',
+      chapterId: 'chapter_01',
+      languages: {'ru', 'uk'},
+      dictionaries: {'ru', 'uk'},
+      hasAudio: true,
+      hasCover: true,
+      hasOutput: true,
+      hasInstalledZip: false,
+      coverPath: 'cover.png',
+      audioVoiceIds: {'af_bella'},
+      profileVoiceIds: {
+        'am_adam',
+        'af_bella',
+        'af_heart',
+        'am_michael',
+        'af_sarah',
+      },
+      playerLevelsByVoice: {
+        'af_bella': {'Normal'},
+      },
+      wordAudioVoiceId: 'af_bella',
+      wordAudioCountsByVoice: {'af_bella': 10},
+      segmentAudioCount: 10,
+      wordAudioCount: 10,
+    );
+
+    expect(status.isOutputFullyBuilt, isTrue);
+  });
 }
 
 VirgilWorkbenchBookItem _item({

@@ -36,6 +36,14 @@ class LexoApiClient {
     return BookStatus.fromJson(data);
   }
 
+  Future<GoogleTranslateUsage> getGoogleTranslateUsage({String? month}) async {
+    final suffix = (month == null || month.trim().isEmpty)
+        ? ''
+        : '?month=${Uri.encodeQueryComponent(month.trim())}';
+    final data = await _get('/google-translate/usage$suffix');
+    return GoogleTranslateUsage.fromJson(data);
+  }
+
   Future<LibraryPayload> getBooks() async {
     final data = await _get('/books');
     return LibraryPayload.fromJson(data);
@@ -586,6 +594,53 @@ class LexoApiClient {
     }
     return data;
   }
+}
+
+class GoogleTranslateUsage {
+  const GoogleTranslateUsage({
+    required this.month,
+    required this.characterCount,
+    required this.freeCharacterLimit,
+    required this.safetyLimit,
+    required this.remainingFreeCharacters,
+    required this.remainingBeforeSafetyLimit,
+    required this.byLang,
+    required this.entryCount,
+  });
+
+  final String month;
+  final int characterCount;
+  final int freeCharacterLimit;
+  final int safetyLimit;
+  final int remainingFreeCharacters;
+  final int remainingBeforeSafetyLimit;
+  final Map<String, int> byLang;
+  final int entryCount;
+
+  factory GoogleTranslateUsage.fromJson(Map<String, dynamic> json) {
+    return GoogleTranslateUsage(
+      month: (json['month'] ?? '').toString(),
+      characterCount: _intFromJson(json['character_count']),
+      freeCharacterLimit: _intFromJson(json['free_character_limit']),
+      safetyLimit: _intFromJson(json['safety_limit']),
+      remainingFreeCharacters: _intFromJson(json['remaining_free_characters']),
+      remainingBeforeSafetyLimit:
+          _intFromJson(json['remaining_before_safety_limit']),
+      byLang: {
+        for (final entry
+            in (json['by_lang'] as Map<String, dynamic>? ?? const {}).entries)
+          entry.key: _intFromJson(entry.value),
+      },
+      entryCount: _intFromJson(json['entry_count']),
+    );
+  }
+}
+
+int _intFromJson(Object? value) {
+  if (value is int) {
+    return value;
+  }
+  return int.tryParse((value ?? '').toString()) ?? 0;
 }
 
 class LexoApiException implements Exception {

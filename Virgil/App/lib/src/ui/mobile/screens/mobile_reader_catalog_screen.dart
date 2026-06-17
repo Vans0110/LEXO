@@ -927,7 +927,7 @@ class _ChapterBooksScreen extends StatelessWidget {
                 ),
               )
             else
-              _AdaptiveBookGrid(
+              VirgilAdaptiveBookGrid(
                 children: [
                   for (final book in books) coverBuilder(context, book),
                 ],
@@ -939,8 +939,8 @@ class _ChapterBooksScreen extends StatelessWidget {
   }
 }
 
-class _AdaptiveBookGrid extends StatelessWidget {
-  const _AdaptiveBookGrid({required this.children});
+class VirgilAdaptiveBookGrid extends StatelessWidget {
+  const VirgilAdaptiveBookGrid({super.key, required this.children});
 
   static const _cardWidth = 116.0;
   static const _minimumGap = 12.0;
@@ -953,25 +953,16 @@ class _AdaptiveBookGrid extends StatelessWidget {
       builder: (context, constraints) {
         const threeColumnsWidth = (_cardWidth * 3) + (_minimumGap * 2);
         final columnCount = constraints.maxWidth >= threeColumnsWidth ? 3 : 2;
-        final rows = <Widget>[];
-
-        for (var start = 0; start < children.length; start += columnCount) {
-          final end = start + columnCount < children.length
-              ? start + columnCount
-              : children.length;
-          if (rows.isNotEmpty) {
-            rows.add(const SizedBox(height: 18));
-          }
-          rows.add(
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: children.sublist(start, end),
-            ),
-          );
-        }
-
-        return Column(
-          children: rows,
+        final gap = (constraints.maxWidth - (_cardWidth * columnCount)) /
+            (columnCount + 1);
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: gap),
+          child: Wrap(
+            spacing: gap,
+            runSpacing: 18,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            children: children,
+          ),
         );
       },
     );

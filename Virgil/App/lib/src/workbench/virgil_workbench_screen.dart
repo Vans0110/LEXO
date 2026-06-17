@@ -90,6 +90,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
   String? _bookId;
   Map<String, String> _bookIdsByTargetLang = const {};
   Map<String, Map<String, dynamic>> _packagesByTargetLang = const {};
+  Set<String> _dictionaryLangs = {'ru'};
   String? _voiceId = _fallbackVoiceId;
   Set<String> _voiceIds = {_fallbackVoiceId};
   bool _busy = false;
@@ -98,11 +99,13 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
   String _log = '';
   List<TtsProfile> _voices = const [];
   TtsPackageState? _packageState;
+  GoogleTranslateUsage? _googleUsage;
 
   @override
   void initState() {
     super.initState();
     unawaited(_loadVoices());
+    unawaited(_loadGoogleUsage());
   }
 
   @override
@@ -137,8 +140,29 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     }
   }
 
-  Future<void> _importCurrentBookToBackend({bool readerOnly = false}) async {
-    final selectedLangs = _selectedTargetLangs();
+  Future<void> _loadGoogleUsage() async {
+    try {
+      final usage = await widget.api.getGoogleTranslateUsage();
+      if (!mounted) {
+        return;
+      }
+      setState(() => _googleUsage = usage);
+    } catch (error) {
+      _appendLog('Google usage load failed: $error');
+    }
+  }
+
+  Future<void> _importCurrentBookToBackend({
+    bool readerOnly = false,
+    required List<String> selectedLangs,
+  }) async {
+    if (selectedLangs.isEmpty) {
+      return;
+    }
+    await _confirmGoogleTranslationUse(
+      selectedLangs: selectedLangs,
+      readerOnly: readerOnly,
+    );
     final imported = <String, String>{};
     final packages = <String, Map<String, dynamic>>{};
     for (final targetLang in selectedLangs) {
@@ -175,9 +199,64 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     });
   }
 
+  Future<void> _confirmGoogleTranslationUse({
+    required List<String> selectedLangs,
+    required bool readerOnly,
+  }) async {
+    final estimatedPerLang = _estimateGoogleCharacters('$_title\n$_sourceText');
+    final estimatedTotal = estimatedPerLang * selectedLangs.length;
+    if (estimatedTotal <= 0) {
+      return;
+    }
+    await _loadGoogleUsage();
+    final usage = _googleUsage;
+    final used = usage?.characterCount ?? 0;
+    final safetyLimit = usage?.safetyLimit ?? 5000;
+    final freeLimit = usage?.freeCharacterLimit ?? 500000;
+    final after = used + estimatedTotal;
+    if (after > safetyLimit) {
+      throw Exception(
+        'Google limit blocked: $used + $estimatedTotal > $safetyLimit chars.',
+      );
+    }
+    if (!mounted) {
+      return;
+    }
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Use Google Translation?'),
+        content: Text(
+          '${readerOnly ? 'Update text' : 'Process book'} will send about '
+          '${_formatCount(estimatedTotal)} chars to Google for '
+          '${selectedLangs.map((lang) => lang.toUpperCase()).join('+')}.\n\n'
+          'Current month used: ${_formatCount(used)} chars.\n'
+          'Work cap: up to ${_formatCount(safetyLimit)} chars; '
+          'after this: ${_formatCount(after)}.\n'
+          'Free tier: ${_formatCount(used)} / ${_formatCount(freeLimit)}.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Use Google'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) {
+      throw Exception('Google translation was not confirmed.');
+    }
+  }
+
   Future<void> _generateVoicePackages({
     required Iterable<String> voiceIds,
     required bool waitForReady,
+    bool overwrite = false,
   }) async {
     final normalizedVoiceIds = voiceIds
         .map((voiceId) => voiceId.trim())
@@ -189,6 +268,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       await _generateCurrentPackage(
         voiceId: voiceId,
         waitForReady: waitForReady,
+        overwrite: overwrite,
       );
     }
   }
@@ -196,6 +276,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
   Future<void> _generateCurrentPackage({
     required String voiceId,
     required bool waitForReady,
+    bool overwrite = false,
   }) async {
     final bookId = _bookId;
     if (bookId == null || bookId.isEmpty || voiceId.isEmpty) {
@@ -213,8 +294,8 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     var state = await widget.api.generateTtsPackage(
       bookId: bookId,
       voiceId: voiceId,
-      overwrite: false,
-      overwriteWordAudio: false,
+      overwrite: overwrite,
+      overwriteWordAudio: overwrite,
     );
     if (mounted) {
       setState(() => _packageState = state);
@@ -235,7 +316,10 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     _appendLog('TTS package status: ${state.status}');
   }
 
-  Future<void> _exportCurrentFiles({bool textOnly = false}) async {
+  Future<void> _exportCurrentFiles({
+    bool textOnly = false,
+    required List<String> targetLangs,
+  }) async {
     final bookId = _bookId;
     if (bookId == null || bookId.isEmpty) {
       throw Exception('Import the book to backend first.');
@@ -250,7 +334,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       sourcePath: _sourcePath,
       coverPath: _coverPath,
       log: _appendLog,
-      targetLangs: _selectedTargetLangs(),
+      targetLangs: targetLangs,
       bookIdsByTargetLang: _bookIdsByTargetLang,
       packagesByTargetLang: _packagesByTargetLang,
     ).exportFiles(
@@ -262,56 +346,8 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       return;
     }
     setState(() => _outputPath = outputDir.path);
+    unawaited(_loadGoogleUsage());
     _appendLog('Export done: ${outputDir.path}');
-  }
-
-  Future<void> _refreshBookDictionaries(
-      VirgilWorkbenchBookSelection selection) async {
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-    try {
-      _applyLibrarySelection(selection);
-      await _importCurrentBookToBackend(readerOnly: true);
-      final bookId = _bookId;
-      if (bookId == null || bookId.isEmpty) {
-        throw Exception('Import the book to backend first.');
-      }
-      final selectedLangs = _selectedTargetLangs();
-      final outputDir = await VirgilWorkbenchBuilder(
-        api: widget.api,
-        level: _level,
-        section: _section,
-        chapterId: _section == 'chapters' ? _chapterId : '',
-        chapterTitle:
-            _section == 'chapters' ? virgilA1ChapterTitle(_chapterId) : '',
-        sourcePath: _sourcePath,
-        coverPath: _coverPath,
-        log: _appendLog,
-        targetLangs: selectedLangs,
-        bookIdsByTargetLang: _bookIdsByTargetLang,
-        packagesByTargetLang: _packagesByTargetLang,
-      ).refreshDictionaries(
-        bookId: bookId,
-        fallbackTitle: _title,
-        languages: selectedLangs,
-      );
-      if (!mounted) {
-        return;
-      }
-      setState(() => _outputPath = outputDir.path);
-      _appendLog('Dictionary refresh done: ${outputDir.path}');
-    } catch (error) {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _error = error.toString());
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
-    }
   }
 
   Future<void> _syncLibraryToR2() async {
@@ -435,7 +471,47 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       for (final lang in _translationLangs)
         if (_targetLangs.contains(lang)) lang,
     ];
-    return selected.isEmpty ? const ['ru'] : selected;
+    return selected;
+  }
+
+  List<String> _selectedDictionaryLangs() {
+    final selected = [
+      for (final lang in _translationLangs)
+        if (_dictionaryLangs.contains(lang)) lang,
+    ];
+    return selected;
+  }
+
+  int _estimateGoogleCharacters(String text) {
+    final buffer = StringBuffer();
+    for (final rune in text.runes) {
+      final char = String.fromCharCode(rune);
+      if (_isAsciiLetterOrDigit(rune) ||
+          char.trim().isEmpty ||
+          '.,!?'.contains(char)) {
+        buffer.write(char);
+      }
+    }
+    return buffer.toString().replaceAll(RegExp(r'\s+'), ' ').trim().length;
+  }
+
+  bool _isAsciiLetterOrDigit(int rune) {
+    return (rune >= 48 && rune <= 57) ||
+        (rune >= 65 && rune <= 90) ||
+        (rune >= 97 && rune <= 122);
+  }
+
+  String _formatCount(int value) {
+    final text = value.toString();
+    final buffer = StringBuffer();
+    for (var index = 0; index < text.length; index += 1) {
+      final remaining = text.length - index;
+      buffer.write(text[index]);
+      if (remaining > 1 && remaining % 3 == 1) {
+        buffer.write(' ');
+      }
+    }
+    return buffer.toString();
   }
 
   String _stableBookKey() {
@@ -455,14 +531,14 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       for (final voiceId in _voiceIds)
         if (available.isEmpty || available.contains(voiceId)) voiceId,
     ]..sort();
-    return selected.isEmpty ? const [_fallbackVoiceId] : selected;
+    return selected;
   }
 
   void _toggleTargetLang(String lang, bool selected) {
     final next = Set<String>.of(_targetLangs);
     if (selected) {
       next.add(lang);
-    } else if (next.length > 1) {
+    } else {
       next.remove(lang);
     }
     setState(() {
@@ -475,16 +551,32 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     });
   }
 
+  void _toggleDictionaryLang(String lang, bool selected) {
+    final next = Set<String>.of(_dictionaryLangs);
+    if (selected) {
+      next.add(lang);
+    } else {
+      next.remove(lang);
+    }
+    setState(() {
+      _dictionaryLangs = next;
+      _packageState = null;
+      _outputPath = null;
+    });
+  }
+
   void _toggleVoice(String voiceId, bool selected) {
     final next = Set<String>.of(_voiceIds);
     if (selected) {
       next.add(voiceId);
-    } else if (next.length > 1) {
+    } else {
       next.remove(voiceId);
     }
     setState(() {
       _voiceIds = next;
-      _voiceId = next.contains(_voiceId) ? _voiceId : next.first;
+      _voiceId = next.contains(_voiceId)
+          ? _voiceId
+          : (next.isEmpty ? null : next.first);
       _packageState = null;
     });
   }
@@ -512,11 +604,11 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     );
   }
 
-  Future<void> _processLibraryBooks(
+  Future<void> _updateLibraryTextOnly(
     List<VirgilWorkbenchBookSelection> selections, {
-    bool includeMissingProfileVoices = false,
+    required List<String> languages,
   }) async {
-    if (selections.isEmpty) {
+    if (selections.isEmpty || languages.isEmpty) {
       return;
     }
     setState(() {
@@ -528,85 +620,75 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         if (!mounted) {
           return;
         }
-        final selectedLangs = _selectedTargetLangs();
+        _applyLibrarySelection(selection);
+        await _importCurrentBookToBackend(
+          readerOnly: true,
+          selectedLangs: languages,
+        );
+        await _exportCurrentFiles(textOnly: true, targetLangs: languages);
+      }
+      unawaited(_loadGoogleUsage());
+    } catch (error) {
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
+  Future<void> _updateLibraryDictionariesOnly(
+    List<VirgilWorkbenchBookSelection> selections, {
+    required List<String> languages,
+  }) async {
+    if (selections.isEmpty || languages.isEmpty) {
+      return;
+    }
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      for (final selection in selections) {
+        if (!mounted) {
+          return;
+        }
         final currentStatus = await _readCurrentExportStatus(selection);
-        final hasRequestedLanguages = currentStatus.hasLanguages(selectedLangs);
-        final hasRequestedDictionaries =
-            currentStatus.hasDictionaries(selectedLangs);
-        final selectedVoiceIds = _selectedVoiceIds();
-        final availableVoiceIds = _voices.map((voice) => voice.voiceId);
-        final targetVoiceIds = {
-          ...selectedVoiceIds,
-          if (includeMissingProfileVoices)
-            ...currentStatus.missingProfileVoicesFor(availableVoiceIds),
-        };
-        final hasRequestedAudio = currentStatus.hasAudioFor(targetVoiceIds);
-        if (hasRequestedLanguages &&
-            hasRequestedDictionaries &&
-            hasRequestedAudio) {
-          if (selection.coverPath.isNotEmpty && !currentStatus.hasCover) {
-            _appendLog(
-              'Repack ready book: ${selection.title} (add cover, no audio generation)',
-            );
-            _applyLibrarySelection(selection);
-            _bookId = currentStatus.bookId;
-            if (_bookId == null || _bookId!.isEmpty) {
-              throw Exception(
-                  'Cannot repack ${selection.title}: existing book_id not found.');
-            }
-            await _exportCurrentFiles(textOnly: true);
-          } else {
-            _appendLog(
-              'Skip ready book: ${selection.title} (${selectedLangs.join('+').toUpperCase()}, audio ready)',
-            );
-          }
-          continue;
+        if (currentStatus.bookId.isEmpty) {
+          throw Exception(
+            'Cannot refresh dictionaries for ${selection.title}: '
+            'existing book_id was not found. Run Text first.',
+          );
         }
         _applyLibrarySelection(selection);
-        await _importCurrentBookToBackend();
-        final backendAudioVoices =
-            _backendAudioVoicesForSelectedLangs(selectedLangs);
-        final backendHasRequestedAudio =
-            targetVoiceIds.every(backendAudioVoices.contains);
-        if (backendHasRequestedAudio) {
-          _appendLog(
-              'Skip Kokoro package: ${selection.title} already has audio');
-        } else {
-          final missingVoiceIds = targetVoiceIds
-              .where((voiceId) => !backendAudioVoices.contains(voiceId))
-              .toList()
-            ..sort();
-          _appendLog(
-            'Generate Kokoro package: ${selection.title} (${missingVoiceIds.join(', ')})',
-          );
-          await _generateVoicePackages(
-            voiceIds: missingVoiceIds,
-            waitForReady: true,
-          );
+        _bookId = currentStatus.bookId;
+        _bookIdsByTargetLang = {
+          for (final lang in languages) lang: currentStatus.bookId,
+        };
+        final outputDir = await VirgilWorkbenchBuilder(
+          api: widget.api,
+          level: _level,
+          section: _section,
+          chapterId: _section == 'chapters' ? _chapterId : '',
+          chapterTitle:
+              _section == 'chapters' ? virgilA1ChapterTitle(_chapterId) : '',
+          sourcePath: _sourcePath,
+          coverPath: _coverPath,
+          log: _appendLog,
+          targetLangs: languages,
+          bookIdsByTargetLang: _bookIdsByTargetLang,
+          packagesByTargetLang: const {},
+        ).refreshDictionaries(
+          bookId: currentStatus.bookId,
+          fallbackTitle: selection.title,
+          languages: languages,
+        );
+        if (mounted) {
+          setState(() => _outputPath = outputDir.path);
         }
-        if (hasRequestedLanguages &&
-            hasRequestedAudio &&
-            !hasRequestedDictionaries) {
-          final missingDictionaries = selectedLangs
-              .where((lang) => !currentStatus.dictionaries.contains(lang))
-              .map((lang) => 'dictionary_$lang.json')
-              .toList();
-          final staleDictionaries = selectedLangs
-              .where((lang) =>
-                  currentStatus.dictionaries.contains(lang) &&
-                  currentStatus.dictionarySources[lang] !=
-                      _expectedDictionarySource(lang))
-              .map((lang) => 'dictionary_$lang.json')
-              .toList();
-          final reason = [
-            if (missingDictionaries.isNotEmpty)
-              'missing ${missingDictionaries.join(', ')}',
-            if (staleDictionaries.isNotEmpty)
-              'stale ${staleDictionaries.join(', ')}',
-          ].join('; ');
-          _appendLog('Re-export metadata: ${selection.title} ($reason)');
-        }
-        await _exportCurrentFiles();
+        _appendLog('Dictionary refresh done: ${outputDir.path}');
       }
     } catch (error) {
       if (mounted) {
@@ -619,7 +701,37 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     }
   }
 
-  Future<void> _updateLibraryTextOnly(
+  Future<void> _startLibraryBooks(
+      List<VirgilWorkbenchBookSelection> selections) async {
+    if (selections.isEmpty) {
+      return;
+    }
+    final selectedTextLangs = _selectedTargetLangs();
+    final selectedDictionaryLangs = _selectedDictionaryLangs();
+    final selectedVoiceIds = _selectedVoiceIds();
+    if (selectedTextLangs.isEmpty &&
+        selectedDictionaryLangs.isEmpty &&
+        selectedVoiceIds.isEmpty) {
+      return;
+    }
+    if (selectedTextLangs.isNotEmpty) {
+      await _updateLibraryTextOnly(
+        selections,
+        languages: selectedTextLangs,
+      );
+    }
+    if (selectedDictionaryLangs.isNotEmpty) {
+      await _updateLibraryDictionariesOnly(
+        selections,
+        languages: selectedDictionaryLangs,
+      );
+    }
+    if (selectedVoiceIds.isNotEmpty) {
+      await _updateLibraryAudioOnly(selections);
+    }
+  }
+
+  Future<void> _updateLibraryAudioOnly(
       List<VirgilWorkbenchBookSelection> selections) async {
     if (selections.isEmpty) {
       return;
@@ -633,9 +745,46 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         if (!mounted) {
           return;
         }
+        final currentStatus = await _readCurrentExportStatus(selection);
+        if (currentStatus.bookId.isEmpty) {
+          throw Exception(
+            'Cannot refresh voices for ${selection.title}: '
+            'existing book_id was not found.',
+          );
+        }
         _applyLibrarySelection(selection);
-        await _importCurrentBookToBackend(readerOnly: true);
-        await _exportCurrentFiles(textOnly: true);
+        _bookId = currentStatus.bookId;
+        final selectedVoiceIds = _selectedVoiceIds();
+        _appendLog(
+          'Rewrite voices only: ${selection.title} '
+          '(${selectedVoiceIds.join(', ')})',
+        );
+        await _generateVoicePackages(
+          voiceIds: selectedVoiceIds,
+          waitForReady: true,
+          overwrite: true,
+        );
+        final outputDir = await VirgilWorkbenchBuilder(
+          api: widget.api,
+          level: _level,
+          section: _section,
+          chapterId: _section == 'chapters' ? _chapterId : '',
+          chapterTitle:
+              _section == 'chapters' ? virgilA1ChapterTitle(_chapterId) : '',
+          sourcePath: _sourcePath,
+          coverPath: _coverPath,
+          log: _appendLog,
+          targetLangs: _selectedTargetLangs(),
+          bookIdsByTargetLang: const {},
+          packagesByTargetLang: const {},
+        ).refreshAudio(
+          bookId: currentStatus.bookId,
+          fallbackTitle: selection.title,
+        );
+        if (mounted) {
+          setState(() => _outputPath = outputDir.path);
+        }
+        _appendLog('Voice refresh done: ${outputDir.path}');
       }
     } catch (error) {
       if (mounted) {
@@ -646,18 +795,6 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         setState(() => _busy = false);
       }
     }
-  }
-
-  Set<String> _backendAudioVoicesForSelectedLangs(Iterable<String> langs) {
-    final result = <String>{};
-    for (final lang in langs) {
-      final package = _packagesByTargetLang[lang];
-      final manifest = package?['tts_manifest'];
-      if (manifest is Map<String, dynamic>) {
-        result.addAll(_readTtsVoiceIds(manifest));
-      }
-    }
-    return result;
   }
 
   List<VirgilWorkbenchBookSelection> _selectedLibraryBooks =
@@ -1160,37 +1297,65 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
+            VirgilWorkbenchGoogleUsagePanel(
+              key: const ValueKey('google-usage-panel'),
+              usage: _googleUsage,
+            ),
+            const SizedBox(
+              key: ValueKey('after-google-usage-panel'),
+              height: 12,
+            ),
             VirgilWorkbenchBookLibrary(
+              key: const ValueKey('workbench-book-library'),
               busy: _busy,
+              canStartActions: _targetLangs.isNotEmpty ||
+                  _dictionaryLangs.isNotEmpty ||
+                  _voiceIds.isNotEmpty,
               onSelected: _selectLibraryBook,
-              onRefreshBook: (selection) => _processLibraryBooks(
-                [selection],
-                includeMissingProfileVoices: true,
-              ),
-              onRefreshDictionary: _refreshBookDictionaries,
-              onProcessAll: _processLibraryBooks,
-              onUpdateTextOnly: _updateLibraryTextOnly,
+              onStart: _startLibraryBooks,
               onClean: _cleanCurrentBookArtifacts,
               onSyncToR2: _syncLibraryToR2,
               onSelectionChanged: (selections) =>
                   setState(() => _selectedLibraryBooks = selections),
               refreshRevision: _libraryRefreshRevision,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(
+              key: ValueKey('after-book-library'),
+              height: 18,
+            ),
             VirgilWorkbenchTranslationLanguagePanel(
+              key: const ValueKey('translation-language-panel'),
               selectedLangs: _targetLangs,
               busy: _busy,
               onChanged: _toggleTargetLang,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(
+              key: ValueKey('after-translation-language-panel'),
+              height: 12,
+            ),
+            VirgilWorkbenchDictionaryLanguagePanel(
+              key: const ValueKey('dictionary-language-panel'),
+              selectedLangs: _dictionaryLangs,
+              busy: _busy,
+              onChanged: _toggleDictionaryLang,
+            ),
+            const SizedBox(
+              key: ValueKey('after-dictionary-language-panel'),
+              height: 12,
+            ),
             VirgilWorkbenchVoicePanel(
+              key: const ValueKey('voice-panel'),
               voices: _voices,
               selectedVoiceIds: _voiceIds,
               busy: _busy,
               onChanged: _toggleVoice,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(
+              key: ValueKey('after-voice-panel'),
+              height: 18,
+            ),
             VirgilWorkbenchStatusPanel(
+              key: const ValueKey('status-panel'),
               sourcePath: _sourcePath,
               coverPath: _coverPath,
               bookId: _bookId,
@@ -1198,13 +1363,21 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
               packageState: _packageState,
             ),
             if (_error != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(
+                key: ValueKey('before-error'),
+                height: 12,
+              ),
               Text(_error!,
+                  key: const ValueKey('workbench-error'),
                   style: TextStyle(color: Theme.of(context).colorScheme.error)),
             ],
-            const SizedBox(height: 18),
+            const SizedBox(
+              key: ValueKey('before-log'),
+              height: 18,
+            ),
             SelectableText(
               _log.isEmpty ? 'Log is empty.' : _log,
+              key: const ValueKey('workbench-log'),
               style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
             ),
           ],

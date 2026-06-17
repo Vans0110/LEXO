@@ -150,7 +150,16 @@ void main() {
       );
 
       final removed = await VirgilLibraryIndexBuilder(libraryDir: libraryDir)
-          .removeBooksMissingFrom(booksDir, outputStatuses: const {});
+          .removeBooksMissingFrom(
+        booksDir,
+        outputStatuses: {
+          virgilWorkbenchBookStatusKey(
+            'a1',
+            'chapter_01_introduction',
+            'Unbuilt Book',
+          ): _incompleteOutputStatus('Unbuilt Book'),
+        },
+      );
 
       expect(removed, 1);
       expect(staleZip.existsSync(), isFalse);
@@ -158,6 +167,58 @@ void main() {
       await tempDir.delete(recursive: true);
     }
   });
+
+  test('cleanup refuses to delete ZIPs when output statuses are unavailable',
+      () async {
+    final tempDir =
+        await Directory.systemTemp.createTemp('virgil_cleanup_guard_test_');
+    final libraryDir = Directory('${tempDir.path}/library');
+    final booksDir = Directory('${tempDir.path}/books');
+    try {
+      final chapterDir = Directory(
+        '${booksDir.path}/A1/Chapter 1 - Introduction',
+      );
+      await chapterDir.create(recursive: true);
+      await File('${chapterDir.path}/Current Book.txt').writeAsString('Text');
+      final zipFile = await _writeBookZip(
+        libraryDir,
+        fileName: 'book_current_current_book.zip',
+        bookId: 'book_current',
+        title: 'Current Book',
+      );
+
+      await expectLater(
+        VirgilLibraryIndexBuilder(libraryDir: libraryDir)
+            .removeBooksMissingFrom(booksDir, outputStatuses: const {}),
+        throwsStateError,
+      );
+      expect(zipFile.existsSync(), isTrue);
+    } finally {
+      await tempDir.delete(recursive: true);
+    }
+  });
+}
+
+VirgilWorkbenchBookStatus _incompleteOutputStatus(String title) {
+  return VirgilWorkbenchBookStatus(
+    title: title,
+    level: 'a1',
+    chapterId: 'chapter_01_introduction',
+    languages: const {'ru'},
+    dictionaries: const {'ru'},
+    hasAudio: false,
+    hasCover: true,
+    hasOutput: true,
+    hasInstalledZip: false,
+    coverPath: 'cover.png',
+    audioVoiceIds: const {},
+    profileVoiceIds: const {'voice'},
+    playerLevelsByVoice: const {},
+    wordAudioVoiceId: '',
+    wordAudioCountsByVoice: const {},
+    segmentAudioCount: 0,
+    wordAudioCount: 0,
+  );
 }
 
 VirgilWorkbenchBookStatus _readyOutputStatus(String title) {

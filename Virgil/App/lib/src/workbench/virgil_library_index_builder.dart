@@ -56,6 +56,11 @@ class VirgilLibraryIndexBuilder {
         .whereType<File>()
         .where((file) => file.path.toLowerCase().endsWith('.zip'))
         .toList();
+    if (zipFiles.isNotEmpty && outputStatuses.isEmpty) {
+      throw StateError(
+        'No Workbench output statuses found; refusing to clean CloudLibrary.',
+      );
+    }
     for (final zipFile in zipFiles) {
       final manifest = await _manifestForZip(zipFile);
       if (manifest == null) {

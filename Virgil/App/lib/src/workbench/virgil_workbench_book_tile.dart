@@ -16,8 +16,6 @@ class VirgilWorkbenchBookTile extends StatelessWidget {
     required this.selected,
     required this.onSelectionChanged,
     required this.onSelected,
-    required this.onRefresh,
-    required this.onRefreshDictionary,
   });
 
   final String title;
@@ -29,8 +27,6 @@ class VirgilWorkbenchBookTile extends StatelessWidget {
   final bool selected;
   final ValueChanged<bool?> onSelectionChanged;
   final VoidCallback onSelected;
-  final VoidCallback onRefresh;
-  final VoidCallback onRefreshDictionary;
 
   @override
   Widget build(BuildContext context) {
@@ -38,52 +34,34 @@ class VirgilWorkbenchBookTile extends StatelessWidget {
     final processed = status?.isProcessed ?? false;
     final resolvedCoverPath =
         coverPath.isNotEmpty ? coverPath : (status?.coverPath ?? '');
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      decoration: BoxDecoration(
-        color: processed
-            ? colorScheme.primaryContainer.withValues(alpha: 0.34)
-            : colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _borderColor(colorScheme, processed)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Checkbox(
-              value: selected,
-              onChanged: busy ? null : onSelectionChanged,
-            ),
-            const SizedBox(width: 8),
-            _BookCoverPreview(
-                path: resolvedCoverPath, hasCover: status?.hasCover),
-            const SizedBox(width: 14),
-            Expanded(child: _BookStatusBody(tile: this)),
-            const SizedBox(width: 12),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton.filledTonal(
-                  tooltip: 'Refresh book',
-                  onPressed: busy ? null : onRefresh,
-                  icon: const Icon(Icons.refresh_outlined),
-                ),
-                const SizedBox(height: 8),
-                IconButton.filledTonal(
-                  tooltip: 'Refresh dictionaries',
-                  onPressed: busy ? null : onRefreshDictionary,
-                  icon: const Icon(Icons.menu_book_outlined),
-                ),
-                const SizedBox(height: 8),
-                FilledButton(
-                  onPressed: busy ? null : onSelected,
-                  child: const Text('Use'),
-                ),
-              ],
-            ),
-          ],
+    return InkWell(
+      onTap: busy ? null : onSelected,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        decoration: BoxDecoration(
+          color: processed
+              ? colorScheme.primaryContainer.withValues(alpha: 0.34)
+              : colorScheme.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: _borderColor(colorScheme, processed)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Checkbox(
+                value: selected,
+                onChanged: busy ? null : onSelectionChanged,
+              ),
+              const SizedBox(width: 8),
+              _BookCoverPreview(
+                  path: resolvedCoverPath, hasCover: status?.hasCover),
+              const SizedBox(width: 14),
+              Expanded(child: _BookStatusBody(tile: this)),
+            ],
+          ),
         ),
       ),
     );

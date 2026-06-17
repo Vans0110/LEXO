@@ -172,6 +172,42 @@ class VirgilWorkbenchBuilder {
     return outputDir;
   }
 
+  Future<Directory> refreshAudio({
+    required String bookId,
+    required String fallbackTitle,
+  }) async {
+    log('Refresh audio only: $bookId');
+    final outputDir = await _findExistingOutputDir(bookId, fallbackTitle);
+    if (outputDir == null) {
+      throw Exception('Output package not found for $fallbackTitle.');
+    }
+    final package = await api.downloadMobileBookPackageChunked(bookId);
+    await _writeJson(
+      outputDir,
+      'tts_manifest.json',
+      await _ttsManifest(outputDir, package, package),
+    );
+    await _writeJson(
+      outputDir,
+      'word_audio_manifest.json',
+      package['word_audio_manifest'] ?? {},
+    );
+    final segmentAudioDir = Directory('${outputDir.path}/audio/segments');
+    if (segmentAudioDir.existsSync()) {
+      await segmentAudioDir.delete(recursive: true);
+    }
+    await segmentAudioDir.create(recursive: true);
+    await _downloadSegmentAudio(outputDir, bookId, package);
+    await _downloadWordAudio(outputDir, package);
+    log('Reader and dictionaries kept unchanged.');
+    await _createAndInstallZip(outputDir);
+    await VirgilLibraryIndexBuilder(
+      libraryDir: VirgilWorkbenchPaths.cloudLibrary,
+      log: log,
+    ).rebuild();
+    return outputDir;
+  }
+
   Map<String, dynamic> _initialPackageFor(String bookId) {
     final package = packagesByTargetLang.values.firstWhere(
       (item) {

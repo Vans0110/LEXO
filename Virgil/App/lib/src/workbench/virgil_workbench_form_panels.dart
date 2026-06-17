@@ -138,6 +138,58 @@ class VirgilWorkbenchTranslationLanguagePanel extends StatelessWidget {
   }
 }
 
+class VirgilWorkbenchDictionaryLanguagePanel extends StatelessWidget {
+  const VirgilWorkbenchDictionaryLanguagePanel({
+    super.key,
+    required this.selectedLangs,
+    required this.busy,
+    required this.onChanged,
+  });
+
+  final Set<String> selectedLangs;
+  final bool busy;
+  final void Function(String lang, bool selected) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Dictionary language',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 8),
+            CheckboxListTile(
+              value: selectedLangs.contains('ru'),
+              onChanged:
+                  busy ? null : (value) => onChanged('ru', value ?? false),
+              title: const Text('Russian words'),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+            CheckboxListTile(
+              value: selectedLangs.contains('uk'),
+              onChanged:
+                  busy ? null : (value) => onChanged('uk', value ?? false),
+              title: const Text('Ukrainian words'),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class VirgilWorkbenchVoicePanel extends StatelessWidget {
   const VirgilWorkbenchVoicePanel({
     super.key,

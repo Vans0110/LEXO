@@ -12,11 +12,9 @@ class VirgilWorkbenchBookLibrary extends StatefulWidget {
   const VirgilWorkbenchBookLibrary({
     super.key,
     required this.busy,
+    required this.canStartActions,
     required this.onSelected,
-    required this.onRefreshBook,
-    required this.onRefreshDictionary,
-    required this.onProcessAll,
-    required this.onUpdateTextOnly,
+    required this.onStart,
     required this.onClean,
     required this.onSyncToR2,
     required this.onSelectionChanged,
@@ -24,13 +22,10 @@ class VirgilWorkbenchBookLibrary extends StatefulWidget {
   });
 
   final bool busy;
+  final bool canStartActions;
   final ValueChanged<VirgilWorkbenchBookSelection> onSelected;
-  final Future<void> Function(VirgilWorkbenchBookSelection selection)
-      onRefreshBook;
-  final Future<void> Function(VirgilWorkbenchBookSelection selection)
-      onRefreshDictionary;
-  final ValueChanged<List<VirgilWorkbenchBookSelection>> onProcessAll;
-  final ValueChanged<List<VirgilWorkbenchBookSelection>> onUpdateTextOnly;
+  final Future<void> Function(List<VirgilWorkbenchBookSelection> selections)
+      onStart;
   final VoidCallback onClean;
   final VoidCallback onSyncToR2;
   final ValueChanged<List<VirgilWorkbenchBookSelection>> onSelectionChanged;
@@ -65,7 +60,7 @@ class _VirgilWorkbenchBookLibraryState
     super.didUpdateWidget(oldWidget);
     if (widget.refreshRevision != oldWidget.refreshRevision) {
       _selectedSourcePaths.clear();
-      _refresh();
+      _future = _loadBooks();
     }
   }
 
@@ -164,30 +159,6 @@ class _VirgilWorkbenchBookLibraryState
     widget.onSelected(selection);
   }
 
-  Future<void> _refreshBook(VirgilWorkbenchBookItem item) async {
-    final selection = await _selectionFor(item);
-    if (!mounted) {
-      return;
-    }
-    await widget.onRefreshBook(selection);
-    if (!mounted) {
-      return;
-    }
-    _refresh();
-  }
-
-  Future<void> _refreshDictionary(VirgilWorkbenchBookItem item) async {
-    final selection = await _selectionFor(item);
-    if (!mounted) {
-      return;
-    }
-    await widget.onRefreshDictionary(selection);
-    if (!mounted) {
-      return;
-    }
-    _refresh();
-  }
-
   Future<VirgilWorkbenchBookSelection> _selectionFor(
       VirgilWorkbenchBookItem item) async {
     final text = await File(item.sourcePath).readAsString();
@@ -260,7 +231,10 @@ class _VirgilWorkbenchBookLibraryState
     ]);
   }
 
-  Future<void> _processAll(List<VirgilWorkbenchBookItem> items) async {
+  Future<void> _startSelected(List<VirgilWorkbenchBookItem> items) async {
+    if (!widget.canStartActions || items.isEmpty) {
+      return;
+    }
     final selections = <VirgilWorkbenchBookSelection>[];
     for (final item in items) {
       selections.add(await _selectionFor(item));
@@ -268,18 +242,10 @@ class _VirgilWorkbenchBookLibraryState
     if (!mounted) {
       return;
     }
-    widget.onProcessAll(selections);
-  }
-
-  Future<void> _updateTextOnly(List<VirgilWorkbenchBookItem> items) async {
-    final selections = <VirgilWorkbenchBookSelection>[];
-    for (final item in items) {
-      selections.add(await _selectionFor(item));
+    await widget.onStart(selections);
+    if (mounted) {
+      _refresh();
     }
-    if (!mounted) {
-      return;
-    }
-    widget.onUpdateTextOnly(selections);
   }
 
   @override
@@ -346,6 +312,9 @@ class _VirgilWorkbenchBookLibraryState
                     .length;
                 final allVisibleSelected = visibleItems.isNotEmpty &&
                     visibleSelectedCount == visibleItems.length;
+                final canStart = !widget.busy &&
+                    selectedItems.isNotEmpty &&
+                    widget.canStartActions;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -408,40 +377,16 @@ class _VirgilWorkbenchBookLibraryState
                         ),
                         const Spacer(),
                         Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
+                          spacing: 8,
+                          runSpacing: 8,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            OutlinedButton.icon(
-                              onPressed: widget.busy ||
-                                      (selectedItems.isEmpty &&
-                                          visibleItems.isEmpty)
-                                  ? null
-                                  : () => _updateTextOnly(
-                                        selectedItems.isEmpty
-                                            ? visibleItems
-                                            : selectedItems,
-                                      ),
-                              icon: const Icon(Icons.article_outlined),
-                              label: Text(
-                                selectedItems.isEmpty
-                                    ? 'Update visible text'
-                                    : 'Update selected text',
-                              ),
-                            ),
-                            FilledButton.tonalIcon(
-                              onPressed: widget.busy || selectedItems.isEmpty
-                                  ? null
-                                  : () => _processAll(selectedItems),
-                              icon: const Icon(Icons.checklist_outlined),
-                              label: Text(
-                                'Process selected (${selectedItems.length})',
-                              ),
-                            ),
                             FilledButton.icon(
-                              onPressed:
-                                  widget.busy ? null : () => _processAll(items),
-                              icon: const Icon(Icons.cloud_upload_outlined),
-                              label: const Text('Process all'),
+                              onPressed: canStart
+                                  ? () => _startSelected(selectedItems)
+                                  : null,
+                              icon: const Icon(Icons.play_arrow_outlined),
+                              label: Text('Start (${selectedItems.length})'),
                             ),
                             OutlinedButton.icon(
                               onPressed: widget.busy || selectedItems.isEmpty
@@ -477,6 +422,7 @@ class _VirgilWorkbenchBookLibraryState
                       ),
                     for (final item in visibleItems)
                       VirgilWorkbenchBookTile(
+                        key: ValueKey(item.sourcePath),
                         title: item.title,
                         level: item.level,
                         chapterTitle: item.chapterTitle,
@@ -488,8 +434,6 @@ class _VirgilWorkbenchBookLibraryState
                         onSelectionChanged: (value) =>
                             _setSelected(items, item, value ?? false),
                         onSelected: () => _selectBook(item),
-                        onRefresh: () => _refreshBook(item),
-                        onRefreshDictionary: () => _refreshDictionary(item),
                       ),
                   ],
                 );

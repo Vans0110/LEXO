@@ -74,9 +74,8 @@ class VirgilWorkbenchBookStatus {
       hasDictionary('ru') &&
       hasDictionary('uk') &&
       hasPlayerReadyVoice &&
-      missingPlayerVoiceIds.isEmpty &&
       wordAudioCount > 0 &&
-      missingWordAudioVoiceIds.isEmpty;
+      readyWordAudioVoiceIds.isNotEmpty;
 
   bool get isFullyBuilt => hasInstalledZip && isOutputFullyBuilt;
 

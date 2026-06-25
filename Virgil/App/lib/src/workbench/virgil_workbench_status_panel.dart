@@ -100,14 +100,16 @@ class _GoogleUsageText extends StatelessWidget {
             .map(
                 (entry) => '${entry.key.toUpperCase()} ${_format(entry.value)}')
             .join(', ');
+    final warningText = usage.characterCount >= usage.safetyLimit
+        ? ' Warning reached: ${_format(usage.safetyLimit)};'
+        : '';
     return Text(
       'Google chars ${usage.month}: '
       '${_format(usage.characterCount)} used. '
-      'Work cap: up to ${_format(usage.safetyLimit)}; '
+      '$warningText '
       'free tier: ${_format(usage.characterCount)} / '
       '${_format(usage.freeCharacterLimit)} '
-      '(cap left ${_format(usage.remainingBeforeSafetyLimit)}, '
-      'free left ${_format(usage.remainingFreeCharacters)}; $languageText)',
+      '(free left ${_format(usage.remainingFreeCharacters)}; $languageText)',
     );
   }
 }

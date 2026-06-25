@@ -238,10 +238,12 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
           title: '${_selectedLevel.toUpperCase()} Books',
           subtitle: chapter.title,
           books: _booksForChapter(chapter.id),
-          coverBuilder: (context, item) => _bundledCover(
+          coverBuilder: (context, item, width) => _bundledCover(
             item,
             navigatorContext: context,
             closeParentOnOpen: true,
+            width: width,
+            coverHeight: width * 1.5,
           ),
         ),
       ),
@@ -370,6 +372,8 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
     VirgilBundledBookInfo item, {
     BuildContext? navigatorContext,
     bool closeParentOnOpen = false,
+    double width = 116,
+    double coverHeight = 162,
   }) {
     final installed = _findInstalledBook(item) != null;
     return VirgilBookCoverCard(
@@ -381,6 +385,8 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
       installed: installed,
       coverBytes: item.coverBytes,
       coverUrl: item.coverUrl,
+      width: width,
+      coverHeight: coverHeight,
       onTap: () => _openBundledDetail(
         item,
         navigatorContext: navigatorContext,
@@ -900,8 +906,11 @@ class _ChapterBooksScreen extends StatelessWidget {
   final String title;
   final String subtitle;
   final List<VirgilBundledBookInfo> books;
-  final Widget Function(BuildContext context, VirgilBundledBookInfo item)
-      coverBuilder;
+  final Widget Function(
+    BuildContext context,
+    VirgilBundledBookInfo item,
+    double width,
+  ) coverBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -928,9 +937,9 @@ class _ChapterBooksScreen extends StatelessWidget {
               )
             else
               VirgilAdaptiveBookGrid(
-                children: [
-                  for (final book in books) coverBuilder(context, book),
-                ],
+                itemCount: books.length,
+                itemBuilder: (context, index, width) =>
+                    coverBuilder(context, books[index], width),
               ),
           ],
         ),
@@ -940,28 +949,43 @@ class _ChapterBooksScreen extends StatelessWidget {
 }
 
 class VirgilAdaptiveBookGrid extends StatelessWidget {
-  const VirgilAdaptiveBookGrid({super.key, required this.children});
+  const VirgilAdaptiveBookGrid({
+    super.key,
+    required this.itemCount,
+    required this.itemBuilder,
+  });
 
-  static const _cardWidth = 116.0;
-  static const _minimumGap = 12.0;
+  static const _threeColumnBreakpoint = 520.0;
+  static const _gap = 14.0;
+  static const _maximumCardWidth = 180.0;
 
-  final List<Widget> children;
+  final int itemCount;
+  final Widget Function(BuildContext context, int index, double width)
+      itemBuilder;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        const threeColumnsWidth = (_cardWidth * 3) + (_minimumGap * 2);
-        final columnCount = constraints.maxWidth >= threeColumnsWidth ? 3 : 2;
-        final gap = (constraints.maxWidth - (_cardWidth * columnCount)) /
-            (columnCount + 1);
+        final columnCount =
+            constraints.maxWidth >= _threeColumnBreakpoint ? 3 : 2;
+        final availableCardWidth =
+            (constraints.maxWidth - (_gap * (columnCount - 1))) / columnCount;
+        final cardWidth =
+            availableCardWidth.clamp(0, _maximumCardWidth).toDouble();
+        final contentWidth =
+            (cardWidth * columnCount) + (_gap * (columnCount - 1));
+        final sidePadding = (constraints.maxWidth - contentWidth) / 2;
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: gap),
+          padding: EdgeInsets.symmetric(horizontal: sidePadding),
           child: Wrap(
-            spacing: gap,
+            spacing: _gap,
             runSpacing: 18,
             crossAxisAlignment: WrapCrossAlignment.start,
-            children: children,
+            children: [
+              for (var index = 0; index < itemCount; index++)
+                itemBuilder(context, index, cardWidth),
+            ],
           ),
         );
       },

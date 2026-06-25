@@ -211,46 +211,40 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     await _loadGoogleUsage();
     final usage = _googleUsage;
     final used = usage?.characterCount ?? 0;
-    final safetyLimit = usage?.safetyLimit ?? 5000;
+    final blockLimit = usage?.blockCharacterLimit ?? 495000;
     final freeLimit = usage?.freeCharacterLimit ?? 500000;
     final after = used + estimatedTotal;
-    if (after > safetyLimit) {
-      throw Exception(
-        'Google limit blocked: $used + $estimatedTotal > $safetyLimit chars.',
-      );
+    if (after <= blockLimit) {
+      return;
     }
     if (!mounted) {
       return;
     }
-    final confirmed = await showDialog<bool>(
+    await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Use Google Translation?'),
+        title: const Text('Google limit reached'),
         content: Text(
           '${readerOnly ? 'Update text' : 'Process book'} will send about '
           '${_formatCount(estimatedTotal)} chars to Google for '
           '${selectedLangs.map((lang) => lang.toUpperCase()).join('+')}.\n\n'
           'Current month used: ${_formatCount(used)} chars.\n'
-          'Work cap: up to ${_formatCount(safetyLimit)} chars; '
-          'after this: ${_formatCount(after)}.\n'
+          'After this: ${_formatCount(after)} chars.\n'
+          'Block at: ${_formatCount(blockLimit)} chars.\n'
           'Free tier: ${_formatCount(used)} / ${_formatCount(freeLimit)}.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Use Google'),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
           ),
         ],
       ),
     );
-    if (confirmed != true) {
-      throw Exception('Google translation was not confirmed.');
-    }
+    throw Exception(
+      'Google block limit reached: $used + $estimatedTotal > $blockLimit chars.',
+    );
   }
 
   Future<void> _generateVoicePackages({

@@ -36,8 +36,8 @@ class VirgilWorkbenchBookLibrary extends StatefulWidget {
       _VirgilWorkbenchBookLibraryState();
 }
 
-class _VirgilWorkbenchBookLibraryState
-    extends State<VirgilWorkbenchBookLibrary> {
+class _VirgilWorkbenchBookLibraryState extends State<VirgilWorkbenchBookLibrary>
+    with AutomaticKeepAliveClientMixin<VirgilWorkbenchBookLibrary> {
   late Future<List<VirgilWorkbenchBookItem>> _future;
   List<VirgilWorkbenchBookItem> _cachedItems = const [];
   final Set<String> _selectedSourcePaths = <String>{};
@@ -77,7 +77,7 @@ class _VirgilWorkbenchBookLibraryState
     final txtFiles = root
         .listSync(recursive: true)
         .whereType<File>()
-        .where((file) => !_isChapterImagesPath(file.path))
+        .where((file) => !virgilWorkbenchIsChapterImagesPath(file.path))
         .where((file) => file.path.toLowerCase().endsWith('.txt'))
         .where((file) => _isBookSource(root, file))
         .toList()
@@ -97,19 +97,7 @@ class _VirgilWorkbenchBookLibraryState
     if (parts.length < 3) {
       return false;
     }
-    final title =
-        virgilWorkbenchBasenameWithoutExtension(file.path).trim().toLowerCase();
-    if (title.contains('plan')) {
-      return false;
-    }
     return true;
-  }
-
-  bool _isChapterImagesPath(String path) {
-    final normalized = path.replaceAll('\\', '/').toLowerCase();
-    return normalized == 'chapter_images' ||
-        normalized.contains('/chapter_images/') ||
-        normalized.startsWith('chapter_images/');
   }
 
   VirgilWorkbenchBookItem _buildItem(
@@ -250,6 +238,7 @@ class _VirgilWorkbenchBookLibraryState
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -304,7 +293,11 @@ class _VirgilWorkbenchBookLibraryState
                   chapter: _chapterFilter,
                   readyFilter: _readyFilter,
                 );
-                final selectedItems = _selectedItems(items);
+                final allSelectedItems = _selectedItems(items);
+                final selectedItems = virgilWorkbenchSelectedVisibleBooks(
+                  visibleItems: visibleItems,
+                  selectedSourcePaths: _selectedSourcePaths,
+                );
                 final visibleSelectedCount = visibleItems
                     .where(
                       (item) => _selectedSourcePaths.contains(item.sourcePath),
@@ -365,14 +358,19 @@ class _VirgilWorkbenchBookLibraryState
                               : (value) {
                                   _setAllSelected(
                                     visibleItems,
-                                    value ?? true,
+                                    virgilWorkbenchShouldSelectAllVisible(
+                                      visibleCount: visibleItems.length,
+                                      selectedVisibleCount:
+                                          visibleSelectedCount,
+                                    ),
                                   );
                                   _notifySelectionChanged(items);
                                 },
                         ),
                         Text(
                           'Visible ($visibleSelectedCount/${visibleItems.length})'
-                          ' · Selected ${selectedItems.length}',
+                          ' · Selected ${selectedItems.length}'
+                          '${allSelectedItems.length > selectedItems.length ? ' visible / ${allSelectedItems.length} total' : ''}',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                         const Spacer(),
@@ -444,4 +442,7 @@ class _VirgilWorkbenchBookLibraryState
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

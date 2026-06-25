@@ -23,18 +23,17 @@ void main() {
   testWidgets('adaptive book grid aligns rows at top and last row left',
       (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: Scaffold(
           body: SizedBox(
             width: 300,
             child: VirgilAdaptiveBookGrid(
-              children: [
-                SizedBox(key: ValueKey('one'), width: 116, height: 180),
-                SizedBox(key: ValueKey('two'), width: 116, height: 140),
-                SizedBox(key: ValueKey('three'), width: 116, height: 160),
-                SizedBox(key: ValueKey('four'), width: 116, height: 120),
-                SizedBox(key: ValueKey('five'), width: 116, height: 150),
-              ],
+              itemCount: 5,
+              itemBuilder: (_, index, width) => SizedBox(
+                key: ValueKey(['one', 'two', 'three', 'four', 'five'][index]),
+                width: width,
+                height: [180.0, 140.0, 160.0, 120.0, 150.0][index],
+              ),
             ),
           ),
         ),
@@ -50,5 +49,39 @@ void main() {
     expect(two.dy, one.dy);
     expect(four.dy, three.dy);
     expect(five.dx, one.dx);
+    expect(tester.getSize(find.byKey(const ValueKey('one'))).width, 143);
+  });
+
+  testWidgets('adaptive book grid uses three capped columns on wide screens',
+      (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 600,
+            child: VirgilAdaptiveBookGrid(
+              itemCount: 5,
+              itemBuilder: (_, index, width) => SizedBox(
+                key: ValueKey(index),
+                width: width,
+                height: 150,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final one = tester.getTopLeft(find.byKey(const ValueKey(0)));
+    final two = tester.getTopLeft(find.byKey(const ValueKey(1)));
+    final three = tester.getTopLeft(find.byKey(const ValueKey(2)));
+    final four = tester.getTopLeft(find.byKey(const ValueKey(3)));
+    final five = tester.getTopLeft(find.byKey(const ValueKey(4)));
+
+    expect(two.dy, one.dy);
+    expect(three.dy, one.dy);
+    expect(four.dx, one.dx);
+    expect(five.dx, two.dx);
+    expect(tester.getSize(find.byKey(const ValueKey(0))).width, 180);
   });
 }

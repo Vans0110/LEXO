@@ -82,10 +82,6 @@ class VirgilBundledBookRepository {
         .whereType<Map<String, dynamic>>();
     final result = <VirgilBundledBookInfo>[];
     for (final item in books) {
-      final title = (item['title'] ?? '').toString();
-      if (_isPlanTitle(title)) {
-        continue;
-      }
       if (level != null && (item['level'] ?? '').toString() != level) {
         continue;
       }
@@ -128,12 +124,6 @@ class VirgilBundledBookRepository {
       coverPath: coverPath.isEmpty ? null : coverPath,
       coverUrl: coverUrl,
     );
-  }
-
-  bool _isPlanTitle(String title) {
-    final normalized = title.trim().toLowerCase();
-    return normalized.contains('plan') ||
-        normalized.contains('\u043f\u043b\u0430\u043d');
   }
 
   Future<VirgilBundledBookInfo?> findBookById(String bookId) async {

@@ -72,6 +72,29 @@ void main() {
     );
   });
 
+  test('only chapter_images paths are excluded from book sources', () {
+    expect(
+      virgilWorkbenchIsChapterImagesPath(
+          r'D:\Programs\LEXO\Studio\Workbench\Books\A1\chapter_images\Полный план A1.txt'),
+      isTrue,
+    );
+    expect(
+      virgilWorkbenchIsChapterImagesPath(
+          r'D:\Programs\LEXO\Studio\Workbench\Books\A1\Глава 3 - Home & Furniture\A Plant by the Window.txt'),
+      isFalse,
+    );
+    expect(
+      virgilWorkbenchIsChapterImagesPath(
+          r'D:\Programs\LEXO\Studio\Workbench\Books\A1\Глава 12 - Travel & Plans\Our Summer Plan.txt'),
+      isFalse,
+    );
+    expect(
+      virgilWorkbenchIsChapterImagesPath(
+          r'D:\Programs\LEXO\Studio\Workbench\Books\A1\Глава 17 - Animals & Pets\The Dog Walking Plan.txt'),
+      isFalse,
+    );
+  });
+
   test('filters by level, chapter, and incomplete state', () {
     final items = [
       _item(
@@ -103,6 +126,70 @@ void main() {
     );
 
     expect(visible.map((item) => item.title), ['Grandma Dinner']);
+  });
+
+  test('start actions use only selected books visible after filters', () {
+    final items = [
+      _item(
+        level: 'a1',
+        chapter: 'Chapter 1 \u2014 Introduction',
+        chapterNumber: 1,
+        title: 'First Day',
+        status: _status(ready: true),
+      ),
+      _item(
+        level: 'a1',
+        chapter: 'Chapter 2 \u2014 Family',
+        chapterNumber: 2,
+        title: 'Grandma Dinner',
+      ),
+      _item(
+        level: 'a2',
+        chapter: 'Chapter 1 \u2014 Memories',
+        chapterNumber: 1,
+        title: 'Summer',
+      ),
+    ];
+    final visible = virgilWorkbenchVisibleBooks(
+      items: items,
+      level: 'a1',
+      chapter: 'Chapter 2 \u2014 Family',
+      readyFilter: VirgilWorkbenchReadyFilter.incomplete,
+    );
+    final selectedVisible = virgilWorkbenchSelectedVisibleBooks(
+      visibleItems: visible,
+      selectedSourcePaths: {
+        'First Day.txt',
+        'Grandma Dinner.txt',
+      },
+    );
+
+    expect(selectedVisible.map((item) => item.title), ['Grandma Dinner']);
+  });
+
+  test('select all visible toggles off when every visible book is selected',
+      () {
+    expect(
+      virgilWorkbenchShouldSelectAllVisible(
+        visibleCount: 5,
+        selectedVisibleCount: 0,
+      ),
+      isTrue,
+    );
+    expect(
+      virgilWorkbenchShouldSelectAllVisible(
+        visibleCount: 5,
+        selectedVisibleCount: 3,
+      ),
+      isTrue,
+    );
+    expect(
+      virgilWorkbenchShouldSelectAllVisible(
+        visibleCount: 5,
+        selectedVisibleCount: 5,
+      ),
+      isFalse,
+    );
   });
 
   test(

@@ -601,6 +601,7 @@ class GoogleTranslateUsage {
     required this.month,
     required this.characterCount,
     required this.freeCharacterLimit,
+    required this.blockCharacterLimit,
     required this.safetyLimit,
     required this.remainingFreeCharacters,
     required this.remainingBeforeSafetyLimit,
@@ -611,6 +612,7 @@ class GoogleTranslateUsage {
   final String month;
   final int characterCount;
   final int freeCharacterLimit;
+  final int blockCharacterLimit;
   final int safetyLimit;
   final int remainingFreeCharacters;
   final int remainingBeforeSafetyLimit;
@@ -622,6 +624,9 @@ class GoogleTranslateUsage {
       month: (json['month'] ?? '').toString(),
       characterCount: _intFromJson(json['character_count']),
       freeCharacterLimit: _intFromJson(json['free_character_limit']),
+      blockCharacterLimit: json.containsKey('block_character_limit')
+          ? _intFromJson(json['block_character_limit'])
+          : 495000,
       safetyLimit: _intFromJson(json['safety_limit']),
       remainingFreeCharacters: _intFromJson(json['remaining_free_characters']),
       remainingBeforeSafetyLimit:

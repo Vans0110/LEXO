@@ -13,6 +13,8 @@ class VirgilBookCoverCard extends StatelessWidget {
     this.coverBytes,
     this.coverUrl,
     this.coverFilePath,
+    this.width = 116,
+    this.coverHeight = 162,
     required this.onTap,
   });
 
@@ -23,6 +25,8 @@ class VirgilBookCoverCard extends StatelessWidget {
   final Uint8List? coverBytes;
   final String? coverUrl;
   final String? coverFilePath;
+  final double width;
+  final double coverHeight;
   final VoidCallback onTap;
 
   @override
@@ -31,7 +35,7 @@ class VirgilBookCoverCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: SizedBox(
-        width: 116,
+        width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -42,7 +46,7 @@ class VirgilBookCoverCard extends StatelessWidget {
               coverBytes: coverBytes,
               coverUrl: coverUrl,
               coverFilePath: coverFilePath,
-              height: 162,
+              height: coverHeight,
             ),
             const SizedBox(height: 8),
             Text(

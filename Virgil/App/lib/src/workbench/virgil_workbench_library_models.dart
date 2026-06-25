@@ -133,6 +133,22 @@ List<VirgilWorkbenchBookItem> virgilWorkbenchVisibleBooks({
   return result;
 }
 
+List<VirgilWorkbenchBookItem> virgilWorkbenchSelectedVisibleBooks({
+  required List<VirgilWorkbenchBookItem> visibleItems,
+  required Set<String> selectedSourcePaths,
+}) {
+  return [
+    for (final item in visibleItems)
+      if (selectedSourcePaths.contains(item.sourcePath)) item,
+  ];
+}
+
+bool virgilWorkbenchShouldSelectAllVisible({
+  required int visibleCount,
+  required int selectedVisibleCount,
+}) =>
+    visibleCount > 0 && selectedVisibleCount < visibleCount;
+
 List<String> virgilWorkbenchLevels(List<VirgilWorkbenchBookItem> items) {
   return items.map((item) => item.level).toSet().toList()..sort();
 }
@@ -157,6 +173,13 @@ String virgilWorkbenchBasenameWithoutExtension(String path) {
       .last;
   final dot = name.lastIndexOf('.');
   return dot <= 0 ? name : name.substring(0, dot);
+}
+
+bool virgilWorkbenchIsChapterImagesPath(String path) {
+  final normalized = path.replaceAll('\\', '/').toLowerCase();
+  return normalized == 'chapter_images' ||
+      normalized.contains('/chapter_images/') ||
+      normalized.startsWith('chapter_images/');
 }
 
 List<String> virgilWorkbenchRelativeParts(String rootPath, String filePath) {

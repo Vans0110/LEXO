@@ -70,8 +70,17 @@ class VirgilWorkbenchBuilder {
                   ? package
                   : await api.downloadMobileBookPackageChunked(langBookId));
     }
-    await _writeJson(outputDir, 'manifest.json',
-        _buildManifest(bookId, title, coverFileName, exportLangs));
+    await _writeJson(
+      outputDir,
+      'manifest.json',
+      _buildManifest(
+        bookId,
+        title,
+        coverFileName,
+        exportLangs,
+        bookIdsByTargetLang,
+      ),
+    );
     await _writeJson(
       outputDir,
       'load_manifest.json',
@@ -82,6 +91,7 @@ class VirgilWorkbenchBuilder {
         exportLangs,
         dictionaryLangs:
             textOnly ? existingDictionaryLangs : exportLangs.toSet(),
+        bookIdsByTargetLang: bookIdsByTargetLang,
       ),
     );
     for (final entry in languagePackages.entries) {
@@ -146,11 +156,24 @@ class VirgilWorkbenchBuilder {
     final loadManifest = await _readJsonObject(loadManifestFile);
     final packageByLang = <String, Map<String, dynamic>>{};
     for (final lang in normalizedLangs) {
-      final langBookId = bookIdsByTargetLang[lang] ??
-          (lang == normalizedLangs.first ? bookId : '');
+      final langBookId = bookIdsByTargetLang[lang] ?? bookId;
       if (langBookId.trim().isEmpty) {
         log('Skip $lang dictionary refresh: missing book_id');
         continue;
+      }
+      if (lang == 'ru' || lang == 'uk') {
+        final result = await api.rebuildLibraryDictionary(
+          bookId: langBookId,
+          targetLang: lang,
+        );
+        final wordCount = (result['word_count'] as num?)?.toInt() ?? 0;
+        if (wordCount == 0) {
+          throw Exception(
+            'Library dictionary $lang is empty for $langBookId. '
+            'Missing seed words.',
+          );
+        }
+        log('Library dictionary $lang rebuilt: ${result['word_count'] ?? 0} words, ${result['phrase_count'] ?? 0} phrases');
       }
       packageByLang[lang] =
           await api.downloadMobileBookPackageChunked(langBookId);
@@ -158,7 +181,10 @@ class VirgilWorkbenchBuilder {
     for (final entry in packageByLang.entries) {
       await _writeJson(outputDir, 'dictionary_${entry.key}.json',
           _dictionaryManifestForLang(entry.key, entry.value));
+      await _writeJson(outputDir, 'word_to_word_${entry.key}.json',
+          _buildWordToWordTemplate(bookId, entry.key, entry.value));
     }
+    await _refreshDefaultReaderFiles(outputDir);
     await _writeJson(
       outputDir,
       'load_manifest.json',
@@ -206,6 +232,186 @@ class VirgilWorkbenchBuilder {
       log: log,
     ).rebuild();
     return outputDir;
+  }
+
+  Future<Directory> cleanArtifacts({
+    required String bookId,
+    required String fallbackTitle,
+    Iterable<String> textLangs = const <String>[],
+    Iterable<String> dictionaryLangs = const <String>[],
+    Iterable<String> voiceIds = const <String>[],
+  }) async {
+    final outputDir = await _findExistingOutputDir(bookId, fallbackTitle);
+    if (outputDir == null) {
+      throw Exception('Output package not found for $fallbackTitle.');
+    }
+    final cleanTextLangs = textLangs
+        .map((lang) => lang.trim().toLowerCase())
+        .where((lang) => lang.isNotEmpty)
+        .toSet();
+    final cleanDictionaryLangs = dictionaryLangs
+        .map((lang) => lang.trim().toLowerCase())
+        .where((lang) => lang.isNotEmpty)
+        .toSet();
+    final cleanVoiceIds = voiceIds
+        .map((voiceId) => voiceId.trim())
+        .where((voiceId) => voiceId.isNotEmpty)
+        .toSet();
+    log(
+      'Clean selected artifacts: $bookId '
+      'text=${cleanTextLangs.join(', ')} '
+      'dictionary=${cleanDictionaryLangs.join(', ')} '
+      'voices=${cleanVoiceIds.join(', ')}',
+    );
+    final loadManifestFile = File('${outputDir.path}/load_manifest.json');
+    final loadManifest = await _readJsonObject(loadManifestFile);
+    final files = Map<String, dynamic>.from(
+        loadManifest['files'] as Map<String, dynamic>? ??
+            const <String, dynamic>{});
+
+    for (final lang in cleanTextLangs) {
+      await _deleteIfExists(File('${outputDir.path}/reader_$lang.json'));
+      await _deleteIfExists(File('${outputDir.path}/word_to_word_$lang.json'));
+      log('Clean reader: $lang');
+    }
+    if (cleanTextLangs.isNotEmpty) {
+      final readers = Map<String, dynamic>.from(
+          files['readers'] as Map<String, dynamic>? ??
+              const <String, dynamic>{});
+      final wordToWordByLang = Map<String, dynamic>.from(
+          files['word_to_word_by_lang'] as Map<String, dynamic>? ??
+              const <String, dynamic>{});
+      for (final lang in cleanTextLangs) {
+        readers.remove(lang);
+        wordToWordByLang.remove(lang);
+      }
+      files['readers'] = readers;
+      files['word_to_word_by_lang'] = wordToWordByLang;
+      await _refreshDefaultReaderFiles(outputDir);
+    }
+
+    for (final lang in cleanDictionaryLangs) {
+      await _deleteIfExists(File('${outputDir.path}/dictionary_$lang.json'));
+      log('Clean dictionary: $lang');
+    }
+    if (cleanDictionaryLangs.isNotEmpty) {
+      final dictionaries = Map<String, dynamic>.from(
+          files['dictionaries'] as Map<String, dynamic>? ??
+              const <String, dynamic>{});
+      for (final lang in cleanDictionaryLangs) {
+        dictionaries.remove(lang);
+      }
+      files['dictionaries'] = dictionaries;
+    }
+
+    if (cleanVoiceIds.isNotEmpty) {
+      await _cleanLocalVoiceArtifacts(outputDir, cleanVoiceIds);
+    }
+
+    loadManifest['files'] = files;
+    await _writeJson(outputDir, 'load_manifest.json', loadManifest);
+    await _createAndInstallZip(outputDir);
+    await VirgilLibraryIndexBuilder(
+      libraryDir: VirgilWorkbenchPaths.cloudLibrary,
+      log: log,
+    ).rebuild();
+    return outputDir;
+  }
+
+  Future<void> _deleteIfExists(File file) async {
+    if (file.existsSync()) {
+      await file.delete();
+    }
+  }
+
+  Future<void> _refreshDefaultReaderFiles(Directory outputDir) async {
+    final remainingReaders = <String, File>{};
+    for (final entity in outputDir.listSync()) {
+      if (entity is! File) {
+        continue;
+      }
+      final name = entity.uri.pathSegments.last;
+      final match = RegExp(r'^reader_([a-z]{2})\.json$').firstMatch(name);
+      if (match != null) {
+        remainingReaders[match.group(1)!] = entity;
+      }
+    }
+    final langs = remainingReaders.keys.toList()..sort();
+    if (langs.isEmpty) {
+      await _deleteIfExists(File('${outputDir.path}/reader.json'));
+      await _deleteIfExists(File('${outputDir.path}/word_to_word.json'));
+      return;
+    }
+    final defaultLang = langs.contains('ru') ? 'ru' : langs.first;
+    await remainingReaders[defaultLang]!.copy('${outputDir.path}/reader.json');
+    final wordToWord = File('${outputDir.path}/word_to_word_$defaultLang.json');
+    if (wordToWord.existsSync()) {
+      await wordToWord.copy('${outputDir.path}/word_to_word.json');
+    } else {
+      await _deleteIfExists(File('${outputDir.path}/word_to_word.json'));
+    }
+  }
+
+  Future<void> _cleanLocalVoiceArtifacts(
+      Directory outputDir, Set<String> voiceIds) async {
+    final ttsManifestFile = File('${outputDir.path}/tts_manifest.json');
+    final ttsManifest = await _readJsonObject(ttsManifestFile);
+    final jobs = (ttsManifest['jobs'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>()
+        .toList();
+    final keptJobs = <Map<String, dynamic>>[];
+    final removedJobIds = <String>{};
+    for (final job in jobs) {
+      final voiceId = (job['voice_id'] ?? '').toString();
+      if (voiceIds.contains(voiceId)) {
+        final jobId = (job['id'] ?? '').toString();
+        if (jobId.isNotEmpty) {
+          removedJobIds.add(jobId);
+        }
+      } else {
+        keptJobs.add(job);
+      }
+    }
+    ttsManifest['jobs'] = keptJobs;
+    await _writeJson(outputDir, 'tts_manifest.json', ttsManifest);
+
+    final segmentDir = Directory('${outputDir.path}/audio/segments');
+    if (segmentDir.existsSync()) {
+      for (final entity in segmentDir.listSync()) {
+        if (entity is! File) {
+          continue;
+        }
+        final name = entity.uri.pathSegments.last;
+        for (final jobId in removedJobIds) {
+          if (name.startsWith('${_safeName(jobId)}_')) {
+            await entity.delete();
+            break;
+          }
+        }
+      }
+    }
+
+    final wordManifestFile = File('${outputDir.path}/word_audio_manifest.json');
+    final wordManifest = await _readJsonObject(wordManifestFile);
+    final voices = Map<String, dynamic>.from(
+        wordManifest['voices'] as Map<String, dynamic>? ??
+            const <String, dynamic>{});
+    for (final voiceId in voiceIds) {
+      voices.remove(voiceId);
+      final voiceDir = Directory('${outputDir.path}/audio/words/$voiceId');
+      if (voiceDir.existsSync()) {
+        await voiceDir.delete(recursive: true);
+      }
+    }
+    wordManifest['voices'] = voices;
+    final voiceKeys = voices.keys.map((key) => key.toString()).toList()..sort();
+    wordManifest['voice_id'] = voiceKeys.isEmpty ? '' : voiceKeys.first;
+    wordManifest['items'] = voiceKeys.isEmpty
+        ? const <String>[]
+        : ((voices[voiceKeys.first] as Map<String, dynamic>?)?['items'] ??
+            const <String>[]);
+    await _writeJson(outputDir, 'word_audio_manifest.json', wordManifest);
+    log('Clean voices: ${voiceIds.join(', ')}');
   }
 
   Map<String, dynamic> _initialPackageFor(String bookId) {
@@ -376,8 +582,12 @@ class VirgilWorkbenchBuilder {
     return _existingCoverFileName(outputDir);
   }
 
-  Map<String, dynamic> _buildManifest(String bookId, String title,
-      String coverFileName, Iterable<String> availableTargetLangs) {
+  Map<String, dynamic> _buildManifest(
+      String bookId,
+      String title,
+      String coverFileName,
+      Iterable<String> availableTargetLangs,
+      Map<String, String> languageBookIds) {
     final langs = availableTargetLangs.toList()..sort();
     return {
       'version': 1,
@@ -392,6 +602,11 @@ class VirgilWorkbenchBuilder {
       'target_lang':
           langs.contains('ru') ? 'ru' : (langs.isEmpty ? 'ru' : langs.first),
       'available_target_langs': langs,
+      'book_ids_by_target_lang': {
+        for (final lang in langs)
+          if ((languageBookIds[lang] ?? '').trim().isNotEmpty)
+            lang: languageBookIds[lang],
+      },
       'source_path': sourcePath,
       'generated_at': DateTime.now().toUtc().toIso8601String(),
     };
@@ -403,6 +618,7 @@ class VirgilWorkbenchBuilder {
     String coverFileName,
     Iterable<String> availableTargetLangs, {
     Set<String>? dictionaryLangs,
+    Map<String, String> bookIdsByTargetLang = const {},
   }) {
     final langs = availableTargetLangs.toList()..sort();
     final dictionaries = (dictionaryLangs ?? langs.toSet()).toList()..sort();
@@ -415,6 +631,11 @@ class VirgilWorkbenchBuilder {
       if (chapterId.isNotEmpty) 'chapter_id': chapterId,
       if (chapterTitle.isNotEmpty) 'chapter_title': chapterTitle,
       if (coverFileName.isNotEmpty) 'cover': coverFileName,
+      'book_ids_by_target_lang': {
+        for (final lang in langs)
+          if ((bookIdsByTargetLang[lang] ?? '').trim().isNotEmpty)
+            lang: bookIdsByTargetLang[lang],
+      },
       'files': {
         'reader': 'reader.json',
         'readers': {
@@ -443,27 +664,77 @@ class VirgilWorkbenchBuilder {
     final reader = package['reader_payload'] as Map<String, dynamic>? ??
         package['reader'] as Map<String, dynamic>? ??
         const <String, dynamic>{};
+    final dictionary = _dictionaryManifestForLang(targetLang, package);
+    final dictionaryEntries = dictionary['entries'] as Map<String, dynamic>? ??
+        const <String, dynamic>{};
     final paragraphs = (reader['paragraphs'] as List<dynamic>? ?? const [])
-        .whereType<Map<String, dynamic>>();
+        .whereType<Map<String, dynamic>>()
+        .toList();
+    final targetTextBySegmentId = <String, String>{
+      for (final paragraph in paragraphs)
+        for (final segment
+            in (paragraph['segments_v2'] as List<dynamic>? ?? const [])
+                .whereType<Map<String, dynamic>>())
+          (segment['id'] ?? '').toString():
+              (segment['target_text'] ?? '').toString(),
+    };
     final entries = <Map<String, dynamic>>[];
+    final claimedBySegment = <String, Set<int>>{};
     for (final paragraph in paragraphs) {
       final paragraphIndex = paragraph['index'] as int? ?? 0;
       final words = (paragraph['words'] as List<dynamic>? ?? const [])
-          .whereType<Map<String, dynamic>>();
+          .whereType<Map<String, dynamic>>()
+          .toList();
+      final wordCountBySegment = <String, int>{};
+      for (final word in words) {
+        final segmentId = (word['segment_id'] ?? 'p$paragraphIndex').toString();
+        wordCountBySegment[segmentId] =
+            (wordCountBySegment[segmentId] ?? 0) + 1;
+      }
       for (final word in words) {
         final wordId = (word['id'] ?? '').toString();
         final text = (word['text'] ?? '').toString();
         if (wordId.isEmpty || text.trim().isEmpty) {
           continue;
         }
+        final lemma = (word['lemma'] ?? text.toLowerCase()).toString();
+        final pos = (word['pos'] ?? '').toString();
+        final dictionaryEntry = dictionaryEntries[_dictionaryKey(lemma, pos)];
+        final translations = dictionaryEntry is Map<String, dynamic>
+            ? _stringList(dictionaryEntry['translations'])
+            : const <String>[];
+        final segmentId = (word['segment_id'] ?? 'p$paragraphIndex').toString();
+        final selection = _selectContextualSpan(
+          translations,
+          targetTextBySegmentId[segmentId] ?? '',
+          sourceIndex: word['order_index_in_segment'] as int? ?? 0,
+          sourceCount: wordCountBySegment[segmentId] ?? 1,
+          claimed: claimedBySegment.putIfAbsent(segmentId, () => <int>{}),
+        );
+        final selectedTranslation = selection['translation'] as String? ?? '';
+        final targetStart = selection['start'] as int? ?? -1;
+        final targetEnd = selection['end'] as int? ?? -1;
+        if (targetStart >= 0) {
+          claimedBySegment[segmentId]!.addAll(
+            List<int>.generate(
+              targetEnd - targetStart + 1,
+              (index) => targetStart + index,
+            ),
+          );
+        }
         entries.add({
           'word_id': wordId,
-          'segment_id': word['segment_id'] ?? 'p$paragraphIndex',
+          'segment_id': segmentId,
           'surface': text,
-          'lemma': word['lemma'] ?? text.toLowerCase(),
-          'pos': word['pos'] ?? '',
-          'translation': '',
-          'note': '',
+          'lemma': lemma,
+          'pos': pos,
+          'translation': selectedTranslation,
+          'translations': translations,
+          'dictionary_key': _dictionaryKey(lemma, pos),
+          'target_start_index': targetStart,
+          'target_end_index': targetEnd,
+          'source': dictionary['source'] ?? '',
+          'note': translations.isEmpty ? 'missing_global_dictionary_entry' : '',
         });
       }
     }
@@ -472,9 +743,265 @@ class VirgilWorkbenchBuilder {
       'book_id': bookId,
       'source_lang': 'en',
       'target_lang': targetLang,
+      'source': dictionary['source'] ?? '',
       'entries': entries,
-      'phrases': [],
+      'phrases': _buildPhraseAlignment(reader, dictionary),
     };
+  }
+
+  List<Map<String, dynamic>> _buildPhraseAlignment(
+    Map<String, dynamic> reader,
+    Map<String, dynamic> dictionary,
+  ) {
+    final phraseRecords = dictionary['phrases'] as Map<String, dynamic>? ??
+        const <String, dynamic>{};
+    if (phraseRecords.isEmpty) {
+      return const <Map<String, dynamic>>[];
+    }
+    final result = <Map<String, dynamic>>[];
+    final seen = <String>{};
+    final paragraphs = (reader['paragraphs'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>();
+    for (final paragraph in paragraphs) {
+      final paragraphIndex = paragraph['index'] as int? ?? 0;
+      final segments = (paragraph['segments_v2'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>();
+      for (final segment in segments) {
+        final segmentId = (segment['id'] ?? 'p$paragraphIndex').toString();
+        final sourceText = (segment['source_text'] ?? '').toString();
+        final targetText = (segment['target_text'] ?? '').toString();
+        final normalizedSource = _normalizePhrase(sourceText);
+        for (final phraseEntry in phraseRecords.entries) {
+          final phrase = _normalizePhrase(phraseEntry.key);
+          if (phrase.isEmpty || !_phraseMatches(phrase, normalizedSource)) {
+            continue;
+          }
+          final dedupeKey = '$segmentId|$phrase';
+          if (!seen.add(dedupeKey)) {
+            continue;
+          }
+          final record = phraseEntry.value;
+          final translations = record is Map<String, dynamic>
+              ? _stringList(record['translations'])
+              : const <String>[];
+          final selectedTranslation =
+              _selectContextualTranslation(translations, targetText);
+          if (selectedTranslation.isEmpty) {
+            continue;
+          }
+          result.add({
+            'segment_id': segmentId,
+            'paragraph_index': paragraphIndex,
+            'source': phrase,
+            'translation': selectedTranslation,
+            'translations': translations,
+            'dictionary_key': phrase,
+            'alignment_kind': 'phrase',
+          });
+        }
+      }
+    }
+    return result;
+  }
+
+  bool _phraseMatches(String phrase, String normalizedSource) {
+    if (normalizedSource.contains(phrase)) {
+      return true;
+    }
+    if (phrase == 'walk into') {
+      return normalizedSource.contains('walks into');
+    }
+    if (phrase == 'look at') {
+      return normalizedSource.contains('looks at');
+    }
+    if (phrase == 'sit down') {
+      return normalizedSource.contains('sits down');
+    }
+    return false;
+  }
+
+  String _dictionaryKey(String lemma, String pos) {
+    return '${lemma.trim().toLowerCase()}|${pos.trim().toUpperCase()}';
+  }
+
+  String _normalizePhrase(String value) {
+    return value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim();
+  }
+
+  Map<String, dynamic> _selectContextualSpan(
+    List<String> translations,
+    String targetText, {
+    required int sourceIndex,
+    required int sourceCount,
+    required Set<int> claimed,
+  }) {
+    final targetTokens = _translationTokens(targetText);
+    final candidates = <Map<String, dynamic>>[];
+    for (var translationIndex = 0;
+        translationIndex < translations.length;
+        translationIndex++) {
+      final translation = translations[translationIndex];
+      final wanted = _translationTokens(translation);
+      if (wanted.isEmpty || wanted.length > targetTokens.length) {
+        continue;
+      }
+      for (var start = 0;
+          start <= targetTokens.length - wanted.length;
+          start++) {
+        final exact = List<int>.generate(wanted.length, (index) => index)
+            .every((offset) => targetTokens[start + offset] == wanted[offset]);
+        if (exact) {
+          candidates.add({
+            'translation': translation,
+            'start': start,
+            'end': start + wanted.length - 1,
+            'exact': true,
+            'translation_index': translationIndex,
+          });
+        }
+      }
+      if (wanted.length != 1) {
+        continue;
+      }
+      for (var start = 0; start < targetTokens.length; start++) {
+        final source = wanted.single;
+        final target = targetTokens[start];
+        final shortest =
+            source.length < target.length ? source.length : target.length;
+        var common = 0;
+        while (common < shortest &&
+            source.codeUnitAt(common) == target.codeUnitAt(common)) {
+          common += 1;
+        }
+        if (common >= 3 && common / shortest >= 0.6) {
+          candidates.add({
+            'translation': translation,
+            'start': start,
+            'end': start,
+            'exact': source == target,
+            'translation_index': translationIndex,
+          });
+        }
+      }
+    }
+    candidates.removeWhere((candidate) {
+      final start = candidate['start'] as int;
+      final end = candidate['end'] as int;
+      return List<int>.generate(end - start + 1, (index) => start + index)
+          .any(claimed.contains);
+    });
+    if (candidates.isEmpty) {
+      return const {'translation': '', 'start': -1, 'end': -1};
+    }
+    final sourcePosition =
+        (sourceIndex + 0.5) / (sourceCount < 1 ? 1 : sourceCount);
+    candidates.sort((left, right) {
+      final leftLength = (left['end'] as int) - (left['start'] as int) + 1;
+      final rightLength = (right['end'] as int) - (right['start'] as int) + 1;
+      final lengthOrder = rightLength.compareTo(leftLength);
+      if (lengthOrder != 0) return lengthOrder;
+      final exactOrder = (right['exact'] == true ? 1 : 0)
+          .compareTo(left['exact'] == true ? 1 : 0);
+      if (exactOrder != 0) return exactOrder;
+      double distance(Map<String, dynamic> item) {
+        final center =
+            ((item['start'] as int) + (item['end'] as int)) / 2 + 0.5;
+        return (sourcePosition - center / targetTokens.length).abs();
+      }
+
+      final distanceOrder = distance(left).compareTo(distance(right));
+      if (distanceOrder != 0) return distanceOrder;
+      return (left['translation_index'] as int)
+          .compareTo(right['translation_index'] as int);
+    });
+    return candidates.first;
+  }
+
+  String _selectContextualTranslation(
+    List<String> translations,
+    String targetText,
+  ) {
+    final targetTokens = _translationTokens(targetText);
+    if (translations.isEmpty || targetTokens.isEmpty) {
+      return '';
+    }
+    for (final translation in translations) {
+      final wanted = _translationTokens(translation);
+      if (_containsTokenSequence(targetTokens, wanted)) {
+        return translation;
+      }
+    }
+    String selected = '';
+    var bestScore = 0.0;
+    for (final translation in translations) {
+      final wanted = _translationTokens(translation);
+      if (wanted.length != 1) {
+        continue;
+      }
+      final source = wanted.single;
+      for (final candidate in targetTokens) {
+        final shortest =
+            source.length < candidate.length ? source.length : candidate.length;
+        var commonPrefix = 0;
+        while (commonPrefix < shortest &&
+            source.codeUnitAt(commonPrefix) ==
+                candidate.codeUnitAt(commonPrefix)) {
+          commonPrefix += 1;
+        }
+        if (commonPrefix < 3) {
+          continue;
+        }
+        final score = commonPrefix / shortest;
+        if (score >= 0.6 && score > bestScore) {
+          selected = translation;
+          bestScore = score;
+        }
+      }
+    }
+    return selected;
+  }
+
+  List<String> _translationTokens(String value) => RegExp(
+        r'[\p{L}\p{N}]+',
+        unicode: true,
+      )
+          .allMatches(value.toLowerCase())
+          .map((match) => match.group(0) ?? '')
+          .where((token) => token.isNotEmpty)
+          .toList();
+
+  bool _containsTokenSequence(List<String> haystack, List<String> wanted) {
+    if (wanted.isEmpty || wanted.length > haystack.length) {
+      return false;
+    }
+    for (var index = 0; index <= haystack.length - wanted.length; index++) {
+      var matches = true;
+      for (var offset = 0; offset < wanted.length; offset++) {
+        if (haystack[index + offset] != wanted[offset]) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  List<String> _stringList(Object? value) {
+    if (value is! List) {
+      return const <String>[];
+    }
+    final result = <String>[];
+    for (final item in value) {
+      final text = item.toString().trim();
+      if (text.isEmpty || result.contains(text)) {
+        continue;
+      }
+      result.add(text);
+    }
+    return result;
   }
 
   Map<String, dynamic> _dictionaryManifestForLang(
@@ -500,10 +1027,15 @@ class VirgilWorkbenchBuilder {
     final dictionaries = Map<String, dynamic>.from(
         files['dictionaries'] as Map<String, dynamic>? ??
             const <String, dynamic>{});
+    final wordToWordByLang = Map<String, dynamic>.from(
+        files['word_to_word_by_lang'] as Map<String, dynamic>? ??
+            const <String, dynamic>{});
     for (final lang in languages) {
       dictionaries[lang] = 'dictionary_$lang.json';
+      wordToWordByLang[lang] = 'word_to_word_$lang.json';
     }
     files['dictionaries'] = dictionaries;
+    files['word_to_word_by_lang'] = wordToWordByLang;
     next['files'] = files;
     return next;
   }

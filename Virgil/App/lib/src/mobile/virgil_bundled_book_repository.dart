@@ -172,6 +172,8 @@ class VirgilBundledBookRepository {
       final dictionaryManifest =
           _readDictionaryJson(files, preferredTargetLang);
       final dictionaryManifests = _readDictionaryPayloads(files, manifest);
+      final wordToWord = _readWordToWordJson(files, preferredTargetLang);
+      final wordToWordByLang = _readWordToWordPayloads(files, manifest);
       final ttsManifest = _readOptionalJson(files, 'tts_manifest.json');
       final wordAudioManifest =
           _readOptionalJson(files, 'word_audio_manifest.json');
@@ -234,7 +236,8 @@ class VirgilBundledBookRepository {
         'detail_manifest': _readOptionalJson(files, 'detail_manifest.json'),
         'tts_manifest': ttsManifest,
         'word_audio_manifest': wordAudioManifest,
-        'word_to_word': _readOptionalJson(files, 'word_to_word.json'),
+        'word_to_word': wordToWord,
+        'word_to_word_by_lang': wordToWordByLang,
       };
       await File('${stagingDir.path}/package.json').writeAsString(
         const JsonEncoder.withIndent('  ').convert(package),
@@ -450,6 +453,32 @@ class VirgilBundledBookRepository {
       return _readOptionalJson(files, langDictionaryName);
     }
     return <String, dynamic>{};
+  }
+
+  Map<String, dynamic> _readWordToWordJson(
+      Map<String, ArchiveFile> files, String preferredTargetLang) {
+    final langWordToWordName = 'word_to_word_$preferredTargetLang.json';
+    if (files.containsKey(langWordToWordName)) {
+      return _readOptionalJson(files, langWordToWordName);
+    }
+    return _readOptionalJson(files, 'word_to_word.json');
+  }
+
+  Map<String, dynamic> _readWordToWordPayloads(
+      Map<String, ArchiveFile> files, Map<String, dynamic> manifest) {
+    final langs =
+        (manifest['available_target_langs'] as List<dynamic>? ?? const [])
+            .map((item) => item.toString())
+            .where((item) => item == 'ru' || item == 'uk')
+            .toList();
+    final payloads = <String, dynamic>{};
+    for (final lang in langs) {
+      final fileName = 'word_to_word_$lang.json';
+      if (files.containsKey(fileName)) {
+        payloads[lang] = _readOptionalJson(files, fileName);
+      }
+    }
+    return payloads;
   }
 
   Map<String, dynamic> _readDictionaryPayloads(

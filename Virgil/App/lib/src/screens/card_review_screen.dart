@@ -30,10 +30,7 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
   late final List<SavedCardItem> _queue;
   late final Player _audioPlayer;
   bool _busy = false;
-  int _completed = 0;
-  int _advanced = 0;
-  int _difficult = 0;
-  int _mastered = 0;
+  bool _closing = false;
 
   @override
   void initState() {
@@ -68,15 +65,6 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
       setState(() {
         _queue.removeAt(0);
         _queue.add(updated);
-        _completed += 1;
-        if (direction == 'right') {
-          _advanced += 1;
-          if (updated.status == 'mastered') {
-            _mastered += 1;
-          }
-        } else {
-          _difficult += 1;
-        }
       });
     } catch (error) {
       if (!mounted) {
@@ -89,6 +77,16 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
       if (mounted) {
         setState(() => _busy = false);
       }
+    }
+  }
+
+  Future<void> _closeReview() async {
+    if (_closing) {
+      return;
+    }
+    setState(() => _closing = true);
+    if (mounted) {
+      Navigator.of(context).pop();
     }
   }
 
@@ -120,80 +118,95 @@ class _CardReviewScreenState extends State<CardReviewScreen> {
   @override
   Widget build(BuildContext context) {
     final current = _queue.first;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Review')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Dismissible(
-                  key: ValueKey(
-                      '${current.id}-${current.progressScore}-${current.reviewCount}'),
-                  direction: DismissDirection.horizontal,
-                  confirmDismiss: (direction) async {
-                    await _applySwipe(
-                      direction == DismissDirection.endToStart
-                          ? 'left'
-                          : 'right',
-                    );
-                    return false;
-                  },
-                  background: _SwipeBackground(
-                    alignment: Alignment.centerLeft,
-                    color: Colors.green,
-                    label: 'Know',
-                    icon: Icons.arrow_forward,
-                  ),
-                  secondaryBackground: _SwipeBackground(
-                    alignment: Alignment.centerRight,
-                    color: Colors.orange,
-                    label: 'Hard',
-                    icon: Icons.arrow_back,
-                  ),
-                  child: _ReviewCard(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _closeReview();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: _closing ? null : _closeReview,
+            icon: const Icon(Icons.arrow_back),
+          ),
+          title: const Text('Review'),
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Dismissible(
                     key: ValueKey(
                         '${current.id}-${current.progressScore}-${current.reviewCount}'),
-                    item: current,
-                    onPlayAudio: () async {
-                      try {
-                        await _playWordAudio(current);
-                      } catch (error) {
-                        if (!mounted) {
-                          return;
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text('Could not play word: $error')),
-                        );
-                      }
+                    direction: DismissDirection.horizontal,
+                    confirmDismiss: (direction) async {
+                      await _applySwipe(
+                        direction == DismissDirection.endToStart
+                            ? 'left'
+                            : 'right',
+                      );
+                      return false;
                     },
+                    background: const _SwipeBackground(
+                      alignment: Alignment.centerLeft,
+                      color: Colors.green,
+                      label: 'Know',
+                      icon: Icons.arrow_forward,
+                    ),
+                    secondaryBackground: const _SwipeBackground(
+                      alignment: Alignment.centerRight,
+                      color: Colors.orange,
+                      label: 'Hard',
+                      icon: Icons.arrow_back,
+                    ),
+                    child: _ReviewCard(
+                      key: ValueKey(
+                          '${current.id}-${current.progressScore}-${current.reviewCount}'),
+                      item: current,
+                      onPlayAudio: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          await _playWordAudio(current);
+                        } catch (error) {
+                          if (!mounted) {
+                            return;
+                          }
+                          messenger.showSnackBar(
+                            SnackBar(
+                                content: Text('Could not play word: $error')),
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _busy ? null : () => _applySwipe('left'),
-                      icon: const Icon(Icons.swipe_left),
-                      label: const Text('Do not know'),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _busy ? null : () => _applySwipe('left'),
+                        icon: const Icon(Icons.swipe_left),
+                        label: const Text('Do not know'),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: _busy ? null : () => _applySwipe('right'),
-                      icon: const Icon(Icons.swipe_right),
-                      label: const Text('Know'),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: _busy ? null : () => _applySwipe('right'),
+                        icon: const Icon(Icons.swipe_right),
+                        label: const Text('Know'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -342,7 +355,7 @@ class _SwipeBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(28),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20),

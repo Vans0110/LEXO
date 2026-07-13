@@ -17,8 +17,8 @@ import 'virgil_workbench_form_panels.dart';
 import 'virgil_library_index_builder.dart';
 import 'virgil_workbench_status_panel.dart';
 
-const _ruContextDictionarySource = 'wiktionary_freedict_nllb_en_ru_context_v3';
-const _ukContextDictionarySource = 'wiktionary_nllb_en_uk_context_v3';
+const _ruContextDictionarySource = 'library_ru_global_words_v1';
+const _ukContextDictionarySource = 'library_uk_global_words_v1';
 
 String _expectedDictionarySource(String lang) =>
     lang == 'uk' ? _ukContextDictionarySource : _ruContextDictionarySource;
@@ -35,6 +35,7 @@ class VirgilWorkbenchScreen extends StatefulWidget {
 class _WorkbenchExportStatus {
   const _WorkbenchExportStatus({
     required this.bookId,
+    required this.bookIdsByTargetLang,
     required this.languages,
     required this.dictionaries,
     required this.dictionarySources,
@@ -45,6 +46,7 @@ class _WorkbenchExportStatus {
   });
 
   final String bookId;
+  final Map<String, String> bookIdsByTargetLang;
   final Set<String> languages;
   final Set<String> dictionaries;
   final Map<String, String> dictionarySources;
@@ -658,9 +660,16 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         }
         _applyLibrarySelection(selection);
         _bookId = currentStatus.bookId;
-        _bookIdsByTargetLang = {
-          for (final lang in languages) lang: currentStatus.bookId,
-        };
+        _bookIdsByTargetLang = currentStatus.bookIdsByTargetLang;
+        final missingBookIds = languages
+            .where((lang) => !_bookIdsByTargetLang.containsKey(lang))
+            .toList();
+        if (missingBookIds.isNotEmpty) {
+          throw Exception(
+            'Missing backend book_id for ${missingBookIds.join(', ')}. '
+            'Run Text for these languages first.',
+          );
+        }
         final outputDir = await VirgilWorkbenchBuilder(
           api: widget.api,
           level: _level,
@@ -816,18 +825,34 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       setState(() => _error = 'Select or load a book before cleaning.');
       return;
     }
+    final selectedTextLangs = _selectedTargetLangs();
+    final selectedDictionaryLangs = _selectedDictionaryLangs();
+    final selectedVoiceIds = _selectedVoiceIds();
+    if (selectedTextLangs.isEmpty &&
+        selectedDictionaryLangs.isEmpty &&
+        selectedVoiceIds.isEmpty) {
+      setState(() =>
+          _error = 'Select text, dictionary, or voice items before cleaning.');
+      return;
+    }
+    final scopeLines = <String>[
+      if (selectedTextLangs.isNotEmpty)
+        'Text: ${selectedTextLangs.map(_languageLabel).join(', ')}',
+      if (selectedDictionaryLangs.isNotEmpty)
+        'Dictionary: ${selectedDictionaryLangs.map(_languageLabel).join(', ')}',
+      if (selectedVoiceIds.isNotEmpty) 'Voices: ${selectedVoiceIds.join(', ')}',
+    ];
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
           selections.length == 1
-              ? 'Clean "${selections.single.title}"?'
-              : 'Clean ${selections.length} books?',
+              ? 'Clean selected parts of "${selections.single.title}"?'
+              : 'Clean selected parts of ${selections.length} books?',
         ),
-        content: const Text(
-          'This deletes generated output, installed ZIP files, and matching '
-          'backend books. Source TXT files, covers, and Cloudflare R2 are not '
-          'changed.',
+        content: Text(
+          'This deletes only the checked parts:\n\n${scopeLines.join('\n')}\n\n'
+          'Unchecked text, dictionaries, voices, source TXT files, covers, and Cloudflare R2 are not changed.',
         ),
         actions: [
           TextButton(
@@ -857,13 +882,13 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         await _cleanBookArtifacts(
           selection,
           currentBookId: currentBookId,
+          textLangs: selectedTextLangs,
+          dictionaryLangs: selectedDictionaryLangs,
+          voiceIds: selectedVoiceIds,
         );
       }
       if (mounted) {
         setState(() {
-          _bookId = null;
-          _bookIdsByTargetLang = const {};
-          _packagesByTargetLang = const {};
           _packageState = null;
           _outputPath = null;
           _selectedLibraryBooks = const <VirgilWorkbenchBookSelection>[];
@@ -881,45 +906,56 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     }
   }
 
+  String _languageLabel(String lang) {
+    return lang == 'uk' ? 'Ukrainian' : 'Russian';
+  }
+
   Future<void> _cleanBookArtifacts(
     VirgilWorkbenchBookSelection selection, {
     String? currentBookId,
+    required List<String> textLangs,
+    required List<String> dictionaryLangs,
+    required List<String> voiceIds,
   }) async {
-    final outputRoot = Directory(
-      '${VirgilWorkbenchPaths.output.path}/${selection.level}/${selection.section}',
-    );
-    final outputDir = await _findOutputDirForSelection(outputRoot, selection);
     final status = await _readCurrentExportStatus(selection);
-    final bookIds = <String>{
-      if ((currentBookId ?? '').isNotEmpty) currentBookId!,
-      if (status.bookId.isNotEmpty) status.bookId,
-    };
-    if (outputDir != null && outputDir.existsSync()) {
-      final outputZip = File(
-        '${outputDir.parent.path}/${outputDir.uri.pathSegments.where((segment) => segment.isNotEmpty).last}.zip',
+    final bookId =
+        (currentBookId ?? '').isNotEmpty ? currentBookId! : status.bookId;
+    if (voiceIds.isNotEmpty && bookId.isNotEmpty) {
+      final result = await widget.api.cleanBookArtifacts(
+        bookId: bookId,
+        voiceIds: voiceIds,
       );
-      await outputDir.delete(recursive: true);
-      _appendLog('Clean output dir: ${outputDir.path}');
-      if (outputZip.existsSync()) {
-        await outputZip.delete();
-        _appendLog('Clean output zip: ${outputZip.path}');
-      }
-    } else {
-      _appendLog('Clean output dir: nothing found for ${selection.title}');
+      _appendLog(
+        'Clean backend voices: $bookId ${voiceIds.join(', ')} '
+        '(jobs=${result['deleted_jobs']}, segments=${result['deleted_segments']})',
+      );
+    } else if (voiceIds.isNotEmpty) {
+      _appendLog(
+          'Clean backend voices skipped for ${selection.title}: missing book_id');
     }
-    final deletedInstalledZips =
-        await _deleteInstalledZipsForSelection(selection);
-    for (final path in deletedInstalledZips) {
-      _appendLog('Clean installed zip: $path');
-    }
-    for (final bookId in bookIds) {
-      try {
-        await widget.api.deleteBook(bookId);
-        _appendLog('Clean backend book: $bookId');
-      } catch (error) {
-        _appendLog('Clean backend book skipped: $bookId ($error)');
-      }
-    }
+    final outputBookId = bookId.isNotEmpty ? bookId : status.bookId;
+    final outputDir = await VirgilWorkbenchBuilder(
+      api: widget.api,
+      level: selection.level,
+      section: selection.section,
+      chapterId: selection.section == 'chapters' ? selection.chapterId : '',
+      chapterTitle: selection.section == 'chapters'
+          ? virgilA1ChapterTitle(selection.chapterId)
+          : '',
+      sourcePath: selection.sourcePath,
+      coverPath: selection.coverPath,
+      log: _appendLog,
+      targetLangs: _selectedTargetLangs(),
+      bookIdsByTargetLang: const {},
+      packagesByTargetLang: const {},
+    ).cleanArtifacts(
+      bookId: outputBookId,
+      fallbackTitle: selection.title,
+      textLangs: textLangs,
+      dictionaryLangs: dictionaryLangs,
+      voiceIds: voiceIds,
+    );
+    _appendLog('Clean scoped output: ${outputDir.path}');
   }
 
   Future<_WorkbenchExportStatus> _readCurrentExportStatus(
@@ -934,6 +970,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     final audioVoices = <String>{};
     final profileVoices = <String>{};
     var bookId = '';
+    final bookIdsByTargetLang = <String, String>{};
     var hasAudio = false;
     if (outputDir != null) {
       final manifestFile = File('${outputDir.path}/manifest.json');
@@ -942,6 +979,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
           final manifest = jsonDecode(await manifestFile.readAsString())
               as Map<String, dynamic>;
           bookId = (manifest['book_id'] ?? '').toString();
+          bookIdsByTargetLang.addAll(_readBookIdsByTargetLang(manifest));
         } catch (_) {}
       }
       final ttsManifestFile = File('${outputDir.path}/tts_manifest.json');
@@ -989,6 +1027,9 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     if (bookId.isEmpty) {
       bookId = zipStatus.bookId;
     }
+    for (final entry in zipStatus.bookIdsByTargetLang.entries) {
+      bookIdsByTargetLang.putIfAbsent(entry.key, () => entry.value);
+    }
     hasAudio = hasAudio || zipStatus.hasAudio;
     if (hasAudio && audioVoices.isEmpty) {
       audioVoices.add(_fallbackVoiceId);
@@ -996,6 +1037,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     final hasCover = await _hasOutputCover(outputDir) || zipStatus.hasCover;
     return _WorkbenchExportStatus(
       bookId: bookId,
+      bookIdsByTargetLang: bookIdsByTargetLang,
       languages: languages,
       dictionaries: dictionaries,
       dictionarySources: dictionarySources,
@@ -1062,6 +1104,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     if (!zipRoot.existsSync()) {
       return const _WorkbenchExportStatus(
         bookId: '',
+        bookIdsByTargetLang: <String, String>{},
         languages: <String>{},
         dictionaries: <String>{},
         dictionarySources: <String, String>{},
@@ -1100,6 +1143,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
         final audioVoices = <String>{};
         final profileVoices = <String>{};
         final bookId = (manifest['book_id'] ?? '').toString();
+        final bookIdsByTargetLang = _readBookIdsByTargetLang(manifest);
         for (final file in archive.files) {
           if (!file.isFile) {
             continue;
@@ -1145,6 +1189,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
             const ['cover.png', 'cover.jpg', 'cover.jpeg'].contains(file.name));
         return _WorkbenchExportStatus(
           bookId: bookId,
+          bookIdsByTargetLang: bookIdsByTargetLang,
           languages: languages,
           dictionaries: dictionaries,
           dictionarySources: dictionarySources,
@@ -1159,6 +1204,7 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     }
     return const _WorkbenchExportStatus(
       bookId: '',
+      bookIdsByTargetLang: <String, String>{},
       languages: <String>{},
       dictionaries: <String>{},
       dictionarySources: <String, String>{},
@@ -1167,48 +1213,6 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
       profileVoices: <String>{},
       hasCover: false,
     );
-  }
-
-  Future<List<String>> _deleteInstalledZipsForSelection(
-      VirgilWorkbenchBookSelection selection) async {
-    final zipRoot = Directory(
-      '${VirgilWorkbenchPaths.cloudLibrary.path}/${selection.level}/${selection.section}/books_zip',
-    );
-    if (!zipRoot.existsSync()) {
-      return const <String>[];
-    }
-    final deleted = <String>[];
-    for (final entity in zipRoot.listSync()) {
-      if (entity is! File || !entity.path.toLowerCase().endsWith('.zip')) {
-        continue;
-      }
-      try {
-        final archive = ZipDecoder().decodeBytes(await entity.readAsBytes());
-        final manifestFile = archive.files
-            .where((file) => file.isFile && file.name == 'manifest.json')
-            .firstOrNull;
-        if (manifestFile == null) {
-          continue;
-        }
-        final manifest = jsonDecode(
-          utf8.decode(manifestFile.content as List<int>),
-        ) as Map<String, dynamic>;
-        if ((manifest['title'] ?? '').toString().trim() != selection.title) {
-          continue;
-        }
-        if ((manifest['level'] ?? '').toString() != selection.level ||
-            (manifest['section'] ?? '').toString() != selection.section ||
-            (manifest['chapter_id'] ?? '').toString() != selection.chapterId) {
-          continue;
-        }
-        final path = entity.path;
-        await entity.delete();
-        deleted.add(path);
-      } catch (_) {
-        continue;
-      }
-    }
-    return deleted;
   }
 
   Set<String> _readTtsVoiceIds(Map<String, dynamic> manifest) {
@@ -1281,6 +1285,38 @@ class _VirgilWorkbenchScreenState extends State<VirgilWorkbenchScreen> {
     _appendLog(
       'Selected library book: ${selection.sourcePath} (${selection.sourceText.length} chars)',
     );
+  }
+
+  Map<String, String> _readBookIdsByTargetLang(Map<String, dynamic> manifest) {
+    final result = <String, String>{};
+    final raw = manifest['book_ids_by_target_lang'];
+    if (raw is Map) {
+      for (final entry in raw.entries) {
+        final lang = entry.key.toString().trim().toLowerCase();
+        final id = entry.value.toString().trim();
+        if (lang.isNotEmpty && id.isNotEmpty) {
+          result[lang] = id;
+        }
+      }
+    }
+    final id = (manifest['book_id'] ?? '').toString().trim();
+    final availableLangs = manifest['available_target_langs'];
+    if (id.isNotEmpty && availableLangs is List) {
+      for (final value in availableLangs) {
+        final lang = value.toString().trim().toLowerCase();
+        if (lang.isNotEmpty) {
+          result.putIfAbsent(lang, () => id);
+        }
+      }
+    }
+    if (result.isEmpty) {
+      final lang =
+          (manifest['target_lang'] ?? '').toString().trim().toLowerCase();
+      if (lang.isNotEmpty && id.isNotEmpty) {
+        result[lang] = id;
+      }
+    }
+    return result;
   }
 
   @override

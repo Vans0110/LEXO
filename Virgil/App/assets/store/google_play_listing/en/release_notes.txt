@@ -1,0 +1,7 @@
+First internal test release of Virgil.
+
+- Short A1 English stories.
+- Chapter-based library with book downloads.
+- Reading with audio playback and speed control.
+- Tap a word to see its translation.
+- Save words and review them with cards.

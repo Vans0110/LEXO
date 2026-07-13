@@ -1,0 +1,230 @@
+﻿chapter,unit,source,occurrences,book_count,own_chapter_books,later_books,first_book,result
+1,address,ledger,7,5,3,2,"1:Two People, One City",pass
+1,age,ledger,5,4,2,2,1:First Day,pass
+1,apartment,target_extra,22,13,1,12,1:Welcome to Maple Street,pass
+1,call,target_extra,33,23,2,21,1:First Day,pass
+1,city,ledger,18,13,3,10,1:First Day,pass
+1,class,target_extra,14,8,1,7,1:The Wrong Classroom,pass
+1,country,ledger,5,5,2,3,"1:Two People, One City",pass
+1,course,target_extra,6,5,1,4,1:The Wrong Classroom,pass
+1,downstairs,target_extra,4,3,1,2,1:The Wrong Classroom,pass
+1,eighteen,target_extra,5,4,1,3,1:First Day,pass
+1,email,ledger,11,7,2,5,1:A Voice from Online,pass
+1,first,target_extra,48,33,4,29,1:First Day,pass
+1,first name,ledger,4,4,3,1,1:First Day,pass
+1,floor,target_extra,17,7,1,6,1:The Wrong Classroom,pass
+1,form,target_extra,3,2,1,1,1:Welcome to Maple Street,pass
+1,friend,ledger,57,35,2,33,1:First Day,pass
+1,from,ledger,32,24,2,22,1:First Day,pass
+1,information,target_extra,2,2,1,1,1:Welcome to Maple Street,pass
+1,language,ledger,4,4,3,1,1:First Day,pass
+1,last,target_extra,23,20,3,17,1:First Day,pass
+1,last name,ledger,4,4,3,1,1:First Day,pass
+1,live,ledger,5,4,2,2,1:First Day,pass
+1,name,ledger,33,21,3,18,1:First Day,pass
+1,near,target_extra,31,27,2,25,1:First Day,pass
+1,neighbour,target_extra,26,13,2,11,"1:Two People, One City",pass
+1,new,ledger,49,30,4,26,1:First Day,pass
+1,number,target_extra,38,25,4,21,"1:Two People, One City",pass
+1,phone,ledger,33,19,3,16,"1:Two People, One City",pass
+1,repeat,target_extra,3,3,1,2,1:A Voice from Online,pass
+1,right,target_extra,14,11,2,9,1:The Wrong Classroom,pass
+1,room,ledger,39,23,2,21,1:First Day,pass
+1,speak,target_extra,9,7,3,4,1:First Day,pass
+1,spell,target_extra,1,1,1,0,1:A Voice from Online,single
+1,street,target_extra,21,13,2,11,"1:Two People, One City",pass
+1,student,ledger,23,13,4,9,1:First Day,pass
+1,teacher,ledger,17,9,2,7,1:First Day,pass
+1,understand,target_extra,6,6,1,5,1:A Voice from Online,pass
+1,upstairs,target_extra,5,4,1,3,1:The Wrong Classroom,pass
+1,welcome,target_extra,10,6,2,4,1:The Wrong Classroom,pass
+1,wrong,target_extra,12,10,1,9,1:The Wrong Classroom,pass
+2,aunt,ledger,5,3,2,1,2:The Family Photo,pass
+2,beard,target_extra,3,2,1,1,2:My Very Tall Brother,pass
+2,birthday,target_extra,13,7,1,6,2:A Birthday for Dad,pass
+2,brother,ledger,12,9,3,6,2:Grandma's Dinner,pass
+2,candle,target_extra,18,4,1,3,2:A Birthday for Dad,pass
+2,careful,target_extra,6,6,1,5,2:Who Has the Keys?,pass
+2,cousin,ledger,6,3,2,1,2:The Family Photo,pass
+2,date,target_extra,3,3,1,2,2:A Birthday for Dad,pass
+2,daughter,ledger,6,6,3,3,2:The Family Photo,pass
+2,eyes,ledger,8,7,2,5,2:My Very Tall Brother,pass
+2,family,target_extra,31,19,5,14,2:Grandma's Dinner,pass
+2,father,ledger,9,5,4,1,2:Grandma's Dinner,pass
+2,funny,ledger,4,4,3,1,2:Grandma's Dinner,pass
+2,glasses,ledger,10,7,3,4,2:Grandma's Dinner,pass
+2,grandfather,ledger,4,3,2,1,2:Grandma's Dinner,pass
+2,grandmother,ledger,5,3,2,1,2:Grandma's Dinner,pass
+2,hair,ledger,3,3,3,0,2:Grandma's Dinner,no_late_recycle
+2,hers,target_extra,128,53,5,44,"1:Two People, One City",pass
+2,his,target_extra,148,54,5,47,1:First Day,pass
+2,husband,ledger,4,4,2,2,2:The Family Photo,pass
+2,kind,ledger,4,4,2,1,1:First Day,pass
+2,mine,target_extra,3,3,1,2,2:Who Has the Keys?,pass
+2,mother,ledger,8,5,3,2,2:Grandma's Dinner,pass
+2,old,ledger,18,16,2,11,1:First Day,pass
+2,parent,ledger,4,3,2,1,2:Grandma's Dinner,pass
+2,parents,target_extra,4,3,2,1,2:Grandma's Dinner,pass
+2,pocket,target_extra,9,6,1,5,2:Who Has the Keys?,pass
+2,present,target_extra,5,3,1,2,2:A Birthday for Dad,pass
+2,quiet,ledger,17,14,2,12,2:Grandma's Dinner,pass
+2,remember,target_extra,11,8,1,7,2:A Birthday for Dad,pass
+2,short,ledger,19,16,2,14,2:Grandma's Dinner,pass
+2,sister,ledger,14,8,2,6,2:A Birthday for Dad,pass
+2,son,ledger,3,3,2,1,2:The Family Photo,pass
+2,surprise,target_extra,2,2,1,1,2:A Birthday for Dad,pass
+2,tall,ledger,7,3,2,1,2:The Family Photo,pass
+2,uncle,ledger,5,3,2,1,2:The Family Photo,pass
+2,wear,target_extra,7,6,1,5,2:My Very Tall Brother,pass
+2,whose,target_extra,3,2,1,1,2:Who Has the Keys?,pass
+2,wife,ledger,4,4,3,1,2:The Family Photo,pass
+2,year,target_extra,16,11,1,7,1:First Day,pass
+2,young,ledger,8,6,2,3,"1:Two People, One City",pass
+2,yours,target_extra,22,17,3,11,1:First Day,pass
+3,above,target_extra,11,11,4,7,3:The Room with Two Doors,pass
+3,apartment,ledger,22,13,2,9,1:Welcome to Maple Street,pass
+3,bathroom,ledger,8,5,2,3,3:The Room with Two Doors,pass
+3,bed,ledger,7,6,2,4,3:New Apartment,pass
+3,bedroom,ledger,4,4,3,1,3:New Apartment,pass
+3,below,target_extra,5,5,1,4,3:A Plant by the Window,pass
+3,between,target_extra,5,4,1,3,3:A Plant by the Window,pass
+3,building,ledger,13,9,2,5,"1:Two People, One City",pass
+3,chair,ledger,8,6,3,3,3:New Apartment,pass
+3,cooker,ledger,3,3,2,1,3:A Plant by the Window,pass
+3,corner,target_extra,5,4,1,3,3:A Plant by the Window,pass
+3,cup,ledger,20,7,2,5,3:New Apartment,pass
+3,door,target_extra,24,16,3,11,1:First Day,pass
+3,downstairs,target_extra,4,3,1,1,1:The Wrong Classroom,pass
+3,entrance,target_extra,5,4,1,2,1:Welcome to Maple Street,pass
+3,floor,ledger,17,7,2,4,1:The Wrong Classroom,pass
+3,fork,ledger,4,4,2,2,3:New Apartment,pass
+3,fridge,ledger,4,4,2,2,3:New Apartment,pass
+3,glass,ledger,10,7,2,2,2:Grandma's Dinner,pass
+3,home,ledger,41,35,2,31,"1:Two People, One City",pass
+3,kettle,ledger,4,3,2,1,3:New Apartment,pass
+3,key,ledger,20,6,2,3,2:Who Has the Keys?,pass
+3,kitchen,ledger,14,11,3,7,2:Who Has the Keys?,pass
+3,knife,ledger,5,5,2,3,3:New Apartment,pass
+3,lamp,ledger,12,4,2,2,3:New Apartment,pass
+3,left,target_extra,47,35,1,32,2:My Very Tall Brother,pass
+3,lift,target_extra,8,2,1,1,3:The Quiet Flat Upstairs,pass
+3,light,target_extra,19,17,2,14,2:A Birthday for Dad,pass
+3,living room,ledger,6,5,4,1,3:New Apartment,pass
+3,mirror,target_extra,3,3,2,1,3:The Room with Two Doors,pass
+3,neighbour,target_extra,26,13,2,9,"1:Two People, One City",pass
+3,plant,target_extra,7,4,3,1,3:New Apartment,pass
+3,plate,ledger,8,8,2,5,2:Grandma's Dinner,pass
+3,right,target_extra,14,11,1,7,1:The Wrong Classroom,pass
+3,room,ledger,39,23,5,14,1:First Day,pass
+3,shelf,ledger,8,5,3,2,3:New Apartment,pass
+3,shower,target_extra,4,3,1,2,3:The Room with Two Doors,pass
+3,sofa,ledger,8,6,3,2,2:Who Has the Keys?,pass
+3,spoon,ledger,3,3,2,1,3:New Apartment,pass
+3,stairs,target_extra,3,3,1,1,1:The Wrong Classroom,pass
+3,table,ledger,39,21,3,14,1:Welcome to Maple Street,pass
+3,towel,ledger,3,3,2,1,3:The Room with Two Doors,pass
+3,upstairs,target_extra,5,4,1,2,1:The Wrong Classroom,pass
+3,wardrobe,ledger,4,3,2,1,3:New Apartment,pass
+3,window,target_extra,15,12,2,10,3:New Apartment,pass
+4,anything else,target_extra,2,1,1,0,4:Lunch at the Corner Cafe,pass
+4,bag,ledger,33,13,2,10,2:Who Has the Keys?,pass
+4,basket,target_extra,2,1,1,0,4:A Picnic with No Bread,pass
+4,bill,ledger,6,3,2,1,4:Lunch at the Corner Cafe,pass
+4,bottle,ledger,4,4,2,2,4:The Last Apple,pass
+4,box,ledger,33,17,2,12,2:The Family Photo,pass
+4,bread,ledger,22,11,3,7,2:Grandma's Dinner,pass
+4,breakfast,ledger,19,12,3,8,3:Where Is My Cup?,pass
+4,burn,target_extra,3,2,1,1,4:The Cooking Problem,pass
+4,cereal,target_extra,2,2,1,1,4:Breakfast for Two,pass
+4,change,target_extra,25,19,1,18,4:The Last Apple,pass
+4,cheap,target_extra,6,5,1,4,4:The Last Apple,pass
+4,cheese,ledger,7,4,3,1,4:The Cooking Problem,pass
+4,chicken,ledger,3,3,2,1,4:Lunch at the Corner Cafe,pass
+4,coffee,ledger,8,6,2,4,4:Breakfast for Two,pass
+4,coin,target_extra,10,5,1,4,4:The Last Apple,pass
+4,cook,ledger,10,8,2,5,1:Welcome to Maple Street,pass
+4,cost,target_extra,21,13,1,12,4:The Last Apple,pass
+4,dinner,ledger,17,11,2,7,2:Grandma's Dinner,pass
+4,egg,ledger,9,5,2,3,4:Breakfast for Two,pass
+4,enough,target_extra,12,11,2,9,4:Breakfast for Two,pass
+4,expensive,target_extra,5,5,1,4,4:The Last Apple,pass
+4,fish,ledger,6,5,2,3,4:The Last Apple,pass
+4,forget,target_extra,2,1,1,0,4:A Picnic with No Bread,pass
+4,fruit,ledger,13,12,3,9,4:Breakfast for Two,pass
+4,hungry,target_extra,2,2,2,0,4:Breakfast for Two,pass
+4,juice,ledger,6,5,3,2,4:The Cooking Problem,pass
+4,kilo,ledger,6,4,2,2,4:The Last Apple,pass
+4,knife,target_extra,5,5,2,1,3:New Apartment,pass
+4,lunch,ledger,9,7,2,4,1:First Day,pass
+4,meat,ledger,2,2,2,0,4:Lunch at the Corner Cafe,no_late_recycle
+4,menu,ledger,5,3,2,1,4:Lunch at the Corner Cafe,pass
+4,milk,target_extra,9,5,1,4,4:Breakfast for Two,pass
+4,order,target_extra,6,3,1,2,4:Lunch at the Corner Cafe,pass
+4,packet,target_extra,2,2,2,0,4:Breakfast for Two,pass
+4,pan,ledger,4,4,2,2,4:The Cooking Problem,pass
+4,pasta,ledger,6,3,2,1,4:The Cooking Problem,pass
+4,picnic,target_extra,4,2,1,1,4:A Picnic with No Bread,pass
+4,piece,target_extra,13,11,2,7,2:Grandma's Dinner,pass
+4,pot,ledger,3,3,2,1,4:The Cooking Problem,pass
+4,price,target_extra,6,6,1,5,4:The Last Apple,pass
+4,rice,ledger,4,3,2,1,4:The Last Apple,pass
+4,salad,ledger,4,4,2,2,4:The Cooking Problem,pass
+4,sandwich,target_extra,9,4,2,2,4:Lunch at the Corner Cafe,pass
+4,sauce,ledger,5,3,2,1,4:The Cooking Problem,pass
+4,share,target_extra,11,9,2,7,4:Breakfast for Two,pass
+4,soup,target_extra,7,4,1,3,4:Lunch at the Corner Cafe,pass
+4,tea,ledger,11,9,2,6,3:Where Is My Cup?,pass
+4,toast,target_extra,3,2,1,1,4:Breakfast for Two,pass
+4,together,target_extra,16,14,1,11,"1:Two People, One City",pass
+4,vegetables,ledger,6,4,2,2,4:The Cooking Problem,pass
+4,waiter,target_extra,4,2,1,1,4:Lunch at the Corner Cafe,pass
+4,water,ledger,29,18,2,15,2:Grandma's Dinner,pass
+5,answer,target_extra,18,16,2,10,1:First Day,pass
+5,backpack,ledger,5,5,2,3,5:New Student,pass
+5,baker,ledger,2,2,2,0,5:A Day at the Bakery,no_late_recycle
+5,bakery,target_extra,2,1,1,0,5:A Day at the Bakery,pass
+5,belong,target_extra,2,2,1,1,5:The English Teacher's Bag,pass
+5,classroom,ledger,8,6,2,3,1:The Wrong Classroom,pass
+5,cleaner,ledger,3,3,2,1,5:A Day at the Bakery,pass
+5,close,target_extra,6,6,1,5,5:A Day at the Bakery,pass
+5,computer,ledger,15,13,2,11,5:New Student,pass
+5,cook,ledger,10,8,2,3,1:Welcome to Maple Street,pass
+5,course,ledger,6,5,2,2,1:The Wrong Classroom,pass
+5,customer,target_extra,10,3,1,2,5:A Day at the Bakery,pass
+5,day,target_extra,42,30,3,24,1:First Day,pass
+5,dictionary,target_extra,3,2,2,0,5:The English Teacher's Bag,pass
+5,doctor,ledger,9,6,2,4,5:A Day at the Bakery,pass
+5,driver,ledger,6,5,2,3,5:A Day at the Bakery,pass
+5,exam,ledger,4,3,2,1,5:New Student,pass
+5,folder,ledger,5,3,2,1,5:The English Teacher's Bag,pass
+5,guard,ledger,4,3,2,1,5:The Library Table,pass
+5,job,ledger,12,8,2,6,5:A Day at the Bakery,pass
+5,laptop,target_extra,7,5,1,4,5:The Library Table,pass
+5,lesson,ledger,4,3,2,1,5:New Student,pass
+5,library,ledger,11,6,2,4,5:New Student,pass
+5,make,target_extra,46,33,2,25,2:A Birthday for Dad,pass
+5,mechanic,ledger,2,2,2,0,5:A Day at the Bakery,no_late_recycle
+5,night,target_extra,14,7,1,6,5:Who Works at Night?,pass
+5,notebook,ledger,6,4,2,2,5:New Student,pass
+5,notes,target_extra,14,11,1,9,4:The Last Apple,pass
+5,nurse,ledger,8,6,2,3,1:Welcome to Maple Street,pass
+5,office,ledger,11,9,2,7,5:The English Teacher's Bag,pass
+5,open,target_extra,31,25,2,19,2:A Birthday for Dad,pass
+5,pen,ledger,5,4,3,1,5:New Student,pass
+5,pencil,ledger,4,4,2,2,5:The English Teacher's Bag,pass
+5,practise,target_extra,7,6,1,5,5:The Library Table,pass
+5,profession,target_extra,3,2,1,1,5:Who Works at Night?,pass
+5,project,ledger,5,3,2,1,5:New Student,pass
+5,question,target_extra,2,2,1,1,5:The Library Table,pass
+5,return,target_extra,15,13,1,10,4:The Cooking Problem,pass
+5,ruler,ledger,4,3,2,1,5:The English Teacher's Bag,pass
+5,schedule,target_extra,5,5,2,3,5:New Student,pass
+5,school,ledger,12,11,2,6,1:First Day,pass
+5,sell,target_extra,2,2,1,1,5:A Day at the Bakery,pass
+5,shift,target_extra,3,2,2,0,5:A Day at the Bakery,pass
+5,student,ledger,23,13,3,6,1:First Day,pass
+5,study,ledger,10,4,2,1,"1:Two People, One City",pass
+5,teacher,ledger,17,9,2,5,1:First Day,pass
+5,together,target_extra,16,14,1,10,"1:Two People, One City",pass
+5,university,ledger,6,4,2,1,1:Welcome to Maple Street,pass
+5,work,ledger,31,21,3,17,2:A Birthday for Dad,pass

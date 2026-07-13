@@ -14,6 +14,7 @@ class MobileAppSettings {
     this.hostUrl = kDefaultMobileHostUrl,
     this.deviceId,
     this.lastSyncAt,
+    this.preferredInterfaceLang = 'ru',
     this.preferredTargetLang = 'ru',
     this.preferredVoiceId = 'af_heart',
     this.preferredPlaybackSpeed = 0.8,
@@ -22,6 +23,7 @@ class MobileAppSettings {
   final String? hostUrl;
   final String? deviceId;
   final String? lastSyncAt;
+  final String preferredInterfaceLang;
   final String preferredTargetLang;
   final String preferredVoiceId;
   final double preferredPlaybackSpeed;
@@ -30,6 +32,7 @@ class MobileAppSettings {
     String? hostUrl,
     String? deviceId,
     String? lastSyncAt,
+    String? preferredInterfaceLang,
     String? preferredTargetLang,
     String? preferredVoiceId,
     double? preferredPlaybackSpeed,
@@ -40,6 +43,8 @@ class MobileAppSettings {
       hostUrl: clearHostUrl ? null : (hostUrl ?? this.hostUrl),
       deviceId: deviceId ?? this.deviceId,
       lastSyncAt: clearLastSyncAt ? null : (lastSyncAt ?? this.lastSyncAt),
+      preferredInterfaceLang:
+          preferredInterfaceLang ?? this.preferredInterfaceLang,
       preferredTargetLang: preferredTargetLang ?? this.preferredTargetLang,
       preferredVoiceId: preferredVoiceId ?? this.preferredVoiceId,
       preferredPlaybackSpeed:
@@ -52,6 +57,7 @@ class MobileAppSettings {
       'host_url': hostUrl,
       'device_id': deviceId,
       'last_sync_at': lastSyncAt,
+      'preferred_interface_lang': preferredInterfaceLang,
       'preferred_target_lang': preferredTargetLang,
       'preferred_voice_id': preferredVoiceId,
       'preferred_playback_speed': preferredPlaybackSpeed,
@@ -59,6 +65,8 @@ class MobileAppSettings {
   }
 
   factory MobileAppSettings.fromJson(Map<String, dynamic> json) {
+    final preferredInterfaceLang =
+        (json['preferred_interface_lang'] as String? ?? 'ru').trim();
     final preferredTargetLang =
         (json['preferred_target_lang'] as String? ?? 'ru').trim();
     final preferredVoiceId =
@@ -71,6 +79,8 @@ class MobileAppSettings {
           : json['host_url'] as String?,
       deviceId: json['device_id'] as String?,
       lastSyncAt: json['last_sync_at'] as String?,
+      preferredInterfaceLang:
+          preferredInterfaceLang == 'uk' ? preferredInterfaceLang : 'ru',
       preferredTargetLang:
           preferredTargetLang == 'uk' ? preferredTargetLang : 'ru',
       preferredVoiceId: _normalizeVoiceId(preferredVoiceId),
@@ -101,6 +111,11 @@ class MobileAppSettings {
 }
 
 class MobileSettingsRepository {
+  Future<bool> exists() async {
+    final file = await _settingsFile();
+    return file.existsSync();
+  }
+
   Future<MobileAppSettings> load() async {
     final file = await _settingsFile();
     if (!file.existsSync()) {

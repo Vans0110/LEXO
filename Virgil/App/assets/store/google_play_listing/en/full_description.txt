@@ -1,0 +1,13 @@
+Virgil helps learners read short English stories and build vocabulary step by step.
+
+The app includes simple A1-level stories organized by chapters. You can download books, read with audio playback, slow down or speed up narration, tap words to see translations, and save useful words for review.
+
+Features:
+- Short English stories for beginner learners
+- Chapter-based library
+- Audio playback with speed control
+- Tap any word to see its translation
+- Save words and review them with cards
+- Works without account registration
+
+Virgil is designed for focused reading practice and vocabulary building.

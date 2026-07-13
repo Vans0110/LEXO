@@ -1,0 +1,225 @@
+﻿chapter,unit,source,occurrences,book_count,own_chapter_books,later_books,first_book,result
+6,after,target_extra,45,39,3,27,2:Grandma's Dinner,pass
+6,afternoon,ledger,8,8,2,5,5:A Day at the Bakery,pass
+6,alarm,ledger,8,4,2,2,6:Seven O'Clock Again,pass
+6,always,ledger,7,6,2,3,5:A Day at the Bakery,pass
+6,appointment,target_extra,5,4,1,3,6:A Very Busy Morning,pass
+6,arrive,ledger,28,21,3,14,"1:Two People, One City",pass
+6,before,target_extra,34,28,3,21,2:Grandma's Dinner,pass
+6,break,ledger,11,10,2,8,6:The Bus Driver,pass
+6,breakfast,target_extra,19,12,3,4,3:Where Is My Cup?,pass
+6,correct,target_extra,8,7,1,5,"1:Two People, One City",pass
+6,dress,ledger,13,4,2,2,6:The Bus Driver,pass
+6,early,ledger,8,7,2,2,2:A Birthday for Dad,pass
+6,evening,ledger,22,18,3,13,3:The Quiet Flat Upstairs,pass
+6,fast,target_extra,1,1,1,0,6:The Clock in the Kitchen,single
+6,finish,ledger,9,8,2,5,5:The Library Table,pass
+6,first,target_extra,48,33,3,21,1:First Day,pass
+6,fix,target_extra,2,2,1,1,6:The Clock in the Kitchen,pass
+6,free,target_extra,6,6,1,5,6:Sunday without an Alarm,pass
+6,get up,ledger,4,3,2,1,6:Seven O'Clock Again,pass
+6,hurry,target_extra,1,1,1,0,6:A Very Busy Morning,single
+6,late,ledger,13,13,3,7,"1:Two People, One City",pass
+6,leave,ledger,39,30,4,19,2:My Very Tall Brother,pass
+6,list,target_extra,8,5,1,2,4:The Cooking Problem,pass
+6,meeting,target_extra,8,5,1,3,5:The Library Table,pass
+6,minute,target_extra,34,26,4,16,"1:Two People, One City",pass
+6,miss,target_extra,7,5,1,4,6:The Clock in the Kitchen,pass
+6,morning,ledger,26,22,4,13,1:The Wrong Classroom,pass
+6,never,ledger,3,3,2,1,6:Seven O'Clock Again,pass
+6,next,target_extra,58,43,2,29,1:First Day,pass
+6,night,ledger,14,7,2,4,5:Who Works at Night?,pass
+6,often,ledger,5,5,2,1,2:Who Has the Keys?,pass
+6,passenger,target_extra,2,2,1,1,6:The Bus Driver,pass
+6,rarely,ledger,3,3,2,1,6:Seven O'Clock Again,pass
+6,ready,target_extra,10,10,2,6,2:Who Has the Keys?,pass
+6,rest,target_extra,12,11,1,8,1:The Wrong Classroom,pass
+6,route,target_extra,12,5,1,4,6:The Bus Driver,pass
+6,shower,target_extra,4,3,1,1,3:The Room with Two Doors,pass
+6,slow,target_extra,4,3,2,1,6:Sunday without an Alarm,pass
+6,slowly,target_extra,9,7,1,5,1:A Voice from Online,pass
+6,sometimes,ledger,9,7,2,4,5:Who Works at Night?,pass
+6,start,ledger,17,16,3,10,5:New Student,pass
+6,traffic,target_extra,3,3,2,1,6:The Bus Driver,pass
+6,usually,ledger,9,8,2,3,4:Breakfast for Two,pass
+6,wake up,ledger,6,5,2,3,6:The Bus Driver,pass
+6,wash,ledger,4,3,2,0,3:The Room with Two Doors,no_late_recycle
+6,weekday,ledger,3,3,2,1,6:Seven O'Clock Again,pass
+6,weekend,ledger,6,4,2,2,6:Seven O'Clock Again,pass
+7,another,target_extra,29,27,2,20,1:A Voice from Online,pass
+7,below,target_extra,5,5,1,3,3:A Plant by the Window,pass
+7,boots,ledger,6,4,2,2,7:The Shoe Shop,pass
+7,cash,target_extra,4,4,1,3,7:The Blue Jacket,pass
+7,changing room,target_extra,2,2,2,0,7:The Wrong Red Dress,pass
+7,choose,target_extra,14,10,1,9,7:A Gift for a Friend,pass
+7,coat,ledger,9,6,2,2,2:My Very Tall Brother,pass
+7,comfortable,target_extra,3,3,3,0,7:The Blue Jacket,pass
+7,cotton,ledger,4,4,3,1,7:The Wrong Red Dress,pass
+7,different,target_extra,16,12,1,7,2:Grandma's Dinner,pass
+7,dress,ledger,13,4,2,0,6:The Bus Driver,no_late_recycle
+7,exchange,target_extra,12,9,2,7,7:The Wrong Red Dress,pass
+7,favourite,target_extra,8,7,1,4,2:A Birthday for Dad,pass
+7,fit,ledger,8,6,4,2,7:The Blue Jacket,pass
+7,foot,target_extra,13,5,1,4,7:The Shoe Shop,pass
+7,gift,target_extra,10,5,1,4,7:A Gift for a Friend,pass
+7,gloves,ledger,5,4,2,2,7:The Blue Jacket,pass
+7,hat,ledger,8,5,2,2,2:The Family Photo,pass
+7,jacket,ledger,16,6,3,2,2:My Very Tall Brother,pass
+7,jeans,ledger,2,2,2,0,7:The Shoe Shop,no_late_recycle
+7,label,target_extra,5,3,1,2,7:The Wrong Red Dress,pass
+7,leather,ledger,4,3,2,1,7:The Shoe Shop,pass
+7,loose,ledger,3,3,2,1,7:The Blue Jacket,pass
+7,pair,ledger,7,3,2,1,7:The Shoe Shop,pass
+7,price,target_extra,6,6,1,4,4:The Last Apple,pass
+7,receipt,target_extra,10,6,2,4,7:The Wrong Red Dress,pass
+7,return,target_extra,15,13,1,9,4:The Cooking Problem,pass
+7,same,target_extra,19,12,1,8,2:Grandma's Dinner,pass
+7,scarf,ledger,7,4,2,2,7:The Blue Jacket,pass
+7,shirt,ledger,10,4,3,1,7:The Shoe Shop,pass
+7,shoes,ledger,15,5,2,3,7:The Shoe Shop,pass
+7,size,ledger,14,6,4,2,7:The Blue Jacket,pass
+7,skirt,ledger,3,2,2,0,7:The Wrong Red Dress,no_late_recycle
+7,style,target_extra,3,3,2,1,7:The Wrong Red Dress,pass
+7,sweater,ledger,7,3,2,1,7:The Blue Jacket,pass
+7,t-shirt,ledger,2,2,2,0,7:The Shoe Shop,no_late_recycle
+7,temperature,target_extra,10,7,1,6,7:Ready for Winter,pass
+7,tight,ledger,3,3,2,1,7:The Blue Jacket,pass
+7,trousers,ledger,3,3,2,1,7:The Shoe Shop,pass
+7,try on,ledger,4,3,3,0,7:The Blue Jacket,no_late_recycle
+7,warm,target_extra,10,8,2,5,3:A Plant by the Window,pass
+7,wear,ledger,7,6,4,1,2:My Very Tall Brother,pass
+7,wool,ledger,4,3,2,1,7:The Blue Jacket,pass
+7,wrap,target_extra,4,3,1,2,7:A Gift for a Friend,pass
+8,bank,ledger,7,5,2,3,8:Lost in the City,pass
+8,battery,target_extra,8,4,1,3,8:Lost in the City,pass
+8,beside,target_extra,23,19,2,15,3:New Apartment,pass
+8,bicycle,ledger,6,4,2,2,8:Lost in the City,pass
+8,block,target_extra,3,3,2,1,8:Lost in the City,pass
+8,bridge,ledger,9,3,2,1,8:Lost in the City,pass
+8,bus,ledger,27,17,2,8,"1:Two People, One City",pass
+8,change,target_extra,25,19,2,14,4:The Last Apple,pass
+8,corner,ledger,5,4,2,1,3:A Plant by the Window,pass
+8,cross,ledger,5,4,3,1,8:Lost in the City,pass
+8,direct,target_extra,2,2,1,1,8:The Bus to River Street,pass
+8,directions,target_extra,5,4,1,3,8:Lost in the City,pass
+8,distance,target_extra,3,3,1,2,8:Meet Me by the Bridge,pass
+8,end,target_extra,13,13,1,7,1:First Day,pass
+8,entrance,target_extra,5,4,1,1,1:Welcome to Maple Street,pass
+8,fare,ledger,3,3,2,1,8:The Bus to River Street,pass
+8,get off,ledger,6,3,2,1,8:The Bus to River Street,pass
+8,get on,ledger,3,3,2,1,8:The Bus to River Street,pass
+8,journey,target_extra,10,8,2,6,8:One Stop Too Far,pass
+8,line,target_extra,11,6,1,4,6:A Very Busy Morning,pass
+8,lost,target_extra,6,6,1,5,8:Lost in the City,pass
+8,map,ledger,17,12,3,7,1:The Wrong Classroom,pass
+8,metro,ledger,7,4,2,2,8:One Stop Too Far,pass
+8,next,target_extra,58,43,2,25,1:First Day,pass
+8,north,ledger,6,4,2,1,5:New Student,pass
+8,opposite,target_extra,5,3,2,1,8:One Stop Too Far,pass
+8,platform,ledger,7,3,2,1,8:One Stop Too Far,pass
+8,previous,target_extra,2,2,1,1,8:One Stop Too Far,pass
+8,return,target_extra,15,13,2,7,4:The Cooking Problem,pass
+8,road,ledger,12,7,2,5,8:Lost in the City,pass
+8,route,ledger,12,5,3,1,6:The Bus Driver,pass
+8,south,ledger,3,3,2,1,8:Meet Me by the Bridge,pass
+8,station,ledger,21,9,3,5,2:My Very Tall Brother,pass
+8,stop,ledger,31,17,3,10,"1:Two People, One City",pass
+8,straight,ledger,4,3,2,1,8:Lost in the City,pass
+8,street,ledger,21,13,3,7,"1:Two People, One City",pass
+8,taxi,ledger,6,4,2,2,8:Lost in the City,pass
+8,ticket,ledger,11,8,2,6,8:The Bus to River Street,pass
+8,train,ledger,21,11,3,7,2:My Very Tall Brother,pass
+8,turn,ledger,20,16,3,10,3:Where Is My Cup?,pass
+8,turn left,target_extra,4,4,3,1,8:Lost in the City,pass
+8,wait,target_extra,14,13,3,8,"1:Two People, One City",pass
+9,autumn,ledger,4,3,2,1,9:A Day in the Forest,pass
+9,bird,target_extra,18,5,1,4,9:A Day in the Forest,pass
+9,bottle,target_extra,4,4,1,1,4:The Last Apple,pass
+9,careful,target_extra,6,6,1,3,2:Who Has the Keys?,pass
+9,change,target_extra,25,19,2,12,4:The Last Apple,pass
+9,cloud,ledger,4,3,2,1,9:A Rainy Day,pass
+9,cold,ledger,8,8,2,4,4:A Picnic with No Bread,pass
+9,cool,ledger,3,3,2,1,9:A Rainy Day,pass
+9,deep,target_extra,1,1,1,0,9:Snow in the Morning,single
+9,dry,ledger,3,3,2,1,9:The Hottest Afternoon,pass
+9,fall,target_extra,13,11,4,6,7:The Blue Jacket,pass
+9,flower,ledger,3,3,2,1,9:A Rainy Day,pass
+9,forest,ledger,4,3,2,1,9:A Day in the Forest,pass
+9,freeze,target_extra,1,1,1,0,9:Snow in the Morning,single
+9,fresh,target_extra,3,3,1,2,9:A Rainy Day,pass
+9,grow,target_extra,3,2,2,0,9:A Day in the Forest,pass
+9,hide,target_extra,4,4,1,2,2:A Birthday for Dad,pass
+9,hill,ledger,8,5,2,2,1:The Wrong Classroom,pass
+9,hot,ledger,4,4,2,2,9:The Hottest Afternoon,pass
+9,ice,target_extra,2,2,1,1,9:Snow in the Morning,pass
+9,lake,ledger,9,6,2,3,8:Meet Me by the Bridge,pass
+9,leaf,target_extra,7,3,2,0,3:A Plant by the Window,pass
+9,melt,target_extra,2,2,1,1,9:Snow in the Morning,pass
+9,nature,target_extra,1,1,1,0,9:A Day in the Forest,single
+9,path,ledger,7,3,2,1,9:Snow in the Morning,pass
+9,quiet,target_extra,17,14,1,9,2:Grandma's Dinner,pass
+9,rain,ledger,13,9,3,6,9:A Rainy Day,pass
+9,rest,target_extra,12,11,1,6,1:The Wrong Classroom,pass
+9,river,ledger,11,6,2,1,8:Lost in the City,pass
+9,season,ledger,5,3,2,1,9:The Hottest Afternoon,pass
+9,shade,target_extra,3,2,1,1,9:The Hottest Afternoon,pass
+9,sky,ledger,4,3,2,1,9:A Rainy Day,pass
+9,snow,ledger,14,5,2,1,7:The Blue Jacket,pass
+9,soft,target_extra,6,5,1,3,3:The Quiet Flat Upstairs,pass
+9,spring,ledger,5,4,2,2,9:A Day in the Forest,pass
+9,storm,ledger,4,3,2,1,9:A Rainy Day,pass
+9,summer,ledger,4,3,2,1,9:The Hottest Afternoon,pass
+9,sun,ledger,3,3,2,1,9:Snow in the Morning,pass
+9,temperature,target_extra,10,7,2,4,7:Ready for Winter,pass
+9,thirsty,target_extra,1,1,1,0,9:The Hottest Afternoon,single
+9,thunder,ledger,3,3,2,1,9:A Rainy Day,pass
+9,tree,ledger,13,7,4,2,4:A Picnic with No Bread,pass
+9,warm,ledger,10,8,3,2,3:A Plant by the Window,pass
+9,wet,ledger,5,3,2,1,9:A Rainy Day,pass
+9,wind,ledger,6,6,3,2,7:Ready for Winter,pass
+9,winter,ledger,8,6,2,1,7:The Blue Jacket,pass
+10,amount,ledger,3,2,2,0,10:The Lost Wallet,no_late_recycle
+10,bill,target_extra,6,3,1,0,4:Lunch at the Corner Cafe,pass
+10,budget,ledger,3,3,2,1,10:Three Prices,pass
+10,card,ledger,19,12,2,7,1:The Wrong Classroom,pass
+10,cash,ledger,4,4,2,1,7:The Blue Jacket,pass
+10,change,ledger,25,19,2,10,4:The Last Apple,pass
+10,cheap,ledger,6,5,2,1,4:The Last Apple,pass
+10,cheaper,target_extra,6,5,2,1,4:The Last Apple,pass
+10,cheapest,target_extra,6,5,2,1,4:The Last Apple,pass
+10,check,target_extra,41,34,3,18,1:The Wrong Classroom,pass
+10,choice,target_extra,3,3,1,2,10:Three Prices,pass
+10,coin,ledger,10,5,2,2,4:The Last Apple,pass
+10,compare,ledger,3,3,2,1,10:Three Prices,pass
+10,cost,ledger,21,13,5,5,4:The Last Apple,pass
+10,count,target_extra,4,4,1,2,8:The Bus to River Street,pass
+10,dozen,ledger,3,3,2,1,10:Three Prices,pass
+10,each,target_extra,27,21,2,13,2:The Family Photo,pass
+10,enough,target_extra,12,11,3,4,4:Breakfast for Two,pass
+10,equal,target_extra,1,1,1,0,10:The Cafe Bill,single
+10,expensive,ledger,5,5,2,2,4:The Last Apple,pass
+10,find,target_extra,37,31,2,16,1:The Wrong Classroom,pass
+10,goal,ledger,6,5,2,3,10:The Phone Fund,pass
+10,half,ledger,6,5,2,1,4:Lunch at the Corner Cafe,pass
+10,inside,target_extra,13,13,2,6,5:The English Teacher's Bag,pass
+10,kilo,target_extra,6,4,1,1,4:The Last Apple,pass
+10,less,target_extra,2,1,1,0,10:Three Prices,pass
+10,lose,target_extra,6,6,1,4,8:Lost in the City,pass
+10,mistake,target_extra,9,6,1,4,7:The Wrong Red Dress,pass
+10,money,ledger,6,5,3,2,10:The Lost Wallet,pass
+10,more,target_extra,16,16,2,8,2:Who Has the Keys?,pass
+10,note,ledger,14,11,2,6,4:The Last Apple,pass
+10,owner,target_extra,5,4,1,3,10:The Lost Wallet,pass
+10,pay,ledger,14,12,5,4,4:Lunch at the Corner Cafe,pass
+10,price,ledger,6,6,3,1,4:The Last Apple,pass
+10,quality,target_extra,1,1,1,0,10:Three Prices,single
+10,receipt,ledger,10,6,2,2,7:The Wrong Red Dress,pass
+10,return,target_extra,15,13,1,5,4:The Cooking Problem,pass
+10,save,ledger,6,5,2,3,10:The Phone Fund,pass
+10,share,target_extra,11,9,1,4,4:Breakfast for Two,pass
+10,spend,ledger,7,6,3,2,9:A Day in the Forest,pass
+10,tip,target_extra,1,1,1,0,10:The Cafe Bill,single
+10,total,ledger,2,2,2,0,10:Market Day,no_late_recycle
+10,wallet,ledger,5,3,2,1,10:The Lost Wallet,pass
+10,week,target_extra,16,9,1,6,6:Seven O'Clock Again,pass
+10,weigh,target_extra,2,2,1,1,10:Market Day,pass

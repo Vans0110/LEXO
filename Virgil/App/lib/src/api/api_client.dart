@@ -108,6 +108,32 @@ class LexoApiClient {
     await _post('/books/delete', {'book_id': bookId});
   }
 
+  Future<Map<String, dynamic>> cleanBookArtifacts({
+    required String bookId,
+    Iterable<String> voiceIds = const <String>[],
+  }) {
+    return _post(
+      '/books/clean-artifacts',
+      {
+        'book_id': bookId,
+        'voice_ids': voiceIds.toList(),
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>> rebuildLibraryDictionary({
+    required String bookId,
+    String targetLang = 'ru',
+  }) {
+    return _post(
+      '/books/rebuild-library-dictionary',
+      {
+        'book_id': bookId,
+        'target_lang': targetLang,
+      },
+    );
+  }
+
   Future<ReaderPayload> getReaderPayload(String bookId) async {
     final data = await _get('/reader/paragraphs?book_id=$bookId');
     return ReaderPayload.fromJson(data);

@@ -234,6 +234,11 @@ class _MobileLibraryScreenState extends State<MobileLibraryScreen> {
       MaterialPageRoute(
         builder: (_) => MobileSettingsScreen(
           settings: settings,
+          onPreferredInterfaceLangChanged: (lang) async {
+            settings = await settingsRepository.save(
+              settings.copyWith(preferredInterfaceLang: lang),
+            );
+          },
           onPreferredTargetLangChanged: (lang) async {
             settings = await settingsRepository.save(
               settings.copyWith(preferredTargetLang: lang),

@@ -117,7 +117,13 @@ class ReaderDetailSheet extends StatelessWidget {
                 onSaveCard: onSaveDictionaryCard,
               ),
             ],
-            if (payload.sourceFirst != null) ...[
+            if (_shouldShowUnitsBlock(payload)) ...[
+              const SizedBox(height: 16),
+              _UnitsBlock(units: payload.units),
+            ],
+            if (payload.sourceFirst != null &&
+                (payload.sourceFirst!.units.isNotEmpty ||
+                    payload.sourceFirst!.groups.isNotEmpty)) ...[
               const SizedBox(height: 16),
               _SourceFirstBlock(payload: payload.sourceFirst!),
             ],
@@ -139,6 +145,87 @@ class ReaderDetailSheet extends StatelessWidget {
     }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
+    );
+  }
+}
+
+bool _shouldShowUnitsBlock(DetailSheetPayload payload) {
+  if (payload.units.length > 1) {
+    return true;
+  }
+  if (payload.units.isEmpty) {
+    return false;
+  }
+  final unit = payload.units.first;
+  return unit.translation.trim().isNotEmpty &&
+      (unit.text.trim() != payload.sheetSourceText.trim() ||
+          unit.translation.trim() != payload.sheetTranslationText.trim());
+}
+
+class _UnitsBlock extends StatelessWidget {
+  const _UnitsBlock({required this.units});
+
+  final List<DetailSheetUnitItem> units;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.28),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.55)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Words',
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 8),
+          for (var index = 0; index < units.length; index++) ...[
+            if (index > 0) const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.55),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    units[index].text,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  if (units[index].translation.trim().isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      units[index].translation,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

@@ -20,9 +20,9 @@ class InteractiveParagraphText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseStyle = const TextStyle(fontSize: 18, height: 1.7);
+    const baseStyle = TextStyle(fontSize: 18, height: 1.7);
     final highlightColor =
-        Theme.of(context).colorScheme.primary.withOpacity(0.18);
+        Theme.of(context).colorScheme.primary.withValues(alpha: 0.18);
     final defaultColor = Theme.of(context).colorScheme.onSurface;
     const wordHighlightPadding =
         EdgeInsets.symmetric(horizontal: 2, vertical: 1);
@@ -75,7 +75,10 @@ class InteractiveParagraphText extends StatelessWidget {
                       ),
                     )
                   : null;
-              if (word == null && unitWord == null) {
+              final isStandaloneFunctionWord = word?.isFunctionWord == true &&
+                  (token.tapUnitId?.trim().isEmpty ?? true);
+              if ((word == null || isStandaloneFunctionWord) &&
+                  unitWord == null) {
                 return TextSpan(
                   text: token.text,
                   style: style,

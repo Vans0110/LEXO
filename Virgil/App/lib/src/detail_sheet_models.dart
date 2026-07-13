@@ -451,6 +451,9 @@ class DetailSheetPayload {
         .where((entry) => entry.tapUnitId == word.tapUnitId)
         .toList()
       ..sort((left, right) => left.orderIndex.compareTo(right.orderIndex));
+    final isBlockSelection =
+        const {'phrase', 'grammar_group'}.contains(word.effectiveAlignmentKind);
+    final isPhraseSelection = word.effectiveAlignmentKind == 'phrase';
     final units = <DetailSheetUnitItem>[];
     var index = 0;
     while (index < selectedWords.length) {
@@ -458,9 +461,13 @@ class DetailSheetPayload {
       final lexicalUnitId = current.lexicalUnitId?.isNotEmpty == true
           ? current.lexicalUnitId!
           : current.id;
-      final lexicalUnitType = current.lexicalUnitType?.isNotEmpty == true
-          ? current.lexicalUnitType!
-          : (current.grammarHint?.isNotEmpty == true ? 'GRAMMAR' : 'LEXICAL');
+      final lexicalUnitType = current.isFunctionWord
+          ? 'GRAMMAR'
+          : (current.lexicalUnitType?.isNotEmpty == true
+              ? current.lexicalUnitType!
+              : (current.grammarHint?.isNotEmpty == true
+                  ? 'GRAMMAR'
+                  : 'LEXICAL'));
       final grouped = <ParagraphWordItem>[current];
       while (index + grouped.length < selectedWords.length &&
           selectedWords[index + grouped.length].lexicalUnitId ==
@@ -475,7 +482,23 @@ class DetailSheetPayload {
       final displayText =
           lexicalUnitType == 'GRAMMAR' ? surfaceText : lemmaText;
       final translation = grouped
-          .map((entry) => entry.effectiveTranslationText?.trim() ?? '')
+          .map((entry) {
+            if (entry.isFunctionWord && !isPhraseSelection) {
+              return '';
+            }
+            if (!isBlockSelection) {
+              return entry.effectiveTranslationText?.trim() ?? '';
+            }
+            final unitFocus = entry.unitTranslationFocusText.trim();
+            if (unitFocus.isNotEmpty) {
+              return unitFocus;
+            }
+            final unitSpan = entry.unitTranslationSpanText.trim();
+            if (unitSpan.isNotEmpty) {
+              return unitSpan;
+            }
+            return entry.effectiveTranslationText?.trim() ?? '';
+          })
           .where((entry) => entry.isNotEmpty)
           .toSet()
           .join(' ');

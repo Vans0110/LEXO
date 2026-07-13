@@ -1,0 +1,4 @@
+interface:
+  display_name: "LEXO Phrase Audit"
+  short_description: "Two-pass audit of book phrases and components"
+  default_prompt: "Use $lexo-phrase-audit to audit one LEXO book phrase layer twice, fix omissions, and rebuild verified dictionaries."

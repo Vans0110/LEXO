@@ -129,6 +129,7 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
       item,
       options: options,
     );
+    await _repository.readPackage(localBookId);
     final nextLibrary = await _repository.listBooks();
     if (!mounted) {
       return null;
@@ -140,7 +141,8 @@ class _MobileReaderCatalogScreenState extends State<MobileReaderCatalogScreen> {
         return book;
       }
     }
-    return null;
+    throw Exception(
+        'Downloaded book package is missing from the local library: $localBookId');
   }
 
   Future<void> _openBook(LibraryBookItem item) async {

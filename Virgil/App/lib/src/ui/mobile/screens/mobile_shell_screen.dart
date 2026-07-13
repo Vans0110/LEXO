@@ -15,6 +15,7 @@ import '../../../mobile/virgil_bundled_book_repository.dart';
 import '../../../models.dart';
 import '../../../screens/cards_list_screen.dart';
 import '../../../widgets/reader_playback_bar.dart';
+import 'mobile_language_setup_screen.dart';
 import 'mobile_settings_screen.dart';
 import 'reader_empty_screen.dart';
 import 'mobile_reader_catalog_screen.dart';
@@ -41,6 +42,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
   int _cardsReloadTick = 0;
   String? _activeBookId;
   MobileAppSettings _appSettings = const MobileAppSettings();
+  bool? _needsLanguageSetup;
   LibraryPayload? _library;
   StreamSubscription<audio_service.MediaItem?>? _backgroundMediaSubscription;
   ReaderPlaybackRepeatMode _playbackRepeatMode = ReaderPlaybackRepeatMode.off;
@@ -73,7 +75,18 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
 
   Future<void> _loadSettings() async {
     try {
+      final hadSettings = await _settingsRepository.exists();
       var settings = await _settingsRepository.load();
+      if (!hadSettings) {
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          _appSettings = settings;
+          _needsLanguageSetup = true;
+        });
+        return;
+      }
       if (settings.deviceId == null || settings.deviceId!.trim().isEmpty) {
         settings = await _settingsRepository.save(
           settings.copyWith(deviceId: _newUuid()),
@@ -82,8 +95,36 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _appSettings = settings);
+      setState(() {
+        _appSettings = settings;
+        _needsLanguageSetup = false;
+      });
     } catch (_) {}
+  }
+
+  Future<void> _completeInitialLanguageSetup(String lang) async {
+    final next = await _settingsRepository.save(
+      _appSettings.copyWith(deviceId: _newUuid(), preferredTargetLang: lang),
+    );
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _appSettings = next;
+      _needsLanguageSetup = false;
+    });
+  }
+
+  Future<void> _setPreferredInterfaceLang(String lang) async {
+    final next = await _settingsRepository.save(
+      _appSettings.copyWith(preferredInterfaceLang: lang),
+    );
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _appSettings = next;
+    });
   }
 
   Future<void> _setPreferredTargetLang(String lang) async {
@@ -357,6 +398,18 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     return null;
   }
 
+  Future<void> _selectDestination(int index) async {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        _libraryReloadTick += 1;
+      }
+      if (index == 2) {
+        _cardsReloadTick += 1;
+      }
+    });
+  }
+
   String _newUuid() {
     final random = Random.secure();
     final bytes = List<int>.generate(16, (_) => random.nextInt(256));
@@ -370,6 +423,17 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_needsLanguageSetup == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (_needsLanguageSetup == true) {
+      return MobileLanguageSetupScreen(
+        onLanguageSelected: _completeInitialLanguageSetup,
+      );
+    }
+
     final screens = [
       MobileReaderCatalogScreen(
         onBookOpened: _handleBookOpened,
@@ -409,6 +473,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
       ),
       MobileSettingsScreen(
         settings: _appSettings,
+        onPreferredInterfaceLangChanged: _setPreferredInterfaceLang,
         onPreferredTargetLangChanged: _setPreferredTargetLang,
         onPreferredVoiceChanged: _setPreferredVoice,
         onPreferredPlaybackSpeedChanged: _setPreferredPlaybackSpeed,
@@ -422,15 +487,7 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() {
-          _selectedIndex = index;
-          if (index == 0) {
-            _libraryReloadTick += 1;
-          }
-          if (index == 2) {
-            _cardsReloadTick += 1;
-          }
-        }),
+        onDestinationSelected: _selectDestination,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.library_books_outlined),

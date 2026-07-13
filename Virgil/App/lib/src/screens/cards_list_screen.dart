@@ -223,14 +223,15 @@ class _CardsListScreenState extends State<CardsListScreen> {
                                     child: _CardListTile(
                                       item: item,
                                       onPlayAudio: () async {
+                                        final messenger =
+                                            ScaffoldMessenger.of(context);
                                         try {
                                           await _playWordAudio(item);
                                         } catch (error) {
                                           if (!mounted) {
                                             return;
                                           }
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
+                                          messenger.showSnackBar(
                                             SnackBar(
                                                 content: Text(
                                                     'Could not play word: $error')),
@@ -324,7 +325,7 @@ class _DeleteBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.12),
+        color: Colors.red.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20),

@@ -23,5 +23,12 @@ Future<Map<String, dynamic>> selectReaderPayloadForSettings(
   if (selectedDictionary is Map<String, dynamic>) {
     packageJson['dictionary_manifest'] = selectedDictionary;
   }
+  final wordToWordByLang =
+      packageJson['word_to_word_by_lang'] as Map<String, dynamic>? ??
+          const <String, dynamic>{};
+  final selectedWordToWord = wordToWordByLang[preferred];
+  if (selectedWordToWord is Map<String, dynamic>) {
+    packageJson['word_to_word'] = selectedWordToWord;
+  }
   return packageJson;
 }

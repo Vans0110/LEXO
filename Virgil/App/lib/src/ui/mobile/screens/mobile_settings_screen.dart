@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../mobile/mobile_settings_repository.dart';
@@ -13,25 +14,51 @@ const _playbackSpeedOptions = [
   1.15,
 ];
 
-class MobileSettingsScreen extends StatelessWidget {
+class MobileSettingsScreen extends StatefulWidget {
   const MobileSettingsScreen({
     super.key,
     required this.settings,
+    required this.onPreferredInterfaceLangChanged,
     required this.onPreferredTargetLangChanged,
     required this.onPreferredVoiceChanged,
     required this.onPreferredPlaybackSpeedChanged,
   });
 
   final MobileAppSettings settings;
+  final ValueChanged<String> onPreferredInterfaceLangChanged;
   final ValueChanged<String> onPreferredTargetLangChanged;
   final ValueChanged<String> onPreferredVoiceChanged;
   final ValueChanged<double> onPreferredPlaybackSpeedChanged;
 
   @override
+  State<MobileSettingsScreen> createState() => _MobileSettingsScreenState();
+}
+
+class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
+  late MobileAppSettings settings;
+  String _appVersion = '';
+
+  @override
+  void initState() {
+    super.initState();
+    settings = widget.settings;
+    _loadAppVersion();
+  }
+
+  @override
+  void didUpdateWidget(MobileSettingsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.settings != widget.settings) {
+      settings = widget.settings;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final strings = _SettingsStrings.forLang(settings.preferredInterfaceLang);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(strings.settingsTitle),
       ),
       body: SafeArea(
         child: ListView(
@@ -46,7 +73,7 @@ class MobileSettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: settings.preferredTargetLang,
+              initialValue: settings.preferredTargetLang,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:
@@ -58,7 +85,10 @@ class MobileSettingsScreen extends StatelessWidget {
               ],
               onChanged: (value) {
                 if (value != null && value != settings.preferredTargetLang) {
-                  onPreferredTargetLangChanged(value);
+                  setState(() {
+                    settings = settings.copyWith(preferredTargetLang: value);
+                  });
+                  widget.onPreferredTargetLangChanged(value);
                 }
               },
             ),
@@ -72,7 +102,7 @@ class MobileSettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: settings.preferredVoiceId,
+              initialValue: settings.preferredVoiceId,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:
@@ -87,7 +117,10 @@ class MobileSettingsScreen extends StatelessWidget {
               ],
               onChanged: (value) {
                 if (value != null && value != settings.preferredVoiceId) {
-                  onPreferredVoiceChanged(value);
+                  setState(() {
+                    settings = settings.copyWith(preferredVoiceId: value);
+                  });
+                  widget.onPreferredVoiceChanged(value);
                 }
               },
             ),
@@ -101,7 +134,7 @@ class MobileSettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<double>(
-              value: settings.preferredPlaybackSpeed,
+              initialValue: settings.preferredPlaybackSpeed,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:
@@ -116,7 +149,10 @@ class MobileSettingsScreen extends StatelessWidget {
               ],
               onChanged: (value) {
                 if (value != null && value != settings.preferredPlaybackSpeed) {
-                  onPreferredPlaybackSpeedChanged(value);
+                  setState(() {
+                    settings = settings.copyWith(preferredPlaybackSpeed: value);
+                  });
+                  widget.onPreferredPlaybackSpeedChanged(value);
                 }
               },
             ),
@@ -145,6 +181,23 @@ class MobileSettingsScreen extends StatelessWidget {
                 builder: (_) => const _FeedbackDialog(),
               ),
             ),
+            const SizedBox(height: 18),
+            Text(
+              strings.betaNotice,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    height: 1.35,
+                  ),
+            ),
+            const SizedBox(height: 18),
+            Center(
+              child: Text(
+                _appVersion.isEmpty ? 'Version' : 'Version $_appVersion',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ),
           ],
         ),
       ),
@@ -159,6 +212,41 @@ class MobileSettingsScreen extends StatelessWidget {
       return '${speed.toStringAsFixed(1)}x';
     }
     return '${speed.toStringAsFixed(2)}x';
+  }
+
+  Future<void> _loadAppVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _appVersion = info.version;
+    });
+  }
+}
+
+class _SettingsStrings {
+  const _SettingsStrings({
+    required this.settingsTitle,
+    required this.betaNotice,
+  });
+
+  final String settingsTitle;
+  final String betaNotice;
+
+  static _SettingsStrings forLang(String lang) {
+    if (lang == 'uk') {
+      return const _SettingsStrings(
+        settingsTitle: 'Налаштування',
+        betaNotice:
+            'Застосунок у бета-версії. Нові книги, голоси та мови додаватимуться поступово.',
+      );
+    }
+    return const _SettingsStrings(
+      settingsTitle: 'Настройки',
+      betaNotice:
+          'Приложение в бета-версии. Новые книги, голоса и языки будут добавляться постепенно.',
+    );
   }
 }
 

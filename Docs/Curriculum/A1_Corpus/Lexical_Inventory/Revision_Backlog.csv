@@ -1,0 +1,62 @@
+﻿chapter,unit,source,occurrences,book_count,own_chapter_books,later_books,first_book,result
+1,spell,target_extra,1,1,1,0,1:A Voice from Online,single
+2,hair,ledger,3,3,3,0,2:Grandma's Dinner,no_late_recycle
+4,meat,ledger,2,2,2,0,4:Lunch at the Corner Cafe,no_late_recycle
+5,baker,ledger,2,2,2,0,5:A Day at the Bakery,no_late_recycle
+5,mechanic,ledger,2,2,2,0,5:A Day at the Bakery,no_late_recycle
+6,fast,target_extra,1,1,1,0,6:The Clock in the Kitchen,single
+6,hurry,target_extra,1,1,1,0,6:A Very Busy Morning,single
+6,wash,ledger,4,3,2,0,3:The Room with Two Doors,no_late_recycle
+7,dress,ledger,13,4,2,0,6:The Bus Driver,no_late_recycle
+7,jeans,ledger,2,2,2,0,7:The Shoe Shop,no_late_recycle
+7,skirt,ledger,3,2,2,0,7:The Wrong Red Dress,no_late_recycle
+7,t-shirt,ledger,2,2,2,0,7:The Shoe Shop,no_late_recycle
+7,try on,ledger,4,3,3,0,7:The Blue Jacket,no_late_recycle
+9,deep,target_extra,1,1,1,0,9:Snow in the Morning,single
+9,freeze,target_extra,1,1,1,0,9:Snow in the Morning,single
+9,nature,target_extra,1,1,1,0,9:A Day in the Forest,single
+9,thirsty,target_extra,1,1,1,0,9:The Hottest Afternoon,single
+10,amount,ledger,3,2,2,0,10:The Lost Wallet,no_late_recycle
+10,equal,target_extra,1,1,1,0,10:The Cafe Bill,single
+10,quality,target_extra,1,1,1,0,10:Three Prices,single
+10,tip,target_extra,1,1,1,0,10:The Cafe Bill,single
+10,total,ledger,2,2,2,0,10:Market Day,no_late_recycle
+11,cough,ledger,3,2,2,0,11:A Cold on Monday,no_late_recycle
+11,ear,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,energy,target_extra,1,1,1,0,11:The Sports Day Headache,single
+11,mouth,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,neck,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,nose,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,patient,ledger,2,1,1,0,11:The Kind Doctor,no_late_recycle
+11,sick,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,stomach,ledger,3,2,2,0,11:The Kind Doctor,no_late_recycle
+11,tablet,ledger,4,2,2,0,11:A Cold on Monday,no_late_recycle
+11,tooth,ledger,3,2,2,0,11:The Kind Doctor,no_late_recycle
+13,brush,target_extra,1,1,1,0,13:The Small Art Club,single
+14,charge,target_extra,1,1,1,0,14:A Phone with No Power,single
+14,device,target_extra,1,1,1,0,14:No Internet Evening,single
+14,solve,target_extra,1,1,1,0,14:No Internet Evening,single
+14,subject,target_extra,1,1,1,0,14:The Wrong Email,single
+15,angry,ledger,3,2,2,0,15:The Unanswered Message,no_late_recycle
+15,apology,ledger,2,2,2,0,15:The Unanswered Message,no_late_recycle
+15,breathe,target_extra,1,1,1,0,15:Before the Presentation,single
+15,fair,target_extra,1,1,1,0,"15:Two Tickets, Three Friends",single
+15,honest,ledger,2,2,1,0,10:The Lost Wallet,no_late_recycle
+15,listen,ledger,7,6,2,0,6:The Bus Driver,no_late_recycle
+16,celebrate,ledger,2,2,2,0,16:New Year Next Door,no_late_recycle
+16,present,ledger,5,3,2,0,2:A Birthday for Dad,no_late_recycle
+16,refuse,ledger,2,2,2,0,16:The Birthday Invitation,no_late_recycle
+18,accident,ledger,2,2,2,0,18:The Lift Stopped,no_late_recycle
+18,discover,ledger,2,2,2,0,18:The Wrong Shopping Bag,no_late_recycle
+18,drop,ledger,6,6,2,0,9:A Rainy Day,no_late_recycle
+18,finally,ledger,6,6,2,0,3:A Plant by the Window,no_late_recycle
+18,lose,ledger,6,6,2,0,8:Lost in the City,no_late_recycle
+18,lucky,ledger,2,2,2,0,18:The Key under the Chair,no_late_recycle
+18,miss,ledger,7,5,2,0,6:The Clock in the Kitchen,no_late_recycle
+18,search,ledger,2,2,2,0,18:The Key under the Chair,no_late_recycle
+19,change,ledger,25,19,3,0,4:The Last Apple,no_late_recycle
+19,dream,ledger,5,3,3,0,19:The Dream Job Wall,no_late_recycle
+19,future,ledger,4,4,4,0,19:The Dream Job Wall,no_late_recycle
+19,in ten years,ledger,3,2,2,0,19:A Cafe of Her Own,no_late_recycle
+19,save,ledger,6,5,3,0,10:The Phone Fund,no_late_recycle
+19,skill,target_extra,1,1,1,0,19:The Dream Job Wall,single

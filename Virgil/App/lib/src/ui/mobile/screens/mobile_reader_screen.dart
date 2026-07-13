@@ -1181,8 +1181,16 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   Future<void> _handleWordLongPress(
       ParagraphItem item, ParagraphWordItem word) async {
     _handleWordTap(item, word);
-    final payload = _detailByWordId[word.id] ??
-        DetailSheetPayload.fromSelection(item: item, word: word);
+    final dictionaryPayload = _detailByWordId[word.id];
+    final isMultiWordBlock =
+        const {'phrase', 'grammar_group'}.contains(word.effectiveAlignmentKind);
+    if (!isMultiWordBlock && word.isFunctionWord && dictionaryPayload == null) {
+      return;
+    }
+    final payload = isMultiWordBlock
+        ? DetailSheetPayload.fromSelection(item: item, word: word)
+        : (dictionaryPayload ??
+            DetailSheetPayload.fromSelection(item: item, word: word));
     _logDetailSheet(item.index, word, payload);
     if (!mounted) {
       return;

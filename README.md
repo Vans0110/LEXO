@@ -1,57 +1,29 @@
-# LEXO
+# LEXO / Virgil Workspace
 
-Первая итерация локального MVP:
+## Main commands
 
-- `engine/` — Python local engine с HTTP API на `localhost`
-- `app/` — Flutter desktop UI-каркас
-- `data/` — локальные данные книги, SQLite, кэш и логи
+- `START_VIRGIL.bat` - run the current Android development build.
+- `START_WORKBENCH.bat` - start the backend and Virgil Workbench.
+- `BUILD_RELEASE.bat` - build and package the Google Play AAB.
+- `BUILD_IOS.bat` - push the current Virgil update and start the GitHub iOS build.
 
-## Что уже есть
+## Structure
 
-- импорт `.txt` книги
-- разбиение на абзацы
-- хранение текущей книги в `SQLite`
-- сохранение позиции чтения
-- lookup слова с локальным кэшем
-- сохранение слов в словарь
-- каркас экранов `Home`, `Reader`, `Saved Words`
-- Windows desktop bootstrap для Flutter app
+- `Virgil/App/` - the only current Flutter application source.
+- `Studio/Workbench/Books/` - source TXT files and covers.
+- `Studio/Backend/` - backend source, local models and databases.
+- `Studio/Runtime/` - generated packages and local logs.
+- `Studio/CloudLibrary/` - local mirror of the R2 book catalog.
+- `Release/Builds/<version>/` - generated Google Play packages.
+- `Release/iOS/` - downloaded IPA builds and the Sideloadly shortcut.
+- `Release/PlayStore/` - descriptions, screenshots and declarations.
+- `Private/` - local credentials, excluded from Git.
+- `Archive/` - preserved legacy files, unused by current workflows.
+- `Docs/History/` - project history and source-of-truth index.
 
-## Чего пока нет
+## Release flow
 
-- реальный офлайн-перевод
-- реальный TTS
-- проверка Flutter UI рантаймом в текущем окружении
-
-## Запуск engine
-
-```bash
-python3 -m engine.main
-```
-
-API по умолчанию поднимается на `http://127.0.0.1:8765`.
-
-## Запуск app на Windows
-
-Нужно, чтобы были установлены Flutter SDK и Visual Studio Build Tools для Windows desktop.
-
-```bash
-cd app
-flutter pub get
-flutter config --enable-windows-desktop
-flutter run -d windows
-```
-
-## Запуск одним кликом
-
-Для mobile/shared LAN host:
-
-- `run_lexo_engine_lan.bat`
-
-Для Windows UI с подключением к уже запущенному host:
-
-- `run_lexo_windows_ui_lan.bat`
-
-Старый combined desktop launcher сохранён как legacy-вариант:
-
-- `scripts/run_lexo_mvp.bat`
+1. Update `version` in `Virgil/App/pubspec.yaml`.
+2. Test with `START_VIRGIL.bat`.
+3. Run `BUILD_RELEASE.bat`.
+4. Upload the AAB from `Release/Builds/<version>/` to Google Play.

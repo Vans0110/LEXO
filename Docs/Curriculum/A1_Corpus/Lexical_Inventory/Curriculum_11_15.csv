@@ -1,0 +1,205 @@
+﻿chapter,unit,source,occurrences,book_count,own_chapter_books,later_books,first_book,result
+11,after,target_extra,45,39,3,17,2:Grandma's Dinner,pass
+11,ankle,ledger,7,3,2,1,11:My Foot Hurts,pass
+11,appointment,ledger,5,4,2,1,6:A Very Busy Morning,pass
+11,arm,ledger,5,4,2,1,2:My Very Tall Brother,pass
+11,back,ledger,11,11,2,3,"1:Two People, One City",pass
+11,bandage,ledger,4,4,3,1,11:My Foot Hurts,pass
+11,before,target_extra,34,28,3,15,2:Grandma's Dinner,pass
+11,better,target_extra,11,10,3,4,5:The Library Table,pass
+11,careful,target_extra,6,6,1,2,2:Who Has the Keys?,pass
+11,cold,ledger,8,8,2,2,4:A Picnic with No Bread,pass
+11,cough,ledger,3,2,2,0,11:A Cold on Monday,no_late_recycle
+11,decide,target_extra,5,5,1,3,9:The Hottest Afternoon,pass
+11,dizzy,ledger,3,3,2,1,11:The Kind Doctor,pass
+11,dose,target_extra,2,1,1,0,11:Tea for a Sick Friend,pass
+11,ear,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,energy,target_extra,1,1,1,0,11:The Sports Day Headache,single
+11,enough,target_extra,12,11,2,2,4:Breakfast for Two,pass
+11,examine,target_extra,2,2,1,1,11:The Kind Doctor,pass
+11,eye,ledger,8,7,2,3,2:My Very Tall Brother,pass
+11,face,ledger,6,5,2,1,1:A Voice from Online,pass
+11,finger,ledger,4,3,2,1,11:The Kind Doctor,pass
+11,foot,ledger,13,5,2,1,7:The Shoe Shop,pass
+11,hand,ledger,9,7,2,3,2:Who Has the Keys?,pass
+11,head,ledger,5,5,2,3,11:The Kind Doctor,pass
+11,headache,ledger,3,3,2,1,11:A Cold on Monday,pass
+11,hurt,ledger,13,10,5,4,7:The Shoe Shop,pass
+11,instruction,target_extra,2,1,1,0,11:Tea for a Sick Friend,pass
+11,leg,ledger,3,3,2,1,11:My Foot Hurts,pass
+11,medicine,ledger,6,3,2,1,11:A Cold on Monday,pass
+11,mouth,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,neck,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,nose,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,pain,ledger,8,5,4,1,11:A Cold on Monday,pass
+11,patient,ledger,2,1,1,0,11:The Kind Doctor,no_late_recycle
+11,rest,target_extra,12,11,3,3,1:The Wrong Classroom,pass
+11,shade,target_extra,3,2,1,0,9:The Hottest Afternoon,pass
+11,sick,ledger,2,2,2,0,11:A Cold on Monday,no_late_recycle
+11,sit down,target_extra,2,2,1,0,1:The Wrong Classroom,pass
+11,stomach,ledger,3,2,2,0,11:The Kind Doctor,no_late_recycle
+11,symptom,target_extra,2,2,2,0,11:The Kind Doctor,pass
+11,tablet,ledger,4,2,2,0,11:A Cold on Monday,no_late_recycle
+11,temperature,ledger,10,7,3,1,7:Ready for Winter,pass
+11,throat,target_extra,3,1,1,0,11:A Cold on Monday,pass
+11,tooth,ledger,3,2,2,0,11:The Kind Doctor,no_late_recycle
+11,twice,target_extra,7,7,1,6,11:Tea for a Sick Friend,pass
+11,walk,target_extra,28,21,1,9,1:First Day,pass
+11,worse,target_extra,5,5,2,2,4:The Cooking Problem,pass
+12,airport,ledger,3,3,2,1,12:A Room with a View,pass
+12,arrive,ledger,28,21,3,8,"1:Two People, One City",pass
+12,beach,target_extra,3,2,1,1,12:Our Summer Plan,pass
+12,booking,ledger,19,13,2,5,1:The Wrong Classroom,pass
+12,breakfast,target_extra,19,12,1,1,3:Where Is My Cup?,pass
+12,carriage,ledger,4,3,2,1,12:The First Train Trip,pass
+12,check-in,ledger,3,3,2,1,12:A Room with a View,pass
+12,choose,target_extra,14,10,1,8,7:A Gift for a Friend,pass
+12,cost,target_extra,21,13,1,4,4:The Last Apple,pass
+12,depart,ledger,4,3,2,1,12:The First Train Trip,pass
+12,distance,target_extra,3,3,1,1,8:Meet Me by the Bridge,pass
+12,finally,target_extra,6,6,1,3,3:A Plant by the Window,pass
+12,guest,ledger,14,7,2,4,3:The Room with Two Doors,pass
+12,holiday,ledger,8,6,2,4,12:Our Summer Plan,pass
+12,hotel,ledger,16,8,3,3,5:Who Works at Night?,pass
+12,journey,ledger,10,8,2,3,8:One Stop Too Far,pass
+12,key card,ledger,2,2,1,1,12:A Room with a View,pass
+12,luggage,ledger,4,3,2,1,12:A Room with a View,pass
+12,mountain,target_extra,3,2,1,1,12:Our Summer Plan,pass
+12,passport,ledger,4,3,2,1,12:A Room with a View,pass
+12,plan,target_extra,37,27,2,18,1:A Voice from Online,pass
+12,plane,ledger,4,3,2,1,12:The Bag at the Airport,pass
+12,platform,target_extra,7,3,1,0,8:One Stop Too Far,pass
+12,ready,target_extra,10,10,1,3,2:Who Has the Keys?,pass
+12,reception,ledger,3,3,2,1,12:A Room with a View,pass
+12,remember,target_extra,11,8,2,4,2:A Birthday for Dad,pass
+12,room,target_extra,39,23,1,8,1:First Day,pass
+12,route,target_extra,12,5,1,0,6:The Bus Driver,pass
+12,seat,ledger,10,7,2,5,12:The First Train Trip,pass
+12,similar,target_extra,4,3,1,2,12:The Bag at the Airport,pass
+12,stay,ledger,11,11,2,4,6:Seven O'Clock Again,pass
+12,suitcase,ledger,7,3,2,1,12:The First Train Trip,pass
+12,tag,ledger,5,3,1,1,1:First Day,pass
+12,ticket,target_extra,11,8,2,4,8:The Bus to River Street,pass
+12,travel,ledger,6,6,2,4,12:The First Train Trip,pass
+12,trip,ledger,8,6,2,3,8:The Bus to River Street,pass
+12,visit,ledger,16,15,2,6,2:Grandma's Dinner,pass
+12,weight,ledger,2,2,1,1,12:The Bag at the Airport,pass
+13,action,target_extra,5,1,1,0,13:The Friday Film,pass
+13,ball,target_extra,2,2,1,1,13:A Game in the Park,pass
+13,brush,target_extra,1,1,1,0,13:The Small Art Club,single
+13,chess,target_extra,4,2,1,1,13:The Hobby Exchange,pass
+13,choose,target_extra,14,10,2,6,7:A Gift for a Friend,pass
+13,cinema,ledger,4,3,2,1,13:The Friday Film,pass
+13,club,target_extra,4,2,1,1,13:The Small Art Club,pass
+13,collect,ledger,3,3,2,1,13:The Friday Film,pass
+13,colour,target_extra,9,7,1,2,7:The Blue Jacket,pass
+13,comedy,ledger,7,3,2,1,13:The Friday Film,pass
+13,dance,ledger,5,3,2,1,13:The Small Art Club,pass
+13,draw,ledger,12,5,2,3,13:The Small Art Club,pass
+13,exchange,target_extra,12,9,1,5,7:The Wrong Red Dress,pass
+13,favourite,ledger,8,7,2,2,2:A Birthday for Dad,pass
+13,film,ledger,12,3,2,1,13:The Friday Film,pass
+13,free time,ledger,3,3,2,1,13:A Guitar Next Door,pass
+13,game,ledger,9,6,2,4,13:A Game in the Park,pass
+13,guitar,ledger,9,4,2,2,13:A Guitar Next Door,pass
+13,hobby,ledger,7,3,2,1,13:The Small Art Club,pass
+13,idea,target_extra,6,6,1,5,13:The Small Art Club,pass
+13,instrument,ledger,4,3,2,1,13:A Guitar Next Door,pass
+13,join,target_extra,2,1,1,0,13:A Game in the Park,pass
+13,keyboard,ledger,6,5,2,3,13:A Guitar Next Door,pass
+13,learn,target_extra,11,8,2,6,13:A Guitar Next Door,pass
+13,lose,ledger,6,6,2,2,8:Lost in the City,pass
+13,loud,target_extra,3,3,2,0,9:A Rainy Day,pass
+13,music,ledger,17,11,3,6,3:The Quiet Flat Upstairs,pass
+13,paint,ledger,5,3,2,1,13:The Small Art Club,pass
+13,picture,target_extra,14,11,2,5,2:The Family Photo,pass
+13,play,target_extra,15,10,4,3,3:The Quiet Flat Upstairs,pass
+13,player,target_extra,2,1,1,0,13:A Game in the Park,pass
+13,practise,ledger,7,6,2,3,5:The Library Table,pass
+13,quiet,target_extra,17,14,2,7,2:Grandma's Dinner,pass
+13,score,ledger,7,3,2,1,13:A Game in the Park,pass
+13,show,target_extra,29,22,3,8,1:The Wrong Classroom,pass
+13,song,ledger,6,3,2,1,13:A Guitar Next Door,pass
+13,sport,ledger,7,5,2,1,8:One Stop Too Far,pass
+13,swim,ledger,3,3,2,1,13:A Game in the Park,pass
+13,teach,target_extra,6,3,1,2,13:The Hobby Exchange,pass
+13,team,ledger,7,4,2,1,5:Who Works at Night?,pass
+13,ticket,target_extra,11,8,1,3,8:The Bus to River Street,pass
+13,win,ledger,3,3,2,1,13:A Game in the Park,pass
+14,address,target_extra,7,5,1,0,"1:Two People, One City",pass
+14,attachment,ledger,5,4,2,2,14:The Message with No Name,pass
+14,battery,ledger,8,4,2,1,8:Lost in the City,pass
+14,button,ledger,7,3,2,1,14:Grandpa Goes Online,pass
+14,call,ledger,33,23,3,10,1:First Day,pass
+14,camera,ledger,6,4,2,2,14:Grandpa Goes Online,pass
+14,charge,target_extra,1,1,1,0,14:A Phone with No Power,single
+14,charger,ledger,4,3,2,1,14:A Phone with No Power,pass
+14,check,target_extra,41,34,2,10,1:The Wrong Classroom,pass
+14,click,ledger,7,4,2,2,14:Grandpa Goes Online,pass
+14,computer,ledger,15,13,3,4,5:New Student,pass
+14,connect,ledger,6,4,2,2,14:A Phone with No Power,pass
+14,connection,target_extra,4,2,1,1,14:No Internet Evening,pass
+14,contact,target_extra,3,3,2,0,1:Welcome to Maple Street,pass
+14,delete,target_extra,4,3,2,1,14:The Message with No Name,pass
+14,device,target_extra,1,1,1,0,14:No Internet Evening,single
+14,download,target_extra,3,2,1,1,14:No Internet Evening,pass
+14,email,ledger,11,7,2,2,1:A Voice from Online,pass
+14,empty,target_extra,10,8,1,4,3:A Plant by the Window,pass
+14,forward,target_extra,2,2,1,1,14:The Wrong Email,pass
+14,full,target_extra,10,10,3,1,2:Who Has the Keys?,pass
+14,group,target_extra,5,5,1,1,2:The Family Photo,pass
+14,headphones,ledger,5,4,2,1,13:A Guitar Next Door,pass
+14,internet,ledger,5,4,2,2,14:Grandpa Goes Online,pass
+14,keyboard,ledger,6,5,2,1,13:A Guitar Next Door,pass
+14,laptop,ledger,7,5,2,2,5:The Library Table,pass
+14,message,ledger,19,12,3,6,8:One Stop Too Far,pass
+14,microphone,ledger,3,3,2,1,14:Grandpa Goes Online,pass
+14,offline,ledger,4,4,2,2,14:A Phone with No Power,pass
+14,online,ledger,6,6,2,2,1:A Voice from Online,pass
+14,phone,ledger,33,19,2,4,"1:Two People, One City",pass
+14,plug,target_extra,2,2,2,0,14:A Phone with No Power,pass
+14,power,ledger,4,4,2,1,10:Three Prices,pass
+14,receive,ledger,3,3,2,1,14:The Message with No Name,pass
+14,reply,target_extra,7,6,2,3,4:The Last Apple,pass
+14,screen,ledger,7,6,3,2,12:The First Train Trip,pass
+14,send,ledger,26,11,3,4,6:A Very Busy Morning,pass
+14,solve,target_extra,1,1,1,0,14:No Internet Evening,single
+14,subject,target_extra,1,1,1,0,14:The Wrong Email,single
+14,unknown,target_extra,2,2,1,1,14:The Message with No Name,pass
+14,video call,target_extra,2,2,1,1,14:Grandpa Goes Online,pass
+15,afraid,ledger,5,4,2,2,15:Before the Presentation,pass
+15,agree,target_extra,2,2,1,0,13:A Guitar Next Door,pass
+15,angry,ledger,3,2,2,0,15:The Unanswered Message,no_late_recycle
+15,answer,target_extra,18,16,3,3,1:First Day,pass
+15,apology,ledger,2,2,2,0,15:The Unanswered Message,no_late_recycle
+15,better,target_extra,11,10,1,2,5:The Library Table,pass
+15,breathe,target_extra,1,1,1,0,15:Before the Presentation,single
+15,busy,target_extra,6,6,2,1,2:My Very Tall Brother,pass
+15,calm,ledger,5,5,2,3,15:Before the Presentation,pass
+15,choose,target_extra,14,10,2,3,7:A Gift for a Friend,pass
+15,disappointed,ledger,3,3,2,1,"15:Two Tickets, Three Friends",pass
+15,excited,ledger,3,3,2,1,"15:Two Tickets, Three Friends",pass
+15,explain,target_extra,8,8,3,3,11:Tea for a Sick Friend,pass
+15,fair,target_extra,1,1,1,0,"15:Two Tickets, Three Friends",single
+15,forgive,ledger,2,2,1,1,15:The Apology Note,pass
+15,happy,ledger,6,6,2,2,2:A Birthday for Dad,pass
+15,help,ledger,30,27,2,9,3:New Apartment,pass
+15,honest,ledger,2,2,1,0,10:The Lost Wallet,no_late_recycle
+15,ignore,target_extra,2,2,1,1,15:The Unanswered Message,pass
+15,include,target_extra,3,3,1,1,10:The Cafe Bill,pass
+15,listen,ledger,7,6,2,0,6:The Bus Driver,no_late_recycle
+15,lonely,ledger,3,3,2,1,15:A Bad Day for Nora,pass
+15,mistake,target_extra,9,6,2,0,7:The Wrong Red Dress,pass
+15,nervous,ledger,7,6,2,3,1:First Day,pass
+15,next time,target_extra,6,6,2,1,4:A Picnic with No Bread,pass
+15,practise,target_extra,7,6,1,2,5:The Library Table,pass
+15,problem,ledger,8,7,2,1,3:The Quiet Flat Upstairs,pass
+15,proud,ledger,2,2,1,1,15:Before the Presentation,pass
+15,reason,target_extra,2,2,1,1,15:The Unanswered Message,pass
+15,sad,ledger,5,4,2,1,11:The Sports Day Headache,pass
+15,sorry,ledger,8,8,2,2,1:The Wrong Classroom,pass
+15,surprised,ledger,5,5,2,1,2:My Very Tall Brother,pass
+15,tired,ledger,8,7,2,2,7:The Shoe Shop,pass
+15,understand,ledger,6,6,2,2,1:A Voice from Online,pass
+15,upset,ledger,3,3,2,1,15:The Unanswered Message,pass
+15,worried,ledger,5,5,2,2,11:The Sports Day Headache,pass

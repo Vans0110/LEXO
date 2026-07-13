@@ -4,6 +4,68 @@
 
 ## Записи
 
+### 2026-07-13
+- Mobile grammar blocks получили reorder-aware разбиение: `is a new` → `новая`, `student` → `ученица`, `at Hill` → `Хилл`, `School` → `школы`; добавлен regression-тест обратного порядка target spans.
+- Library dictionary обновлён до v2: контекстные словоформы и provenance RU/UK, контекстный word-to-word выбор; пересобраны 10 актуальных двуязычных пакетов.
+- Word-to-word стал occurrence-level: каждое `word_id` сопоставляется с незанятым target-span текущего предложения; исправлены `English`/`class`/`Room`/`fourteen` в The Wrong Classroom.
+- Phrase/detail контур очищен от legacy Source-first: phrase хранит общий перевод и components, а Words показывает отдельные `word_to_word` (`walk` → `входит`, `into` → `в`).
+- Добавлен репозиторный Codex skill `$lexo-phrase-audit`: два прохода по всем parallel-сегментам, строгая phrase/components schema, omission audit, валидатор и восстановимый установщик.
+- Файл: [2026-07-13.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-13.md)
+### 2026-07-10
+- Mobile package/detail flow переключён на новый word_to_word alignment: language-specific alignment сохраняется из ZIP, Refresh dictionaries обновляет word-to-word, detail sheet строится из dictionary alignment и показывает unit-level слова.
+- Исправлен multi-language Refresh dictionaries при едином стабильном book_id: языковые слои разделены, пересобраны RU/UK seeds и layers пяти текущих книг Chapter 1.
+- Закрыт partial-manifest case Workbench dictionary refresh: неполная языковая карта дополняется единым стабильным book_id.
+- Mobile reader сохраняет phrase-блоки, показывает их слова отдельными блоками в карточке, выводит полный переводной сегмент и отключает standalone tap служебных слов.
+- Добавлены POS-driven grammar blocks: `DET/AUX/PART` структурно присоединяются к lexical head без hardcoded-слов и ложных отдельных переводов.
+- Файл: [2026-07-10.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-10.md)
+
+### 2026-07-09
+- Добавлен первый RU-прототип library dictionary: `book_layer_ru.json`, накопительные `global_words_ru.json`/`global_phrases_ru.json`, lookup через global words с fallback на Virgil Core и endpoint rebuild для одной книги.
+- Library dictionary распространён на все актуальные книги A1 Chapter 1 для RU/UK: per-book word/phrase seeds, book layers и чистые global words/phrases пересобраны.
+- Файл: [2026-07-09.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-09.md)
+
+### 2026-07-03
+- Из Virgil mobile убран тестовый AdMob/interstitial-контур; текст `Поддержка проекта` сохранён в store-сырьё и release-материалы как будущая стратегия окна `Что нового`.
+- Файл: [2026-07-03.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-03.md)
+
+### 2026-07-02
+- Исправлено фактическое подключение review-exit interstitial и защита загрузки рекламы до инициализации SDK.
+- Выход из swipe-review уточнён: interstitial показывается только после минимум 3 действий с карточками.
+- В Virgil mobile подключена тестовая Google AdMob interstitial-реклама с правилом: первые 10 минут без рекламы, затем не чаще одного раза в 15 минут.
+- Virgil подготовлен к следующему обновлению: pubspec.yaml поднят до 1.0.1+2, Settings будет показывать Version 1.0.1.
+- В мобильной карточке книги добавлена проверка package после скачивания и UI-обработка ошибок Load/Open без падения приложения.
+- В мобильных Settings удалён раздел языка интерфейса; beta/about-текст перенесён вниз над версией.
+- Package id Virgil для Google Play изменён на `com.lexo.virgil`; signed AAB `1.0.0+1` пересобран, Play release package обновлён с новыми checksum; добавлены EN screenshots/feature graphic для default listing.
+- Файл: [2026-07-02.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-02.md)
+
+### 2026-07-01
+- Собран чистый `Release/GooglePlay/1.0.0` пакет для Play Console: AAB, listing, screenshots, privacy policy, checklists и checksums без ключей.
+- Virgil version привязана к `pubspec.yaml`: release `1.0.0+1`, Settings показывает `Version 1.0.0`; AAB пересобран и проверен.
+- Подготовлены локальный `public/privacy-policy.html` и скрипты публикации GitHub Pages; GitHub connector не смог записать файл из-за 403.
+- Privacy policy page упрощена до одной английской версии для Play Console.
+- Подготовлена статическая EN/UK/RU privacy policy page для публикации URL в Google Play Console.
+- Файл: [2026-07-01.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-01.md)
+
+### 2026-06-30
+- Подготовлен Google Play listing package: UK/RU описания, release notes, privacy policy drafts, feature graphics и Data Safety checklist.
+- Проведён Google Play release audit Virgil: AAB собирается, targetSdk=36, тесты проходят; выявлены риски по секретам, store materials и Data Safety.
+- Google Play promo screenshots разнесены по языковым папкам `uk` и `ru`; генератор получил параметр `-Language uk|ru`.
+- Google Play promo screenshots очищены: тонкая рамка телефона, без лишней подложки, обновлены украинские тексты для 6 карточек.
+- Пересобраны 6 Google Play promo screenshots 1080x1920 для Virgil из реальных скринов приложения, подписи заменены на украинские.
+- Заменён launcher icon Virgil: добавлен 1024px master и пересобраны iOS/Android PNG.
+- В мобильный Settings добавлена английская строка Version 1.0.0.
+- В мобильный Settings добавлен выбор языка интерфейса RU/UK и переключаемая beta-надпись под ним.
+- В A1 Workbench/CloudLibrary словарях заполнены пустые RU/UK word-card entries: в Core добавлены только новые ключи, существующие entries не изменялись; повторный аудит показал missing=0.
+- Файл: [2026-06-30.md](/mnt/d/Programs/LEXO/Docs/History/2026-06-30.md)
+
+### 2026-06-26
+- В Virgil добавлен первый экран выбора языка перевода после установки: он появляется только до создания mobile_settings.json.
+- Файл: [2026-06-26.md](/mnt/d/Programs/LEXO/Docs/History/2026-06-26.md)
+
+### 2026-06-25
+- Workbench Clean selected переведён на scoped-очистку отмеченных text/dictionary/Kokoro voice artifacts без удаления невыбранных частей книги; добавлен backend endpoint для очистки TTS выбранных voices.
+- Файл: [2026-06-25.md](/mnt/d/Programs/LEXO/Docs/History/2026-06-25.md)
+
 ### 2026-06-24
 - Ошибочная обработка 9 TTS WAV-сегментов в `book_bdcc11162ee4` отменена; из ZIP `A Voice from Online` извлечён slow-сегмент MP3, созданы тестовые копии с увеличенными паузами x1.5/x2/x2.25/x4.5, clean/smooth/fade100/soft-edges/envelope/edges-x3 x4.5-версии, pitch-preserving копия дорожки x1.5 и цельные Kokoro slow WAV для двух абзацев на speed 0.85/0.75/0.70/0.65/0.60, цельный no-split speed 0.60 и word-by-word speed 0.60.
 - Файл: [2026-06-24.md](/mnt/d/Programs/LEXO/Docs/History/2026-06-24.md)

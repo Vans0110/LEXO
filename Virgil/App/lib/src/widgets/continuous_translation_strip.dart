@@ -53,13 +53,12 @@ class ContinuousTranslationStrip extends StatelessWidget {
       selectedWord: selectedWord,
       targetStream: targetStream,
     );
-    if (selection == null) {
+    final segment = _fullSegment(targetStream, selectedWord.segmentId);
+    if (segment.isEmpty) {
       return _buildFallbackBar(context, _fallbackText(paragraph));
     }
-
-    final window = _buildWindow(targetStream, selection);
-    return SizedBox(
-      height: 94,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 94),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: Theme.of(context)
@@ -79,12 +78,13 @@ class ContinuousTranslationStrip extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
                 children: [
-                  for (var index = 0; index < window.length; index++) ...[
+                  for (var index = 0; index < segment.length; index++) ...[
                     if (index > 0) const TextSpan(text: ' '),
                     TextSpan(
-                      text: window[index].text,
-                      style: window[index].globalIndex >= selection.$1 &&
-                              window[index].globalIndex <= selection.$2
+                      text: segment[index].text,
+                      style: selection != null &&
+                              segment[index].globalIndex >= selection.$1 &&
+                              segment[index].globalIndex <= selection.$2
                           ? const TextStyle(fontWeight: FontWeight.w700)
                           : null,
                     ),
@@ -92,8 +92,6 @@ class ContinuousTranslationStrip extends StatelessWidget {
                 ],
               ),
               textAlign: TextAlign.center,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
@@ -102,10 +100,6 @@ class ContinuousTranslationStrip extends StatelessWidget {
   }
 
   String _fallbackText(ParagraphItem paragraph) {
-    final selectedText = translationFocusText?.trim() ?? '';
-    if (selectedText.isNotEmpty) {
-      return selectedText;
-    }
     return paragraph.targetText;
   }
 
@@ -180,14 +174,12 @@ class ContinuousTranslationStrip extends StatelessWidget {
     return -1;
   }
 
-  List<_TargetStreamToken> _buildWindow(
+  List<_TargetStreamToken> _fullSegment(
     List<_TargetStreamToken> targetStream,
-    (int, int) selection,
+    String? segmentId,
   ) {
-    const radiusWords = 5;
-    final start = (selection.$1 - radiusWords).clamp(0, targetStream.length);
-    final end = (selection.$2 + radiusWords + 1).clamp(0, targetStream.length);
-    return targetStream.sublist(start, end);
+    final id = segmentId?.trim() ?? '';
+    return targetStream.where((token) => token.segmentId == id).toList();
   }
 
   Widget _buildFallbackBar(BuildContext context, String text) {

@@ -1,37 +1,46 @@
-# Python
-  .venv/
-  .venv_kokoro/
-  **/__pycache__/
-  *.pyc
+# Python environments and generated files
+Studio/Backend/.venv_backend/
+Studio/Backend/.venv_kokoro/
+**/__pycache__/
+*.pyc
 
-  # Flutter / Dart
-  app/.dart_tool/
-  app/build/
-  app/.flutter-plugins
-  app/.flutter-plugins-dependencies
-  app/.packages
+# Backend runtime data
+Studio/Backend/data/
 
-  # Flutter generated Windows files
-  app/windows/flutter/ephemeral/
+# Flutter generated files
+Virgil/App/.dart_tool/
+Virgil/App/build/
+Virgil/App/.flutter-plugins
+Virgil/App/.flutter-plugins-dependencies
+Virgil/App/.packages
+Virgil/App/windows/flutter/ephemeral/
+Virgil/App/.idea/
+Virgil/App/android/.kotlin/
 
-  # IDE
-  app/.idea/
-  .vscode/
+# Signing secrets
+Virgil/App/android/key.properties
+Virgil/App/keys/
 
-  # Local data
-  data/lexo.db
-  data/tts/
-  data/logs/
-  data/current_book/
-  logs/
-  *.log
+# Local books, cloud mirror and generated output
+Studio/Workbench/Books/
+Studio/Runtime/
+Studio/CloudLibrary/
 
-  # Large local models
-  data/models/
+# Built release packages
+Release/Builds/*
+!Release/Builds/README.md
 
-  # Optional local books
-  Books/
+# Private credentials
+Private/*
+!Private/credentials.env.example
 
-  # OS
-  .DS_Store
-  Thumbs.db
+# Preserved legacy files
+Archive/
+
+# IDE and OS
+.vscode/
+.codex
+.DS_Store
+Thumbs.db
+*.log
+tmp/

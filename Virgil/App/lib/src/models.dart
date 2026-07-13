@@ -341,6 +341,14 @@ class ParagraphWordItem {
   final String? effectiveMatchedBy;
   final String? effectiveAlignmentKind;
   final String? effectiveCoverageStatus;
+  bool get isFunctionWord => const {
+        'ADP',
+        'AUX',
+        'CCONJ',
+        'DET',
+        'PART',
+        'SCONJ',
+      }.contains(pos?.trim().toUpperCase());
 
   factory ParagraphWordItem.fromJson(Map<String, dynamic> json) {
     final sourceFirstFocusText = json['source_first_focus_text'] as String?;

@@ -49,6 +49,7 @@ class _VirgilBookDetailScreenState extends State<VirgilBookDetailScreen> {
   late bool _installed = widget.installed;
   late bool _updateAvailable = widget.updateAvailable;
   late LibraryBookItem? _localBook = widget.localBook;
+  String? _error;
   bool _actionBusy = false;
 
   Future<void> _runAction(VirgilBookAction? action,
@@ -56,7 +57,10 @@ class _VirgilBookDetailScreenState extends State<VirgilBookDetailScreen> {
     if (action == null || _actionBusy || widget.busy) {
       return;
     }
-    setState(() => _actionBusy = true);
+    setState(() {
+      _actionBusy = true;
+      _error = null;
+    });
     try {
       await action();
       if (!mounted) {
@@ -67,6 +71,10 @@ class _VirgilBookDetailScreenState extends State<VirgilBookDetailScreen> {
       }
       if (closeAfter) {
         Navigator.of(context).pop(true);
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() => _error = _formatActionError(error));
       }
     } finally {
       if (mounted) {
@@ -80,7 +88,10 @@ class _VirgilBookDetailScreenState extends State<VirgilBookDetailScreen> {
     if (action == null || _actionBusy || widget.busy) {
       return;
     }
-    setState(() => _actionBusy = true);
+    setState(() {
+      _actionBusy = true;
+      _error = null;
+    });
     try {
       final localBook = await action(const VirgilDownloadOptions());
       if (!mounted) {
@@ -91,6 +102,10 @@ class _VirgilBookDetailScreenState extends State<VirgilBookDetailScreen> {
         _installed = localBook != null;
         _updateAvailable = false;
       });
+    } catch (error) {
+      if (mounted) {
+        setState(() => _error = _formatActionError(error));
+      }
     } finally {
       if (mounted) {
         setState(() => _actionBusy = false);
@@ -141,6 +156,14 @@ class _VirgilBookDetailScreenState extends State<VirgilBookDetailScreen> {
     }
   }
 
+  String _formatActionError(Object error) {
+    final message = error.toString();
+    const prefix = 'Exception: ';
+    return message.startsWith(prefix)
+        ? message.substring(prefix.length)
+        : message;
+  }
+
   @override
   Widget build(BuildContext context) {
     final busy = widget.busy || _actionBusy;
@@ -185,6 +208,14 @@ class _VirgilBookDetailScreenState extends State<VirgilBookDetailScreen> {
               ),
             ],
             const SizedBox(height: 24),
+            if (_error != null && _error!.trim().isNotEmpty) ...[
+              Text(
+                _error!,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+              const SizedBox(height: 14),
+            ],
             FilledButton.icon(
               onPressed: busy
                   ? null

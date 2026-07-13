@@ -255,6 +255,102 @@ class MobileBookPackage {
     return result;
   }
 
+  static DetailSheetPayload? _detailFromDictionaryAlignedWord({
+    required Map<String, dynamic> word,
+    required String paragraphSourceText,
+  }) {
+    final matchedBy = (word['effective_matched_by'] as String? ?? '').trim();
+    final alignmentKind =
+        (word['effective_alignment_kind'] as String? ?? '').trim();
+    if (matchedBy != 'dictionary_alignment' || alignmentKind == 'phrase') {
+      return null;
+    }
+    final translation = _firstNonEmpty([
+      word['unit_translation_focus_text'],
+      word['unit_translation_span_text'],
+      word['effective_translation_text'],
+      word['translation_focus_text'],
+      word['translation_span_text'],
+    ]);
+    if (translation.isEmpty) {
+      return null;
+    }
+    final wordId = (word['id'] as String? ?? '').trim();
+    final surface = (word['text'] as String? ?? '').trim();
+    final lemma = ((word['lemma'] as String?)?.trim().isNotEmpty == true
+            ? word['lemma'] as String
+            : surface)
+        .trim()
+        .toLowerCase();
+    final pos = (word['pos'] as String? ?? '').trim().toUpperCase();
+    final source = (word['source_unit_text'] as String? ?? '').trim().isNotEmpty
+        ? word['source_unit_text'] as String
+        : surface;
+    return DetailSheetPayload.fromJson({
+      'word_id': wordId,
+      'tap_unit_id': word['tap_unit_id'] as String? ?? wordId,
+      'sheet_source_text': source,
+      'sheet_translation_text': translation,
+      'example_source_text':
+          word['segment_source_text'] as String? ?? paragraphSourceText,
+      'example_translation_text': word['segment_target_text'] as String? ?? '',
+      'source_first': null,
+      'dictionary_entry': {
+        'query': surface,
+        'lemma': lemma,
+        'transcript': '',
+        'word_found': true,
+        'word_entry': <String, dynamic>{},
+        'translations': [translation],
+        'part_of_speech': pos,
+        'definitions': <String>[],
+        'inflected_forms': <String>[],
+        'verb_forms': <String, dynamic>{},
+        'phrasals': <dynamic>[],
+        'entries': [
+          {
+            'source': matchedBy,
+            'lemma': lemma,
+            'part_of_speech': pos,
+            'transcript': '',
+            'translations': [translation],
+            'definitions': <String>[],
+          }
+        ],
+        'has_content': true,
+        'note': '',
+      },
+      'units': [
+        {
+          'id': word['lexical_unit_id'] as String? ?? wordId,
+          'type': word['lexical_unit_type'] as String? ?? 'LEXICAL',
+          'text': surface,
+          'surface_text': surface,
+          'lemma': lemma,
+          'translation': translation,
+          'grammar_hint': word['grammar_hint'] as String? ?? '',
+          'morph_label': word['morph_label'] as String? ?? '',
+          'is_primary': true,
+          'is_grammar': false,
+          'example_source_text':
+              word['segment_source_text'] as String? ?? paragraphSourceText,
+          'example_translation_text':
+              word['segment_target_text'] as String? ?? '',
+        }
+      ],
+    });
+  }
+
+  static String _firstNonEmpty(Iterable<Object?> values) {
+    for (final value in values) {
+      final text = value?.toString().trim() ?? '';
+      if (text.isNotEmpty) {
+        return text;
+      }
+    }
+    return '';
+  }
+
   static Map<String, DetailSheetPayload> _buildDetailByWordId(
     Map<String, dynamic> manifest,
     Map<String, dynamic> dictionaryManifest,
@@ -278,7 +374,22 @@ class MobileBookPackage {
           .whereType<Map<String, dynamic>>();
       for (final word in words) {
         final wordId = word['id'] as String? ?? '';
-        if (wordId.isEmpty || result.containsKey(wordId)) {
+        if (wordId.isEmpty) {
+          continue;
+        }
+        if (_isFunctionWordPos(word['pos'])) {
+          result.remove(wordId);
+          continue;
+        }
+        final alignedDetail = _detailFromDictionaryAlignedWord(
+          word: word,
+          paragraphSourceText: sourceText,
+        );
+        if (alignedDetail != null) {
+          result[wordId] = alignedDetail;
+          continue;
+        }
+        if (result.containsKey(wordId)) {
           continue;
         }
         final lemma =
@@ -305,8 +416,8 @@ class MobileBookPackage {
           'dictionary_entry': dictionaryEntry,
           'units': [
             {
-              'unit_id': word['lexical_unit_id'] as String? ?? wordId,
-              'source_text': word['text'] as String? ?? '',
+              'id': word['lexical_unit_id'] as String? ?? wordId,
+              'text': word['text'] as String? ?? '',
               'translation': '',
               'grammar_hint': word['grammar_hint'] as String? ?? '',
               'morph_label': word['morph_label'] as String? ?? '',
@@ -319,4 +430,13 @@ class MobileBookPackage {
     }
     return result;
   }
+
+  static bool _isFunctionWordPos(Object? value) => const {
+        'ADP',
+        'AUX',
+        'CCONJ',
+        'DET',
+        'PART',
+        'SCONJ',
+      }.contains(value?.toString().trim().toUpperCase());
 }

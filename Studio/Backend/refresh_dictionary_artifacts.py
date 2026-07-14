@@ -145,6 +145,13 @@ def _segments(reader: dict) -> dict[str, dict]:
     return result
 
 
+def _canonical_dictionary_key(value: object) -> str:
+    lemma, separator, pos = str(value or "").strip().partition("|")
+    if not separator:
+        return lemma.lower()
+    return f"{lemma.lower()}|{pos.upper()}"
+
+
 def _manifest_entry(key: str, record: dict, lang: str, existing: dict | None) -> dict:
     lemma, _, pos = key.partition("|")
     translations = [str(value) for value in record.get("translations") or []]
@@ -189,7 +196,11 @@ def _refresh_language(
     reader: dict,
     words: dict,
     phrases: dict,
+    absorbed_word_keys: set[str] | None = None,
 ) -> tuple[dict, dict]:
+    absorbed_word_keys = {
+        _canonical_dictionary_key(item) for item in (absorbed_word_keys or set())
+    }
     dictionary_path = output_dir / f"dictionary_{lang}.json"
     existing_dictionary = _load(dictionary_path) if dictionary_path.exists() else {}
     existing_entries = existing_dictionary.get("entries") or {}
@@ -211,12 +222,12 @@ def _refresh_language(
     entries = {
         key: _manifest_entry(
             key,
-            words[key],
+            {} if key in absorbed_word_keys else words[key],
             lang,
             existing_entries.get(key) if isinstance(existing_entries, dict) else None,
         )
         for key in sorted(reader_keys)
-        if key in words
+        if key in words or key in absorbed_word_keys
     }
     dictionary = {
         "book_id": reader.get("book_id") or existing_dictionary.get("book_id") or "",
@@ -244,7 +255,7 @@ def _refresh_language(
             lemma = str(word.get("lemma") or word.get("text") or "").strip().lower()
             pos = str(word.get("pos") or "").strip().upper()
             key = f"{lemma}|{pos}"
-            record = words.get(key) or {}
+            record = {} if key in absorbed_word_keys else words.get(key) or {}
             translations = [str(value) for value in record.get("translations") or []]
             selected, target_start, target_end = _select_translation(
                 translations,
@@ -332,13 +343,15 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
         )
         for lang in ("ru", "uk")
     }
-    layer_titles = {
+    layers_by_title = {
         lang: {
-            str(_load(path).get("title") or "").strip()
+            str(payload.get("title") or "").strip(): payload
             for path in store.books_dir(lang).glob(f"*/book_layer_{lang}.json")
+            for payload in [_load(path)]
         }
         for lang in ("ru", "uk")
     }
+    layer_titles = {lang: set(items) for lang, items in layers_by_title.items()}
     updated = []
     zip_count = 0
     for output_dir in sorted(path for path in output_root.iterdir() if path.is_dir()):
@@ -353,12 +366,19 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
             if title not in layer_titles[lang] or not reader_path.exists():
                 continue
             reader = _load(reader_path)
+            audit = layers_by_title[lang][title].get("book_layer_audit") or {}
+            absorbed_word_keys = {
+                _canonical_dictionary_key(item)
+                for item in audit.get("absorbed_word_keys") or []
+                if str(item).strip()
+            }
             dictionary, word_to_word = _refresh_language(
                 output_dir,
                 lang=lang,
                 reader=reader,
                 words=globals_by_lang[lang][0],
                 phrases=globals_by_lang[lang][1],
+                absorbed_word_keys=absorbed_word_keys,
             )
             changed_langs.append(lang)
             if write:
@@ -406,12 +426,19 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
                     archive.close()
                     for lang in changed_langs:
                         reader = _load(package_dir / f"reader_{lang}.json")
+                        audit = layers_by_title[lang][title].get("book_layer_audit") or {}
+                        absorbed_word_keys = {
+                            _canonical_dictionary_key(item)
+                            for item in audit.get("absorbed_word_keys") or []
+                            if str(item).strip()
+                        }
                         dictionary, word_to_word = _refresh_language(
                             package_dir,
                             lang=lang,
                             reader=reader,
                             words=globals_by_lang[lang][0],
                             phrases=globals_by_lang[lang][1],
+                            absorbed_word_keys=absorbed_word_keys,
                         )
                         _write(package_dir / f"dictionary_{lang}.json", dictionary)
                         _write(package_dir / f"word_to_word_{lang}.json", word_to_word)

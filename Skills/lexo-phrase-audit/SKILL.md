@@ -1,6 +1,6 @@
 ---
 name: lexo-phrase-audit
-description: Perform an exhaustive two-pass semantic audit of phrases and component words in a LEXO book layer, then update verified book/global dictionaries and rebuilt packages. Use when the user asks Codex to find missing phrases, audit phrase coverage, rebuild a book dictionary from parallel source/translation segments, or invokes `$lexo-phrase-audit` for RU or UK books.
+description: Perform an exhaustive semantic audit that retains only multiword meanings which cannot be reconstructed from independent word translations, rejects compositional groups, checks omissions and phrase necessity independently, then updates verified book/global dictionaries and rebuilt packages. Use when the user asks Codex to find missing or excessive phrases, audit phrase coverage, rebuild a book dictionary from parallel source/translation segments, or invokes `$lexo-phrase-audit` for RU or UK books.
 ---
 
 # LEXO Phrase Audit
@@ -24,12 +24,13 @@ Analyze every object in `parallel[]`; never use a hardcoded phrase list as the s
 
 For each source/translation pair:
 
-1. Identify phrasal verbs, fixed expressions, collocations, existential/grammar constructions, prepositional groups, multiword names, and reordered or discontinuous semantic blocks.
-2. Keep ordinary compositional words independent unless grouping materially changes meaning, word ownership, or target order.
-3. Record every accepted phrase using the schema in `references/phrase-schema.md`.
-4. Decompose the phrase into `components[]`. Give each component its contextual target value. An empty component translation requires `empty_reason`.
-5. Preserve occurrence evidence: segment source, target, source form, and target span text.
-6. Add confirmed contextual component translations to the matching book word entry; never delete an older confirmed translation.
+1. Identify multiword candidates, but do not accept them from category alone.
+2. Translate their components independently. Reject the candidate when those word translations preserve the complete target meaning.
+3. Do not treat a collocation, name, prepositional group, reordered block, case change, agreement, or natural target order as a phrase unless separate words lose or change meaning.
+4. Accept only semantic exceptions: idioms, non-compositional phrasal verbs, existential/grammar constructions, and other groups whose meaning cannot be reconstructed word by word.
+5. Record every accepted phrase using the compact schema in `references/phrase-schema.md`; keep necessity proof only in audit metadata.
+6. Decompose the phrase into `components[]`. Give each component only its independently owned target value. An empty component translation requires `empty_reason`.
+7. Preserve only attested `source_forms[]` in the phrase. Store evidence as `segment_indexes[]` in the audit; never duplicate complete source/target segments inside phrase records or seeds.
 
 Do not infer a translation that is absent from the book target. Do not assign the same target span to unrelated source components.
 
@@ -47,6 +48,20 @@ For each segment, ask:
 - Are components missing, duplicated, or assigned to another occurrence?
 
 Record every segment in `phrase_audit.reviewed_segments[]`, including segments with no phrases. Resolve omissions, then repeat the audit until `unresolved_omissions` is empty. Never claim completion from phrase count alone.
+
+## Pass 3: independent necessity audit
+
+Start again without using the accepted phrase list as truth. For every retained phrase and every rejected multiword candidate:
+
+- construct the best word-by-word result from independent dictionary meanings;
+- reject the phrase if that result preserves the full meaning;
+- ignore mere reordering, inflection, case, agreement, names, and ordinary collocations;
+- retain the phrase only when word-by-word translation loses or changes meaning;
+- record the decision and reason in `phrase_audit.necessity_pass.phrase_decisions[]`.
+
+Reject outputs containing corruption runs such as `???` or `�`.
+
+Require one accepted decision per retained phrase, keep rejected decisions as evidence against reintroduction, and finish only with `unresolved=[]`.
 
 ## Validate before merge
 

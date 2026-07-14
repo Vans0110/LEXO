@@ -105,7 +105,7 @@ class ContextDictionaryFallbackTest(unittest.TestCase):
         self.assertEqual(entry["translations"], ["математика"])
         self.assertEqual(entry["target_lang"], "uk")
 
-    def test_title_propn_uses_lexical_article(self) -> None:
+    def test_title_propn_does_not_alias_to_lexical_article(self) -> None:
         entry = self.resolver.build_entry(
             surface="Classroom",
             lemma="classroom",
@@ -114,7 +114,7 @@ class ContextDictionaryFallbackTest(unittest.TestCase):
         )
 
         self.assertEqual(entry["dictionary_key"], "classroom|PROPN")
-        self.assertEqual(entry["translations"], ["класс", "классная комната"])
+        self.assertEqual(entry["translations"], [])
 
     def test_real_propn_keeps_proper_name_article(self) -> None:
         entry = self.resolver.build_entry(

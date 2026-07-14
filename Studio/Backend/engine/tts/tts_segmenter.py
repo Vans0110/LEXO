@@ -12,37 +12,8 @@ MIN_SPLIT_WORDS = 6
 PHRASE_PAUSE_MS = 120
 SENTENCE_PAUSE_MS = 250
 PARAGRAPH_PAUSE_MS = 400
-WEAK_ENDINGS = {
-    "a",
-    "an",
-    "and",
-    "as",
-    "at",
-    "by",
-    "for",
-    "from",
-    "in",
-    "of",
-    "on",
-    "or",
-    "the",
-    "to",
-    "with",
-}
-WEAK_STARTS = {
-    "and",
-    "because",
-    "but",
-    "or",
-    "so",
-    "then",
-}
 MIN_TAIL_WORDS = 4
 MIN_TAIL_CHARS = 24
-HEADING_PREFIX_RE = re.compile(
-    r"^(chapter|part|section|book|prologue|epilogue)\b",
-    flags=re.IGNORECASE,
-)
 
 
 def build_tts_chunks(
@@ -307,10 +278,7 @@ def _best_split_index(text: str, policy: dict[str, int | str]) -> int:
 def _is_preferred_break(next_text: str, policy: dict[str, int | str]) -> bool:
     if len(next_text) > int(policy["target_chunk_chars"]):
         return True
-    first_word = _normalize_word(next_text.split()[0]) if next_text.split() else ""
-    if first_word in {"however", "but", "then", "suddenly", "meanwhile"}:
-        return True
-    return str(policy["boundary_strictness"]) in {"high", "max"} and first_word in {"and", "but", "so"}
+    return str(policy["boundary_strictness"]) in {"high", "max"} and _is_short_tail(next_text)
 
 
 def _resolve_pause_ms(
@@ -339,7 +307,8 @@ def _normalize_word(word: str) -> str:
 def _is_heading_line(line: str) -> bool:
     if not line or len(line) > 80:
         return False
-    return bool(HEADING_PREFIX_RE.match(line))
+    stripped = line.strip()
+    return stripped.endswith(":") or (stripped.isupper() and any(char.isalpha() for char in stripped))
 
 
 def _normalize_heading(line: str) -> str:
@@ -351,12 +320,6 @@ def _normalize_heading(line: str) -> str:
 
 
 def _should_avoid_break(left_text: str, right_text: str, policy: dict[str, int | str]) -> bool:
-    left_last = _last_word(left_text)
-    right_first = _first_word(right_text)
-    if left_last in WEAK_ENDINGS:
-        return True
-    if right_first in WEAK_STARTS:
-        return True
     if _is_short_tail(right_text):
         return True
     strictness = str(policy["boundary_strictness"])
@@ -366,13 +329,7 @@ def _should_avoid_break(left_text: str, right_text: str, policy: dict[str, int |
 def _score_split_candidate(text: str, split_at: int, policy: dict[str, int | str]) -> tuple[int, int, int, int]:
     left = text[:split_at].strip()
     right = text[split_at:].strip()
-    left_last = _last_word(left)
-    right_first = _first_word(right)
     score = 0
-    if left_last and left_last not in WEAK_ENDINGS:
-        score += 5
-    if right_first and right_first not in WEAK_STARTS:
-        score += 4
     if not _is_short_tail(right):
         score += 4
     if re.search(r"[.!?][\"')\]]?$", left):

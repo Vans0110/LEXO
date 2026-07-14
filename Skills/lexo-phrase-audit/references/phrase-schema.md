@@ -19,17 +19,11 @@
       "source": "are",
       "lemma": "be",
       "pos": "AUX",
-      "translation": "находятся"
+      "translation": "",
+      "empty_reason": "the Russian predicate belongs to the existential construction"
     }
   ],
-  "occurrences": [
-    {
-      "source_text": "There are books, maps, and twelve students in the room.",
-      "target_text": "В комнате находятся книги, карты и двенадцать учеников.",
-      "source_form": "There are",
-      "target_span_text": "находятся"
-    }
-  ]
+  "source_forms": ["There are"]
 }
 ```
 
@@ -43,7 +37,7 @@ Allowed `type` values:
 - `name_group`
 - `reordered_block`
 
-A phrase may have several occurrences. Keep one canonical lowercase source key while preserving actual `source_form` evidence.
+A phrase may have several forms. Keep one canonical lowercase source key and compact `source_forms[]`. Never copy complete source/target segments into phrase records or seeds.
 
 ## Audit metadata
 
@@ -64,12 +58,25 @@ A phrase may have several occurrences. Keep one canonical lowercase source key w
     "second_pass": {
       "status": "passed",
       "unresolved_omissions": []
+    },
+    "necessity_pass": {
+      "status": "passed",
+      "phrase_decisions": [
+        {
+          "source": "there are",
+          "decision": "accepted",
+          "word_by_word_result": "there + be",
+          "reason": "separate words do not express existence",
+          "segment_indexes": [0]
+        }
+      ],
+      "unresolved": []
     }
   }
 }
 ```
 
-Every `parallel[]` object must have a corresponding reviewed-segment entry. Use `status: no_phrase_required` when independent words fully represent the segment.
+Every `parallel[]` object must have a corresponding reviewed-segment entry. Use `status: no_phrase_required` when independent words fully represent the segment. Every retained phrase requires an accepted necessity decision. Reordering, inflection, proper-name grouping, and ordinary compositional translation are rejection reasons, not phrase evidence.
 
 ## Global phrase
 

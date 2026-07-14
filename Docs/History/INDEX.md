@@ -4,6 +4,17 @@
 
 ## Записи
 
+### 2026-07-14
+- Из production-контура словарей, QA, POS и TTS удалены hardcoded-слова, фразы, переводы, книжные ID/исключения и языковые таблицы; добавлен guard-тест, пересобраны 10 RU/UK пакетов, global rebuild идемпотентен.
+- Добавлен `$lexo-build-ru-book-layer`: создание контекстного RU book layer и seed-файлов по EN/RU текстам с обязательным независимым вторым проходом и валидатором.
+- Skill полностью прогнан на `The Wrong Classroom`: 24 RU-пары, 81 контекстное слово, 25 доказанных фраз, второй проход `unresolved=0`; globals и пакеты пересобраны идемпотентно.
+- Исправлен word ownership RU-слоя: 11 phrase-absorbed function keys сохранены во всех seed/layer/package артефактах с пустыми переводами и `empty_reason`; global fallback заблокирован, skill запрещает значения вида `the → комната`, backend 24/24.
+- `$lexo-build-ru-book-layer` усилен обязательным третьим word-ownership audit: решения по каждому `lemma|POS`, reverse target ownership и блокирующая сверка seed/phrase/layer; прежние противоречия The Wrong Classroom теперь обнаруживаются валидатором.
+- The Wrong Classroom повторно прогнан через Pass 3: 81/81 word decisions, `be|AUX`/`be|VERB` пустые, исправлены ownership `at`/`to`/`for`/`of`; validator 0 errors, backend 24/24, RU rebuild `changed=false`, пакеты пересобраны.
+- Фразовые skills переведены на строгий meaning-loss критерий с блокирующим necessity Pass 4; The Wrong Classroom сокращён с 25 до 6 необходимых фраз, 19 композиционных групп отклонены, validators 0 errors, backend 24/24, RU globals 53 phrases и `changed=false`.
+- Phrase JSON очищен от полных сегментов и audit prose: evidence хранится ссылками `segment_indexes`, `seed_phrases_ru.json` содержит только компактные словарные поля; исправлены `????????`, добавлен encoding guard, validators 0 errors и backend 24/24.
+- Файл: [2026-07-14.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-14.md)
+
 ### 2026-07-13
 - Mobile grammar blocks получили reorder-aware разбиение: `is a new` → `новая`, `student` → `ученица`, `at Hill` → `Хилл`, `School` → `школы`; добавлен regression-тест обратного порядка target spans.
 - Library dictionary обновлён до v2: контекстные словоформы и provenance RU/UK, контекстный word-to-word выбор; пересобраны 10 актуальных двуязычных пакетов.

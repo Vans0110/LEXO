@@ -44,32 +44,16 @@ def _target_match_score(translation: str, target_tokens: list[str]) -> float:
 
 
 def _token_matches_any(token: str, target_tokens: list[str]) -> bool:
-    token_variants = _token_variants(token)
     for target in target_tokens:
-        if token_variants & _token_variants(target):
+        if token == target:
             return True
-        if len(token) >= 5 and len(target) >= 5:
-            if token[:5] == target[:5] or token.startswith(target[:5]) or target.startswith(token[:5]):
-                return True
+        shortest = min(len(token), len(target))
+        common = 0
+        while common < shortest and token[common] == target[common]:
+            common += 1
+        if common >= 5 and common / shortest >= 0.6:
+            return True
     return False
-
-
-def _token_variants(token: str) -> set[str]:
-    normalized = _norm(token)
-    variants = {normalized}
-    if len(normalized) >= 4:
-        variants.add(normalized[:5])
-    for suffix in (
-        "иями", "ями", "ами", "ого", "его", "ому", "ему", "ыми", "ими",
-        "ая", "яя", "ое", "ее", "ый", "ий", "ой", "ую", "юю", "ом",
-        "ем", "ах", "ях", "ов", "ев", "ей", "ью", "ия", "ья", "а", "я",
-        "ы", "и", "е", "у", "ю", "ь",
-    ):
-        if normalized.endswith(suffix) and len(normalized) > len(suffix) + 2:
-            variants.add(normalized[:-len(suffix)])
-    if normalized.endswith("ец") and len(normalized) > 4:
-        variants.add(normalized[:-2])
-    return {variant for variant in variants if variant}
 
 
 def _tokens(text: str) -> list[str]:

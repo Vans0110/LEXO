@@ -7,31 +7,6 @@ from pathlib import Path
 
 VIRGIL_CORE_DICTIONARY_SOURCE = "virgil_core_dictionary"
 
-TITLE_PROPN_ALIASES = {
-    "apartment|PROPN": "apartment|NOUN",
-    "aunt|PROPN": "aunt|NOUN",
-    "city|PROPN": "city|NOUN",
-    "classroom|PROPN": "classroom|NOUN",
-    "cousin|PROPN": "cousin|NOUN",
-    "day|PROPN": "day|NOUN",
-    "dinner|PROPN": "dinner|NOUN",
-    "father|PROPN": "father|NOUN",
-    "first|PROPN": "first|ADJ",
-    "grandfather|PROPN": "grandfather|NOUN",
-    "grandma|PROPN": "grandma|NOUN",
-    "grandmother|PROPN": "grandmother|NOUN",
-    "green|PROPN": "green|ADJ",
-    "mother|PROPN": "mother|NOUN",
-    "online|PROPN": "online|ADJ",
-    "people|PROPN": "people|NOUN",
-    "room|PROPN": "room|NOUN",
-    "school|PROPN": "school|NOUN",
-    "street|PROPN": "street|NOUN",
-    "student|PROPN": "student|NOUN",
-    "voice|PROPN": "voice|NOUN",
-}
-
-
 class VirgilCoreDictionary:
     def __init__(self, root: Path) -> None:
         self.path = (
@@ -58,10 +33,7 @@ class VirgilCoreDictionary:
         lookup_lemma = self._clean_text(lemma).lower() or query
         requested_pos = str(pos or "").strip()
         dictionary_key = self._dictionary_key(lookup_lemma, requested_pos)
-        resolved_dictionary_key = TITLE_PROPN_ALIASES.get(
-            dictionary_key, dictionary_key
-        )
-        record = self.entries.get(resolved_dictionary_key)
+        record = self.entries.get(dictionary_key)
         translations = self._translations(record, target_lang)
         if not translations:
             return self._empty_entry(

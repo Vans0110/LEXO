@@ -21,7 +21,7 @@ from .google_translator import GoogleTranslator, default_google_usage_tracker
 from .hybrid_translation_rerank import HybridTranslationReranker
 from .library_dictionary import LIBRARY_DICTIONARY_SOURCE, LibraryDictionaryStore, library_dictionary_source
 from .semantic_translation_rerank import SemanticTranslationReranker
-from .segment_translation_qa import SegmentQaWord, SegmentTranslationQa, ZERO_WEIGHT_SOURCE_WORDS
+from .segment_translation_qa import SegmentQaWord, SegmentTranslationQa, ZERO_WEIGHT_POS
 from .source_pos_lemma import SourcePosLemmaAnalyzer
 from .text_loader import normalize_text
 from .structural_translation_rerank import StructuralTranslationReranker
@@ -721,12 +721,10 @@ class LexoStorage:
         for index, surface in enumerate(segment_words):
             analysis = word_analyses[index] if index < len(word_analyses) else None
             lemma = str(getattr(analysis, "lemma", "") or surface).strip().lower()
-            surface_key = str(surface or "").strip().lower()
             pos = str(getattr(analysis, "pos", "") or "").strip()
             translations: tuple[str, ...] = ()
             if (
-                lemma not in ZERO_WEIGHT_SOURCE_WORDS
-                and surface_key not in ZERO_WEIGHT_SOURCE_WORDS
+                pos.upper() not in ZERO_WEIGHT_POS
                 and callable(alternatives_method)
             ):
                 cache_key = (lemma, pos.upper())
@@ -985,7 +983,7 @@ class LexoStorage:
             "source_lang": str(book["source_lang"] or "en"),
             "target_lang": target_lang,
             "parallel": parallel,
-            "phrases": self._book_phrase_seed(book_id, target_lang) or self._build_strict_phrase_entries(parallel, target_lang),
+            "phrases": self._book_phrase_seed(book_id, target_lang),
             "words": list(words_by_key.values()),
         }
 
@@ -1074,173 +1072,7 @@ class LexoStorage:
                         result[clean_key] = text
                 if result:
                     return result
-        if target_lang == "uk" and book_id == "book_919621151055":
-            return {
-                'about|ADP': 'про',
-                'and|CCONJ': 'і',
-                'at|ADP': 'під час',
-                'a|DET': 'один',
-                'be|AUX': 'бути',
-                'book|NOUN': 'книжка',
-                'bus|NOUN': 'автобус',
-                'by|ADP': 'на',
-                'city|NOUN': 'місто',
-                'classroom|NOUN': 'класна кімната',
-                'david|PROPN': 'Дейвід',
-                'day|NOUN': 'день',
-                'do|AUX': 'робити',
-                'eighteen|NUM': 'вісімнадцять',
-                'emma|PROPN': 'Емма',
-                'evening|NOUN': 'вечір',
-                'every|DET': 'кожний',
-                'father|NOUN': 'батько',
-                'feel|VERB': 'почувається',
-                'find|VERB': 'знаходить',
-                'first|ADJ': 'перший',
-                'friendly|ADJ': 'привітний',
-                'friend|NOUN': 'друг',
-                'game|NOUN': 'гра',
-                'go|VERB': 'йде',
-                'good|ADJ': 'хороший',
-                'great|ADJ': 'чудовий',
-                'happily|ADV': 'щасливо',
-                'hello|INTJ': 'привіт',
-                'help|VERB': 'допомагає',
-                'her|PRON': 'її',
-                'he|PRON': 'він',
-                'hi|INTJ': 'привіт',
-                'his|PRON': 'його',
-                'home|NOUN': 'дім',
-                'i|PRON': 'я',
-                'in|ADP': 'у',
-                'kind|ADJ': 'добрий',
-                'know|VERB': 'знає',
-                'like|VERB': 'подобається',
-                'live|VERB': 'живе',
-                'lunch|NOUN': 'обід',
-                'mother|NOUN': 'мати',
-                'morning|NOUN': 'ранок',
-                'movie|NOUN': 'фільм',
-                'music|NOUN': 'музика',
-                'my|PRON': 'мій',
-                'name|NOUN': 'імʼя',
-                'nervous|ADJ': 'нервовий',
-                'new|ADJ': 'новий',
-                'new|PROPN': 'новий',
-                'not|PART': 'не',
-                'now|ADV': 'зараз',
-                'old|ADJ': 'старий',
-                'or|CCONJ': 'чи',
-                'parent|NOUN': 'батько',
-                'say|VERB': 'каже',
-                'school|NOUN': 'школа',
-                'she|PRON': 'вона',
-                'show|VERB': 'показує',
-                'sit|VERB': 'сидить',
-                'small|ADJ': 'малий',
-                'smile|VERB': 'посміхається',
-                'student|NOUN': 'студент',
-                'student|PROPN': 'студент',
-                'talk|NOUN': 'розмова',
-                'talk|VERB': 'говорить',
-                'teacher|NOUN': 'вчитель',
-                'the|DET': 'цей',
-                'they|PRON': 'вони',
-                'time|NOUN': 'час',
-                'to|ADP': 'до',
-                'today|NOUN': 'сьогодні',
-                'very|ADV': 'дуже',
-                'walk|VERB': 'ходить',
-                'with|ADP': 'з',
-                'woman|NOUN': 'жінка',
-                'year|NOUN': 'рік',
-                'young|ADJ': 'молодий',
-            }
-        if target_lang != "ru" or book_id != "book_cad03a8f1779":
-            return {}
-        return {
-            "amir|PROPN": "Амир",
-            "and|CCONJ": "и",
-            "at|ADP": "у",
-            "a|DET": "один",
-            "be|AUX": "быть",
-            "be|VERB": "быть",
-            "but|CCONJ": "но",
-            "down|ADP": "вниз",
-            "every|DET": "каждый",
-            "for|ADP": "для",
-            "her|PRON": "её",
-            "he|PRON": "он",
-            "into|ADP": "в",
-            "in|ADP": "в",
-            "it|PRON": "это",
-            "late|ADV": "поздно",
-            "next|ADV": "следующий",
-            "of|ADP": "из",
-            "on|ADP": "на",
-            "there|PRON": "там",
-            "the|DET": "этот",
-            "this|PRON": "это",
-            "to|ADP": "к",
-            "ask|VERB": "спрашивает",
-            "board|NOUN": "доска",
-            "book|NOUN": "книга",
-            "card|NOUN": "карточка",
-            "carefully|ADV": "внимательно",
-            "check|VERB": "проверяет",
-            "classroom|NOUN": "класс",
-            "classroom|PROPN": "класс",
-            "class|NOUN": "урок",
-            "course|NOUN": "курс",
-            "day|NOUN": "день",
-            "downstairs|ADJ": "внизу",
-            "downstair|NOUN": "внизу",
-            "english|ADJ": "английский",
-            "find|VERB": "находит",
-            "first|ADJ": "первый",
-            "five|NUM": "пять",
-            "floor|NOUN": "этаж",
-            "forty-one|NUM": "сорок один",
-            "fourteen|NUM": "четырнадцать",
-            "fourth|ADJ": "четвёртый",
-            "good|ADJ": "добрый",
-            "hill|PROPN": "Хилл",
-            "i|PRON": "я",
-            "look|VERB": "смотрит",
-            "man|NOUN": "мужчина",
-            "map|NOUN": "карта",
-            "math|NOUN": "математика",
-            "minute|NOUN": "минута",
-            "morning|NOUN": "утро",
-            "new|ADJ": "новая",
-            "now|ADV": "теперь",
-            "number|NOUN": "номер",
-            "please|INTJ": "пожалуйста",
-            "rest|NOUN": "остаток",
-            "right|ADJ": "нужный",
-            "room|NOUN": "комната",
-            "room|PROPN": "комната",
-            "sara|PROPN": "Сара",
-            "say|VERB": "говорит",
-            "school|PROPN": "школа",
-            "she|PRON": "она",
-            "show|VERB": "показывает",
-            "sit|VERB": "садится",
-            "smile|VERB": "улыбается",
-            "sorry|ADJ": "жаль",
-            "stair|NOUN": "лестница",
-            "student|NOUN": "ученик",
-            "teacher|NOUN": "учитель",
-            "twelve|NUM": "двенадцать",
-            "upstairs|ADV": "наверху",
-            "walk|VERB": "входит",
-            "welcome|INTJ": "добро пожаловать",
-            "write|VERB": "пишет",
-            "wrong|ADJ": "не тот",
-            "wrong|PROPN": "неправильный",
-            "yes|INTJ": "да",
-            "you|PRON": "вы",
-        }
+        return {}
 
 
     def _book_phrase_seed(self, book_id: str, target_lang: str) -> list[dict]:
@@ -1307,57 +1139,6 @@ class LexoStorage:
             seen.add(key)
         return phrases
 
-    def _build_strict_phrase_entries(self, parallel: list[dict], target_lang: str = "ru") -> list[dict]:
-        if target_lang == "uk":
-            specs = [
-                ('my name', 'мене звати'),
-                ('at lunch time', 'під час обіду'),
-                ('in the evening', 'увечері'),
-                ('talk about', 'говорять про'),
-                ('first day', 'перший день'),
-                ('new school', 'новій школі'),
-                ('years old', 'років'),
-                ('every morning', 'щоранку'),
-                ('by bus', 'автобусом'),
-            ]
-        else:
-            specs = [
-                ('i am sorry', 'мне очень жаль'),
-                ('good morning', 'доброе утро'),
-                ('welcome to', 'добро пожаловать'),
-                ('wrong room', 'не в той комнате'),
-                ('walk into', 'входит в'),
-                ('look at', 'смотрит на'),
-                ('next to', 'рядом с'),
-                ('sit down', 'садится'),
-                ('rest of the day', 'до конца дня'),
-            ]
-        phrases: list[dict] = []
-        seen: set[str] = set()
-        for item in parallel:
-            source = str(item.get("source") or "")
-            translation = str(item.get("translation") or "")
-            source_key = source.lower()
-            translation_key = translation.lower()
-            for phrase, ru in specs:
-                if phrase in seen:
-                    continue
-                if not self._strict_phrase_matches(phrase, source_key):
-                    continue
-                if ru.lower() not in translation_key:
-                    continue
-                phrases.append({"source": phrase, "translation": ru})
-                seen.add(phrase)
-        return phrases
-
-    def _strict_phrase_matches(self, phrase: str, source: str) -> bool:
-        if phrase == "walk into":
-            return "walks into" in source or "walk into" in source
-        if phrase == "look at":
-            return "looks at" in source or "look at" in source
-        if phrase == "sit down":
-            return "sits down" in source or "sit down" in source
-        return phrase in source
     def rebuild_book_quality(self, book_id: str | None = None) -> dict:
         resolved = self._resolve_required_book_id(book_id)
         return {"ok": True, "book_id": resolved, "mode": "source_only", "segment_count": self._segment_count(resolved)}

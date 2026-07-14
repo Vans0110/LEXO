@@ -6,35 +6,8 @@ from typing import Iterable
 from .tokenization import WORD_RE
 
 
-ZERO_WEIGHT_SOURCE_WORDS = {"a", "an", "the", "am", "is", "are"}
 ZERO_WEIGHT_POS = {"DET"}
 WEAK_POS = {"AUX", "PART"}
-EXTRA_INTENSIFIERS = {
-    "очень",
-    "немного",
-    "сильно",
-    "слегка",
-    "дуже",
-    "трохи",
-}
-EXTRA_PHASE_WORDS = {
-    "начинает",
-    "начал",
-    "начала",
-    "начали",
-    "начинать",
-    "стал",
-    "стала",
-    "стали",
-    "становится",
-    "починає",
-    "почав",
-    "почала",
-    "почали",
-    "став",
-    "стала",
-    "стали",
-}
 @dataclass(frozen=True)
 class SegmentQaWord:
     surface: str
@@ -94,10 +67,8 @@ class SegmentTranslationQa:
         possible_score = 0.0
 
         for word in words:
-            source_key = (word.lemma or word.surface).strip().lower()
-            surface_key = word.surface.strip().lower()
             pos = word.pos.strip().upper()
-            if source_key in ZERO_WEIGHT_SOURCE_WORDS or surface_key in ZERO_WEIGHT_SOURCE_WORDS or pos in ZERO_WEIGHT_POS:
+            if pos in ZERO_WEIGHT_POS:
                 coverage.append({
                     "source": word.surface,
                     "lemma": word.lemma,
@@ -140,7 +111,7 @@ class SegmentTranslationQa:
                 })
 
         coverage_score = covered_score / possible_score if possible_score > 0 else 0.0
-        penalties = self._penalties(source_tokens, target_tokens, candidate)
+        penalties = self._penalties(candidate)
         penalty_score = sum(item["value"] for item in penalties)
         length_score = self._length_score(source_tokens, target_tokens)
         return coverage_score + length_score - penalty_score, coverage, penalties
@@ -177,20 +148,9 @@ class SegmentTranslationQa:
 
     def _penalties(
         self,
-        source_tokens: list[str],
-        target_tokens: list[str],
         candidate: str,
     ) -> list[dict]:
         penalties: list[dict] = []
-        source_set = set(source_tokens)
-        if not ({"very", "really", "little", "slightly", "strongly"} & source_set):
-            for token in target_tokens:
-                if token in EXTRA_INTENSIFIERS:
-                    penalties.append({"type": "extra_intensifier", "token": token, "value": 0.22})
-        if not ({"start", "starts", "started", "begin", "begins", "began"} & source_set):
-            for token in target_tokens:
-                if token in EXTRA_PHASE_WORDS:
-                    penalties.append({"type": "extra_phase", "token": token, "value": 0.28})
         if candidate.lstrip().startswith("-"):
             penalties.append({"type": "leading_dash", "token": "-", "value": 0.2})
         return penalties
@@ -198,7 +158,7 @@ class SegmentTranslationQa:
     def _length_score(self, source_tokens: list[str], target_tokens: list[str]) -> float:
         source_content_count = max(
             1,
-            len([token for token in source_tokens if token not in ZERO_WEIGHT_SOURCE_WORDS]),
+            len(source_tokens),
         )
         if not target_tokens:
             return -0.5

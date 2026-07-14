@@ -22,9 +22,6 @@ BUCKET_WEIGHTS = {
     "POSSESSIVE": 0.28,
     "NEGATION": 0.3,
 }
-NEGATION_LEMMAS = {"not", "no", "never", "не", "ні", "нет"}
-
-
 @dataclass(frozen=True)
 class StructuralRerankResult:
     selected: str
@@ -295,12 +292,11 @@ class StructuralTranslationReranker:
         return counts
 
     def _bucket_for_token(self, token: dict) -> str:
-        lemma = str(token.get("lemma") or token.get("text") or "").strip().lower()
         upos = str(token.get("upos") or "")
         tag = str(token.get("tag") or "")
         dep = str(token.get("dep") or "")
         feats = str(token.get("feats") or "")
-        if lemma in NEGATION_LEMMAS or "Polarity=Neg" in feats:
+        if "Polarity=Neg" in feats:
             return "NEGATION"
         if tag == "PRP$" or dep == "poss" or "Poss=Yes" in feats:
             return "POSSESSIVE"

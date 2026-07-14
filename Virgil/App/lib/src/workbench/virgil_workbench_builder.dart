@@ -773,14 +773,22 @@ class VirgilWorkbenchBuilder {
         final normalizedSource = _normalizePhrase(sourceText);
         for (final phraseEntry in phraseRecords.entries) {
           final phrase = _normalizePhrase(phraseEntry.key);
-          if (phrase.isEmpty || !_phraseMatches(phrase, normalizedSource)) {
+          final record = phraseEntry.value;
+          final sourceForms = record is Map<String, dynamic>
+              ? _stringList(record['source_forms'])
+              : const <String>[];
+          final normalizedForms = <String>{
+            phrase,
+            ...sourceForms.map(_normalizePhrase),
+          }..removeWhere((value) => value.isEmpty);
+          if (phrase.isEmpty ||
+              !normalizedForms.any(normalizedSource.contains)) {
             continue;
           }
           final dedupeKey = '$segmentId|$phrase';
           if (!seen.add(dedupeKey)) {
             continue;
           }
-          final record = phraseEntry.value;
           final translations = record is Map<String, dynamic>
               ? _stringList(record['translations'])
               : const <String>[];
@@ -802,22 +810,6 @@ class VirgilWorkbenchBuilder {
       }
     }
     return result;
-  }
-
-  bool _phraseMatches(String phrase, String normalizedSource) {
-    if (normalizedSource.contains(phrase)) {
-      return true;
-    }
-    if (phrase == 'walk into') {
-      return normalizedSource.contains('walks into');
-    }
-    if (phrase == 'look at') {
-      return normalizedSource.contains('looks at');
-    }
-    if (phrase == 'sit down') {
-      return normalizedSource.contains('sits down');
-    }
-    return false;
   }
 
   String _dictionaryKey(String lemma, String pos) {

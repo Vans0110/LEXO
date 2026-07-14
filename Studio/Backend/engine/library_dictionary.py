@@ -141,7 +141,19 @@ class LibraryDictionaryStore:
                 continue
             clean_translations = self._dedupe([str(item) for item in translations])
             if clean_translations:
-                result[normalized_source] = {"translations": clean_translations}
+                source_forms = [normalized_source]
+                variants = record.get("variants")
+                if isinstance(variants, list):
+                    for variant in variants:
+                        if not isinstance(variant, dict):
+                            continue
+                        forms = variant.get("source_forms")
+                        if isinstance(forms, list):
+                            source_forms.extend(self._normalize_phrase(item) for item in forms)
+                result[normalized_source] = {
+                    "translations": clean_translations,
+                    "source_forms": self._dedupe([item for item in source_forms if item]),
+                }
         return result
 
     def _merge_words(self, words: object, target_lang: str = "ru", book_id: str = "") -> int:

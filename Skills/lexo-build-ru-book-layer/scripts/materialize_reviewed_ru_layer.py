@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from validate_verification_word_to_word import validate as validate_word_to_word
+
 
 def load(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -40,6 +42,9 @@ def main() -> None:
     absorbed_word_keys = {
         clean(item).lower() for item in spec.get("absorbed_word_keys") or [] if clean(item)
     }
+    dictionary_fallbacks = spec.get("dictionary_fallbacks") or {}
+    if not isinstance(dictionary_fallbacks, dict):
+        raise ValueError("dictionary_fallbacks must be an object")
     words: list[dict[str, Any]] = []
     seed_words: dict[str, dict[str, Any]] = {}
     seen: set[str] = set()
@@ -58,12 +63,19 @@ def main() -> None:
             word["translation"] = ""
             word["translations"] = []
             word["empty_reason"] = reason
+            fallback = clean(dictionary_fallbacks.get(key))
+            if fallback:
+                word["dictionary_translation"] = fallback
+                word["dictionary_translation_source"] = "skill_fallback"
             words.append(word)
             seed_words[key] = {
                 "translation": "",
                 "translations": [],
                 "empty_reason": reason,
             }
+            if fallback:
+                seed_words[key]["dictionary_translation"] = fallback
+                seed_words[key]["dictionary_translation_source"] = "skill_fallback"
             continue
         values = overrides.get(key, word.get("translations") or [])
         if isinstance(values, str):
@@ -74,7 +86,24 @@ def main() -> None:
             if value and value.casefold() not in {item.casefold() for item in translations}:
                 translations.append(value)
         if not translations:
-            raise ValueError(f"No reviewed translations for {key}")
+            fallback = clean(dictionary_fallbacks.get(key))
+            if not fallback:
+                raise ValueError(f"No reviewed translations or fallback for {key}")
+            reason = "no independently owned target value in this book"
+            word["translation"] = ""
+            word["translations"] = []
+            word["empty_reason"] = reason
+            word["dictionary_translation"] = fallback
+            word["dictionary_translation_source"] = "skill_fallback"
+            words.append(word)
+            seed_words[key] = {
+                "translation": "",
+                "translations": [],
+                "empty_reason": reason,
+                "dictionary_translation": fallback,
+                "dictionary_translation_source": "skill_fallback",
+            }
+            continue
         word["translation"] = translations[0]
         word["translations"] = translations
         words.append(word)
@@ -157,10 +186,37 @@ def main() -> None:
         {key: value for key, value in phrase.items() if key != "audit_notes"}
         for phrase in phrases
     ]
+    verification = spec.get("verification_word_to_word")
+    if not isinstance(verification, dict):
+        raise ValueError("review spec requires verification_word_to_word object")
+    verification = {
+        **verification,
+        "version": 1,
+        "book_id": layer.get("book_id"),
+        "source_lang": "en",
+        "target_lang": "ru",
+    }
+    proof_errors, _ = validate_word_to_word(layer, verification)
+    if proof_errors:
+        raise ValueError(
+            "verification_word_to_word is invalid: " + "; ".join(proof_errors)
+        )
     write(directory / "seed_words_ru.json", seed_words)
     write(directory / "seed_phrases_ru.json", seed_phrases)
+    write(directory / "word_to_word_ru.json", verification)
     write(layer_path, layer)
-    print(json.dumps({"parallel": len(parallel), "words": len(words), "phrases": len(phrases)}, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "parallel": len(parallel),
+                "words": len(words),
+                "phrases": len(phrases),
+                "word_occurrences": len(verification.get("entries") or []),
+                "phrase_blocks": len(verification.get("phrase_blocks") or []),
+            },
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":

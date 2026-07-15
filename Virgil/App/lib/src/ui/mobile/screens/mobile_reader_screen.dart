@@ -1184,9 +1184,6 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     final dictionaryPayload = _detailByWordId[word.id];
     final isMultiWordBlock =
         const {'phrase', 'grammar_group'}.contains(word.effectiveAlignmentKind);
-    if (!isMultiWordBlock && word.isFunctionWord && dictionaryPayload == null) {
-      return;
-    }
     final payload = isMultiWordBlock
         ? DetailSheetPayload.fromSelection(item: item, word: word)
         : (dictionaryPayload ??

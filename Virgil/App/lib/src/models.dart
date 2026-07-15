@@ -298,6 +298,7 @@ class ParagraphWordItem {
     this.effectiveMatchedBy,
     this.effectiveAlignmentKind,
     this.effectiveCoverageStatus,
+    this.dictionaryTranslations = const <String>[],
   });
 
   final String id;
@@ -341,6 +342,7 @@ class ParagraphWordItem {
   final String? effectiveMatchedBy;
   final String? effectiveAlignmentKind;
   final String? effectiveCoverageStatus;
+  final List<String> dictionaryTranslations;
   bool get isFunctionWord => const {
         'ADP',
         'AUX',
@@ -461,6 +463,11 @@ class ParagraphWordItem {
           (json['effective_coverage_status'] as String?)?.isNotEmpty == true
               ? json['effective_coverage_status'] as String?
               : json['source_first_coverage_status'] as String?,
+      dictionaryTranslations:
+          (json['dictionary_translations'] as List<dynamic>? ?? const [])
+              .map((item) => item.toString().trim())
+              .where((item) => item.isNotEmpty)
+              .toList(),
     );
   }
 }

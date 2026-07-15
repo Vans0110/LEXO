@@ -6,7 +6,8 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
-
+from validate_seed_consistency import normalized_phrase_map, normalized_word_map, phrase_components_cover_source
+from validate_verification_word_to_word import validate as validate_word_to_word
 
 PHRASE_TYPES = {
     "phrasal_verb",
@@ -19,8 +20,7 @@ PHRASE_TYPES = {
 }
 TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
 FUNCTION_POS = {"DET", "AUX", "ADP", "PART", "CCONJ", "SCONJ"}
-OWNERSHIP_TYPES = {"word", "absorbed", "mixed"}
-
+OWNERSHIP_TYPES = {"word", "absorbed", "mixed", "noncontextual"}
 
 def clean(value: object) -> str:
     return " ".join(str(value or "").split())
@@ -59,34 +59,6 @@ def corruption_paths(value: object, path: str = "$") -> list[str]:
     return found
 
 
-def normalized_word_map(items: object) -> dict[str, tuple[str, ...]]:
-    result: dict[str, tuple[str, ...]] = {}
-    if isinstance(items, dict):
-        iterable = []
-        for key, value in items.items():
-            if not isinstance(value, dict) or "|" not in str(key):
-                continue
-            lemma, pos = str(key).rsplit("|", 1)
-            iterable.append({**value, "lemma": lemma, "pos": pos})
-    else:
-        iterable = items or []
-    for item in iterable:
-        if not isinstance(item, dict):
-            continue
-        key = f"{clean(item.get('lemma')).lower()}|{clean(item.get('pos')).upper()}"
-        values = tuple(sorted({clean(value).casefold() for value in item.get("translations") or [] if clean(value)}))
-        result[key] = values
-    return result
-
-
-def normalized_phrase_map(items: object) -> dict[str, str]:
-    return {
-        clean(item.get("source")).casefold(): clean(item.get("translation")).casefold()
-        for item in items or []
-        if isinstance(item, dict) and clean(item.get("source"))
-    }
-
-
 def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
     errors: list[str] = []
     for path in corruption_paths(payload):
@@ -103,10 +75,13 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
     words = [item for item in payload.get("words") or [] if isinstance(item, dict)]
     phrases = [item for item in payload.get("phrases") or [] if isinstance(item, dict)]
     audit_payload = payload.get("book_layer_audit")
+    absorbed_items = (
+        audit_payload.get("absorbed_word_keys") or []
+        if isinstance(audit_payload, dict)
+        else []
+    )
     absorbed_word_keys = {
-        clean(item).lower()
-        for item in (audit_payload.get("absorbed_word_keys") or [])
-        if isinstance(audit_payload, dict) and clean(item)
+        clean(item).lower() for item in absorbed_items if clean(item)
     }
     pairs = {(clean(item.get("source")), clean(item.get("translation"))) for item in parallel}
     if not parallel:
@@ -131,13 +106,24 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
             errors.append(f"{label}.translation must occur in translations[]")
         key = f"{lemma}|{pos}"
         is_absorbed = key.lower() in absorbed_word_keys
+        fallback = clean(word.get("dictionary_translation"))
+        fallback_source = clean(word.get("dictionary_translation_source"))
         if not any(clean(item) for item in translations or []):
-            if not is_absorbed or not clean(word.get("empty_reason")):
+            if (not is_absorbed and not fallback) or not clean(word.get("empty_reason")):
                 errors.append(
-                    f"{label} without translations requires absorbed ownership and empty_reason"
+                    f"{label} without translations requires absorption or fallback and empty_reason"
                 )
         elif is_absorbed:
             errors.append(f"{label} is absorbed but still has translations")
+        if fallback and fallback_source != "skill_fallback":
+            errors.append(
+                f"{label}.dictionary_translation requires "
+                "dictionary_translation_source='skill_fallback'"
+            )
+        if fallback and len(tokens(fallback)) != 1:
+            errors.append(f"{label}.dictionary_translation must be one word")
+        if fallback_source and not fallback:
+            errors.append(f"{label} has fallback source without fallback value")
         if key in seen_word_keys:
             errors.append(f"duplicate word key: {key}")
         seen_word_keys.add(key)
@@ -191,6 +177,8 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
                         )
                 if component_translation and clean(component.get("pos")).upper() not in FUNCTION_POS:
                     component_owners.setdefault(component_translation, set()).add(component_key)
+            if not phrase_components_cover_source(phrase):
+                errors.append(f"{label}.components[] do not cover the complete phrase source")
         source_forms = phrase.get("source_forms")
         if not isinstance(source_forms, list) or not any(clean(item) for item in source_forms):
             errors.append(f"{label}.source_forms[] is required")
@@ -298,6 +286,22 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
                     errors.append(f"{label} word ownership disagrees with word/audit state")
                 if ownership == "mixed" and (not word_values or is_absorbed):
                     errors.append(f"{label} mixed ownership requires translations and no blanket absorption")
+                if ownership == "noncontextual":
+                    matching_word = next(
+                        (
+                            word
+                            for word in words
+                            if f"{clean(word.get('lemma')).lower()}|{clean(word.get('pos')).upper()}"
+                            == normalized_key
+                        ),
+                        {},
+                    )
+                    if word_values or is_absorbed or not clean(
+                        matching_word.get("dictionary_translation")
+                    ):
+                        errors.append(
+                            f"{label} noncontextual ownership requires only a teaching fallback"
+                        )
             missing_decisions = seen_word_keys - set(decisions_by_key)
             extra_decisions = set(decisions_by_key) - seen_word_keys
             if missing_decisions:
@@ -371,6 +375,14 @@ def main() -> int:
             seed_phrases = json.loads(seed_phrases_path.read_text(encoding="utf-8"))
             if normalized_phrase_map(seed_phrases) != normalized_phrase_map(payload.get("phrases")):
                 errors.append("seed_phrases_ru.json disagrees with book_layer_ru.json phrases[]")
+        proof_path = layer_path.with_name("word_to_word_ru.json")
+        if not proof_path.exists():
+            errors.append("word_to_word_ru.json verification artifact is required")
+        else:
+            proof = load(proof_path)
+            proof_errors, proof_counts = validate_word_to_word(payload, proof)
+            errors.extend(f"word_to_word: {error}" for error in proof_errors)
+            counts.update({f"word_to_word_{key}": value for key, value in proof_counts.items()})
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"ERROR: {exc}")
         return 2

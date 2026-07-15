@@ -262,6 +262,7 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
   Map<String, dynamic> paragraph,
   Map<String, Map<String, dynamic>> alignmentByWordId,
   List<Map<String, dynamic>> phraseAlignments,
+  Map<String, dynamic> dictionaryEntries,
 ) {
   final normalizedParagraph = <String, dynamic>{...paragraph};
   final tokensBySegmentId = <String, List<String>>{};
@@ -306,9 +307,17 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
       next.remove(legacyKey);
     }
     final wordId = (next['id'] ?? '').toString();
-    if (_isFunctionWordPos(next['pos'])) {
-      next['tap_unit_id'] = '';
-    }
+    final lemma =
+        (next['lemma'] ?? next['text'] ?? '').toString().trim().toLowerCase();
+    final pos = (next['pos'] ?? '').toString().trim().toUpperCase();
+    final dictionaryEntry = dictionaryEntries['$lemma|$pos'];
+    next['dictionary_translations'] = dictionaryEntry is Map<String, dynamic>
+        ? (dictionaryEntry['translations'] as List<dynamic>? ?? const [])
+            .map((item) => item.toString().trim())
+            .where((item) => item.isNotEmpty)
+            .toSet()
+            .toList()
+        : const <String>[];
     final alignment = alignmentByWordId[wordId];
     if (alignment == null) {
       return next;
@@ -513,6 +522,12 @@ Map<String, dynamic> _normalizePackageJson(Map<String, dynamic> rawPackage) {
   };
   final alignmentByWordId = _wordAlignmentById(package);
   final phraseAlignments = _phraseAlignments(package);
+  final dictionaryManifest =
+      package['dictionary_manifest'] as Map<String, dynamic>? ??
+          const <String, dynamic>{};
+  final dictionaryEntries =
+      dictionaryManifest['entries'] as Map<String, dynamic>? ??
+          const <String, dynamic>{};
   final paragraphs = (readerPayload['paragraphs'] as List<dynamic>? ?? const [])
       .whereType<Map<String, dynamic>>()
       .map((paragraph) {
@@ -520,6 +535,7 @@ Map<String, dynamic> _normalizePackageJson(Map<String, dynamic> rawPackage) {
       paragraph,
       alignmentByWordId,
       phraseAlignments,
+      dictionaryEntries,
     );
     alignedParagraph['words'] =
         (alignedParagraph['words'] as List<dynamic>? ?? const [])

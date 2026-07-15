@@ -1,11 +1,24 @@
 ---
 name: lexo-build-ru-book-layer
-description: Create a complete Russian LEXO book layer from an English original and its approved Russian translation, including aligned parallel segments, context-specific word translations, phrase translations, component ownership, occurrence evidence, an independent second-pass audit, and a blocking third-pass word-ownership audit. Use when the user asks to create, generate, rebuild from source texts, or fully re-analyze a RU `book_layer_ru.json`, `seed_words_ru.json`, or `seed_phrases_ru.json` for one book.
+description: Create complete Russian word files for one LEXO book and prove them with an occurrence-level word-to-word artifact. Produces seed words, seed phrases, the book layer, and a verification word-to-word file only; never rebuilds globals, packages, or ZIP files.
 ---
 
 # LEXO Build RU Book Layer
 
-Build one Russian book layer at a time from the English source and the approved Russian translation. This skill creates evidence-backed dictionary data; it does not translate the book itself.
+Build one Russian book layer at a time from the English source and the approved Russian translation. This skill creates evidence-backed dictionary files; it does not translate or distribute the book.
+
+## Strict scope
+
+The only outputs are:
+
+- `seed_words_ru.json`;
+- `seed_phrases_ru.json`;
+- `book_layer_ru.json`;
+- a skill-owned verification `word_to_word_ru.json`.
+
+Never rebuild or edit global dictionaries, Workbench data, application assets,
+CloudLibrary files, production packages, or ZIP files. Never change Flutter.
+Those are separate workflows requiring separate authorization.
 
 ## Respect project authorization
 
@@ -56,6 +69,18 @@ Create a word record for every lexical occurrence required by the reader diction
 - never assign a neighbouring noun, verb, adjective, or whole phrase translation to a function word (`the` must never receive the translation of `room` or `teacher`);
 - keep independently translated function words only when an exact contextual target belongs to that word itself;
 - never select a global dictionary value merely because it exists.
+
+Keep contextual and teaching values separate. `translations[]` contains only
+values independently supported by this book. When no independently owned target
+value exists, preserve an empty contextual translation and classify the
+occurrence. The skill may provide one concise teaching value in
+`dictionary_translation`, but it must be marked as non-contextual and must never
+claim a target span in the book.
+
+Do not encode particular English words as rules. Apply structural rules to all
+determiners, auxiliaries, particles, conjunctions, prepositions, lexical words
+whose sense changes inside a construction, and words omitted by the approved
+translation.
 
 Treat global RU words as comparison material, not as primary evidence. Add confirmed contextual values; do not erase older confirmed values during later merge.
 
@@ -136,14 +161,51 @@ After approval and a clean second pass:
 1. Write `seed_words_ru.json` from verified book word evidence.
 2. Write `seed_phrases_ru.json` from verified phrase evidence.
 3. Write `book_layer_ru.json` with `parallel`, `words`, `phrases`, and audit metadata.
-4. Run `scripts/validate_ru_book_layer.py <book_layer_ru.json>`. The validator also compares sibling seed files when they exist.
-5. Rebuild RU global words/phrases through the project rebuild script; never hand-edit globals as the primary source.
-6. Run global rebuild again in check mode and require `changed=false`.
-7. Rebuild `dictionary_ru.json`, occurrence-level `word_to_word_ru.json`, and affected package ZIP.
-8. Run relevant backend tests, Flutter regression, Python compile, and Dart analyze.
-9. Update the current daily history and concise `Docs/History/INDEX.md` entry.
+4. Build the skill-owned occurrence-level `word_to_word_ru.json` directly from
+   verified book tokens, seeds, phrases, and ownership decisions.
+5. Run `scripts/validate_ru_book_layer.py <book_layer_ru.json>`. The validator
+   must compare both sibling seed files and the sibling verification
+   `word_to_word_ru.json`.
+6. Run Python compile and the skill's deterministic tests.
+7. Update the current daily history and concise `Docs/History/INDEX.md` entry.
 
 Treat validator errors and unresolved second-, third-, or fourth-pass findings as blocking.
+
+## Verification word-to-word contract
+
+Create exactly one entry for every source occurrence identified by `word_id`.
+Every entry must have exactly one status:
+
+- `independent_translation`;
+- `phrase_component`;
+- `grammar_component`;
+- `zero_correspondence`;
+- `dictionary_fallback`;
+- `source_translation_omission`;
+- `unresolved`.
+
+An empty contextual translation requires `empty_reason`. Phrase and grammar
+components also require `owner_unit_id`; all components of one block must share
+its `tap_unit_id`. A dictionary fallback may contain one concise
+`dictionary_translation`, but no contextual target span. Never copy a whole
+phrase translation into its components.
+
+The verification file also contains phrase blocks with source, translation,
+segment, component `word_ids`, and shared unit id. Every retained seed phrase
+and every attested source form must materialize in this file.
+
+Completion is forbidden unless all of the following are zero:
+
+- missing or duplicate `word_id` values;
+- unclassified occurrences;
+- empty values without reasons;
+- unmaterialized phrases;
+- phrase components with different tap units;
+- independent owners claiming the same target span;
+- unresolved occurrences.
+
+If any check fails, do not report completion. Report each problem with segment,
+`word_id`, source form, and reason.
 
 ## Report
 
@@ -156,6 +218,11 @@ Report:
 - corrections found during Pass 2;
 - ownership corrections found during Pass 3;
 - unresolved items, which must be zero for completion;
-- validator, rebuild, idempotence, package, and test results.
+- verification word-to-word occurrence and phrase-block counts;
+- contextual translations, dictionary fallbacks, zero correspondences, and
+  source-translation omissions;
+- validator and deterministic test results.
 
-Never claim that the RU book layer is complete unless every segment passed both semantic analyses and every word key passed the independent ownership audit.
+Never claim that the RU word files are complete unless every segment passed both
+semantic analyses, every word key passed the ownership audit, and every source
+occurrence passed the verification word-to-word validator.

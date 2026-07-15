@@ -69,22 +69,35 @@ Run:
 
 ```powershell
 python Skills/lexo-phrase-audit/scripts/validate_phrase_layer.py <book_layer_path>
+# RU books only:
+python Skills/lexo-build-ru-book-layer/scripts/validate_ru_book_layer.py <book_layer_path>
 ```
 
-Treat any validator error as blocking. Review warnings manually. Also compare the phrase list against every parallel segment yourself; the deterministic validator cannot judge semantics.
+For RU books, the second command also requires and validates the sibling seeds
+and skill-owned verification `word_to_word_ru.json`. For another language, use
+its equivalent book-word validator and never substitute the RU schema. Treat any validator error
+as blocking. Review warnings manually. Also compare the phrase list against
+every parallel segment yourself; deterministic validators cannot judge
+semantics.
 
-## Update dictionaries
+## Write and verify book word files
 
 After approval and a clean audit:
 
 1. Update the book word/phrase seeds so regeneration preserves the result.
 2. Update `book_layer_{lang}.json` atomically.
-3. Rebuild global words and phrases through the project rebuild script; do not edit globals as the primary source.
-4. Run the global rebuild again in check mode and require `changed=false`.
-5. Rebuild `dictionary_{lang}.json`, occurrence-level `word_to_word_{lang}.json`, and package ZIPs.
-6. Confirm phrase headers use global phrases while `Words` uses individual occurrence-level word entries.
-7. Run backend tests, Flutter regression tests, Python compile, and Dart analyze relevant to the change.
-8. Update the current daily history and the concise INDEX entry.
+3. Build a skill-owned occurrence-level `word_to_word_{lang}.json` directly
+   from verified book tokens, word seeds, phrase seeds, and ownership decisions.
+4. Require one classified entry per `word_id`, one shared `tap_unit_id` for all
+   components of a retained phrase, and one materialized block for every
+   attested phrase occurrence.
+5. Run the book-layer and verification word-to-word validators plus Python
+   compile and deterministic skill tests.
+6. Update the current daily history and the concise INDEX entry.
+
+Never rebuild or edit globals, Workbench data, application assets,
+CloudLibrary files, production packages, or ZIP files. Never change Flutter.
+Those are outside this skill.
 
 ## Report
 
@@ -95,7 +108,7 @@ Report:
 - component translations added to book words;
 - unresolved omissions (must be zero for completion);
 - validator/test results;
-- rebuilt package scope;
+- verification word-to-word occurrence and phrase-block counts;
 - any judgment calls requiring user review.
 
 Never report the phrase layer as complete when only a hardcoded seed list was checked.

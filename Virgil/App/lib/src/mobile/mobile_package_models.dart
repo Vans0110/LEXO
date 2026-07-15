@@ -258,6 +258,7 @@ class MobileBookPackage {
   static DetailSheetPayload? _detailFromDictionaryAlignedWord({
     required Map<String, dynamic> word,
     required String paragraphSourceText,
+    required Map<String, dynamic>? dictionaryEntry,
   }) {
     final matchedBy = (word['effective_matched_by'] as String? ?? '').trim();
     final alignmentKind =
@@ -282,7 +283,12 @@ class MobileBookPackage {
             : surface)
         .trim()
         .toLowerCase();
-    final pos = (word['pos'] as String? ?? '').trim().toUpperCase();
+    final dictionaryTranslations =
+        (dictionaryEntry?['translations'] as List<dynamic>? ?? const [])
+            .map((item) => item.toString().trim())
+            .where((item) => item.isNotEmpty)
+            .toSet()
+            .toList();
     final source = (word['source_unit_text'] as String? ?? '').trim().isNotEmpty
         ? word['source_unit_text'] as String
         : surface;
@@ -295,31 +301,7 @@ class MobileBookPackage {
           word['segment_source_text'] as String? ?? paragraphSourceText,
       'example_translation_text': word['segment_target_text'] as String? ?? '',
       'source_first': null,
-      'dictionary_entry': {
-        'query': surface,
-        'lemma': lemma,
-        'transcript': '',
-        'word_found': true,
-        'word_entry': <String, dynamic>{},
-        'translations': [translation],
-        'part_of_speech': pos,
-        'definitions': <String>[],
-        'inflected_forms': <String>[],
-        'verb_forms': <String, dynamic>{},
-        'phrasals': <dynamic>[],
-        'entries': [
-          {
-            'source': matchedBy,
-            'lemma': lemma,
-            'part_of_speech': pos,
-            'transcript': '',
-            'translations': [translation],
-            'definitions': <String>[],
-          }
-        ],
-        'has_content': true,
-        'note': '',
-      },
+      'dictionary_entry': dictionaryEntry,
       'units': [
         {
           'id': word['lexical_unit_id'] as String? ?? wordId,
@@ -327,7 +309,7 @@ class MobileBookPackage {
           'text': surface,
           'surface_text': surface,
           'lemma': lemma,
-          'translation': translation,
+          'translation': dictionaryTranslations.join(' / '),
           'grammar_hint': word['grammar_hint'] as String? ?? '',
           'morph_label': word['morph_label'] as String? ?? '',
           'is_primary': true,
@@ -377,13 +359,18 @@ class MobileBookPackage {
         if (wordId.isEmpty) {
           continue;
         }
-        if (_isFunctionWordPos(word['pos'])) {
-          result.remove(wordId);
-          continue;
-        }
+        final lemma =
+            ((word['lemma'] as String?) ?? (word['text'] as String?) ?? '')
+                .trim()
+                .toLowerCase();
+        final pos = (word['pos'] as String? ?? '').trim().toUpperCase();
+        final dictionaryKey = '$lemma|$pos';
+        final dictionaryEntry = dictionaryEntries[dictionaryKey];
         final alignedDetail = _detailFromDictionaryAlignedWord(
           word: word,
           paragraphSourceText: sourceText,
+          dictionaryEntry:
+              dictionaryEntry is Map<String, dynamic> ? dictionaryEntry : null,
         );
         if (alignedDetail != null) {
           result[wordId] = alignedDetail;
@@ -392,13 +379,6 @@ class MobileBookPackage {
         if (result.containsKey(wordId)) {
           continue;
         }
-        final lemma =
-            ((word['lemma'] as String?) ?? (word['text'] as String?) ?? '')
-                .trim()
-                .toLowerCase();
-        final pos = (word['pos'] as String? ?? '').trim().toUpperCase();
-        final dictionaryKey = '$lemma|$pos';
-        final dictionaryEntry = dictionaryEntries[dictionaryKey];
         if (dictionaryEntry is! Map<String, dynamic>) {
           continue;
         }
@@ -430,13 +410,4 @@ class MobileBookPackage {
     }
     return result;
   }
-
-  static bool _isFunctionWordPos(Object? value) => const {
-        'ADP',
-        'AUX',
-        'CCONJ',
-        'DET',
-        'PART',
-        'SCONJ',
-      }.contains(value?.toString().trim().toUpperCase());
 }

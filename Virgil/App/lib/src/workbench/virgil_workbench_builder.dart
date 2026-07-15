@@ -167,13 +167,22 @@ class VirgilWorkbenchBuilder {
           targetLang: lang,
         );
         final wordCount = (result['word_count'] as num?)?.toInt() ?? 0;
-        if (wordCount == 0) {
+        final translatedWordCount =
+            (result['translated_word_count'] as num?)?.toInt() ?? 0;
+        final missingWordCount =
+            (result['missing_word_count'] as num?)?.toInt() ?? 0;
+        if (wordCount == 0 || translatedWordCount == 0) {
           throw Exception(
             'Library dictionary $lang is empty for $langBookId. '
-            'Missing seed words.',
+            'No matching Global dictionary words.',
           );
         }
-        log('Library dictionary $lang rebuilt: ${result['word_count'] ?? 0} words, ${result['phrase_count'] ?? 0} phrases');
+        log(
+          'Library dictionary $lang built from Globals: '
+          '$translatedWordCount/$wordCount words, '
+          '$missingWordCount missing, '
+          '${result['phrase_count'] ?? 0} Global phrases',
+        );
       }
       packageByLang[lang] =
           await api.downloadMobileBookPackageChunked(langBookId);

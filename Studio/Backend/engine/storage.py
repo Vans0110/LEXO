@@ -893,22 +893,36 @@ class LexoStorage:
         normalized_lang = str(target_lang or "ru").strip().lower() or "ru"
         if normalized_lang not in {"ru", "uk"}:
             raise ValueError("Library dictionary prototype supports only ru/uk")
-        payload = self._build_book_layer_payload(resolved, normalized_lang)
-        layer_path = self.library_dictionary_store.write_book_layer(payload, normalized_lang)
-        merge_result = self.library_dictionary_store.merge_book_layer(payload)
+
+        # Workbench refresh is intentionally read-only for seed, book-layer and
+        # Global dictionary files. Globals are maintained by a separate,
+        # explicitly selected-book workflow; this endpoint only rebuilds the
+        # selected book's derived dictionary data from the current Globals.
         self._clear_book_dictionary_cache(resolved)
         with self._connect() as conn:
-            dictionary_entry_count = self._rebuild_book_dictionary_entries(conn, resolved)
+            dictionary_entry_count = self._rebuild_book_dictionary_entries(
+                conn,
+                resolved,
+                target_lang=normalized_lang,
+            )
+        manifest = self._book_dictionary_manifest(resolved, normalized_lang)
+        entries = manifest.get("entries") or {}
+        translated_word_count = sum(
+            1
+            for entry in entries.values()
+            if isinstance(entry, dict) and bool(entry.get("translations"))
+        )
+        missing_word_count = max(0, len(entries) - translated_word_count)
         return {
             "ok": True,
             "book_id": resolved,
             "target_lang": normalized_lang,
-            "book_layer_path": str(layer_path),
-            "word_count": len(payload.get("words") or []),
-            "phrase_count": len(payload.get("phrases") or []),
-            "parallel_count": len(payload.get("parallel") or []),
+            "source": manifest.get("source") or "",
+            "word_count": len(entries),
+            "translated_word_count": translated_word_count,
+            "missing_word_count": missing_word_count,
+            "phrase_count": int(manifest.get("phrase_count") or 0),
             "dictionary_entry_count": dictionary_entry_count,
-            **merge_result,
         }
 
     def _build_book_layer_payload(self, book_id: str, target_lang: str) -> dict:
@@ -1342,7 +1356,12 @@ class LexoStorage:
     def _dictionary_key(self, lemma: str, pos: str) -> str:
         return f"{str(lemma or '').strip().lower()}|{str(pos or '').strip().upper()}"
 
-    def _rebuild_book_dictionary_entries(self, conn: sqlite3.Connection, book_id: str) -> int:
+    def _rebuild_book_dictionary_entries(
+        self,
+        conn: sqlite3.Connection,
+        book_id: str,
+        target_lang: str = "ru",
+    ) -> int:
         rows = conn.execute(
             """
             SELECT normalized_text, lemma, pos
@@ -1366,7 +1385,12 @@ class LexoStorage:
         created_at = datetime.now(timezone.utc).isoformat()
         entry_rows = []
         for key, (surface, lemma, pos) in entries_by_key.items():
-            entry = self.dictionary_lookup.lookup_word(surface, lemma=lemma, pos=pos, target_lang="ru")
+            entry = self.dictionary_lookup.lookup_word(
+                surface,
+                lemma=lemma,
+                pos=pos,
+                target_lang=target_lang,
+            )
             entry["dictionary_key"] = key
             entry["offline_manifest"] = True
             entry_rows.append(

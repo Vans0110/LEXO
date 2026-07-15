@@ -451,9 +451,6 @@ class DetailSheetPayload {
         .where((entry) => entry.tapUnitId == word.tapUnitId)
         .toList()
       ..sort((left, right) => left.orderIndex.compareTo(right.orderIndex));
-    final isBlockSelection =
-        const {'phrase', 'grammar_group'}.contains(word.effectiveAlignmentKind);
-    final isPhraseSelection = word.effectiveAlignmentKind == 'phrase';
     final units = <DetailSheetUnitItem>[];
     var index = 0;
     while (index < selectedWords.length) {
@@ -482,26 +479,10 @@ class DetailSheetPayload {
       final displayText =
           lexicalUnitType == 'GRAMMAR' ? surfaceText : lemmaText;
       final translation = grouped
-          .map((entry) {
-            if (entry.isFunctionWord && !isPhraseSelection) {
-              return '';
-            }
-            if (!isBlockSelection) {
-              return entry.effectiveTranslationText?.trim() ?? '';
-            }
-            final unitFocus = entry.unitTranslationFocusText.trim();
-            if (unitFocus.isNotEmpty) {
-              return unitFocus;
-            }
-            final unitSpan = entry.unitTranslationSpanText.trim();
-            if (unitSpan.isNotEmpty) {
-              return unitSpan;
-            }
-            return entry.effectiveTranslationText?.trim() ?? '';
-          })
+          .expand((entry) => entry.dictionaryTranslations)
           .where((entry) => entry.isNotEmpty)
           .toSet()
-          .join(' ');
+          .join(' / ');
       units.add(
         DetailSheetUnitItem(
           id: lexicalUnitId,

@@ -1,0 +1,4 @@
+interface:
+  display_name: "LEXO Add RU Books to Globals"
+  short_description: "Add selected RU book seeds to Globals"
+  default_prompt: "Use $lexo-add-ru-books-to-globals to add selected RU book seeds to the Global dictionaries."

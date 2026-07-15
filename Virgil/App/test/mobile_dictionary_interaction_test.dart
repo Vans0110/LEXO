@@ -97,7 +97,22 @@ Map<String, dynamic> _package() {
         },
       ],
     },
-    'dictionary_manifest': {'entries': <String, dynamic>{}},
+    'dictionary_manifest': {
+      'entries': {
+        'rest|NOUN': {
+          'translations': ['отдых']
+        },
+        'of|ADP': {
+          'translations': ['из']
+        },
+        'the|DET': {
+          'translations': ['этот']
+        },
+        'day|NOUN': {
+          'translations': ['день']
+        },
+      },
+    },
   };
 }
 
@@ -108,6 +123,7 @@ Map<String, dynamic> _grammarPackage(
   final package = _package();
   final words = <Map<String, dynamic>>[];
   final entries = <Map<String, dynamic>>[];
+  final dictionaryEntries = <String, dynamic>{};
   for (var index = 0; index < items.length; index++) {
     final (text, pos, translation) = items[index];
     final id = 'grammar_word_$index';
@@ -117,6 +133,9 @@ Map<String, dynamic> _grammarPackage(
       'segment_id': 'segment_1',
       'translation': translation,
     });
+    dictionaryEntries['${text.toLowerCase()}|$pos'] = {
+      'translations': [translation],
+    };
   }
   final paragraph =
       ((package['reader_payload'] as Map)['paragraphs'] as List).first as Map;
@@ -146,6 +165,7 @@ Map<String, dynamic> _grammarPackage(
     'entries': entries,
     'phrases': <Map<String, dynamic>>[],
   };
+  package['dictionary_manifest'] = {'entries': dictionaryEntries};
   return package;
 }
 
@@ -185,8 +205,8 @@ void main() {
         ['rest', 'of', 'the', 'day']);
     expect(phraseCard.units.map((unit) => unit.translation),
         ['отдых', 'из', 'этот', 'день']);
-    expect(package.detailByWordId, isNot(contains('word_of')));
-    expect(package.detailByWordId, isNot(contains('word_the')));
+    expect(package.detailByWordId, contains('word_of'));
+    expect(package.detailByWordId, contains('word_the'));
   });
 
   test('POS grammar groups attach function words to a lexical head', () {
@@ -235,12 +255,12 @@ void main() {
       );
       expect(card.units.length, paragraph.words.length);
       expect(card.units.first.type, 'GRAMMAR');
-      expect(card.units.first.translation, isEmpty);
+      expect(card.units.first.translation, isNotEmpty);
       expect(card.units.last.isPrimary, isTrue);
     }
   });
 
-  test('unattached function word is not a standalone tap target', () {
+  test('unattached function word keeps its standalone tap target', () {
     final raw = _grammarPackage(
       [('of', 'ADP', 'из')],
       ['из'],
@@ -250,8 +270,35 @@ void main() {
         as Map<String, dynamic>;
     final word = ((paragraph['words'] as List).first as Map<String, dynamic>);
     final token = ((paragraph['tokens'] as List).first as Map<String, dynamic>);
-    expect(word['tap_unit_id'], '');
-    expect(token.containsKey('tap_unit_id'), isFalse);
+    expect(word['tap_unit_id'], 'grammar_word_0');
+    expect(token['tap_unit_id'], 'grammar_word_0');
+    final package = MobileBookPackage(normalized);
+    final detail = package.detailByWordId['grammar_word_0'];
+    expect(detail, isNotNull);
+    expect(detail!.sheetSourceText, 'of');
+    expect(detail.sheetTranslationText, 'из');
+  });
+
+  test('Words use dictionary values while the header uses alignment', () {
+    final raw = _grammarPackage(
+      [('word', 'NOUN', 'контекст')],
+      ['контекст'],
+    );
+    raw['dictionary_manifest'] = {
+      'entries': {
+        'word|NOUN': {
+          'translations': ['словарное значение'],
+        },
+      },
+    };
+
+    final normalized = normalizeMobilePackageJsonForTest(raw);
+    final package = MobileBookPackage(normalized);
+    final detail = package.detailByWordId['grammar_word_0'];
+
+    expect(detail, isNotNull);
+    expect(detail!.sheetTranslationText, 'контекст');
+    expect(detail.units.single.translation, 'словарное значение');
   });
 
   test('grammar groups allow reversed target order', () {

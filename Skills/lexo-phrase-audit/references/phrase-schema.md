@@ -105,3 +105,14 @@ The merge adds provenance without removing book evidence:
 ```
 
 Global data is derived. The book layer and seeds remain the editable evidence source.
+
+## Scope and occurrence proof
+
+The phrase audit stops after writing the book word seed, phrase seed, book layer,
+and a skill-owned verification `word_to_word_<lang>.json`. It never rebuilds
+globals, Workbench data, packages, or ZIP files.
+
+Every attested retained phrase occurrence must appear as one verification phrase
+block. All component `word_id` values share that block's `owner_unit_id` and
+`tap_unit_id`. A missing block, split tap units, an empty component without a
+reason, or a whole translation copied to multiple components is blocking.

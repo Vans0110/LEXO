@@ -4,6 +4,18 @@
 
 ## Записи
 
+### 2026-07-15
+- GitHub push закреплён через существующий Git Credential Manager без лишнего требования `gh auth`; для mixed worktree обязателен выборочный staging.
+- Добавлена актуальная карта Virgil: расширен App README и создан подробный документ архитектуры с mobile/Workbench/R2 и dictionary data flow.
+- Detail sheet разделён по источникам: `Words` строится только из книжного dictionary/Globals, а word-to-word используется только для contextual header и параллельной подсветки.
+- Reader больше не отключает standalone tap и detail card только по служебному POS: точные `and → и` и `at → на` доступны, long press карточки работает, phrase/grammar ownership сохранён.
+- Workbench Dictionary refresh переведён на односторонний контур Globals → книжный dictionary → word-to-word: seed/book layer/Globals не изменяются; The Wrong Classroom проверен 81/81, missing 0, 5 фраз.
+- Словарные skills ограничены четырьмя собственными файлами без globals/ZIP; добавлен обязательный occurrence-level `word_to_word_ru.json` с блокирующей проверкой всех слов, ownership и phrase-блоков.
+- `The Wrong Classroom` пересобран новым контрактом: 146/146 occurrences, 5 единых phrase-блоков, `unresolved=0`, оба валидатора без ошибок; ZIP и globals не обновлялись.
+- RU Globals вручную очищены; создан `$lexo-add-ru-books-to-globals` для инкрементального добавления только выбранных seed-книг с double audit, skip/new-translation логикой и отчётом покрытия.
+- `The Wrong Classroom` выборочно добавлен в RU Globals: 81 word key/100 переводов и 5 фраз; повторный прогон 105/105 `skipped_existing`, остальные 9 книг не применены.
+- Файл: [2026-07-15.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-15.md)
+
 ### 2026-07-14
 - Из production-контура словарей, QA, POS и TTS удалены hardcoded-слова, фразы, переводы, книжные ID/исключения и языковые таблицы; добавлен guard-тест, пересобраны 10 RU/UK пакетов, global rebuild идемпотентен.
 - Добавлен `$lexo-build-ru-book-layer`: создание контекстного RU book layer и seed-файлов по EN/RU текстам с обязательным независимым вторым проходом и валидатором.

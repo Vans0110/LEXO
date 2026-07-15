@@ -21,6 +21,13 @@
 - `Archive/` - preserved legacy files, unused by current workflows.
 - `Docs/History/` - project history and source-of-truth index.
 
+## Project maps
+
+- `Virgil/App/README.md` - quick map of the active Flutter application.
+- `Docs/VIRGIL_ARCHITECTURE.md` - detailed mobile, Workbench, package and dictionary data flows.
+- `Studio/Workbench/README.md` - Workbench launch and storage locations.
+- `Docs/History/INDEX.md` - chronological source-of-truth index for completed work.
+
 ## Release flow
 
 1. Update `version` in `Virgil/App/pubspec.yaml`.

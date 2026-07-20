@@ -725,12 +725,11 @@ void main() {
 
     expect(words[0].sourceUnitText, 'Sara');
     expect(words[0].effectiveFocusText, 'Сара');
-    expect(words[1].sourceUnitText, 'is a new');
-    expect(words[1].effectiveFocusText, 'новая');
+    expect(words[1].sourceUnitText, 'is a new student');
+    expect(words[1].effectiveFocusText, 'новая ученица');
     expect(words[2].tapUnitId, words[1].tapUnitId);
     expect(words[3].tapUnitId, words[1].tapUnitId);
-    expect(words[4].sourceUnitText, 'student');
-    expect(words[4].effectiveFocusText, 'ученица');
+    expect(words[4].tapUnitId, words[1].tapUnitId);
     expect(words[5].sourceUnitText, 'at Hill');
     expect(words[5].effectiveFocusText, 'Хилл');
     expect(words[6].tapUnitId, words[5].tapUnitId);
@@ -739,6 +738,52 @@ void main() {
     expect(words[5].targetStartIndex, 4);
     expect(words[7].targetStartIndex, 3);
   });
+
+  test('AUX nominal groups keep adjective modifiers with the noun head', () {
+    final raw = _grammarPackage(
+      [
+        ('am', 'AUX', ''),
+        ('in', 'ADP', 'в'),
+        ('the', 'DET', ''),
+        ('different', 'ADJ', 'той'),
+        ('place', 'NOUN', 'комнате'),
+      ],
+      ['не', 'в', 'той', 'комнате'],
+    );
+    final entries = ((raw['word_to_word'] as Map)['entries'] as List)
+        .cast<Map<String, dynamic>>();
+    final adjective = entries.singleWhere(
+      (entry) => entry['word_id'] == 'grammar_word_3',
+    );
+    adjective['target_start_index'] = 2;
+    adjective['target_end_index'] = 2;
+    adjective['highlight_target_start_index'] = 0;
+    adjective['highlight_target_end_index'] = 2;
+
+    final package = MobileBookPackage(normalizeMobilePackageJsonForTest(raw));
+    final words = package.readerPayload.paragraphs.single.words;
+
+    expect(words[0].sourceUnitText, 'am in the different place');
+    expect(words[4].tapUnitId, words[0].tapUnitId);
+    expect(words[0].effectiveFocusText, 'не в той комнате');
+    expect(words[0].targetStartIndex, 0);
+    expect(words[0].targetEndIndex, 3);
+  });
+
+  test('AUX with a predicate adjective still forms an adjective group', () {
+    final raw = _grammarPackage(
+      [('seems', 'AUX', ''), ('different', 'ADJ', 'другой')],
+      ['другой'],
+    );
+
+    final package = MobileBookPackage(normalizeMobilePackageJsonForTest(raw));
+    final words = package.readerPayload.paragraphs.single.words;
+
+    expect(words[0].sourceUnitText, 'seems different');
+    expect(words[1].tapUnitId, words[0].tapUnitId);
+    expect(words[0].effectiveFocusText, 'другой');
+  });
+
   testWidgets('inflected target word stays inside the complete segment',
       (tester) async {
     final raw = _grammarPackage(

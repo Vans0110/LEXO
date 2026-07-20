@@ -233,7 +233,7 @@ void _applyPosGrammarGroups(
           group.add(next);
           continue;
         }
-        if (_isLexicalHeadPos(pos)) {
+        if (_isLexicalHeadPos(pos) && !(firstPos == 'AUX' && pos == 'ADJ')) {
           group.add(next);
           headFound = true;
           break;
@@ -242,6 +242,12 @@ void _applyPosGrammarGroups(
           break;
         }
         group.add(next);
+      }
+      if (!headFound &&
+          firstPos == 'AUX' &&
+          group.length > 1 &&
+          (group.last['pos'] ?? '').toString().trim().toUpperCase() == 'ADJ') {
+        headFound = true;
       }
       if (!headFound || group.length < 2) {
         continue;
@@ -259,8 +265,12 @@ void _applyPosGrammarGroups(
               .trim()
               .isNotEmpty)
           .map((word) => (
-                (word['target_start_index'] as int?) ?? -1,
-                (word['target_end_index'] as int?) ?? -1,
+                (word['highlight_target_start_index'] as int?) ??
+                    (word['target_start_index'] as int?) ??
+                    -1,
+                (word['highlight_target_end_index'] as int?) ??
+                    (word['target_end_index'] as int?) ??
+                    -1,
               ))
           .where((span) => span.$1 >= 0 && span.$2 >= span.$1)
           .toList();

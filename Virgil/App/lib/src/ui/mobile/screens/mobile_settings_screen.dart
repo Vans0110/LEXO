@@ -102,7 +102,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              initialValue: settings.preferredVoiceId,
+              value: settings.preferredVoiceId,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:
@@ -134,7 +134,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<double>(
-              initialValue: settings.preferredPlaybackSpeed,
+              value: settings.preferredPlaybackSpeed,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:

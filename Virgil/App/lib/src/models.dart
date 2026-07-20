@@ -263,6 +263,8 @@ class ParagraphWordItem {
     required this.orderIndexInSegment,
     required this.targetStartIndex,
     required this.targetEndIndex,
+    required this.highlightTargetStartIndex,
+    required this.highlightTargetEndIndex,
     this.segmentId,
     required this.anchorWordId,
     required this.tapUnitId,
@@ -301,6 +303,10 @@ class ParagraphWordItem {
     this.dictionaryTranslations = const <String>[],
     this.functionWordLabel,
     this.functionWordExplanation,
+    this.functionWordBaseForm,
+    this.functionWordTranslation,
+    this.functionWordUsage,
+    this.functionWordExamples = const <Map<String, String>>[],
     this.blockSource,
     this.blockTranslation,
     this.blockDictionaryTranslation,
@@ -314,6 +320,8 @@ class ParagraphWordItem {
   final int orderIndexInSegment;
   final int targetStartIndex;
   final int targetEndIndex;
+  final int highlightTargetStartIndex;
+  final int highlightTargetEndIndex;
   final String? segmentId;
   final String? anchorWordId;
   final String tapUnitId;
@@ -352,6 +360,10 @@ class ParagraphWordItem {
   final List<String> dictionaryTranslations;
   final String? functionWordLabel;
   final String? functionWordExplanation;
+  final String? functionWordBaseForm;
+  final String? functionWordTranslation;
+  final String? functionWordUsage;
+  final List<Map<String, String>> functionWordExamples;
   final String? blockSource;
   final String? blockTranslation;
   final String? blockDictionaryTranslation;
@@ -391,6 +403,9 @@ class ParagraphWordItem {
       orderIndexInSegment: json['order_index_in_segment'] as int? ?? 0,
       targetStartIndex: json['target_start_index'] as int? ?? -1,
       targetEndIndex: json['target_end_index'] as int? ?? -1,
+      highlightTargetStartIndex:
+          json['highlight_target_start_index'] as int? ?? -1,
+      highlightTargetEndIndex: json['highlight_target_end_index'] as int? ?? -1,
       segmentId: json['segment_id'] as String?,
       anchorWordId: json['anchor_word_id'] as String?,
       tapUnitId: json['tap_unit_id'] as String? ?? '',
@@ -484,6 +499,17 @@ class ParagraphWordItem {
               .toList(),
       functionWordLabel: json['function_word_label'] as String?,
       functionWordExplanation: json['function_word_explanation'] as String?,
+      functionWordBaseForm: json['function_word_base_form'] as String?,
+      functionWordTranslation: json['function_word_translation'] as String?,
+      functionWordUsage: json['function_word_usage'] as String?,
+      functionWordExamples:
+          (json['function_word_examples'] as List<dynamic>? ?? const [])
+              .whereType<Map<String, dynamic>>()
+              .map((example) => {
+                    'source': (example['source'] ?? '').toString(),
+                    'translation': (example['translation'] ?? '').toString(),
+                  })
+              .toList(),
       blockSource: json['block_source'] as String?,
       blockTranslation: json['block_translation'] as String?,
       blockDictionaryTranslation:

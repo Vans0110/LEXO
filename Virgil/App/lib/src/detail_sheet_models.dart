@@ -492,13 +492,18 @@ class DetailSheetPayload {
           .map((entry) =>
               (entry.lemma?.isNotEmpty == true ? entry.lemma! : entry.text))
           .join(' ');
-      final displayText =
-          lexicalUnitType == 'GRAMMAR' ? surfaceText : lemmaText;
-      final translation = grouped
+      final displayText = surfaceText;
+      final dictionaryTranslation = grouped
           .expand((entry) => entry.dictionaryTranslations)
           .where((entry) => entry.isNotEmpty)
           .toSet()
           .join(' / ');
+      final functionTranslation = grouped
+          .map((entry) => entry.functionWordTranslation?.trim() ?? '')
+          .firstWhere((entry) => entry.isNotEmpty, orElse: () => '');
+      final translation = dictionaryTranslation.isNotEmpty
+          ? dictionaryTranslation
+          : functionTranslation;
       units.add(
         DetailSheetUnitItem(
           id: lexicalUnitId,
@@ -519,6 +524,15 @@ class DetailSheetPayload {
           functionWordExplanation: grouped
               .map((entry) => entry.functionWordExplanation?.trim() ?? '')
               .firstWhere((entry) => entry.isNotEmpty, orElse: () => ''),
+          functionWordBaseForm: grouped
+              .map((entry) => entry.functionWordBaseForm?.trim() ?? '')
+              .firstWhere((entry) => entry.isNotEmpty, orElse: () => ''),
+          functionWordTranslation: functionTranslation,
+          functionWordUsage: grouped
+              .map((entry) => entry.functionWordUsage?.trim() ?? '')
+              .firstWhere((entry) => entry.isNotEmpty, orElse: () => ''),
+          functionWordExamples:
+              grouped.expand((entry) => entry.functionWordExamples).toList(),
           isPrimary: lexicalUnitType != 'GRAMMAR',
           exampleSourceText: grouped.first.segmentSourceText ?? item.sourceText,
           exampleTranslationText:
@@ -798,6 +812,10 @@ class DetailSheetUnitItem {
     required this.morphLabel,
     this.functionWordLabel = '',
     this.functionWordExplanation = '',
+    this.functionWordBaseForm = '',
+    this.functionWordTranslation = '',
+    this.functionWordUsage = '',
+    this.functionWordExamples = const <Map<String, String>>[],
     required this.isPrimary,
     required this.exampleSourceText,
     required this.exampleTranslationText,
@@ -813,6 +831,10 @@ class DetailSheetUnitItem {
   final String morphLabel;
   final String functionWordLabel;
   final String functionWordExplanation;
+  final String functionWordBaseForm;
+  final String functionWordTranslation;
+  final String functionWordUsage;
+  final List<Map<String, String>> functionWordExamples;
   final bool isPrimary;
   final String exampleSourceText;
   final String exampleTranslationText;
@@ -833,6 +855,18 @@ class DetailSheetUnitItem {
       functionWordLabel: json['function_word_label'] as String? ?? '',
       functionWordExplanation:
           json['function_word_explanation'] as String? ?? '',
+      functionWordBaseForm: json['function_word_base_form'] as String? ?? '',
+      functionWordTranslation:
+          json['function_word_translation'] as String? ?? '',
+      functionWordUsage: json['function_word_usage'] as String? ?? '',
+      functionWordExamples:
+          (json['function_word_examples'] as List<dynamic>? ?? const [])
+              .whereType<Map<String, dynamic>>()
+              .map((example) => {
+                    'source': (example['source'] ?? '').toString(),
+                    'translation': (example['translation'] ?? '').toString(),
+                  })
+              .toList(),
       isPrimary: json['is_primary'] as bool? ?? false,
       exampleSourceText: json['example_source_text'] as String? ?? '',
       exampleTranslationText: json['example_translation_text'] as String? ?? '',

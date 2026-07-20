@@ -39,13 +39,7 @@ class VirgilLibraryIndexBuilder {
         'No Workbench TXT books found; refusing to clean CloudLibrary.',
       );
     }
-    final publishableKeys = sourceFiles
-        .where(
-          (file) =>
-              outputStatuses[_sourceStatusKey(sourceBooksDir, file)]
-                  ?.isOutputFullyBuilt ??
-              false,
-        )
+    final sourceBookKeys = sourceFiles
         .map((file) => _sourceBookKey(sourceBooksDir, file))
         .where((key) => key.isNotEmpty)
         .toSet();
@@ -67,7 +61,7 @@ class VirgilLibraryIndexBuilder {
         continue;
       }
       final key = _manifestBookKey(manifest);
-      if (key.isEmpty || publishableKeys.contains(key)) {
+      if (key.isEmpty || sourceBookKeys.contains(key)) {
         continue;
       }
       await _deleteExtractedCover(zipFile, manifest);
@@ -184,18 +178,6 @@ class VirgilLibraryIndexBuilder {
     final chapterId = virgilWorkbenchChapterId(parts[1]);
     final title = _basenameWithoutExtension(parts.last);
     return _bookKey(level, 'chapters', chapterId, title);
-  }
-
-  String _sourceStatusKey(Directory sourceBooksDir, File file) {
-    final parts = _relativeParts(sourceBooksDir.path, file.path);
-    if (parts.length < 3) {
-      return '';
-    }
-    return virgilWorkbenchBookStatusKey(
-      virgilWorkbenchNormalizeLevel(parts.first),
-      virgilWorkbenchChapterId(parts[1]),
-      _basenameWithoutExtension(parts.last),
-    );
   }
 
   String _manifestBookKey(Map<String, dynamic> manifest) {

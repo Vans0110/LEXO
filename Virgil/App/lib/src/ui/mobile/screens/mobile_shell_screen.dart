@@ -8,6 +8,7 @@ import '../../../api/api_client.dart';
 import '../../../cards_models.dart';
 import '../../../mobile/mobile_audio_handler.dart';
 import '../../../mobile/mobile_cards_repository.dart';
+import '../../../mobile/mobile_book_version.dart';
 import '../../../mobile/mobile_package_models.dart';
 import '../../../mobile/mobile_package_repository.dart';
 import '../../../mobile/mobile_settings_repository.dart';
@@ -195,6 +196,11 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
 
   void _handleLibraryLoaded(LibraryPayload payload) {
     final currentBookId = _activeBookId;
+    final activePackageChanged = activeBookPackageChanged(
+      previous: _library,
+      next: payload,
+      activeBookId: currentBookId,
+    );
     final currentBookExists = currentBookId != null &&
         payload.items.any((item) => item.id == currentBookId);
     final nextActiveBookId =
@@ -207,6 +213,9 @@ class _MobileShellScreenState extends State<MobileShellScreen> {
     setState(() {
       _library = payload;
       _activeBookId = nextActiveBookId;
+      if (activePackageChanged) {
+        _readerReloadTick += 1;
+      }
     });
   }
 

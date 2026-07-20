@@ -42,6 +42,22 @@ class InteractiveParagraphText extends StatelessWidget {
       lastTokenIndexByUnit[tapUnitId] = index;
     }
 
+    String? joinedUnitIdForWhitespace(int index) {
+      if (tokens[index].text.trim().isNotEmpty ||
+          index == 0 ||
+          index == tokens.length - 1) {
+        return null;
+      }
+      final leftUnitId = tokens[index - 1].tapUnitId;
+      final rightUnitId = tokens[index + 1].tapUnitId;
+      if (leftUnitId == null ||
+          leftUnitId.isEmpty ||
+          leftUnitId != rightUnitId) {
+        return null;
+      }
+      return leftUnitId;
+    }
+
     return RichText(
       text: TextSpan(
         children: [
@@ -58,6 +74,10 @@ class InteractiveParagraphText extends StatelessWidget {
                   firstTokenIndexByUnit[token.tapUnitId] == index;
               final isLastInUnit = token.tapUnitId != null &&
                   lastTokenIndexByUnit[token.tapUnitId] == index;
+              final joinedWhitespaceUnitId = joinedUnitIdForWhitespace(index);
+              final isSelectedGroupWhitespace =
+                  joinedWhitespaceUnitId != null &&
+                      joinedWhitespaceUnitId == selectedTapUnitId;
               final style = baseStyle.copyWith(
                 color: defaultColor,
                 fontWeight: FontWeight.w400,
@@ -77,6 +97,17 @@ class InteractiveParagraphText extends StatelessWidget {
                   : null;
               final isStandaloneFunctionWord = word?.isFunctionWord == true &&
                   (token.tapUnitId?.trim().isEmpty ?? true);
+              if (isSelectedGroupWhitespace) {
+                return WidgetSpan(
+                  alignment: PlaceholderAlignment.baseline,
+                  baseline: TextBaseline.alphabetic,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 1),
+                    color: highlightColor,
+                    child: Text(token.text, style: style),
+                  ),
+                );
+              }
               if ((word == null || isStandaloneFunctionWord) &&
                   unitWord == null) {
                 return TextSpan(

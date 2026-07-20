@@ -148,6 +148,33 @@ bool _isLexicalHeadPos(Object? value) => const {
       'VERB',
     }.contains(value?.toString().trim().toUpperCase());
 
+bool _hasVerifiedOccurrenceOwnership(Map<String, dynamic> word) =>
+    word['verified_occurrence'] == true;
+
+void _applyVerifiedTapUnits(List<Map<String, dynamic>> words) {
+  final groups = <String, List<Map<String, dynamic>>>{};
+  for (final word in words) {
+    if (!_hasVerifiedOccurrenceOwnership(word)) {
+      continue;
+    }
+    final tapUnitId = (word['tap_unit_id'] ?? '').toString().trim();
+    if (tapUnitId.isNotEmpty) {
+      groups.putIfAbsent(tapUnitId, () => []).add(word);
+    }
+  }
+  for (final group in groups.values.where((items) => items.length > 1)) {
+    group.sort((left, right) => ((left['order_index_in_segment'] as int?) ?? 0)
+        .compareTo((right['order_index_in_segment'] as int?) ?? 0));
+    final source = group
+        .map((word) => (word['text'] ?? '').toString().trim())
+        .where((text) => text.isNotEmpty)
+        .join(' ');
+    for (final word in group) {
+      word['source_unit_text'] = source;
+    }
+  }
+}
+
 void _applyPosGrammarGroups(
   List<Map<String, dynamic>> words,
   Map<String, List<String>> tokensBySegmentId,
@@ -164,6 +191,9 @@ void _applyPosGrammarGroups(
           .compareTo((right['order_index_in_segment'] as int?) ?? 0));
     for (var index = 0; index < segmentWords.length; index++) {
       final first = segmentWords[index];
+      if (_hasVerifiedOccurrenceOwnership(first)) {
+        continue;
+      }
       if ((first['effective_alignment_kind'] ?? '').toString() == 'block') {
         continue;
       }
@@ -178,17 +208,22 @@ void _applyPosGrammarGroups(
           nextIndex < segmentWords.length;
           nextIndex++) {
         final next = segmentWords[nextIndex];
+        if (_hasVerifiedOccurrenceOwnership(next)) {
+          break;
+        }
         if ((next['effective_alignment_kind'] ?? '').toString() == 'block') {
           break;
         }
         final pos = (next['pos'] ?? '').toString().trim().toUpperCase();
         final allowedModifier = const {
-          'ADJ',
-          'ADV',
-          'DET',
-          'NUM',
-          'PART',
-        }.contains(pos);
+              'ADJ',
+              'ADP',
+              'ADV',
+              'DET',
+              'NUM',
+              'PART',
+            }.contains(pos) &&
+            (pos != 'ADP' || firstPos == 'AUX');
         if (pos == 'DET') {
           hasDeterminer = true;
           group.add(next);
@@ -265,6 +300,39 @@ void _applyPosGrammarGroups(
   }
 }
 
+Map<String, dynamic>? _functionWordFor(
+  Map<String, dynamic> records, {
+  required String surface,
+  required String lemma,
+  required String pos,
+}) {
+  final exact = records['$surface|$pos'];
+  if (exact is Map<String, dynamic>) {
+    return exact;
+  }
+  final wanted = '$surface|$pos'.toLowerCase();
+  for (final value in records.values) {
+    if (value is! Map<String, dynamic>) {
+      continue;
+    }
+    final aliases = (value['match_keys'] as List<dynamic>? ?? const [])
+        .map((item) => item.toString().trim().toLowerCase());
+    if (aliases.contains(wanted)) {
+      return value;
+    }
+  }
+  final bySurface = records.entries
+      .where((entry) => entry.key.split('|').first.toLowerCase() == surface)
+      .map((entry) => entry.value)
+      .whereType<Map<String, dynamic>>()
+      .toList();
+  if (bySurface.length == 1) {
+    return bySurface.single;
+  }
+  final byLemma = records['$lemma|$pos'];
+  return byLemma is Map<String, dynamic> ? byLemma : null;
+}
+
 Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
   Map<String, dynamic> paragraph,
   Map<String, Map<String, dynamic>> alignmentByWordId,
@@ -328,15 +396,38 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
             .toSet()
             .toList()
         : const <String>[];
-    final functionWord = functionWords['$surface|$pos'];
+    final functionWord = _functionWordFor(
+      functionWords,
+      surface: surface,
+      lemma: lemma,
+      pos: pos,
+    );
     if (functionWord is Map<String, dynamic>) {
       next['function_word_label'] = (functionWord['label'] ?? '').toString();
       next['function_word_explanation'] =
           (functionWord['explanation'] ?? '').toString();
+      next['function_word_base_form'] =
+          (functionWord['base_form'] ?? '').toString();
+      next['function_word_translation'] =
+          (functionWord['translation'] ?? '').toString();
+      next['function_word_usage'] = (functionWord['usage'] ?? '').toString();
+      next['function_word_examples'] =
+          functionWord['examples'] as List<dynamic>? ?? const <dynamic>[];
     }
     final alignment = alignmentByWordId[wordId];
     if (alignment == null) {
       return next;
+    }
+    if (alignment['verified_occurrence'] == true) {
+      next['verified_occurrence'] = true;
+      next['owner_unit_id'] = (alignment['owner_unit_id'] ?? '').toString();
+      next['verification_status'] =
+          (alignment['verification_status'] ?? '').toString();
+      final verifiedTapUnitId =
+          (alignment['tap_unit_id'] ?? '').toString().trim();
+      if (verifiedTapUnitId.isNotEmpty) {
+        next['tap_unit_id'] = verifiedTapUnitId;
+      }
     }
     final translation = (alignment['translation'] ?? '').toString().trim();
     if (translation.isEmpty) {
@@ -367,6 +458,16 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
           : _targetTokens(translation).length;
       next['target_start_index'] = start;
       next['target_end_index'] = start + length - 1;
+    }
+    final highlightStart =
+        (alignment['highlight_target_start_index'] as int?) ?? -1;
+    final highlightEnd =
+        (alignment['highlight_target_end_index'] as int?) ?? -1;
+    if (highlightStart >= 0 && highlightEnd >= highlightStart) {
+      next['highlight_target_start_index'] = highlightStart;
+      next['highlight_target_end_index'] = highlightEnd;
+      next['target_coverage_kind'] =
+          (alignment['target_coverage_kind'] ?? '').toString();
     }
     return next;
   }).toList();
@@ -447,6 +548,7 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
     }
   }
 
+  _applyVerifiedTapUnits(words);
   _applyPosGrammarGroups(words, tokensBySegmentId);
 
   final tapUnitByWordId = <String, String>{};

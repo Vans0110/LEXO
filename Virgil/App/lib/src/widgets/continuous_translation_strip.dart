@@ -148,8 +148,15 @@ class ContinuousTranslationStrip extends StatelessWidget {
     if (segmentId.isEmpty) {
       return null;
     }
-    final startInSegment = selectedWord.targetStartIndex;
-    final endInSegment = selectedWord.targetEndIndex;
+    final hasDisplayHighlight = selectedWord.highlightTargetStartIndex >= 0 &&
+        selectedWord.highlightTargetEndIndex >=
+            selectedWord.highlightTargetStartIndex;
+    final startInSegment = hasDisplayHighlight
+        ? selectedWord.highlightTargetStartIndex
+        : selectedWord.targetStartIndex;
+    final endInSegment = hasDisplayHighlight
+        ? selectedWord.highlightTargetEndIndex
+        : selectedWord.targetEndIndex;
     if (startInSegment < 0 || endInSegment < 0) {
       return null;
     }

@@ -312,6 +312,16 @@ class MobileBookPackage {
           'translation': dictionaryTranslations.join(' / '),
           'grammar_hint': word['grammar_hint'] as String? ?? '',
           'morph_label': word['morph_label'] as String? ?? '',
+          'function_word_label': word['function_word_label'] as String? ?? '',
+          'function_word_explanation':
+              word['function_word_explanation'] as String? ?? '',
+          'function_word_base_form':
+              word['function_word_base_form'] as String? ?? '',
+          'function_word_translation':
+              word['function_word_translation'] as String? ?? '',
+          'function_word_usage': word['function_word_usage'] as String? ?? '',
+          'function_word_examples':
+              word['function_word_examples'] as List<dynamic>? ?? const [],
           'is_primary': true,
           'is_grammar': false,
           'example_source_text':
@@ -377,6 +387,55 @@ class MobileBookPackage {
           continue;
         }
         if (result.containsKey(wordId)) {
+          final functionWordExplanation =
+              (word['function_word_explanation'] as String? ?? '').trim();
+          if (functionWordExplanation.isNotEmpty) {
+            result[wordId] = DetailSheetPayload.fromJson({
+              'word_id': wordId,
+              'tap_unit_id': word['tap_unit_id'] as String? ?? wordId,
+              'sheet_source_text': (word['source_unit_text'] as String?) ??
+                  (word['text'] as String?) ??
+                  '',
+              'sheet_translation_text': '',
+              'example_source_text':
+                  word['segment_source_text'] as String? ?? sourceText,
+              'example_translation_text':
+                  word['segment_target_text'] as String? ?? '',
+              'source_first': null,
+              'dictionary_entry': dictionaryEntry is Map<String, dynamic>
+                  ? dictionaryEntry
+                  : null,
+              'units': [
+                {
+                  'id': word['lexical_unit_id'] as String? ?? wordId,
+                  'type': word['lexical_unit_type'] as String? ?? 'GRAMMAR',
+                  'text': word['text'] as String? ?? '',
+                  'surface_text': word['text'] as String? ?? '',
+                  'lemma': lemma,
+                  'translation': '',
+                  'grammar_hint': word['grammar_hint'] as String? ?? '',
+                  'morph_label': word['morph_label'] as String? ?? '',
+                  'function_word_label':
+                      word['function_word_label'] as String? ?? '',
+                  'function_word_explanation': functionWordExplanation,
+                  'function_word_base_form':
+                      word['function_word_base_form'] as String? ?? '',
+                  'function_word_translation':
+                      word['function_word_translation'] as String? ?? '',
+                  'function_word_usage':
+                      word['function_word_usage'] as String? ?? '',
+                  'function_word_examples':
+                      word['function_word_examples'] as List<dynamic>? ??
+                          const [],
+                  'is_primary': true,
+                  'example_source_text':
+                      word['segment_source_text'] as String? ?? sourceText,
+                  'example_translation_text':
+                      word['segment_target_text'] as String? ?? '',
+                }
+              ],
+            });
+          }
           continue;
         }
         if (dictionaryEntry is! Map<String, dynamic>) {
@@ -401,6 +460,18 @@ class MobileBookPackage {
               'translation': '',
               'grammar_hint': word['grammar_hint'] as String? ?? '',
               'morph_label': word['morph_label'] as String? ?? '',
+              'function_word_label':
+                  word['function_word_label'] as String? ?? '',
+              'function_word_explanation':
+                  word['function_word_explanation'] as String? ?? '',
+              'function_word_base_form':
+                  word['function_word_base_form'] as String? ?? '',
+              'function_word_translation':
+                  word['function_word_translation'] as String? ?? '',
+              'function_word_usage':
+                  word['function_word_usage'] as String? ?? '',
+              'function_word_examples':
+                  word['function_word_examples'] as List<dynamic>? ?? const [],
               'is_primary': true,
               'is_grammar': false,
             }

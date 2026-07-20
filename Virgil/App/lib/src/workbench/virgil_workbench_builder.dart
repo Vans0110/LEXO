@@ -185,6 +185,25 @@ class VirgilWorkbenchBuilder {
           '$missingWordCount missing, '
           '${result['block_count'] ?? 0} Global blocks',
         );
+        final coverageCount =
+            (result['target_coverage_count'] as num?)?.toInt() ?? 0;
+        final coverageUnresolved =
+            (result['target_coverage_unresolved_count'] as num?)?.toInt() ?? 0;
+        final coverageVerified = result['target_coverage_verified'] == true;
+        final coverageAvailable = result['target_coverage_available'] == true;
+        if (coverageAvailable) {
+          log(
+            'Target coverage $lang: $coverageCount structural spans, '
+            '$coverageUnresolved unresolved',
+          );
+        }
+        if (coverageAvailable &&
+            (!coverageVerified || coverageUnresolved > 0)) {
+          throw Exception(
+            'Target coverage is incomplete for $langBookId: '
+            '$coverageUnresolved unresolved target tokens.',
+          );
+        }
       }
       packageByLang[lang] =
           await api.downloadMobileBookPackageChunked(langBookId);
@@ -676,6 +695,21 @@ class VirgilWorkbenchBuilder {
     final dictionary = _dictionaryManifestForLang(targetLang, package);
     final dictionaryEntries = dictionary['entries'] as Map<String, dynamic>? ??
         const <String, dynamic>{};
+    final verifiedByWordId = <String, Map<String, dynamic>>{
+      for (final entry
+          in (dictionary['verified_word_alignments'] as List<dynamic>? ??
+                  const [])
+              .whereType<Map<String, dynamic>>())
+        if ((entry['word_id'] ?? '').toString().isNotEmpty)
+          (entry['word_id'] ?? '').toString(): entry,
+    };
+    final coverageByAnchor = <String, Map<String, dynamic>>{
+      for (final entry
+          in (dictionary['target_coverage'] as List<dynamic>? ?? const [])
+              .whereType<Map<String, dynamic>>())
+        if ((entry['display_anchor_word_id'] ?? '').toString().isNotEmpty)
+          (entry['display_anchor_word_id'] ?? '').toString(): entry,
+    };
     final paragraphs = (reader['paragraphs'] as List<dynamic>? ?? const [])
         .whereType<Map<String, dynamic>>()
         .toList();
@@ -713,23 +747,32 @@ class VirgilWorkbenchBuilder {
             ? _stringList(dictionaryEntry['translations'])
             : const <String>[];
         final segmentId = (word['segment_id'] ?? 'p$paragraphIndex').toString();
-        final selection = _selectContextualSpan(
-          translations,
-          targetTextBySegmentId[segmentId] ?? '',
-          sourceIndex: word['order_index_in_segment'] as int? ?? 0,
-          sourceCount: wordCountBySegment[segmentId] ?? 1,
-          claimed: claimedBySegment.putIfAbsent(segmentId, () => <int>{}),
-        );
+        final verified = verifiedByWordId[wordId];
+        final selection = verified == null
+            ? _selectContextualSpan(
+                translations,
+                targetTextBySegmentId[segmentId] ?? '',
+                sourceIndex: word['order_index_in_segment'] as int? ?? 0,
+                sourceCount: wordCountBySegment[segmentId] ?? 1,
+                claimed: claimedBySegment.putIfAbsent(segmentId, () => <int>{}),
+              )
+            : <String, dynamic>{
+                'translation':
+                    (verified['contextual_translation'] ?? '').toString(),
+                'start': verified['target_start_index'] ?? -1,
+                'end': verified['target_end_index'] ?? -1,
+              };
         final selectedTranslation = selection['translation'] as String? ?? '';
         final targetStart = selection['start'] as int? ?? -1;
         final targetEnd = selection['end'] as int? ?? -1;
+        final coverage = coverageByAnchor[wordId];
         if (targetStart >= 0) {
-          claimedBySegment[segmentId]!.addAll(
-            List<int>.generate(
-              targetEnd - targetStart + 1,
-              (index) => targetStart + index,
-            ),
-          );
+          claimedBySegment.putIfAbsent(segmentId, () => <int>{}).addAll(
+                List<int>.generate(
+                  targetEnd - targetStart + 1,
+                  (index) => targetStart + index,
+                ),
+              );
         }
         entries.add({
           'word_id': wordId,
@@ -742,8 +785,25 @@ class VirgilWorkbenchBuilder {
           'dictionary_key': _dictionaryKey(lemma, pos),
           'target_start_index': targetStart,
           'target_end_index': targetEnd,
+          if (verified != null) 'verified_occurrence': true,
+          if (verified != null)
+            'owner_unit_id': (verified['owner_unit_id'] ?? '').toString(),
+          if (verified != null)
+            'tap_unit_id': (verified['tap_unit_id'] ?? '').toString(),
+          if (verified != null)
+            'verification_status': (verified['status'] ?? '').toString(),
+          if (coverage != null)
+            'highlight_target_start_index':
+                coverage['highlight_target_start_index'],
+          if (coverage != null)
+            'highlight_target_end_index':
+                coverage['highlight_target_end_index'],
+          if (coverage != null)
+            'target_coverage_kind': coverage['ownership'] ?? '',
           'source': dictionary['source'] ?? '',
-          'note': translations.isEmpty ? 'missing_global_dictionary_entry' : '',
+          'note': verified != null
+              ? (verified['empty_reason'] ?? '').toString()
+              : (translations.isEmpty ? 'missing_global_dictionary_entry' : ''),
         });
       }
     }
@@ -755,6 +815,8 @@ class VirgilWorkbenchBuilder {
       'source': dictionary['source'] ?? '',
       'entries': entries,
       'blocks': _buildBlockAlignment(reader, dictionary),
+      'target_coverage':
+          dictionary['target_coverage'] as List<dynamic>? ?? const <dynamic>[],
     };
   }
 
@@ -1073,6 +1135,8 @@ class VirgilWorkbenchBuilder {
       'function_words': functionWords,
       'word_alignments': wordAlignments,
       'block_alignments': blockAlignments,
+      'target_coverage':
+          alignment['target_coverage'] as List<dynamic>? ?? const <dynamic>[],
     };
   }
 

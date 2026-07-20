@@ -69,6 +69,40 @@ void main() {
     }
   });
 
+  test('output status recognizes reader lexicon as dictionary', () async {
+    final tempDir =
+        await Directory.systemTemp.createTemp('virgil_lexicon_status_test_');
+    try {
+      final outputDir = Directory(
+        '${tempDir.path}/Studio/Runtime/workbench_output/a1/chapters/book_test',
+      );
+      await outputDir.create(recursive: true);
+      await File('${outputDir.path}/manifest.json').writeAsString(jsonEncode({
+        'title': 'RU-only Book',
+        'level': 'a1',
+        'chapter_id': 'chapter_01_introduction',
+      }));
+      await File('${outputDir.path}/reader_ru.json').writeAsString('{}');
+      await File('${outputDir.path}/reader_lexicon_ru.json')
+          .writeAsString('{}');
+
+      final statuses = await VirgilWorkbenchBookStatusLoader(
+        appRoot: tempDir.path,
+      ).loadOutputStatuses();
+      final status = statuses[virgilWorkbenchBookStatusKey(
+        'a1',
+        'chapter_01_introduction',
+        'RU-only Book',
+      )];
+
+      expect(status, isNotNull);
+      expect(status!.languages, {'ru'});
+      expect(status.dictionaries, {'ru'});
+    } finally {
+      await tempDir.delete(recursive: true);
+    }
+  });
+
   test('cleanup removes ZIP and cover missing from Workbench sources',
       () async {
     final tempDir =
@@ -130,7 +164,7 @@ void main() {
     }
   });
 
-  test('cleanup removes ZIP when TXT exists but output is not fully built',
+  test('cleanup keeps published ZIP when TXT exists but output is incomplete',
       () async {
     final tempDir =
         await Directory.systemTemp.createTemp('virgil_unbuilt_cleanup_test_');
@@ -161,8 +195,8 @@ void main() {
         },
       );
 
-      expect(removed, 1);
-      expect(staleZip.existsSync(), isFalse);
+      expect(removed, 0);
+      expect(staleZip.existsSync(), isTrue);
     } finally {
       await tempDir.delete(recursive: true);
     }

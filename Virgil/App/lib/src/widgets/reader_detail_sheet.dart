@@ -255,7 +255,9 @@ String _blockTypeLabel(String value) {
 }
 
 bool _shouldShowUnitsBlock(DetailSheetPayload payload) {
-  return payload.units.any((unit) => unit.translation.trim().isNotEmpty);
+  return payload.units.any((unit) =>
+      unit.translation.trim().isNotEmpty ||
+      unit.functionWordExplanation.trim().isNotEmpty);
 }
 
 class _UnitsBlock extends StatelessWidget {
@@ -329,6 +331,28 @@ class _UnitsBlock extends StatelessWidget {
                           ),
                         ],
                         if (units[index]
+                                .functionWordBaseForm
+                                .trim()
+                                .isNotEmpty &&
+                            units[index]
+                                    .functionWordBaseForm
+                                    .trim()
+                                    .toLowerCase() !=
+                                units[index]
+                                    .surfaceText
+                                    .trim()
+                                    .toLowerCase()) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            'Начальная форма: ${units[index].functionWordBaseForm}',
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                          ),
+                        ],
+                        if (units[index]
                             .functionWordExplanation
                             .trim()
                             .isNotEmpty) ...[
@@ -349,6 +373,40 @@ class _UnitsBlock extends StatelessWidget {
                                 .bodySmall
                                 ?.copyWith(color: colorScheme.onSurfaceVariant),
                           ),
+                          if (units[index]
+                              .functionWordUsage
+                              .trim()
+                              .isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              'Употребление: ${units[index].functionWordUsage}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
+                          for (final example
+                              in units[index].functionWordExamples) ...[
+                            if ((example['source'] ?? '').trim().isNotEmpty &&
+                                (example['translation'] ?? '')
+                                    .trim()
+                                    .isNotEmpty) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                '${example['source']} — ${example['translation']}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                              ),
+                            ],
+                          ],
                         ],
                       ],
                     ),

@@ -193,7 +193,7 @@ void main() {
   });
 
   test(
-    'fully built requires every reader, dictionary, audio, cover, and zip',
+    'fully built requires a reader dictionary pair, audio, cover, and zip',
     () {
       expect(_status(ready: true).isFullyBuilt, isTrue);
       expect(_status(ready: false).isFullyBuilt, isFalse);
@@ -225,6 +225,33 @@ void main() {
       },
       wordAudioVoiceId: 'af_bella',
       wordAudioCountsByVoice: {'af_bella': 10},
+      segmentAudioCount: 10,
+      wordAudioCount: 10,
+    );
+
+    expect(status.isOutputFullyBuilt, isTrue);
+  });
+
+  test('output is fully built with one available reader dictionary language',
+      () {
+    const status = VirgilWorkbenchBookStatus(
+      title: 'RU-only Book',
+      level: 'a1',
+      chapterId: 'chapter_01',
+      languages: {'ru'},
+      dictionaries: {'ru'},
+      hasAudio: true,
+      hasCover: true,
+      hasOutput: true,
+      hasInstalledZip: false,
+      coverPath: 'cover.png',
+      audioVoiceIds: {'af_heart'},
+      profileVoiceIds: {'af_heart'},
+      playerLevelsByVoice: {
+        'af_heart': {'Normal'},
+      },
+      wordAudioVoiceId: 'af_heart',
+      wordAudioCountsByVoice: {'af_heart': 10},
       segmentAudioCount: 10,
       wordAudioCount: 10,
     );

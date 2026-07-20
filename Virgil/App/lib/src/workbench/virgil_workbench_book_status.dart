@@ -69,10 +69,7 @@ class VirgilWorkbenchBookStatus {
   bool get isOutputFullyBuilt =>
       hasOutput &&
       hasCover &&
-      hasLanguage('ru') &&
-      hasLanguage('uk') &&
-      hasDictionary('ru') &&
-      hasDictionary('uk') &&
+      languages.intersection(dictionaries).isNotEmpty &&
       hasPlayerReadyVoice &&
       wordAudioCount > 0 &&
       readyWordAudioVoiceIds.isNotEmpty;
@@ -259,8 +256,9 @@ class VirgilWorkbenchBookStatusLoader {
       if (readerMatch != null) {
         languages.add(readerMatch.group(1)!);
       }
-      final dictionaryMatch =
-          RegExp(r'^dictionary_([a-z]{2})\.json$').firstMatch(fileName);
+      final dictionaryMatch = RegExp(
+        r'^(?:reader_lexicon|dictionary)_([a-z]{2})\.json$',
+      ).firstMatch(fileName);
       if (dictionaryMatch != null) {
         dictionaries.add(dictionaryMatch.group(1)!);
       }
@@ -372,8 +370,9 @@ class VirgilWorkbenchBookStatusLoader {
           if (readerMatch != null) {
             languages.add(readerMatch.group(1)!);
           }
-          final dictionaryMatch =
-              RegExp(r'^dictionary_([a-z]{2})\.json$').firstMatch(item.name);
+          final dictionaryMatch = RegExp(
+            r'^(?:reader_lexicon|dictionary)_([a-z]{2})\.json$',
+          ).firstMatch(item.name);
           if (dictionaryMatch != null) {
             dictionaries.add(dictionaryMatch.group(1)!);
           }

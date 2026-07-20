@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:virgil/src/detail_sheet_models.dart';
+import 'package:virgil/src/models.dart';
 import 'package:virgil/src/mobile/mobile_package_models.dart';
 import 'package:virgil/src/mobile/mobile_package_repository.dart';
 import 'package:virgil/src/mobile/virgil_bundled_book_repository.dart';
 import 'package:virgil/src/widgets/continuous_translation_strip.dart';
+import 'package:virgil/src/widgets/interactive_paragraph_text.dart';
 import 'package:virgil/src/widgets/reader_detail_sheet.dart';
 
 Map<String, dynamic> _word(String id, String text, String pos, int index) => {
@@ -189,6 +191,71 @@ Map<String, dynamic> _grammarPackage(
 }
 
 void main() {
+  testWidgets('selected multi-word group fills the whitespace between words',
+      (tester) async {
+    const groupId = 'group_there_are';
+    const tokens = [
+      ParagraphTokenItem(
+        id: 'token_there',
+        text: 'There',
+        kind: 'word',
+        orderIndex: 0,
+        tapUnitId: groupId,
+        wordId: 'word_there',
+      ),
+      ParagraphTokenItem(
+        id: 'token_space',
+        text: ' ',
+        kind: 'punctuation',
+        orderIndex: 1,
+        tapUnitId: null,
+        wordId: null,
+      ),
+      ParagraphTokenItem(
+        id: 'token_are',
+        text: 'are',
+        kind: 'word',
+        orderIndex: 2,
+        tapUnitId: groupId,
+        wordId: 'word_are',
+      ),
+    ];
+    final words = [
+      ParagraphWordItem.fromJson({
+        ..._word('word_there', 'There', 'PRON', 0),
+        'tap_unit_id': groupId,
+      }),
+      ParagraphWordItem.fromJson({
+        ..._word('word_are', 'are', 'AUX', 1),
+        'tap_unit_id': groupId,
+      }),
+    ];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: InteractiveParagraphText(
+            tokens: tokens,
+            words: words,
+            selectedTapUnitId: groupId,
+            onWordTap: (_) {},
+            onWordLongPress: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    final whitespace = tester.widget<Container>(
+      find
+          .ancestor(
+            of: find.text(' '),
+            matching: find.byType(Container),
+          )
+          .first,
+    );
+    expect(whitespace.color, isNotNull);
+  });
+
   test('reader lexicon restores runtime dictionary and alignments', () {
     final lexicon = <String, dynamic>{
       'version': 3,
@@ -384,6 +451,124 @@ void main() {
     expect(paragraph.words.last.targetEndIndex, 3);
   });
 
+  test('display highlight can include a target insertion without changing card',
+      () {
+    final raw = _grammarPackage(
+      [('fourteen', 'NUM', 'четырнадцать')],
+      ['комната', 'номер', 'четырнадцать'],
+    );
+    final entry = ((raw['word_to_word'] as Map<String, dynamic>)['entries']
+            as List<dynamic>)
+        .single as Map<String, dynamic>;
+    entry['target_start_index'] = 2;
+    entry['target_end_index'] = 2;
+    entry['highlight_target_start_index'] = 1;
+    entry['highlight_target_end_index'] = 2;
+    entry['target_coverage_kind'] = 'insertion';
+
+    final package = MobileBookPackage(normalizeMobilePackageJsonForTest(raw));
+    final paragraph = package.readerPayload.paragraphs.single;
+    final word = paragraph.words.single;
+    final card = DetailSheetPayload.fromSelection(item: paragraph, word: word);
+
+    expect(word.targetStartIndex, 2);
+    expect(word.targetEndIndex, 2);
+    expect(word.highlightTargetStartIndex, 1);
+    expect(word.highlightTargetEndIndex, 2);
+    expect(card.sheetSourceText, 'fourteen');
+    expect(card.sheetTranslationText, 'четырнадцать');
+  });
+
+  test('POS grammar groups attach AUX through ADP to a lexical head', () {
+    final raw = _grammarPackage(
+      [
+        ('is', 'AUX', ''),
+        ('in', 'ADP', 'in'),
+        ('Room', 'NOUN', 'room'),
+      ],
+      ['in', 'room'],
+    );
+
+    final package = MobileBookPackage(normalizeMobilePackageJsonForTest(raw));
+    final paragraph = package.readerPayload.paragraphs.single;
+    final groupId = paragraph.words.first.tapUnitId;
+
+    expect(groupId, startsWith('grammar_segment_1_is_in_Room'));
+    expect(paragraph.words.every((word) => word.tapUnitId == groupId), isTrue);
+    expect(paragraph.words.first.sourceUnitText, 'is in Room');
+    expect(paragraph.words.first.effectiveFocusText, 'in room');
+  });
+
+  test('verified ownership stays separate from expanded target highlight', () {
+    final raw = _grammarPackage(
+      [
+        ('am', 'AUX', ''),
+        ('in', 'ADP', 'в'),
+        ('the', 'DET', ''),
+        ('wrong', 'ADJ', 'той'),
+        ('room', 'NOUN', 'комнате'),
+      ],
+      ['не', 'в', 'той', 'комнате'],
+    );
+    final entries = ((raw['word_to_word'] as Map)['entries'] as List)
+        .cast<Map<String, dynamic>>();
+    for (var index = 0; index < entries.length; index++) {
+      entries[index].addAll({
+        'verified_occurrence': true,
+        'owner_unit_id': 'owner_$index',
+        'tap_unit_id': 'verified_word_$index',
+        'verification_status': 'verified',
+      });
+    }
+    entries[3].addAll({
+      'target_start_index': 2,
+      'target_end_index': 2,
+      'highlight_target_start_index': 0,
+      'highlight_target_end_index': 2,
+      'target_coverage_kind': 'restructure',
+    });
+
+    final package = MobileBookPackage(normalizeMobilePackageJsonForTest(raw));
+    final words = package.readerPayload.paragraphs.single.words;
+
+    expect(words.map((word) => word.tapUnitId).toList(), [
+      'verified_word_0',
+      'verified_word_1',
+      'verified_word_2',
+      'verified_word_3',
+      'verified_word_4',
+    ]);
+    expect(words[3].sourceUnitText, 'wrong');
+    expect(words[3].targetStartIndex, 2);
+    expect(words[3].targetEndIndex, 2);
+    expect(words[3].highlightTargetStartIndex, 0);
+    expect(words[3].highlightTargetEndIndex, 2);
+  });
+
+  test('shared verified tap id creates a source block without POS guessing',
+      () {
+    final raw = _grammarPackage(
+      [('blue', 'ADJ', 'синий'), ('door', 'NOUN', 'дверь')],
+      ['синяя', 'дверь'],
+    );
+    final entries = ((raw['word_to_word'] as Map)['entries'] as List)
+        .cast<Map<String, dynamic>>();
+    for (final entry in entries) {
+      entry.addAll({
+        'verified_occurrence': true,
+        'owner_unit_id': 'verified_block',
+        'tap_unit_id': 'verified_block',
+        'verification_status': 'verified',
+      });
+    }
+
+    final package = MobileBookPackage(normalizeMobilePackageJsonForTest(raw));
+    final words = package.readerPayload.paragraphs.single.words;
+
+    expect(words.every((word) => word.tapUnitId == 'verified_block'), isTrue);
+    expect(words.every((word) => word.sourceUnitText == 'blue door'), isTrue);
+  });
+
   test('unattached function word keeps its standalone tap target', () {
     final raw = _grammarPackage(
       [('of', 'ADP', 'из')],
@@ -423,6 +608,100 @@ void main() {
     expect(detail, isNotNull);
     expect(detail!.sheetTranslationText, 'контекст');
     expect(detail.units.single.translation, 'словарное значение');
+  });
+
+  testWidgets('Words show function explanation without a translation',
+      (tester) async {
+    final payload = DetailSheetPayload.fromJson({
+      'word_id': 'word_is',
+      'tap_unit_id': 'word_is',
+      'sheet_source_text': 'is',
+      'sheet_translation_text': '',
+      'example_source_text': 'Her English class is in Room fourteen.',
+      'example_translation_text': '',
+      'units': [
+        {
+          'id': 'word_is',
+          'type': 'GRAMMAR',
+          'text': 'is',
+          'translation': '',
+          'function_word_label': 'Auxiliary verb',
+          'function_word_explanation':
+              'Connects the subject to its description.',
+        },
+      ],
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: ReaderDetailSheet(payload: payload)),
+      ),
+    );
+
+    expect(find.text('Words'), findsOneWidget);
+    expect(find.text('Auxiliary verb'), findsOneWidget);
+    expect(
+      find.text('Connects the subject to its description.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('inflected be form keeps surface title and its own explanation',
+      (tester) async {
+    final raw = _grammarPackage(
+      [('are', 'VERB', '')],
+      ['находятся'],
+    );
+    raw['dictionary_manifest'] = {
+      'entries': <String, dynamic>{},
+      'function_words': {
+        'are|AUX': {
+          'surface': 'are',
+          'base_form': 'be',
+          'translation': 'быть',
+          'label': 'Форма be для you, we, they',
+          'explanation': 'Подробное описание формы are.',
+          'usage': 'Употребляется с you, we, they.',
+          'examples': [
+            {
+              'source': 'There are books.',
+              'translation': 'Есть книги.',
+            }
+          ],
+          'match_keys': ['are|VERB'],
+        },
+      },
+    };
+    final rawParagraph =
+        ((raw['reader_payload'] as Map<String, dynamic>)['paragraphs'] as List)
+            .single as Map<String, dynamic>;
+    ((rawParagraph['words'] as List).single as Map<String, dynamic>)['lemma'] =
+        'be';
+
+    final package = MobileBookPackage(normalizeMobilePackageJsonForTest(raw));
+    final paragraph = package.readerPayload.paragraphs.single;
+    final detail = DetailSheetPayload.fromSelection(
+      item: paragraph,
+      word: paragraph.words.single,
+    );
+    final unit = detail.units.single;
+
+    expect(unit.text, 'are');
+    expect(unit.lemma, 'be');
+    expect(unit.translation, 'быть');
+    expect(unit.functionWordBaseForm, 'be');
+
+    await tester.pumpWidget(
+      MaterialApp(home: Scaffold(body: ReaderDetailSheet(payload: detail))),
+    );
+    expect(find.text('are'), findsWidgets);
+    expect(find.text('Начальная форма: be'), findsOneWidget);
+    expect(find.text('Форма be для you, we, they'), findsOneWidget);
+    expect(find.text('Подробное описание формы are.'), findsOneWidget);
+    expect(find.text('Употребление: Употребляется с you, we, they.'),
+        findsOneWidget);
+    expect(find.text('There are books. — Есть книги.'), findsOneWidget);
+    expect(find.text('be'), findsNothing);
   });
 
   test('grammar groups allow reversed target order', () {

@@ -73,7 +73,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              initialValue: settings.preferredTargetLang,
+              value: settings.preferredTargetLang,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:

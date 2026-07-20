@@ -20,6 +20,7 @@ STATUSES = {
     "unresolved",
 }
 COMPONENT_STATUSES = {"block_component", "grammar_component"}
+TARGET_COVERAGE_OWNERSHIPS = {"block", "insertion", "restructure"}
 
 
 def clean(value: object) -> str:
@@ -62,6 +63,9 @@ def validate(
     entries = [item for item in proof.get("entries") or [] if isinstance(item, dict)]
     blocks = [
         item for item in proof.get("block_occurrences") or [] if isinstance(item, dict)
+    ]
+    target_coverage = [
+        item for item in proof.get("target_coverage") or [] if isinstance(item, dict)
     ]
     entries_by_segment: dict[int, list[dict[str, Any]]] = defaultdict(list)
     entries_by_id: dict[str, dict[str, Any]] = {}
@@ -132,16 +136,94 @@ def validate(
             errors.append(f"{label} {status} must not have contextual translation")
         if status in COMPONENT_STATUSES and (not owner or not tap):
             errors.append(f"{label} component requires owner_unit_id and tap_unit_id")
-        if status == "independent_translation":
-            if not isinstance(start, int) or not isinstance(end, int) or start < 0 or end < start:
-                errors.append(f"{label} independent translation requires target span")
-            elif isinstance(segment_index, int):
+        if status == "independent_translation" and (
+            not isinstance(start, int) or not isinstance(end, int) or start < 0 or end < start
+        ):
+            errors.append(f"{label} independent translation requires target span")
+        if contextual and isinstance(start, int) and isinstance(end, int) and start >= 0 and end >= start:
+            if isinstance(segment_index, int):
                 for target_index in range(start, end + 1):
                     token_owners[(segment_index, target_index)].append(word_id)
 
     for span, owners in token_owners.items():
         if len(owners) > 1:
             errors.append(f"independent target token {span} has owners {owners}")
+
+    coverage_counts: Counter[str] = Counter()
+    for index, coverage in enumerate(target_coverage):
+        label = f"target_coverage[{index}]"
+        segment_index = coverage.get("segment_index")
+        start = coverage.get("target_start_index")
+        end = coverage.get("target_end_index")
+        ownership = clean(coverage.get("ownership"))
+        source_word_ids = coverage.get("source_word_ids")
+        reason = clean(coverage.get("reason"))
+        if not isinstance(segment_index, int) or not 0 <= segment_index < len(parallel):
+            errors.append(f"{label}.segment_index is invalid")
+            continue
+        target_tokens = tokens(parallel[segment_index].get("translation"))
+        if (
+            not isinstance(start, int)
+            or not isinstance(end, int)
+            or start < 0
+            or end < start
+            or end >= len(target_tokens)
+        ):
+            errors.append(f"{label} has invalid target span")
+            continue
+        expected_text = " ".join(target_tokens[start : end + 1])
+        if tokens(coverage.get("target_text")) != target_tokens[start : end + 1]:
+            errors.append(
+                f"{label}.target_text disagrees with span: expected={expected_text!r}"
+            )
+        if ownership not in TARGET_COVERAGE_OWNERSHIPS:
+            errors.append(f"{label}.ownership is invalid: {ownership!r}")
+        else:
+            coverage_counts[ownership] += end - start + 1
+        if not isinstance(source_word_ids, list) or not source_word_ids:
+            errors.append(f"{label}.source_word_ids[] is required")
+            source_word_ids = []
+        for word_id in source_word_ids:
+            entry = entries_by_id.get(clean(word_id))
+            if entry is None:
+                errors.append(f"{label} references unknown word_id {word_id!r}")
+            elif entry.get("segment_index") != segment_index:
+                errors.append(f"{label} references a word from another segment")
+        anchor = clean(coverage.get("display_anchor_word_id"))
+        if anchor and anchor not in {clean(item) for item in source_word_ids}:
+            errors.append(f"{label}.display_anchor_word_id must belong to source_word_ids")
+        highlight_start = coverage.get("highlight_target_start_index")
+        highlight_end = coverage.get("highlight_target_end_index")
+        if anchor:
+            if (
+                not isinstance(highlight_start, int)
+                or not isinstance(highlight_end, int)
+                or highlight_start > start
+                or highlight_end < end
+                or highlight_start < 0
+                or highlight_end >= len(target_tokens)
+            ):
+                errors.append(f"{label} has invalid display highlight span")
+        elif isinstance(highlight_start, int) or isinstance(highlight_end, int):
+            errors.append(f"{label} display highlight requires an anchor")
+        if not reason:
+            errors.append(f"{label}.reason is required")
+        for target_index in range(start, end + 1):
+            token_owners[(segment_index, target_index)].append(
+                f"target_coverage:{index}"
+            )
+
+    for span, owners in token_owners.items():
+        if len(owners) > 1:
+            errors.append(f"target token {span} has multiple owners {owners}")
+
+    for segment_index, pair in enumerate(parallel):
+        for target_index, target_token in enumerate(tokens(pair.get("translation"))):
+            if not token_owners.get((segment_index, target_index)):
+                errors.append(
+                    f"uncovered target token: segment={segment_index}, "
+                    f"index={target_index}, token={target_token!r}"
+                )
 
     for segment_index, pair in enumerate(parallel):
         ordered = sorted(
@@ -240,6 +322,9 @@ def validate(
         "parallel": len(parallel),
         "entries": len(entries),
         "block_occurrences": len(blocks),
+        "target_coverage": len(target_coverage),
+        "target_insertions": coverage_counts["insertion"],
+        "target_restructures": coverage_counts["restructure"],
         "unresolved": status_counts["unresolved"],
         "fallbacks": status_counts["dictionary_fallback"],
         "zero_correspondences": status_counts["zero_correspondence"],

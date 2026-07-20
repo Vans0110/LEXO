@@ -1,0 +1,4 @@
+interface:
+  display_name: "LEXO Add UK Books to Globals"
+  short_description: "Add Ukrainian books to Global dictionaries"
+  default_prompt: "Use $lexo-add-uk-books-to-globals to add selected Ukrainian book seeds to UK Globals and verify Function Words."

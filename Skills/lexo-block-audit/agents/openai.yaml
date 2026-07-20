@@ -1,4 +1,4 @@
 interface:
   display_name: "LEXO Block Audit"
-  short_description: "Build minimal reusable multiword meaning blocks"
-  default_prompt: "Use $lexo-block-audit to audit one LEXO book, retain only minimal reusable blocks whose meaning cannot be reconstructed from separate words, add a concise reusable explanation, and rebuild verified dictionaries."
+  short_description: "Create and audit RU book dictionary files"
+  default_prompt: "Use $lexo-block-audit to create and audit the complete RU dictionary files for one LEXO book, retain only minimal reusable semantic blocks, and verify every word occurrence."

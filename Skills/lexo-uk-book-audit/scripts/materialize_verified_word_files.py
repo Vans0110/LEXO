@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import json
@@ -58,7 +58,7 @@ def find_form(words: list[dict[str, Any]], form: str) -> list[dict[str, Any]]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Materialize four verified RU word files")
+    parser = argparse.ArgumentParser(description="Materialize four verified UK word files")
     parser.add_argument("book_dir", type=Path)
     parser.add_argument("reader", type=Path)
     parser.add_argument("alignment", type=Path)
@@ -69,8 +69,8 @@ def main() -> None:
     reader = load(args.reader.resolve())
     alignment = load(args.alignment.resolve())
     review = load(args.review.resolve())
-    old_seed_words = load(book_dir / "seed_words_ru.json")
-    blocks = load(book_dir / "seed_blocks_ru.json")
+    old_seed_words = load(book_dir / "seed_words_uk.json")
+    blocks = load(book_dir / "seed_blocks_uk.json")
     aligned_by_id = {
         clean(item.get("word_id")): item
         for item in alignment.get("entries") or []
@@ -306,7 +306,7 @@ def main() -> None:
         "book_id": clean(reader.get("book_id")),
         "title": clean(reader.get("title")),
         "source_lang": "en",
-        "target_lang": "ru",
+        "target_lang": "uk",
         "parallel": parallel,
         "words": layer_words,
         "blocks": blocks,
@@ -324,14 +324,14 @@ def main() -> None:
         "version": 1,
         "book_id": clean(reader.get("book_id")),
         "source_lang": "en",
-        "target_lang": "ru",
+        "target_lang": "uk",
         "entries": entries,
         "block_occurrences": block_occurrences,
     }
-    write(book_dir / "seed_words_ru.json", seed_words)
-    write(book_dir / "seed_blocks_ru.json", blocks)
-    write(book_dir / "book_layer_ru.json", layer)
-    write(book_dir / "word_to_word_ru.json", proof)
+    write(book_dir / "seed_words_uk.json", seed_words)
+    write(book_dir / "seed_blocks_uk.json", blocks)
+    write(book_dir / "book_layer_uk.json", layer)
+    write(book_dir / "word_to_word_uk.json", proof)
     print(
         json.dumps(
             {
@@ -348,3 +348,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

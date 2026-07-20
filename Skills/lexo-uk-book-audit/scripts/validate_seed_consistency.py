@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from typing import Any
 
@@ -61,11 +61,13 @@ def normalized_word_map(
     return result
 
 
-def normalized_block_map(items: object) -> dict[str, str]:
+def normalized_block_map(items: object) -> dict[str, tuple[str, str]]:
     return {
-        clean(item.get("source")).casefold(): clean(
-            item.get("translation")
-        ).casefold()
+        clean(item.get("source")).casefold(): (
+            clean(item.get("translation")).casefold(),
+            clean(item.get("dictionary_translation")).casefold(),
+        )
         for item in items or []
         if isinstance(item, dict) and clean(item.get("source"))
     }
+

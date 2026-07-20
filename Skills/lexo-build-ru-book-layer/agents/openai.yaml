@@ -1,4 +1,0 @@
-interface:
-  display_name: "LEXO Build RU Book Layer"
-  short_description: "Build and four-pass audit a Russian book dictionary"
-  default_prompt: "Use $lexo-build-ru-book-layer to create a Russian LEXO book layer, audit semantics and word ownership, then retain only blocks whose meaning cannot be reconstructed word by word."

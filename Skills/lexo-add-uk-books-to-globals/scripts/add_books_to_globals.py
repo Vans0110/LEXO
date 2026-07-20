@@ -9,21 +9,13 @@ import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any
-from function_word_audit import (
-    audit_function_forms,
-    audit_functions,
-    function_errors,
-    function_occurrence_candidates,
-)
+from function_word_audit import audit_functions, function_errors
+from verified_book_gate import require_verified_book
 TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
-
-
 def clean(value: object) -> str:
     return " ".join(str(value or "").split())
 def block_key(value: object) -> str:
     return " ".join(match.group(0).casefold() for match in TOKEN_RE.finditer(str(value or "")))
-
-
 def word_key(value: object) -> str:
     lemma, separator, pos = clean(value).partition("|")
     return f"{lemma.casefold()}|{pos.upper()}" if separator else ""
@@ -60,16 +52,17 @@ def append_unique(values: list[str], value: str) -> bool:
 
 
 def seed_dir(root: Path, book_id: str) -> Path:
-    return root / "Studio" / "Backend" / "data" / "dictionaries" / "library_ru" / "books" / book_id
+    return root / "Studio" / "Backend" / "data" / "dictionaries" / "library_uk" / "books" / book_id
 
 
 def load_book(root: Path, book_id: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     directory = seed_dir(root, book_id)
-    words_path = directory / "seed_words_ru.json"
+    require_verified_book(directory, book_id)
+    words_path = directory / "seed_words_uk.json"
     if not words_path.exists():
-        raise ValueError(f"{book_id}: missing seed_words_ru.json")
+        raise ValueError(f"{book_id}: missing seed_words_uk.json")
     words = load_object(words_path)
-    blocks_path = directory / "seed_blocks_ru.json"
+    blocks_path = directory / "seed_blocks_uk.json"
     if blocks_path.exists():
         raw_blocks = json.loads(blocks_path.read_text(encoding="utf-8"))
         if isinstance(raw_blocks, list):
@@ -101,18 +94,12 @@ def load_book(root: Path, book_id: str) -> tuple[dict[str, Any], list[dict[str, 
         else:
             raise ValueError(f"expected block seed object or list: {blocks_path}")
     else:
-        layer_path = directory / "book_layer_ru.json"
+        layer_path = directory / "book_layer_uk.json"
         layer = load_object(layer_path) if layer_path.exists() else {}
         if layer.get("blocks") != []:
             raise ValueError(f"{book_id}: missing block seed without explicit empty layer")
         blocks = []
     return words, blocks
-
-
-def load_verification_entries(root: Path, book_id: str) -> list[dict[str, Any]]:
-    path = seed_dir(root, book_id) / "word_to_word_ru.json"
-    payload = load_object(path)
-    return [item for item in payload.get("entries") or [] if isinstance(item, dict)]
 
 
 def contributions(root: Path, book_id: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
@@ -324,8 +311,8 @@ def audit_book(root: Path, book_id: str, words: dict[str, Any], blocks: dict[str
 
 
 def paths(root: Path) -> tuple[Path, Path, Path, Path]:
-    library = root / "Studio" / "Backend" / "data" / "dictionaries" / "library_ru"
-    return library / "global_words_ru.json", library / "global_blocks_ru.json", library / "global_function_words_ru.json", library / "books"
+    library = root / "Studio" / "Backend" / "data" / "dictionaries" / "library_uk"
+    return library / "global_words_uk.json", library / "global_blocks_uk.json", library / "global_function_words_uk.json", library / "books"
 
 
 def command_add(args: argparse.Namespace) -> int:
@@ -345,27 +332,14 @@ def command_add(args: argparse.Namespace) -> int:
                 errors.append(f"{book_id}: second audit missing {missing}")
             seed_words, _ = load_book(args.root, book_id)
             function_present, function_missing = audit_functions(seed_words, functions)
-            form_candidates = function_occurrence_candidates(
-                seed_words, load_verification_entries(args.root, book_id)
-            )
-            form_present, form_missing, form_invalid = audit_function_forms(
-                form_candidates, functions
-            )
             report["books"][book_id]["function_words"] = {
                 "existing": function_present,
                 "missing": function_missing,
-                "surface_existing": form_present,
-                "surface_missing": form_missing,
-                "surface_invalid": form_invalid,
             }
             report["totals"]["function_existing"] = report["totals"].get("function_existing", 0) + len(function_present)
             report["totals"]["function_missing"] = report["totals"].get("function_missing", 0) + len(function_missing)
             if function_missing:
                 errors.append(f"{book_id}: missing function descriptions {function_missing}")
-            if form_missing:
-                errors.append(f"{book_id}: missing function surface forms {form_missing}")
-            if form_invalid:
-                errors.append(f"{book_id}: invalid function surface forms {form_invalid}")
         except (OSError, ValueError, json.JSONDecodeError) as exc:
             errors.append(str(exc))
     report.update({"write": bool(args.write), "errors": errors})
@@ -384,20 +358,14 @@ def command_report(args: argparse.Namespace) -> int:
     words, blocks = load_object(words_path), load_object(blocks_path)
     functions = load_object(functions_path)
     result: dict[str, Any] = {"books": {}, "counts": Counter()}
-    for directory in sorted(path.parent for path in books_path.glob("*/seed_words_ru.json")):
+    for directory in sorted(path.parent for path in books_path.glob("*/seed_words_uk.json")):
         book_id = directory.name
         try:
             present, expected, missing = audit_book(args.root, book_id, words, blocks)
             seed_words, _ = load_book(args.root, book_id)
             function_present, function_missing = audit_functions(seed_words, functions)
-            form_candidates = function_occurrence_candidates(
-                seed_words, load_verification_entries(args.root, book_id)
-            )
-            form_present, form_missing, form_invalid = audit_function_forms(
-                form_candidates, functions
-            )
-            status = "fully_applied" if present == expected and not function_missing and not form_missing and not form_invalid else "not_applied" if present == 0 else "partially_applied"
-            result["books"][book_id] = {"status": status, "present": present, "expected": expected, "missing": missing, "function_existing": function_present, "function_missing": function_missing, "function_surface_existing": form_present, "function_surface_missing": form_missing, "function_surface_invalid": form_invalid}
+            status = "fully_applied" if present == expected and not function_missing else "not_applied" if present == 0 else "partially_applied"
+            result["books"][book_id] = {"status": status, "present": present, "expected": expected, "missing": missing, "function_existing": function_present, "function_missing": function_missing}
         except (OSError, ValueError, json.JSONDecodeError) as exc:
             status = "invalid"
             result["books"][book_id] = {"status": status, "error": str(exc)}
@@ -411,7 +379,7 @@ def command_report(args: argparse.Namespace) -> int:
 def main() -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
-    parser = argparse.ArgumentParser(description="Incrementally add selected RU book seeds to Globals")
+    parser = argparse.ArgumentParser(description="Incrementally add selected UK book seeds to Globals")
     subparsers = parser.add_subparsers(dest="command", required=True)
     add = subparsers.add_parser("add")
     add.add_argument("--root", type=Path, required=True)
@@ -428,3 +396,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

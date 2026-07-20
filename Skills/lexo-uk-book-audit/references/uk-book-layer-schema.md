@@ -1,4 +1,4 @@
-# RU book-layer schema
+﻿# UK book-layer schema
 
 ## Primary layer
 
@@ -8,7 +8,7 @@
   "book_id": "book_id",
   "title": "Book title",
   "source_lang": "en",
-  "target_lang": "ru",
+  "target_lang": "uk",
   "parallel": [],
   "words": [],
   "blocks": [],
@@ -21,7 +21,7 @@
 ```json
 {
   "source": "The exact English segment.",
-  "translation": "Точный утверждённый русский сегмент."
+  "translation": "Точний затверджений український сегмент."
 }
 ```
 
@@ -34,8 +34,8 @@ Every input pair must appear exactly once and in reading order.
   "word": "walks",
   "lemma": "walk",
   "pos": "VERB",
-  "translation": "входит",
-  "translations": ["входит", "идёт"]
+  "translation": "заходить",
+  "translations": ["заходить", "іде"]
 }
 ```
 
@@ -44,9 +44,9 @@ Every input pair must appear exactly once and in reading order.
 - `translation` is the primary contextual value supported by this book.
 - Every item in `translations[]` needs evidence in at least one `parallel[]` pair.
 - Keep contextually different confirmed values; do not add generic dictionary senses absent from the book.
-- `seed_words_ru.json` and `words[]` contain every source word, including function words.
-- Keep a function word with no independent Russian equivalent, but use `translation: ""`, `translations: []`, and `empty_reason`. Record the same absorption in its block component.
-- Never give an article or other function word the translation of an adjacent lexical word. Invalid examples include `the → комната`, `a → студент`, `down → садится`, and `there → находятся` when those target spans belong to `room`, `student`, `sit`, and `be` respectively.
+- `seed_words_uk.json` and `words[]` contain every source word, including function words.
+- Keep a function word with no independent Ukrainian equivalent, but use `translation: ""`, `translations: []`, and `empty_reason`. Record the same absorption in its block component.
+- Never give an article or other function word the translation of an adjacent lexical word. Invalid examples include `the → кімната`, `a → студент`, `down → сідає`, and `there → є` when those target spans belong to `room`, `student`, `sit`, and the whole construction respectively.
 
 ```json
 {
@@ -55,7 +55,7 @@ Every input pair must appear exactly once and in reading order.
   "pos": "DET",
   "translation": "",
   "translations": [],
-  "empty_reason": "article has no independent Russian target"
+  "empty_reason": "артикль не має окремого українського відповідника"
 }
 ```
 
@@ -64,20 +64,20 @@ Every input pair must appear exactly once and in reading order.
 ```json
 {
   "source": "walk into",
-  "translation": "входит в",
+  "translation": "заходить до",
   "type": "phrasal_verb",
   "components": [
     {
       "source": "walk",
       "lemma": "walk",
       "pos": "VERB",
-      "translation": "входит"
+      "translation": "заходить"
     },
     {
       "source": "into",
       "lemma": "into",
       "pos": "ADP",
-      "translation": "в"
+      "translation": "до"
     }
   ],
   "source_forms": ["walks into"]
@@ -94,7 +94,7 @@ Allowed block types:
 - `name_group`
 - `reordered_block`
 
-Every block requires a concise target-language `explanation` that describes the reusable construction rather than the surrounding sentence. The source must be the shortest contiguous span that retains the exceptional meaning. An empty component translation requires `empty_reason` explaining structural absorption. Block records and `seed_blocks_ru.json` must not contain complete segment copies or audit prose. Necessity evidence belongs only to Pass 4 and references `parallel[]` through zero-based `segment_indexes[]`.
+Every block requires a concise target-language `explanation` that describes the reusable construction rather than the surrounding sentence. The source must be the shortest contiguous span that retains the exceptional meaning. An empty component translation requires `empty_reason` explaining structural absorption. Block records and `seed_blocks_uk.json` must not contain complete segment copies or audit prose. Necessity evidence belongs only to Pass 4 and references `parallel[]` through zero-based `segment_indexes[]`.
 
 ## Three-pass audit
 
@@ -106,7 +106,7 @@ Every block requires a concise target-language `explanation` that describes the 
     "reviewed_segments": [
       {
         "source_text": "She walks into the room.",
-        "target_text": "Она входит в комнату.",
+        "target_text": "Вона заходить до кімнати.",
         "status": "covered",
         "word_keys": ["walk|VERB", "room|NOUN"],
         "block_sources": ["walk into"],
@@ -124,8 +124,8 @@ Every block requires a concise target-language `explanation` that describes the 
         {
           "key": "walk|VERB",
           "ownership": "word",
-          "translations": ["входит"],
-          "evidence": ["She walks into the room. → Она входит в комнату."]
+          "translations": ["заходить"],
+          "evidence": ["She walks into the room. → Вона заходить до кімнати."]
         }
       ],
       "corrections": [],
@@ -137,14 +137,14 @@ Every block requires a concise target-language `explanation` that describes the 
         {
           "source": "sit down",
           "decision": "accepted",
-          "word_by_word_result": "сидит + вниз",
-          "reason": "the combination means to take a seat",
+          "word_by_word_result": "сидить + униз",
+          "reason": "сполука означає сісти",
           "segment_indexes": [17]
         },
         {
           "source": "first floor",
           "decision": "rejected",
-          "word_by_word_result": "первый этаж",
+          "word_by_word_result": "перший поверх",
           "reason": "independent words preserve the complete meaning",
           "segment_indexes": [13]
         }
@@ -159,13 +159,13 @@ Every `parallel[]` pair must have a corresponding `reviewed_segments[]` entry. P
 
 An `absorbed` decision requires empty word translations and membership in `absorbed_word_keys`. A `word` decision requires non-empty translations and must not be absorbed. Use `mixed` only when the same key has independently translated and structurally absorbed occurrences; its `translations[]` contains only independently owned target spans.
 
-Block-component translations and word records must agree. A non-empty component translation must occur in the matching word record. An absorbed component must be empty and explain which block, construction, or Russian morphological relation owns its meaning. The translation of a whole construction must never be copied to one of its grammatical components; for example, `there are → находятся` does not establish `be → находятся`.
+Block-component translations and word records must agree. A non-empty component translation must occur in the matching word record. An absorbed component must be empty and explain which block, construction, or Ukrainian morphological relation owns its meaning. The translation of a whole construction must never be copied to one of its grammatical components; for example, `there are → є` does not establish `be → є`.
 
 Pass 4 requires exactly one `accepted` decision for every retained block. Rejected candidates remain in audit metadata so a later rebuild does not recreate compositional groups.
 
 ## Reproducible seeds
 
-`seed_words_ru.json` and `seed_blocks_ru.json` are editable evidence sources used to regenerate the layer. Globals and package artifacts are derived outputs. Never make a global dictionary the only location of new book evidence.
+`seed_words_uk.json` and `seed_blocks_uk.json` are editable evidence sources used to regenerate the layer. Globals and package artifacts are derived outputs. Never make a global dictionary the only location of new book evidence.
 
 ## Teaching fallback
 
@@ -176,7 +176,7 @@ may be stored only as:
 
 ```json
 {
-  "dictionary_translation": "значение",
+  "dictionary_translation": "значення",
   "dictionary_translation_source": "skill_fallback"
 }
 ```
@@ -187,7 +187,7 @@ conditions; they must not contain a closed list of particular English words.
 
 ## Verification word-to-word
 
-`word_to_word_ru.json` is owned by this skill. It proves the seeds and layer
+`word_to_word_uk.json` is owned by this skill. It proves the seeds and layer
 against every source occurrence but is not a Workbench, package, or ZIP artifact.
 
 ```json
@@ -195,7 +195,7 @@ against every source occurrence but is not a Workbench, package, or ZIP artifact
   "version": 1,
   "book_id": "book_id",
   "source_lang": "en",
-  "target_lang": "ru",
+  "target_lang": "uk",
   "entries": [
     {
       "word_id": "stable_occurrence_id",
@@ -220,7 +220,7 @@ against every source occurrence but is not a Workbench, package, or ZIP artifact
       "tap_unit_id": "block:0:0",
       "block_source": "canonical block",
       "source_form": "attested source form",
-      "translation": "перевод всей конструкции",
+      "translation": "переклад усієї конструкції",
       "segment_index": 0,
       "word_ids": ["first_word_id", "second_word_id"]
     }
@@ -259,3 +259,4 @@ statuses are blocking errors.
 The skill stops after writing and validating the two seeds, book layer, and
 verification word-to-word file. It does not rebuild globals, Workbench data,
 application assets, CloudLibrary files, packages, or ZIP files.
+

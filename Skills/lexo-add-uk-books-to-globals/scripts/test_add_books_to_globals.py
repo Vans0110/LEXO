@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import argparse
+import contextlib
+import io
 import json
 import sys
 import tempfile
@@ -8,13 +11,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from add_books_to_globals import apply_books, audit_book, duplicates
-from function_word_audit import (
-    audit_function_forms,
-    audit_functions,
-    function_errors,
-    function_occurrence_candidates,
-)
+from add_books_to_globals import apply_books, audit_book, command_add, duplicates
+from function_word_audit import audit_functions, function_errors
+from verified_book_gate import require_verified_book
 
 
 def write(path: Path, payload: object) -> None:
@@ -35,16 +34,16 @@ def seed(
         / "Backend"
         / "data"
         / "dictionaries"
-        / "library_ru"
+        / "library_uk"
         / "books"
         / book_id
     )
     write(
-        directory / "seed_words_ru.json",
+        directory / "seed_words_uk.json",
         {"rest|NOUN": {"translation": translation, "translations": [translation]}},
     )
     write(
-        directory / "seed_blocks_ru.json",
+        directory / "seed_blocks_uk.json",
         [
             {
                 "source": "at rest",
@@ -57,19 +56,65 @@ def seed(
             }
         ],
     )
+    write(
+        directory / "book_layer_uk.json",
+        {
+            "book_id": book_id,
+            "target_lang": "uk",
+            "blocks": [{}],
+            "book_layer_audit": {
+                "second_pass": {"status": "passed", "unresolved": []},
+                "third_pass": {"status": "passed", "unresolved": []},
+                "fourth_pass": {"status": "passed", "unresolved": []},
+            },
+        },
+    )
+    write(
+        directory / "word_to_word_uk.json",
+        {"book_id": book_id, "target_lang": "uk", "entries": [], "block_occurrences": []},
+    )
 
 
 class AddBooksToGlobalsTest(unittest.TestCase):
+    def test_full_write_and_repeat_preview_use_only_uk_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            seed(root, "book_a", "спокої")
+            library = root / "Studio/Backend/data/dictionaries/library_uk"
+            write(library / "global_words_uk.json", {})
+            write(library / "global_blocks_uk.json", {})
+            write(library / "global_function_words_uk.json", {})
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                code = command_add(argparse.Namespace(root=root, book_id=["book_a"], write=True))
+            self.assertEqual(0, code)
+            self.assertTrue(json.loads((library / "global_words_uk.json").read_text(encoding="utf-8")))
+            self.assertFalse((root / "Studio/Backend/data/dictionaries/library_ru").exists())
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                code = command_add(argparse.Namespace(root=root, book_id=["book_a"], write=False))
+            repeat = json.loads(output.getvalue())
+            self.assertEqual(0, code)
+            self.assertEqual(2, repeat["totals"]["skipped_existing"])
+
+    def test_rejects_legacy_book_without_four_file_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "book_legacy"
+            directory.mkdir()
+            write(directory / "seed_words_uk.json", {})
+            with self.assertRaisesRegex(ValueError, "incomplete UK four-file contract"):
+                require_verified_book(directory, "book_legacy")
+
     def test_function_word_audit_uses_pos_and_requires_descriptions(self) -> None:
         seeds = {
             "be|AUX": {"translation": ""},
             "to|PART": {"translation": ""},
-            "book|NOUN": {"translation": "книга"},
+            "book|NOUN": {"translation": "книжка"},
         }
         functions = {
             "be|AUX": {
-                "label": "Форма-связка",
-                "explanation": "Связывает участника с признаком или состоянием.",
+                "label": "Форма-зв’язка",
+                "explanation": "Пов’язує учасника з ознакою або станом.",
             }
         }
         present, missing = audit_functions(seeds, functions)
@@ -85,8 +130,8 @@ class AddBooksToGlobalsTest(unittest.TestCase):
             {"be|AUX": {}},
             {
                 "copula|AUX": {
-                    "label": "Форма-связка",
-                    "explanation": "Связывает участника с признаком.",
+                    "label": "Форма-зв’язка",
+                    "explanation": "Пов’язує учасника з ознакою.",
                     "match_keys": ["be|AUX"],
                 },
             },
@@ -94,55 +139,14 @@ class AddBooksToGlobalsTest(unittest.TestCase):
         self.assertEqual(["be|AUX"], present)
         self.assertEqual([], missing)
 
-    def test_inflected_function_forms_require_surface_specific_records(self) -> None:
-        candidates = function_occurrence_candidates(
-            {"be|AUX": {}},
-            [
-                {"surface": "are", "lemma": "be", "pos": "VERB"},
-                {"surface": "am", "lemma": "be", "pos": "AUX"},
-            ],
-        )
-        functions = {
-            "are|AUX": {
-                "surface": "are",
-                "base_form": "be",
-                "translation": "быть",
-                "label": "Форма be для you, we, they",
-                "explanation": "Описывает форму are.",
-                "usage": "Употребляется с you, we, they.",
-                "examples": [
-                    {"source": "There are books.", "translation": "Есть книги."}
-                ],
-                "match_keys": ["are|VERB"],
-            }
-        }
-        present, missing, invalid = audit_function_forms(candidates, functions)
-        self.assertEqual(["are|VERB"], present)
-        self.assertEqual(["am|AUX"], missing)
-        self.assertEqual([], invalid)
-
-        functions["am|AUX"] = {
-            "surface": "am",
-            "base_form": "be",
-            "translation": "быть",
-            "label": "Форма be для I",
-            "explanation": "Описывает форму am.",
-            "usage": "Употребляется только с I.",
-            "examples": [{"source": "I am ready.", "translation": "Я готов."}],
-        }
-        present, missing, invalid = audit_function_forms(candidates, functions)
-        self.assertEqual(["am|AUX", "are|VERB"], present)
-        self.assertEqual([], missing)
-        self.assertEqual([], invalid)
-
     def test_block_keeps_dictionary_and_contextual_translations(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             seed(
                 root,
                 "book_a",
-                "конца",
-                block_dictionary_translation="оставшаяся часть чего-либо",
+                "спокої",
+                block_dictionary_translation="стан спокою",
             )
             _, blocks, report, errors = apply_books(root, ["book_a"], {}, {})
             self.assertEqual([], errors)
@@ -150,7 +154,7 @@ class AddBooksToGlobalsTest(unittest.TestCase):
             self.assertEqual(1, report["totals"]["new_translation"])
             record = blocks["at rest"]
             self.assertEqual(
-                ["оставшаяся часть чего-либо", "в конца"],
+                ["стан спокою", "в спокої"],
                 record["translations"],
             )
             self.assertEqual(
@@ -161,8 +165,8 @@ class AddBooksToGlobalsTest(unittest.TestCase):
     def test_incremental_add_skip_and_new_translation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            seed(root, "book_a", "покое")
-            seed(root, "book_b", "остаток")
+            seed(root, "book_a", "спокої")
+            seed(root, "book_b", "решта")
             words, blocks, report, errors = apply_books(
                 root, ["book_a"], {}, {}
             )
@@ -191,7 +195,7 @@ class AddBooksToGlobalsTest(unittest.TestCase):
             self.assertEqual(2, len(next_words["rest|NOUN"]["translations"]))
             self.assertEqual(2, len(next_blocks["at rest"]["translations"]))
 
-            seed(root, "book_c", "покое")
+            seed(root, "book_c", "спокої")
             _, _, provenance_report, errors = apply_books(
                 root, ["book_c"], words, blocks
             )
@@ -203,7 +207,7 @@ class AddBooksToGlobalsTest(unittest.TestCase):
     def test_reports_unapplied_book(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            seed(root, "book_a", "покое")
+            seed(root, "book_a", "спокої")
             present, expected, missing = audit_book(root, "book_a", {}, {})
             self.assertEqual(0, present)
             self.assertEqual(2, expected)
@@ -212,3 +216,4 @@ class AddBooksToGlobalsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

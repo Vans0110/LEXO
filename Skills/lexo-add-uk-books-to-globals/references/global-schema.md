@@ -1,4 +1,4 @@
-# Incremental RU Global schema
+# Incremental UK Global schema
 
 ## Word identity
 
@@ -8,10 +8,10 @@ Global word key: normalized lowercase `lemma|UPPER_POS`.
 {
   "lemma": "lemma",
   "pos": "POS",
-  "translations": ["перевод"],
+  "translations": ["переклад"],
   "variants": [
     {
-      "translation": "перевод",
+      "translation": "переклад",
       "translation_kind": "contextual",
       "book_ids": ["book_id"],
       "source_forms": ["source form"]
@@ -31,12 +31,12 @@ Global block key: normalized lowercase source block.
 
 ```json
 {
-  "translations": ["перевод"],
+  "translations": ["переклад"],
   "type": "grammar_construction",
-  "explanation": "Короткое переиспользуемое пояснение конструкции.",
+  "explanation": "Коротке багаторазове пояснення конструкції.",
   "variants": [
     {
-      "translation": "перевод",
+      "translation": "переклад",
       "translation_kind": "contextual",
       "book_ids": ["book_id"],
       "source_forms": ["attested form"]
@@ -53,7 +53,7 @@ is supplemented without duplicate component records.
 A block can contain several valid meanings. Preserve `dictionary_translation`
 as a `dictionary_fallback` variant and each exact book occurrence translation
 as a `contextual` variant. For example, `the rest of` may contain both
-`оставшаяся часть чего-либо` and `конца`; adding the latter must not replace the
+`решта чогось` and `кінця`; adding the latter must not replace the
 former.
 
 `type` and `explanation` are required. The explanation describes the reusable
@@ -73,8 +73,8 @@ Global function key: normalized lowercase `lemma|UPPER_POS`.
 ```json
 {
   "be|AUX": {
-    "label": "Начальная форма be",
-    "explanation": "Краткое переиспользуемое описание грамматической функции.",
+    "label": "Початкова форма be",
+    "explanation": "Короткий багаторазовий опис граматичної функції.",
     "match_keys": ["be|VERB"]
   }
 }
@@ -85,26 +85,3 @@ a book. `match_keys` is optional and may only contain normalized keys. Existing
 valid descriptions are preserved; an absent functional `lemma|POS` found in a
 selected seed must be reviewed and added before the Global merge can pass.
 
-Inflected surface forms use independent records even when they share one lemma:
-
-```json
-{
-  "are|AUX": {
-    "surface": "are",
-    "base_form": "be",
-    "translation": "быть",
-    "label": "Форма глагола be для you, we, they",
-    "explanation": "Полное локализованное описание именно формы are.",
-    "usage": "Употребляется с you, we, they и существительными во множественном числе.",
-    "examples": [
-      {"source": "There are books.", "translation": "В комнате находятся книги."}
-    ],
-    "match_keys": ["are|VERB"]
-  }
-}
-```
-
-The displayed surface record is not replaced by a lemma record. `base_form`
-exists only for grouping and explanation. A POS alias must keep the same
-normalized surface. Required forms are derived from verified occurrences, not
-from a closed lexical list.

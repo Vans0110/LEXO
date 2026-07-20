@@ -8,6 +8,45 @@ from refresh_dictionary_artifacts import _refresh_language
 
 
 class RefreshDictionaryArtifactsTest(unittest.TestCase):
+    def test_block_selects_contextual_variant_without_losing_dictionary_meaning(self) -> None:
+        reader = {
+            "book_id": "book-test",
+            "paragraphs": [
+                {
+                    "words": [],
+                    "segments_v2": [
+                        {
+                            "id": "segment-1",
+                            "source_text": "For the rest of the day.",
+                            "target_text": "До конца дня.",
+                        }
+                    ],
+                }
+            ],
+        }
+        blocks = {
+            "the rest of": {
+                "translations": ["оставшаяся часть чего-либо", "конца"],
+                "components": [{"source": "rest"}],
+            }
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            lexicon = _refresh_language(
+                Path(temp_dir),
+                lang="ru",
+                reader=reader,
+                words={},
+                blocks=blocks,
+            )
+        self.assertEqual(
+            "конца",
+            lexicon["block_alignments"][0]["translation"],
+        )
+        self.assertEqual(
+            ["оставшаяся часть чего-либо", "конца"],
+            lexicon["blocks"]["the rest of"]["translations"],
+        )
+
     def test_skips_block_gloss_absent_from_target_segment(self) -> None:
         reader = {
             "book_id": "book-test",

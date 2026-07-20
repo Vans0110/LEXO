@@ -913,6 +913,7 @@ class LexoStorage:
             if isinstance(entry, dict) and bool(entry.get("translations"))
         )
         missing_word_count = max(0, len(entries) - translated_word_count)
+        coverage_status = self._book_target_coverage_status(resolved, normalized_lang)
         return {
             "ok": True,
             "book_id": resolved,
@@ -923,6 +924,7 @@ class LexoStorage:
             "missing_word_count": missing_word_count,
             "block_count": int(manifest.get("block_count") or 0),
             "dictionary_entry_count": dictionary_entry_count,
+            **coverage_status,
         }
 
     def _build_book_layer_payload(self, book_id: str, target_lang: str) -> dict:
@@ -1561,8 +1563,96 @@ class LexoStorage:
             "blocks": blocks,
             "function_words": function_words,
         }
+        verification = self._book_verified_alignment(book_id, target_lang)
+        if verification:
+            manifest["verified_word_alignments"] = verification.get("entries") or []
+            manifest["target_coverage"] = verification.get("target_coverage") or []
+            manifest["verification_version"] = verification.get("version") or 1
         self._dictionary_manifest_cache[cache_key] = manifest
         return manifest
+
+    def _book_verified_alignment(self, book_id: str, target_lang: str) -> dict:
+        proof_path = (
+            self.library_dictionary_store.book_layer_path(book_id, target_lang).parent
+            / f"word_to_word_{target_lang}.json"
+        )
+        if not proof_path.exists():
+            return {}
+        try:
+            payload = json.loads(proof_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}
+        if not isinstance(payload, dict):
+            return {}
+        if str(payload.get("book_id") or "").strip() != str(book_id).strip():
+            return {}
+        if str(payload.get("target_lang") or "").strip().lower() != target_lang:
+            return {}
+        return payload
+
+    def _book_target_coverage_status(self, book_id: str, target_lang: str) -> dict:
+        verification = self._book_verified_alignment(book_id, target_lang)
+        if not verification or "target_coverage" not in verification:
+            return {
+                "target_coverage_available": False,
+                "target_coverage_verified": False,
+                "target_coverage_count": 0,
+                "target_coverage_unresolved_count": 0,
+            }
+        layer_path = self.library_dictionary_store.book_layer_path(
+            book_id, target_lang
+        )
+        try:
+            layer = json.loads(layer_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            layer = {}
+        parallel = layer.get("parallel") if isinstance(layer, dict) else []
+        parallel = parallel if isinstance(parallel, list) else []
+        covered: set[tuple[int, int]] = set()
+        unresolved = 0
+        for entry in verification.get("entries") or []:
+            if not isinstance(entry, dict):
+                continue
+            if str(entry.get("status") or "") == "unresolved":
+                unresolved += 1
+            segment_index = entry.get("segment_index")
+            start = entry.get("target_start_index")
+            end = entry.get("target_end_index")
+            if isinstance(segment_index, int) and isinstance(start, int) and isinstance(end, int):
+                covered.update((segment_index, index) for index in range(start, end + 1))
+        coverage = [
+            item
+            for item in verification.get("target_coverage") or []
+            if isinstance(item, dict)
+        ]
+        for item in coverage:
+            segment_index = item.get("segment_index")
+            start = item.get("target_start_index")
+            end = item.get("target_end_index")
+            if str(item.get("ownership") or "") not in {
+                "block",
+                "insertion",
+                "restructure",
+            }:
+                unresolved += 1
+            if isinstance(segment_index, int) and isinstance(start, int) and isinstance(end, int):
+                covered.update((segment_index, index) for index in range(start, end + 1))
+        for segment_index, pair in enumerate(parallel):
+            if not isinstance(pair, dict):
+                continue
+            target_tokens = re.findall(
+                r"[^\W_]+", str(pair.get("translation") or ""), flags=re.UNICODE
+            )
+            unresolved += sum(
+                (segment_index, target_index) not in covered
+                for target_index in range(len(target_tokens))
+            )
+        return {
+            "target_coverage_available": True,
+            "target_coverage_verified": unresolved == 0,
+            "target_coverage_count": len(coverage),
+            "target_coverage_unresolved_count": unresolved,
+        }
 
     def _clear_book_dictionary_cache(self, book_id: str) -> None:
         prefix = str(book_id)

@@ -6,7 +6,8 @@
 
 ### 2026-07-20
 - Репозиторий подготовлен как полный исходный проект: добавлены актуальный Block-контур, карта Workbench/backend/mobile/Skills, безопасная граница локальных данных и инструкции запуска.
-- Phrase-контур заменён на Block-контур: введены три глобальных словаря Words/Blocks/Function Words, создан `$lexo-block-audit`; occurrence-контракт усилен точным target-span, для `the rest of` исправлено владение `конца`, обновлены backend/reader/mobile и пересобраны 10 RU/UK ZIP.
+- Phrase-контур заменён на Block-контур: введены три глобальных словаря Words/Blocks/Function Words, создан `$lexo-block-audit`; Global Block хранит общее и несколько контекстных значений, occurrence использует точный target-span (`the rest of → конца`), обновлены backend/reader/mobile и пересобраны 10 RU/UK ZIP.
+- Mobile detail sheet оформляет `Blocks` как отдельный контейнер с вложенной карточкой, словарным значением, типом и пояснением; контекстный перевод сохранён отдельно для заголовка и подсветки.
 - Файл: [2026-07-20.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-20.md)
 
 ### 2026-07-16

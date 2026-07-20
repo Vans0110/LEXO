@@ -303,6 +303,7 @@ class ParagraphWordItem {
     this.functionWordExplanation,
     this.blockSource,
     this.blockTranslation,
+    this.blockDictionaryTranslation,
     this.blockType,
     this.blockExplanation,
   });
@@ -353,6 +354,7 @@ class ParagraphWordItem {
   final String? functionWordExplanation;
   final String? blockSource;
   final String? blockTranslation;
+  final String? blockDictionaryTranslation;
   final String? blockType;
   final String? blockExplanation;
   bool get isFunctionWord => const {
@@ -484,6 +486,8 @@ class ParagraphWordItem {
       functionWordExplanation: json['function_word_explanation'] as String?,
       blockSource: json['block_source'] as String?,
       blockTranslation: json['block_translation'] as String?,
+      blockDictionaryTranslation:
+          json['block_dictionary_translation'] as String?,
       blockType: json['block_type'] as String?,
       blockExplanation: json['block_explanation'] as String?,
     );

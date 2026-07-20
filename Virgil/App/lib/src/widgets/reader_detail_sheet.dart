@@ -156,13 +156,17 @@ class _BlockCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final dictionaryTranslation =
+        payload.blockDictionaryTranslation.trim().isNotEmpty
+            ? payload.blockDictionaryTranslation
+            : payload.blockTranslation;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.28),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outlineVariant),
+        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.55)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,31 +179,79 @@ class _BlockCard extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 8),
-          Text(payload.blockSource,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(fontWeight: FontWeight.w700)),
-          if (payload.blockTranslation.trim().isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(payload.blockTranslation,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    )),
-          ],
-          if (payload.blockExplanation.trim().isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(payload.blockExplanation,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(color: colorScheme.onSurfaceVariant)),
-          ],
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: colorScheme.outlineVariant.withOpacity(0.55),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(payload.blockSource,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.w700)),
+                if (dictionaryTranslation.trim().isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(dictionaryTranslation,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          )),
+                ],
+                if (payload.blockType.trim().isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Тип: ${_blockTypeLabel(payload.blockType)}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ],
+                if (payload.blockExplanation.trim().isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(payload.blockExplanation,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: colorScheme.onSurfaceVariant)),
+                ],
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+String _blockTypeLabel(String value) {
+  final raw = value.trim().toLowerCase();
+  const labels = <String, String>{
+    'grammar_construction': 'грамматическая конструкция',
+    'fixed_expression': 'устойчивое выражение',
+    'phrasal_verb': 'фразовый глагол',
+    'collocation': 'словосочетание',
+    'prepositional_group': 'предложная группа',
+    'name_group': 'группа имени собственного',
+    'reordered_block': 'блок с изменённым порядком слов',
+  };
+  final localized = labels[raw];
+  if (localized != null) {
+    return localized;
+  }
+  final normalized = raw.replaceAll('_', ' ');
+  if (normalized.isEmpty) {
+    return '';
+  }
+  return '${normalized[0].toUpperCase()}${normalized.substring(1)}';
 }
 
 bool _shouldShowUnitsBlock(DetailSheetPayload payload) {

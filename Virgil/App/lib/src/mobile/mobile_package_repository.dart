@@ -270,6 +270,7 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
   Map<String, Map<String, dynamic>> alignmentByWordId,
   List<Map<String, dynamic>> blockAlignments,
   Map<String, dynamic> dictionaryEntries,
+  Map<String, dynamic> dictionaryBlocks,
   Map<String, dynamic> functionWords,
 ) {
   final normalizedParagraph = <String, dynamic>{...paragraph};
@@ -386,6 +387,27 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
     final length = _targetTokens(translation).length;
     final blockId =
         'block_${segmentId}_${source.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_')}';
+    final blockKey = (block['block_key'] ?? source).toString().trim();
+    final catalogBlock = dictionaryBlocks[blockKey] is Map<String, dynamic>
+        ? dictionaryBlocks[blockKey] as Map<String, dynamic>
+        : dictionaryBlocks[source] is Map<String, dynamic>
+            ? dictionaryBlocks[source] as Map<String, dynamic>
+            : const <String, dynamic>{};
+    final variants = (catalogBlock['variants'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>();
+    final dictionaryTranslation = variants
+        .where((variant) =>
+            (variant['translation_kind'] ?? '').toString() ==
+            'dictionary_fallback')
+        .map((variant) => (variant['translation'] ?? '').toString().trim())
+        .firstWhere((value) => value.isNotEmpty, orElse: () {
+      return (catalogBlock['translations'] as List<dynamic>? ?? const [])
+          .map((value) => value.toString().trim())
+          .firstWhere(
+            (value) => value.isNotEmpty && value != translation,
+            orElse: () => translation,
+          );
+    });
     for (final word in blockWords) {
       final attachedBlocks =
           (word['block_alignments'] as List<dynamic>? ?? const <dynamic>[])
@@ -414,6 +436,7 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
       word['effective_alignment_kind'] = 'block';
       word['block_source'] = source;
       word['block_translation'] = translation;
+      word['block_dictionary_translation'] = dictionaryTranslation;
       word['block_type'] = (block['block_type'] ?? '').toString();
       word['block_explanation'] = (block['explanation'] ?? '').toString();
       word['effective_coverage_status'] = 'dictionary';
@@ -557,6 +580,9 @@ Map<String, dynamic> _normalizePackageJson(Map<String, dynamic> rawPackage) {
   final dictionaryEntries =
       dictionaryManifest['entries'] as Map<String, dynamic>? ??
           const <String, dynamic>{};
+  final dictionaryBlocks =
+      dictionaryManifest['blocks'] as Map<String, dynamic>? ??
+          const <String, dynamic>{};
   final functionWords =
       dictionaryManifest['function_words'] as Map<String, dynamic>? ??
           const <String, dynamic>{};
@@ -568,6 +594,7 @@ Map<String, dynamic> _normalizePackageJson(Map<String, dynamic> rawPackage) {
       alignmentByWordId,
       blockAlignments,
       dictionaryEntries,
+      dictionaryBlocks,
       functionWords,
     );
     alignedParagraph['words'] =

@@ -404,6 +404,7 @@ class DetailSheetPayload {
     required this.units,
     this.blockSource = '',
     this.blockTranslation = '',
+    this.blockDictionaryTranslation = '',
     this.blockType = '',
     this.blockExplanation = '',
   });
@@ -419,6 +420,7 @@ class DetailSheetPayload {
   final List<DetailSheetUnitItem> units;
   final String blockSource;
   final String blockTranslation;
+  final String blockDictionaryTranslation;
   final String blockType;
   final String blockExplanation;
 
@@ -445,6 +447,8 @@ class DetailSheetPayload {
           .toList(),
       blockSource: json['block_source'] as String? ?? '',
       blockTranslation: json['block_translation'] as String? ?? '',
+      blockDictionaryTranslation:
+          json['block_dictionary_translation'] as String? ?? '',
       blockType: json['block_type'] as String? ?? '',
       blockExplanation: json['block_explanation'] as String? ?? '',
     );
@@ -542,6 +546,7 @@ class DetailSheetPayload {
       units: units,
       blockSource: word.blockSource ?? '',
       blockTranslation: word.blockTranslation ?? '',
+      blockDictionaryTranslation: word.blockDictionaryTranslation ?? '',
       blockType: word.blockType ?? '',
       blockExplanation: word.blockExplanation ?? '',
     );

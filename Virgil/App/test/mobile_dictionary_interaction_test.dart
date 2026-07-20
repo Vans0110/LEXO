@@ -116,6 +116,21 @@ Map<String, dynamic> _package() {
           'translations': ['день']
         },
       },
+      'blocks': {
+        'rest of the day': {
+          'translations': ['оставшаяся часть дня', 'до конца дня'],
+          'variants': [
+            {
+              'translation': 'оставшаяся часть дня',
+              'translation_kind': 'dictionary_fallback',
+            },
+            {
+              'translation': 'до конца дня',
+              'translation_kind': 'contextual',
+            },
+          ],
+        },
+      },
     },
   };
 }
@@ -250,6 +265,8 @@ void main() {
     );
     expect(blockCard.sheetSourceText, 'rest of the day');
     expect(blockCard.blockType, 'grammar_construction');
+    expect(blockCard.blockDictionaryTranslation, 'оставшаяся часть дня');
+    expect(blockCard.blockTranslation, 'до конца дня');
     expect(
         blockCard.blockExplanation, 'Указывает на оставшуюся часть времени.');
     expect(blockCard.units.map((unit) => unit.surfaceText),
@@ -568,5 +585,75 @@ void main() {
 
     expect(savedUnit?.id, 'word_next');
     expect(savedTranslations, ['рядом']);
+  });
+
+  testWidgets('detail sheet renders a nested Blocks card with dictionary value',
+      (tester) async {
+    final payload = DetailSheetPayload.fromJson({
+      'word_id': 'block_id',
+      'tap_unit_id': 'block_id',
+      'sheet_source_text': 'the rest of',
+      'sheet_translation_text': 'конца',
+      'example_source_text':
+          'She checks every room number carefully for the rest of the day.',
+      'example_translation_text':
+          'Она внимательно проверяет номера всех комнат до конца дня.',
+      'units': const <Map<String, dynamic>>[],
+      'block_source': 'the rest of',
+      'block_translation': 'конца',
+      'block_dictionary_translation': 'оставшаяся часть чего-либо',
+      'block_type': 'grammar_construction',
+      'block_explanation':
+          'Указывает на часть времени, количества или предмета, которая ещё осталась.',
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: ReaderDetailSheet(payload: payload)),
+      ),
+    );
+
+    expect(find.text('Blocks'), findsOneWidget);
+    expect(find.text('the rest of'), findsNWidgets(2));
+    expect(find.text('оставшаяся часть чего-либо'), findsOneWidget);
+    expect(find.text('Тип: грамматическая конструкция'), findsOneWidget);
+    expect(
+      find.text(
+        'Указывает на часть времени, количества или предмета, которая ещё осталась.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('конца'), findsOneWidget);
+  });
+
+  testWidgets('all supported block types have Russian labels', (tester) async {
+    const labels = <String, String>{
+      'phrasal_verb': 'фразовый глагол',
+      'fixed_expression': 'устойчивое выражение',
+      'collocation': 'словосочетание',
+      'grammar_construction': 'грамматическая конструкция',
+      'prepositional_group': 'предложная группа',
+      'name_group': 'группа имени собственного',
+      'reordered_block': 'блок с изменённым порядком слов',
+    };
+
+    for (final entry in labels.entries) {
+      final payload = DetailSheetPayload.fromJson({
+        'word_id': 'block_id',
+        'tap_unit_id': 'block_id',
+        'sheet_source_text': 'source block',
+        'sheet_translation_text': 'перевод',
+        'units': const <Map<String, dynamic>>[],
+        'block_source': 'source block',
+        'block_translation': 'перевод',
+        'block_type': entry.key,
+      });
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: ReaderDetailSheet(payload: payload)),
+        ),
+      );
+      expect(find.text('Тип: ${entry.value}'), findsOneWidget);
+    }
   });
 }

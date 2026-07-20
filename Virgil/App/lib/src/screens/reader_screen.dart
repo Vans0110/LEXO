@@ -710,8 +710,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
         heightFactor: 0.72,
         child: ReaderDetailSheet(
           payload: payload,
-          onSaveDictionaryCard: (translations) =>
-              _saveDictionaryCard(payload, translations),
+          onSaveWord: (unit, translations) =>
+              _saveDictionaryCard(unit, translations),
           onPlayWordAudio: () => _playDetailWordAudio(payload),
         ),
       ),
@@ -763,11 +763,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   Future<void> _saveDictionaryCard(
-      DetailSheetPayload payload, List<String> translations) async {
+      DetailSheetUnitItem unit, List<String> translations) async {
     try {
       await _controller.saveDictionaryCard(
         bookId: widget.bookId,
-        wordId: payload.wordId,
+        wordId: unit.id,
         translations: translations,
       );
       if (!mounted) {

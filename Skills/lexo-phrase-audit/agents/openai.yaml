@@ -1,4 +1,0 @@
-interface:
-  display_name: "LEXO Phrase Audit"
-  short_description: "Keep only phrases that lose meaning word by word"
-  default_prompt: "Use $lexo-phrase-audit to audit one LEXO book, reject compositional multiword groups, retain only phrases whose meaning cannot be reconstructed from separate words, and rebuild verified dictionaries."

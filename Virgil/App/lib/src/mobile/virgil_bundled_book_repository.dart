@@ -10,6 +10,31 @@ import 'virgil_a1_chapters.dart';
 import 'virgil_download_options.dart';
 import 'mobile_settings_repository.dart';
 
+Map<String, dynamic> dictionaryManifestFromReaderLexicon(
+        Map<String, dynamic> lexicon) =>
+    {
+      'book_id': lexicon['book_id'] ?? '',
+      'target_lang': lexicon['target_lang'] ?? '',
+      'source': lexicon['source'] ?? '',
+      'entries': lexicon['words'] as Map<String, dynamic>? ??
+          const <String, dynamic>{},
+      'blocks': lexicon['blocks'] as Map<String, dynamic>? ??
+          const <String, dynamic>{},
+      'function_words': lexicon['function_words'] as Map<String, dynamic>? ??
+          const <String, dynamic>{},
+    };
+
+Map<String, dynamic> alignmentFromReaderLexicon(Map<String, dynamic> lexicon) =>
+    {
+      'version': lexicon['version'] ?? 3,
+      'book_id': lexicon['book_id'] ?? '',
+      'source_lang': lexicon['source_lang'] ?? 'en',
+      'target_lang': lexicon['target_lang'] ?? '',
+      'source': lexicon['source'] ?? '',
+      'entries': lexicon['word_alignments'] as List<dynamic>? ?? const [],
+      'blocks': lexicon['block_alignments'] as List<dynamic>? ?? const [],
+    };
+
 class VirgilBundledBookInfo {
   const VirgilBundledBookInfo({
     required this.bookId,
@@ -169,11 +194,30 @@ class VirgilBundledBookRepository {
       final manifest = _readJson(files, 'manifest.json');
       final reader = _readReaderJson(files, preferredTargetLang);
       final readerPayloads = _readReaderPayloads(files, manifest);
-      final dictionaryManifest =
-          _readDictionaryJson(files, preferredTargetLang);
-      final dictionaryManifests = _readDictionaryPayloads(files, manifest);
-      final wordToWord = _readWordToWordJson(files, preferredTargetLang);
-      final wordToWordByLang = _readWordToWordPayloads(files, manifest);
+      final readerLexicons = _readReaderLexicons(files, manifest);
+      final selectedLexicon =
+          readerLexicons[preferredTargetLang] as Map<String, dynamic>? ??
+              const <String, dynamic>{};
+      final dictionaryManifest = selectedLexicon.isNotEmpty
+          ? dictionaryManifestFromReaderLexicon(selectedLexicon)
+          : _readDictionaryJson(files, preferredTargetLang);
+      final dictionaryManifests = readerLexicons.isNotEmpty
+          ? {
+              for (final entry in readerLexicons.entries)
+                entry.key: dictionaryManifestFromReaderLexicon(
+                    entry.value as Map<String, dynamic>),
+            }
+          : _readDictionaryPayloads(files, manifest);
+      final wordToWord = selectedLexicon.isNotEmpty
+          ? alignmentFromReaderLexicon(selectedLexicon)
+          : _readWordToWordJson(files, preferredTargetLang);
+      final wordToWordByLang = readerLexicons.isNotEmpty
+          ? {
+              for (final entry in readerLexicons.entries)
+                entry.key: alignmentFromReaderLexicon(
+                    entry.value as Map<String, dynamic>),
+            }
+          : _readWordToWordPayloads(files, manifest);
       final ttsManifest = _readOptionalJson(files, 'tts_manifest.json');
       final wordAudioManifest =
           _readOptionalJson(files, 'word_audio_manifest.json');
@@ -238,6 +282,8 @@ class VirgilBundledBookRepository {
         'word_audio_manifest': wordAudioManifest,
         'word_to_word': wordToWord,
         'word_to_word_by_lang': wordToWordByLang,
+        'reader_lexicon': selectedLexicon,
+        'reader_lexicons': readerLexicons,
       };
       await File('${stagingDir.path}/package.json').writeAsString(
         const JsonEncoder.withIndent('  ').convert(package),
@@ -453,6 +499,27 @@ class VirgilBundledBookRepository {
       return _readOptionalJson(files, langDictionaryName);
     }
     return <String, dynamic>{};
+  }
+
+  Map<String, dynamic> _readReaderLexicons(
+      Map<String, ArchiveFile> files, Map<String, dynamic> manifest) {
+    final langs =
+        (manifest['available_target_langs'] as List<dynamic>? ?? const [])
+            .map((item) => item.toString())
+            .where((item) => item == 'ru' || item == 'uk')
+            .toSet();
+    for (final name in files.keys) {
+      final match =
+          RegExp(r'^reader_lexicon_([a-z]{2})\.json$').firstMatch(name);
+      if (match != null) {
+        langs.add(match.group(1)!);
+      }
+    }
+    return {
+      for (final lang in langs)
+        if (files.containsKey('reader_lexicon_$lang.json'))
+          lang: _readOptionalJson(files, 'reader_lexicon_$lang.json'),
+    };
   }
 
   Map<String, dynamic> _readWordToWordJson(

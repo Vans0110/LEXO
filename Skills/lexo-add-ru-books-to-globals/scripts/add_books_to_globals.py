@@ -18,7 +18,7 @@ def clean(value: object) -> str:
     return " ".join(str(value or "").split())
 
 
-def phrase_key(value: object) -> str:
+def block_key(value: object) -> str:
     return " ".join(match.group(0).casefold() for match in TOKEN_RE.finditer(str(value or "")))
 
 
@@ -67,20 +67,20 @@ def load_book(root: Path, book_id: str) -> tuple[dict[str, Any], list[dict[str, 
     if not words_path.exists():
         raise ValueError(f"{book_id}: missing seed_words_ru.json")
     words = load_object(words_path)
-    phrases_path = directory / "seed_phrases_ru.json"
-    if phrases_path.exists():
-        raw_phrases = json.loads(phrases_path.read_text(encoding="utf-8"))
-        if isinstance(raw_phrases, list):
-            phrases = [item for item in raw_phrases if isinstance(item, dict)]
-        elif isinstance(raw_phrases, dict):
-            phrases = []
-            for source, value in raw_phrases.items():
+    blocks_path = directory / "seed_blocks_ru.json"
+    if blocks_path.exists():
+        raw_blocks = json.loads(blocks_path.read_text(encoding="utf-8"))
+        if isinstance(raw_blocks, list):
+            blocks = [item for item in raw_blocks if isinstance(item, dict)]
+        elif isinstance(raw_blocks, dict):
+            blocks = []
+            for source, value in raw_blocks.items():
                 if isinstance(value, dict):
                     translations = value.get("translations") or []
                     translation = clean(value.get("translation")) or next(
                         (clean(item) for item in translations if clean(item)), ""
                     )
-                    phrases.append(
+                    blocks.append(
                         {
                             **value,
                             "source": source,
@@ -89,7 +89,7 @@ def load_book(root: Path, book_id: str) -> tuple[dict[str, Any], list[dict[str, 
                         }
                     )
                 else:
-                    phrases.append(
+                    blocks.append(
                         {
                             "source": source,
                             "translation": clean(value),
@@ -97,18 +97,18 @@ def load_book(root: Path, book_id: str) -> tuple[dict[str, Any], list[dict[str, 
                         }
                     )
         else:
-            raise ValueError(f"expected phrase seed object or list: {phrases_path}")
+            raise ValueError(f"expected block seed object or list: {blocks_path}")
     else:
         layer_path = directory / "book_layer_ru.json"
         layer = load_object(layer_path) if layer_path.exists() else {}
-        if layer.get("phrases") != []:
-            raise ValueError(f"{book_id}: missing phrase seed without explicit empty layer")
-        phrases = []
-    return words, phrases
+        if layer.get("blocks") != []:
+            raise ValueError(f"{book_id}: missing block seed without explicit empty layer")
+        blocks = []
+    return words, blocks
 
 
 def contributions(root: Path, book_id: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
-    words, phrases = load_book(root, book_id)
+    words, blocks = load_book(root, book_id)
     word_items: list[dict[str, Any]] = []
     skipped: list[dict[str, Any]] = []
     for raw_key, value in words.items():
@@ -136,24 +136,26 @@ def contributions(root: Path, book_id: str) -> tuple[list[dict[str, Any]], list[
         for translation in dict.fromkeys(item.casefold() for item in translations):
             canonical = next(item for item in translations if item.casefold() == translation)
             word_items.append({"key": key, "lemma": lemma, "pos": pos, "translation": canonical, "kind": kind, "source_form": source_form})
-    phrase_items: list[dict[str, Any]] = []
-    for item in phrases:
-        source = phrase_key(item.get("source"))
+    block_items: list[dict[str, Any]] = []
+    for item in blocks:
+        source = block_key(item.get("source"))
         translation = clean(item.get("translation"))
+        block_type = clean(item.get("type"))
+        explanation = clean(item.get("explanation"))
         forms = [clean(form) for form in item.get("source_forms") or [] if clean(form)]
-        if not source or not translation or not forms:
-            raise ValueError(f"{book_id}: invalid phrase seed {item!r}")
+        if not source or not translation or not block_type or not explanation or not forms:
+            raise ValueError(f"{book_id}: invalid block seed {item!r}")
         if len([form.casefold() for form in forms]) != len(
             {form.casefold() for form in forms}
         ):
-            raise ValueError(f"{book_id}: duplicate source_forms in phrase {source}")
-        phrase_items.append({"key": source, "translation": translation, "kind": "contextual", "source_forms": forms, "components": item.get("components") or []})
-    phrase_identities = [
-        (item["key"], item["translation"].casefold()) for item in phrase_items
+            raise ValueError(f"{book_id}: duplicate source_forms in block {source}")
+        block_items.append({"key": source, "translation": translation, "kind": "contextual", "type": block_type, "explanation": explanation, "source_forms": forms, "components": item.get("components") or []})
+    block_identities = [
+        (item["key"], item["translation"].casefold()) for item in block_items
     ]
-    if len(phrase_identities) != len(set(phrase_identities)):
-        raise ValueError(f"{book_id}: duplicate phrase seed identity")
-    return word_items, phrase_items, skipped
+    if len(block_identities) != len(set(block_identities)):
+        raise ValueError(f"{book_id}: duplicate block seed identity")
+    return word_items, block_items, skipped
 
 
 def variant(record: dict[str, Any], translation: str) -> dict[str, Any] | None:
@@ -184,44 +186,54 @@ def merge_components(record: dict[str, Any], components: list[Any], book_id: str
     for component in components:
         if not isinstance(component, dict) or not clean(component.get("translation")):
             continue
-        identity = (phrase_key(component.get("source")), clean(component.get("lemma")).casefold(), clean(component.get("pos")).upper(), clean(component.get("translation")).casefold())
-        existing = next((item for item in target if isinstance(item, dict) and (phrase_key(item.get("source")), clean(item.get("lemma")).casefold(), clean(item.get("pos")).upper(), clean(item.get("translation")).casefold()) == identity), None)
+        identity = (block_key(component.get("source")), clean(component.get("lemma")).casefold(), clean(component.get("pos")).upper(), clean(component.get("translation")).casefold())
+        existing = next((item for item in target if isinstance(item, dict) and (block_key(item.get("source")), clean(item.get("lemma")).casefold(), clean(item.get("pos")).upper(), clean(item.get("translation")).casefold()) == identity), None)
         if existing is None:
             existing = {"source": clean(component.get("source")), "lemma": clean(component.get("lemma")).casefold(), "pos": clean(component.get("pos")).upper(), "translation": clean(component.get("translation")), "book_ids": []}
             target.append(existing)
         append_unique(existing.setdefault("book_ids", []), book_id)
 
 
-def apply_books(root: Path, book_ids: list[str], words: dict[str, Any], phrases: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], list[str]]:
-    next_words, next_phrases = copy.deepcopy(words), copy.deepcopy(phrases)
+def apply_books(root: Path, book_ids: list[str], words: dict[str, Any], blocks: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], list[str]]:
+    next_words, next_blocks = copy.deepcopy(words), copy.deepcopy(blocks)
     report: dict[str, Any] = {"books": {}, "totals": Counter()}
     errors: list[str] = []
     for book_id in book_ids:
         actions: list[dict[str, Any]] = []
         try:
-            word_items, phrase_items, skipped = contributions(root, book_id)
+            word_items, block_items, skipped = contributions(root, book_id)
             actions.extend(skipped)
             for item in word_items:
                 record = next_words.setdefault(item["key"], {"lemma": item["lemma"], "pos": item["pos"], "translations": [], "variants": []})
                 action, reason = merge_variant(record, item, book_id, [item["source_form"]])
                 actions.append({"type": "word", "key": item["key"], "translation": item["translation"], "action": action, "reason": reason})
-            for item in phrase_items:
-                record = next_phrases.setdefault(item["key"], {"translations": [], "variants": [], "components": []})
+            for item in block_items:
+                record = next_blocks.setdefault(item["key"], {"translations": [], "variants": [], "components": []})
+                existing_type = clean(record.get("type"))
+                existing_explanation = clean(record.get("explanation"))
+                if existing_type and existing_type != item["type"]:
+                    raise ValueError(f"{book_id}: conflicting block type for {item['key']}")
+                if existing_explanation and existing_explanation != item["explanation"]:
+                    raise ValueError(f"{book_id}: conflicting block explanation for {item['key']}")
+                record["type"] = item["type"]
+                record["explanation"] = item["explanation"]
                 action, reason = merge_variant(record, item, book_id, item["source_forms"])
                 merge_components(record, item["components"], book_id)
-                actions.append({"type": "phrase", "key": item["key"], "translation": item["translation"], "action": action, "reason": reason})
+                actions.append({"type": "block", "key": item["key"], "translation": item["translation"], "action": action, "reason": reason})
         except (OSError, ValueError, json.JSONDecodeError) as exc:
             errors.append(str(exc))
         counts = Counter(item.get("action") or item.get("reason") for item in actions)
         report["books"][book_id] = {"counts": dict(counts), "actions": actions}
         report["totals"].update(counts)
     report["totals"] = dict(report["totals"])
-    return next_words, next_phrases, report, errors
+    return next_words, next_blocks, report, errors
 
 
 def duplicates(payload: dict[str, Any], label: str) -> list[str]:
     errors: list[str] = []
     for key, record in payload.items():
+        if label == "block" and (not clean(record.get("type")) or not clean(record.get("explanation"))):
+            errors.append(f"{label} {key}: missing type or explanation")
         translations = [clean(item).casefold() for item in record.get("translations") or []]
         if len(translations) != len(set(translations)):
             errors.append(f"{label} {key}: duplicate translations")
@@ -235,7 +247,7 @@ def duplicates(payload: dict[str, Any], label: str) -> list[str]:
                     errors.append(f"{label} {key}: duplicate {field}")
         component_ids = [
             (
-                phrase_key(item.get("source")),
+                block_key(item.get("source")),
                 clean(item.get("lemma")).casefold(),
                 clean(item.get("pos")).upper(),
                 clean(item.get("translation")).casefold(),
@@ -274,9 +286,9 @@ def preservation_errors(before: dict[str, Any], after: dict[str, Any], label: st
     return errors
 
 
-def audit_book(root: Path, book_id: str, words: dict[str, Any], phrases: dict[str, Any]) -> tuple[int, int, list[str]]:
-    word_items, phrase_items, _ = contributions(root, book_id)
-    expected = len(word_items) + len(phrase_items)
+def audit_book(root: Path, book_id: str, words: dict[str, Any], blocks: dict[str, Any]) -> tuple[int, int, list[str]]:
+    word_items, block_items, _ = contributions(root, book_id)
+    expected = len(word_items) + len(block_items)
     present = 0
     missing: list[str] = []
     for item in word_items:
@@ -286,33 +298,33 @@ def audit_book(root: Path, book_id: str, words: dict[str, Any], phrases: dict[st
             present += 1
         else:
             missing.append(f"word {item['key']} -> {item['translation']}")
-    for item in phrase_items:
-        current = variant(phrases.get(item["key"], {}), item["translation"])
+    for item in block_items:
+        current = variant(blocks.get(item["key"], {}), item["translation"])
         forms = {clean(value).casefold() for value in (current or {}).get("source_forms", [])}
         expected_forms = {clean(value).casefold() for value in item["source_forms"]}
         if current and book_id in current.get("book_ids", []) and expected_forms <= forms:
             present += 1
         else:
-            missing.append(f"phrase {item['key']} -> {item['translation']}")
+            missing.append(f"block {item['key']} -> {item['translation']}")
     return present, expected, missing
 
 
 def paths(root: Path) -> tuple[Path, Path, Path]:
     library = root / "Studio" / "Backend" / "data" / "dictionaries" / "library_ru"
-    return library / "global_words_ru.json", library / "global_phrases_ru.json", library / "books"
+    return library / "global_words_ru.json", library / "global_blocks_ru.json", library / "books"
 
 
 def command_add(args: argparse.Namespace) -> int:
-    words_path, phrases_path, _ = paths(args.root)
-    words, phrases = load_object(words_path), load_object(phrases_path)
-    next_words, next_phrases, report, errors = apply_books(args.root, list(dict.fromkeys(args.book_id)), words, phrases)
+    words_path, blocks_path, _ = paths(args.root)
+    words, blocks = load_object(words_path), load_object(blocks_path)
+    next_words, next_blocks, report, errors = apply_books(args.root, list(dict.fromkeys(args.book_id)), words, blocks)
     errors.extend(duplicates(next_words, "word"))
-    errors.extend(duplicates(next_phrases, "phrase"))
+    errors.extend(duplicates(next_blocks, "block"))
     errors.extend(preservation_errors(words, next_words, "word"))
-    errors.extend(preservation_errors(phrases, next_phrases, "phrase"))
+    errors.extend(preservation_errors(blocks, next_blocks, "block"))
     for book_id in dict.fromkeys(args.book_id):
         try:
-            present, expected, missing = audit_book(args.root, book_id, next_words, next_phrases)
+            present, expected, missing = audit_book(args.root, book_id, next_words, next_blocks)
             if present != expected:
                 errors.append(f"{book_id}: second audit missing {missing}")
         except (OSError, ValueError, json.JSONDecodeError) as exc:
@@ -320,22 +332,22 @@ def command_add(args: argparse.Namespace) -> int:
     report.update({"write": bool(args.write), "errors": errors})
     if args.write and not errors:
         write_object(words_path, next_words)
-        write_object(phrases_path, next_phrases)
-        reloaded_words, reloaded_phrases = load_object(words_path), load_object(phrases_path)
-        if reloaded_words != next_words or reloaded_phrases != next_phrases:
+        write_object(blocks_path, next_blocks)
+        reloaded_words, reloaded_blocks = load_object(words_path), load_object(blocks_path)
+        if reloaded_words != next_words or reloaded_blocks != next_blocks:
             report["errors"].append("post-write reload differs")
     print(json.dumps(report, ensure_ascii=False, indent=2, default=dict))
     return 1 if report["errors"] else 0
 
 
 def command_report(args: argparse.Namespace) -> int:
-    words_path, phrases_path, books_path = paths(args.root)
-    words, phrases = load_object(words_path), load_object(phrases_path)
+    words_path, blocks_path, books_path = paths(args.root)
+    words, blocks = load_object(words_path), load_object(blocks_path)
     result: dict[str, Any] = {"books": {}, "counts": Counter()}
     for directory in sorted(path.parent for path in books_path.glob("*/seed_words_ru.json")):
         book_id = directory.name
         try:
-            present, expected, missing = audit_book(args.root, book_id, words, phrases)
+            present, expected, missing = audit_book(args.root, book_id, words, blocks)
             status = "fully_applied" if present == expected else "not_applied" if present == 0 else "partially_applied"
             result["books"][book_id] = {"status": status, "present": present, "expected": expected, "missing": missing}
         except (OSError, ValueError, json.JSONDecodeError) as exc:

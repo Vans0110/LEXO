@@ -20,7 +20,7 @@ class MobilePackageDictionaryManifestTests(unittest.TestCase):
                 "sit|VERB": {"translations": ["садиться"]},
                 "missing|ADJ": {"translations": []},
             },
-            "phrase_count": 2,
+            "block_count": 2,
         }
         storage._build_book_layer_payload = lambda *args, **kwargs: self.fail(
             "Workbench rebuild must not read seed/book-layer payloads"
@@ -43,7 +43,7 @@ class MobilePackageDictionaryManifestTests(unittest.TestCase):
         self.assertEqual(3, result["word_count"])
         self.assertEqual(2, result["translated_word_count"])
         self.assertEqual(1, result["missing_word_count"])
-        self.assertEqual(2, result["phrase_count"])
+        self.assertEqual(2, result["block_count"])
         self.assertNotIn("book_layer_path", result)
         self.assertNotIn("global_words_path", result)
 

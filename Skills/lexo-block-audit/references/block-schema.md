@@ -1,12 +1,13 @@
-# Phrase layer schema
+# Block layer schema
 
-## Book phrase
+## Book block
 
 ```json
 {
   "source": "there are",
   "translation": "находятся",
   "type": "grammar_construction",
+  "explanation": "Сообщает, что кто-то или что-то существует либо находится где-то.",
   "components": [
     {
       "source": "there",
@@ -37,13 +38,17 @@ Allowed `type` values:
 - `name_group`
 - `reordered_block`
 
-A phrase may have several forms. Keep one canonical lowercase source key and compact `source_forms[]`. Never copy complete source/target segments into phrase records or seeds.
+A block may have several forms. Keep one canonical lowercase source key and compact `source_forms[]`. Require a concise reusable `explanation` in the target language. Explain the construction, not the whole sentence. Never copy complete source/target segments into block records or seeds.
+
+The source must be the shortest contiguous reusable span that still owns the non-compositional meaning. For example, store `the rest of`, not the contextual wrapper `for the rest of the day`; the wrapper remains occurrence evidence and its full translation remains in the book segment/alignment.
+
+`translation` is occurrence evidence, not a dictionary gloss. Store the exact contiguous target span owned by the minimal source block, and require that span in every target segment referenced by the accepted audit decision. Keep a reusable paraphrase only in `explanation`. For `for the rest of the day → до конца дня`, store `the rest of → конца`; the excluded `for → до` and `day → дня` remain word-owned.
 
 ## Audit metadata
 
 ```json
 {
-  "phrase_audit": {
+  "block_audit": {
     "version": 1,
     "method": "codex_two_pass",
     "reviewed_segments": [
@@ -51,7 +56,7 @@ A phrase may have several forms. Keep one canonical lowercase source key and com
         "source_text": "There are books.",
         "target_text": "Есть книги.",
         "status": "covered",
-        "phrase_sources": ["there are"],
+        "block_sources": ["there are"],
         "notes": ""
       }
     ],
@@ -61,7 +66,7 @@ A phrase may have several forms. Keep one canonical lowercase source key and com
     },
     "necessity_pass": {
       "status": "passed",
-      "phrase_decisions": [
+      "block_decisions": [
         {
           "source": "there are",
           "decision": "accepted",
@@ -76,15 +81,17 @@ A phrase may have several forms. Keep one canonical lowercase source key and com
 }
 ```
 
-Every `parallel[]` object must have a corresponding reviewed-segment entry. Use `status: no_phrase_required` when independent words fully represent the segment. Every retained phrase requires an accepted necessity decision. Reordering, inflection, proper-name grouping, and ordinary compositional translation are rejection reasons, not phrase evidence.
+Every `parallel[]` object must have a corresponding reviewed-segment entry. Use `status: no_block_required` when independent words fully represent the segment. Every retained block requires an accepted necessity decision. Reordering, inflection, proper-name grouping, ordinary compositional translation, and non-minimal contextual wrappers are rejection reasons, not block evidence.
 
-## Global phrase
+## Global block
 
 The merge adds provenance without removing book evidence:
 
 ```json
 {
   "translations": ["находятся"],
+  "type": "grammar_construction",
+  "explanation": "Сообщает о наличии или местонахождении.",
   "variants": [
     {
       "translation": "находятся",
@@ -108,11 +115,11 @@ Global data is derived. The book layer and seeds remain the editable evidence so
 
 ## Scope and occurrence proof
 
-The phrase audit stops after writing the book word seed, phrase seed, book layer,
+The block audit stops after writing the book word seed, block seed, book layer,
 and a skill-owned verification `word_to_word_<lang>.json`. It never rebuilds
 globals, Workbench data, packages, or ZIP files.
 
-Every attested retained phrase occurrence must appear as one verification phrase
-block. All component `word_id` values share that block's `owner_unit_id` and
+Every attested retained block occurrence must appear as one verification block
+occurrence. All component `word_id` values share that block's `owner_unit_id` and
 `tap_unit_id`. A missing block, split tap units, an empty component without a
 reason, or a whole translation copied to multiple components is blocking.

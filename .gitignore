@@ -29,6 +29,16 @@ Studio/CloudLibrary/
 # Built release packages
 Release/Builds/*
 !Release/Builds/README.md
+Release/GooglePlay/*/aab/
+Release/iOS/*.ipa
+Release/iOS/*.zip
+
+# Local diagnostics and scratch artifacts
+.tmp/
+AGENTS.md.bak.*
+Studio/Workbench/New Text Document.txt
+Studio/*.wav
+Studio/*.timings.json
 
 # Private credentials
 Private/*

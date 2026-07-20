@@ -44,7 +44,7 @@ def main() -> None:
         f"{str(item.get('lemma') or '').lower()}|{str(item.get('pos') or '').upper()}".lower()
         for item in words
     }
-    reason = "meaning is absorbed by a verified phrase or grammar block"
+    reason = "meaning is absorbed by a verified block or grammar block"
     for key in sorted(keys):
         if key not in source_words:
             raise ValueError(f"reader word not found: {key}")

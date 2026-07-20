@@ -25,13 +25,15 @@ creates another variant. An identical translation supplements provenance only.
 Fallback variants use `translation_kind: dictionary_fallback`; a contextual
 contribution upgrades the same translation to `contextual`.
 
-## Phrase identity
+## Block identity
 
-Global phrase key: normalized lowercase source phrase.
+Global block key: normalized lowercase source block.
 
 ```json
 {
   "translations": ["перевод"],
+  "type": "grammar_construction",
+  "explanation": "Короткое переиспользуемое пояснение конструкции.",
   "variants": [
     {
       "translation": "перевод",
@@ -44,9 +46,13 @@ Global phrase key: normalized lowercase source phrase.
 }
 ```
 
-`normalized source + case-insensitive translation` is unique. Phrase components
+`normalized source + case-insensitive translation` is unique. Block components
 are merged by normalized `source + lemma + POS + translation`; book provenance
 is supplemented without duplicate component records.
+
+`type` and `explanation` are required. The explanation describes the reusable
+block rather than the complete sentence. Conflicting non-empty values for the
+same normalized source are blocking and must not be silently merged.
 
 ## Preservation
 

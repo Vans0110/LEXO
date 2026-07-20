@@ -6,10 +6,10 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
-from validate_seed_consistency import normalized_phrase_map, normalized_word_map, phrase_components_cover_source
+from validate_seed_consistency import normalized_block_map, normalized_word_map, block_components_cover_source
 from validate_verification_word_to_word import validate as validate_word_to_word
 
-PHRASE_TYPES = {
+BLOCK_TYPES = {
     "phrasal_verb",
     "fixed_expression",
     "collocation",
@@ -73,7 +73,7 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
 
     parallel = [item for item in payload.get("parallel") or [] if isinstance(item, dict)]
     words = [item for item in payload.get("words") or [] if isinstance(item, dict)]
-    phrases = [item for item in payload.get("phrases") or [] if isinstance(item, dict)]
+    blocks = [item for item in payload.get("blocks") or [] if isinstance(item, dict)]
     audit_payload = payload.get("book_layer_audit")
     absorbed_items = (
         audit_payload.get("absorbed_word_keys") or []
@@ -131,23 +131,25 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
             clean(item).casefold() for item in translations or [] if clean(item)
         }
 
-    seen_phrases: set[str] = set()
+    seen_blocks: set[str] = set()
     component_owners: dict[str, set[str]] = {}
     component_translations_by_key: dict[str, set[str]] = {}
-    for index, phrase in enumerate(phrases):
-        label = f"phrases[{index}]"
-        source = clean(phrase.get("source")).casefold()
-        if not source or not clean(phrase.get("translation")):
+    for index, block in enumerate(blocks):
+        label = f"blocks[{index}]"
+        source = clean(block.get("source")).casefold()
+        if not source or not clean(block.get("translation")):
             errors.append(f"{label} requires source and translation")
-        if source in seen_phrases:
-            errors.append(f"duplicate phrase source: {source}")
-        seen_phrases.add(source)
-        if phrase.get("type") not in PHRASE_TYPES:
+        if source in seen_blocks:
+            errors.append(f"duplicate block source: {source}")
+        seen_blocks.add(source)
+        if block.get("type") not in BLOCK_TYPES:
             errors.append(f"{label} has invalid type")
+        if not clean(block.get("explanation")):
+            errors.append(f"{label} requires a reusable explanation")
         for forbidden in ("occurrences", "necessity"):
-            if forbidden in phrase:
-                errors.append(f"{label}.{forbidden} belongs in audit metadata, not phrase records")
-        components = phrase.get("components")
+            if forbidden in block:
+                errors.append(f"{label}.{forbidden} belongs in audit metadata, not block records")
+        components = block.get("components")
         if not isinstance(components, list) or not components:
             errors.append(f"{label}.components[] is required")
         else:
@@ -177,13 +179,13 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
                         )
                 if component_translation and clean(component.get("pos")).upper() not in FUNCTION_POS:
                     component_owners.setdefault(component_translation, set()).add(component_key)
-            if not phrase_components_cover_source(phrase):
-                errors.append(f"{label}.components[] do not cover the complete phrase source")
-        source_forms = phrase.get("source_forms")
+            if not block_components_cover_source(block):
+                errors.append(f"{label}.components[] do not cover the complete block source")
+        source_forms = block.get("source_forms")
         if not isinstance(source_forms, list) or not any(clean(item) for item in source_forms):
             errors.append(f"{label}.source_forms[] is required")
         elif not any(
-            contains_sequence(pair_source, form) and contains_sequence(pair_target, phrase.get("translation"))
+            contains_sequence(pair_source, form)
             for pair_source, pair_target in pairs
             for form in source_forms
             if clean(form)
@@ -197,7 +199,7 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
             pos in FUNCTION_POS or key.lower() in absorbed_word_keys
         ):
             errors.append(
-                f"word {key} misses phrase-component translations "
+                f"word {key} misses block-component translations "
                 f"{sorted(missing_component_values)}"
             )
         if pos not in FUNCTION_POS:
@@ -321,8 +323,8 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
             elif unresolved:
                 errors.append(f"fourth pass has {len(unresolved)} unresolved item(s)")
             accepted: list[str] = []
-            for index, decision in enumerate(fourth.get("phrase_decisions") or []):
-                label = f"fourth_pass.phrase_decisions[{index}]"
+            for index, decision in enumerate(fourth.get("block_decisions") or []):
+                label = f"fourth_pass.block_decisions[{index}]"
                 if not isinstance(decision, dict):
                     errors.append(f"{label} must be an object")
                     continue
@@ -341,18 +343,18 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
                 if decision_value == "accepted":
                     accepted.append(decision_source)
             if len(accepted) != len(set(accepted)):
-                errors.append("fourth pass has duplicate accepted phrase decisions")
-            if set(accepted) != seen_phrases:
+                errors.append("fourth pass has duplicate accepted block decisions")
+            if set(accepted) != seen_blocks:
                 errors.append(
-                    "fourth-pass accepted phrases disagree with phrases[]: "
-                    f"missing={sorted(seen_phrases - set(accepted))}, "
-                    f"extra={sorted(set(accepted) - seen_phrases)}"
+                    "fourth-pass accepted blocks disagree with blocks[]: "
+                    f"missing={sorted(seen_blocks - set(accepted))}, "
+                    f"extra={sorted(set(accepted) - seen_blocks)}"
                 )
 
     return errors, {
         "parallel": len(parallel),
         "words": len(words),
-        "phrases": len(phrases),
+        "blocks": len(blocks),
         "reviewed": len(reviewed),
     }
 
@@ -366,15 +368,15 @@ def main() -> int:
         payload = load(layer_path)
         errors, counts = validate(payload)
         seed_words_path = layer_path.with_name("seed_words_ru.json")
-        seed_phrases_path = layer_path.with_name("seed_phrases_ru.json")
+        seed_blocks_path = layer_path.with_name("seed_blocks_ru.json")
         if seed_words_path.exists():
             seed_words = json.loads(seed_words_path.read_text(encoding="utf-8"))
             if normalized_word_map(seed_words) != normalized_word_map(payload.get("words")):
                 errors.append("seed_words_ru.json disagrees with book_layer_ru.json words[]")
-        if seed_phrases_path.exists():
-            seed_phrases = json.loads(seed_phrases_path.read_text(encoding="utf-8"))
-            if normalized_phrase_map(seed_phrases) != normalized_phrase_map(payload.get("phrases")):
-                errors.append("seed_phrases_ru.json disagrees with book_layer_ru.json phrases[]")
+        if seed_blocks_path.exists():
+            seed_blocks = json.loads(seed_blocks_path.read_text(encoding="utf-8"))
+            if normalized_block_map(seed_blocks) != normalized_block_map(payload.get("blocks")):
+                errors.append("seed_blocks_ru.json disagrees with book_layer_ru.json blocks[]")
         proof_path = layer_path.with_name("word_to_word_ru.json")
         if not proof_path.exists():
             errors.append("word_to_word_ru.json verification artifact is required")

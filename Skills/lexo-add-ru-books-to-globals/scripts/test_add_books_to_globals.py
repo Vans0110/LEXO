@@ -32,11 +32,13 @@ def seed(root: Path, book_id: str, translation: str) -> None:
         {"rest|NOUN": {"translation": translation, "translations": [translation]}},
     )
     write(
-        directory / "seed_phrases_ru.json",
+        directory / "seed_blocks_ru.json",
         [
             {
                 "source": "at rest",
                 "translation": f"в {translation}",
+                "type": "fixed_expression",
+                "explanation": "Describes a state without movement or activity.",
                 "source_forms": ["at rest"],
                 "components": [],
             }
@@ -50,37 +52,37 @@ class AddBooksToGlobalsTest(unittest.TestCase):
             root = Path(temporary)
             seed(root, "book_a", "покое")
             seed(root, "book_b", "остаток")
-            words, phrases, report, errors = apply_books(
+            words, blocks, report, errors = apply_books(
                 root, ["book_a"], {}, {}
             )
             self.assertEqual([], errors)
             self.assertEqual(2, report["totals"]["added"])
             self.assertEqual([], duplicates(words, "word"))
-            self.assertEqual([], duplicates(phrases, "phrase"))
+            self.assertEqual([], duplicates(blocks, "block"))
             present, expected, missing = audit_book(
-                root, "book_a", words, phrases
+                root, "book_a", words, blocks
             )
             self.assertEqual((expected, []), (present, missing))
 
-            same_words, same_phrases, same_report, errors = apply_books(
-                root, ["book_a"], words, phrases
+            same_words, same_blocks, same_report, errors = apply_books(
+                root, ["book_a"], words, blocks
             )
             self.assertEqual([], errors)
             self.assertEqual(words, same_words)
-            self.assertEqual(phrases, same_phrases)
+            self.assertEqual(blocks, same_blocks)
             self.assertEqual(2, same_report["totals"]["skipped_existing"])
 
-            next_words, next_phrases, next_report, errors = apply_books(
-                root, ["book_b"], words, phrases
+            next_words, next_blocks, next_report, errors = apply_books(
+                root, ["book_b"], words, blocks
             )
             self.assertEqual([], errors)
             self.assertEqual(2, next_report["totals"]["new_translation"])
             self.assertEqual(2, len(next_words["rest|NOUN"]["translations"]))
-            self.assertEqual(2, len(next_phrases["at rest"]["translations"]))
+            self.assertEqual(2, len(next_blocks["at rest"]["translations"]))
 
             seed(root, "book_c", "покое")
             _, _, provenance_report, errors = apply_books(
-                root, ["book_c"], words, phrases
+                root, ["book_c"], words, blocks
             )
             self.assertEqual([], errors)
             self.assertEqual(

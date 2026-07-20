@@ -39,7 +39,7 @@ def fixture() -> tuple[dict, dict]:
                 "empty_reason": "owned by the construction",
             },
         ],
-        "phrases": [
+        "blocks": [
             {
                 "source": "sit down",
                 "translation": "садятся",
@@ -78,9 +78,9 @@ def fixture() -> tuple[dict, dict]:
                 "pos": "VERB",
                 "contextual_translation": "садятся",
                 "dictionary_translation": "",
-                "status": "phrase_component",
-                "owner_unit_id": "phrase:0:1",
-                "tap_unit_id": "phrase:0:1",
+                "status": "block_component",
+                "owner_unit_id": "block:0:1",
+                "tap_unit_id": "block:0:1",
                 "target_start_index": 1,
                 "target_end_index": 1,
                 "empty_reason": "",
@@ -94,17 +94,17 @@ def fixture() -> tuple[dict, dict]:
                 "pos": "PART",
                 "contextual_translation": "",
                 "dictionary_translation": "вниз",
-                "status": "phrase_component",
-                "owner_unit_id": "phrase:0:1",
-                "tap_unit_id": "phrase:0:1",
+                "status": "block_component",
+                "owner_unit_id": "block:0:1",
+                "tap_unit_id": "block:0:1",
                 "empty_reason": "meaning is owned by the construction",
             },
         ],
-        "phrase_blocks": [
+        "block_occurrences": [
             {
-                "unit_id": "phrase:0:1",
-                "tap_unit_id": "phrase:0:1",
-                "phrase_source": "sit down",
+                "unit_id": "block:0:1",
+                "tap_unit_id": "block:0:1",
+                "block_source": "sit down",
                 "source_form": "sit down",
                 "translation": "садятся",
                 "segment_index": 0,
@@ -116,14 +116,14 @@ def fixture() -> tuple[dict, dict]:
 
 
 class VerificationWordToWordTest(unittest.TestCase):
-    def test_accepts_complete_phrase_block(self) -> None:
+    def test_accepts_complete_block(self) -> None:
         layer, proof = fixture()
         errors, counts = validate(layer, proof)
         self.assertEqual([], errors)
         self.assertEqual(3, counts["entries"])
-        self.assertEqual(1, counts["phrase_blocks"])
+        self.assertEqual(1, counts["block_occurrences"])
 
-    def test_rejects_split_phrase_tap_units(self) -> None:
+    def test_rejects_split_block_tap_units(self) -> None:
         layer, proof = fixture()
         proof["entries"][2]["tap_unit_id"] = "word:w2"
         errors, _ = validate(layer, proof)

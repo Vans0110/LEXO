@@ -27,8 +27,7 @@ class MobileCardsRepository {
     final items = await _readCards();
     final filtered = items
         .where((item) => !item.isDeleted)
-        .where(
-            (item) => item.cardType == 'lexical' || item.cardType == 'phrase')
+        .where((item) => item.cardType == 'lexical' || item.cardType == 'block')
         .toList()
       ..sort((left, right) {
         final scoreCompare = left.progressScore.compareTo(right.progressScore);

@@ -7,12 +7,15 @@ class ReaderDetailSheet extends StatelessWidget {
   const ReaderDetailSheet({
     super.key,
     required this.payload,
-    this.onSaveDictionaryCard,
+    this.onSaveWord,
     this.onPlayWordAudio,
   });
 
   final DetailSheetPayload payload;
-  final Future<void> Function(List<String> translations)? onSaveDictionaryCard;
+  final Future<void> Function(
+    DetailSheetUnitItem unit,
+    List<String> translations,
+  )? onSaveWord;
   final Future<void> Function()? onPlayWordAudio;
 
   @override
@@ -109,17 +112,13 @@ class ReaderDetailSheet extends StatelessWidget {
                 ),
               ),
             ],
-            if (payload.dictionaryEntry?.hasContent == true ||
-                (payload.dictionaryEntry?.note.trim().isNotEmpty ?? false)) ...[
+            if (payload.blockSource.trim().isNotEmpty) ...[
               const SizedBox(height: 16),
-              _DictionaryBlock(
-                entry: payload.dictionaryEntry!,
-                onSaveCard: onSaveDictionaryCard,
-              ),
+              _BlockCard(payload: payload),
             ],
             if (_shouldShowUnitsBlock(payload)) ...[
               const SizedBox(height: 16),
-              _UnitsBlock(units: payload.units),
+              _UnitsBlock(units: payload.units, onSaveWord: onSaveWord),
             ],
             if (payload.sourceFirst != null &&
                 (payload.sourceFirst!.units.isNotEmpty ||
@@ -149,23 +148,72 @@ class ReaderDetailSheet extends StatelessWidget {
   }
 }
 
+class _BlockCard extends StatelessWidget {
+  const _BlockCard({required this.payload});
+
+  final DetailSheetPayload payload;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Blocks',
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(payload.blockSource,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(fontWeight: FontWeight.w700)),
+          if (payload.blockTranslation.trim().isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(payload.blockTranslation,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    )),
+          ],
+          if (payload.blockExplanation.trim().isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(payload.blockExplanation,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: colorScheme.onSurfaceVariant)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 bool _shouldShowUnitsBlock(DetailSheetPayload payload) {
-  if (payload.units.length > 1) {
-    return true;
-  }
-  if (payload.units.isEmpty) {
-    return false;
-  }
-  final unit = payload.units.first;
-  return unit.translation.trim().isNotEmpty &&
-      (unit.text.trim() != payload.sheetSourceText.trim() ||
-          unit.translation.trim() != payload.sheetTranslationText.trim());
+  return payload.units.any((unit) => unit.translation.trim().isNotEmpty);
 }
 
 class _UnitsBlock extends StatelessWidget {
-  const _UnitsBlock({required this.units});
+  const _UnitsBlock({required this.units, required this.onSaveWord});
 
   final List<DetailSheetUnitItem> units;
+  final Future<void> Function(
+    DetailSheetUnitItem unit,
+    List<String> translations,
+  )? onSaveWord;
 
   @override
   Widget build(BuildContext context) {
@@ -201,25 +249,69 @@ class _UnitsBlock extends StatelessWidget {
                   color: colorScheme.outlineVariant.withValues(alpha: 0.55),
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    units[index].text,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          units[index].text,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                         ),
-                  ),
-                  if (units[index].translation.trim().isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      units[index].translation,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.primary,
-                            fontWeight: FontWeight.w600,
+                        if (units[index].translation.trim().isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            units[index].translation,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
+                        ],
+                        if (units[index]
+                            .functionWordExplanation
+                            .trim()
+                            .isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          if (units[index].functionWordLabel.trim().isNotEmpty)
+                            Text(
+                              units[index].functionWordLabel,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium
+                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                          const SizedBox(height: 2),
+                          Text(
+                            units[index].functionWordExplanation,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(color: colorScheme.onSurfaceVariant),
+                          ),
+                        ],
+                      ],
                     ),
-                  ],
+                  ),
+                  if (onSaveWord != null &&
+                      _unitTranslationOptions(units[index]).isNotEmpty)
+                    IconButton(
+                      tooltip: 'Save word',
+                      onPressed: () => _openUnitSaveSelection(
+                        context,
+                        units[index],
+                        onSaveWord!,
+                      ),
+                      icon: const Icon(Icons.bookmark_add_outlined),
+                    ),
                 ],
               ),
             ),
@@ -230,136 +322,41 @@ class _UnitsBlock extends StatelessWidget {
   }
 }
 
-class _DictionaryBlock extends StatelessWidget {
-  const _DictionaryBlock({
-    required this.entry,
-    required this.onSaveCard,
-  });
-
-  final DetailSheetDictionaryEntry entry;
-  final Future<void> Function(List<String> translations)? onSaveCard;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colorScheme.tertiaryContainer.withOpacity(0.28),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.tertiary.withOpacity(0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (entry.query.trim().isNotEmpty)
-            Text(
-              entry.query,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-          if (onSaveCard != null &&
-              _dictionaryTranslationOptions(entry).isNotEmpty) ...[
-            const SizedBox(height: 10),
-            FilledButton.icon(
-              onPressed: () => _openSaveSelection(context, entry, onSaveCard!),
-              icon: const Icon(Icons.bookmark_add_outlined),
-              label: const Text('Save'),
-            ),
-          ],
-          if (entry.entries.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            for (var index = 0; index < entry.entries.length; index++) ...[
-              if (index > 0) const SizedBox(height: 10),
-              _DictionaryArticleBlock(article: entry.entries[index]),
-            ],
-          ],
-          if (entry.phrasals.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            for (final phrasal in entry.phrasals) ...[
-              Text(
-                phrasal.word,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-              if (phrasal.translation.trim().isNotEmpty)
-                Text(
-                  phrasal.translation,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-              const SizedBox(height: 8),
-            ],
-          ],
-          if (entry.note.trim().isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              entry.note,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Future<void> _openSaveSelection(
-    BuildContext context,
-    DetailSheetDictionaryEntry entry,
-    Future<void> Function(List<String> translations) onSave,
-  ) async {
-    final selected = await showModalBottomSheet<List<String>>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (_) => _DictionarySaveSelectionSheet(
-        options: _dictionaryTranslationOptions(entry),
-      ),
-    );
-    if (selected == null || selected.isEmpty) {
-      return;
-    }
-    await onSave(selected);
-  }
-}
-
-List<_DictionaryTranslationOption> _dictionaryTranslationOptions(
-    DetailSheetDictionaryEntry entry) {
+List<_DictionaryTranslationOption> _unitTranslationOptions(
+    DetailSheetUnitItem unit) {
   final result = <_DictionaryTranslationOption>[];
   final seen = <String>{};
-  for (final article in entry.entries) {
-    final sourceParts = [
-      if (article.partOfSpeech.trim().isNotEmpty) article.partOfSpeech.trim(),
-    ];
-    final sourceLabel = sourceParts.join(' · ');
-    for (final translation in article.translations) {
-      final text = translation.trim();
-      final key = text.toLowerCase();
-      if (text.isEmpty || seen.contains(key)) {
-        continue;
-      }
-      seen.add(key);
-      result.add(
-          _DictionaryTranslationOption(text: text, sourceLabel: sourceLabel));
-    }
-  }
-  for (final translation in entry.translations) {
+  for (final translation in unit.translation.split('/')) {
     final text = translation.trim();
     final key = text.toLowerCase();
-    if (text.isEmpty || seen.contains(key)) {
+    if (text.isEmpty || !seen.add(key)) {
       continue;
     }
-    seen.add(key);
     result.add(_DictionaryTranslationOption(text: text, sourceLabel: ''));
   }
   return result;
+}
+
+Future<void> _openUnitSaveSelection(
+  BuildContext context,
+  DetailSheetUnitItem unit,
+  Future<void> Function(
+    DetailSheetUnitItem unit,
+    List<String> translations,
+  ) onSave,
+) async {
+  final selected = await showModalBottomSheet<List<String>>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (_) => _DictionarySaveSelectionSheet(
+      options: _unitTranslationOptions(unit),
+    ),
+  );
+  if (selected == null || selected.isEmpty) {
+    return;
+  }
+  await onSave(unit, selected);
 }
 
 class _DictionaryTranslationOption {
@@ -473,50 +470,6 @@ class _DictionarySaveSelectionSheetState
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _DictionaryArticleBlock extends StatelessWidget {
-  const _DictionaryArticleBlock({required this.article});
-
-  final DetailSheetDictionaryArticle article;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.28),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.55)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (article.lemma.trim().isNotEmpty) ...[
-            Text(
-              article.lemma,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-          ],
-          if (article.translations.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            for (final translation in article.translations.take(8))
-              Text(
-                '• $translation',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-          ],
-        ],
       ),
     );
   }

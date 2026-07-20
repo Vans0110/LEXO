@@ -12,14 +12,14 @@ from typing import Any
 TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
 STATUSES = {
     "independent_translation",
-    "phrase_component",
+    "block_component",
     "grammar_component",
     "zero_correspondence",
     "dictionary_fallback",
     "source_translation_omission",
     "unresolved",
 }
-COMPONENT_STATUSES = {"phrase_component", "grammar_component"}
+COMPONENT_STATUSES = {"block_component", "grammar_component"}
 
 
 def clean(value: object) -> str:
@@ -61,7 +61,7 @@ def validate(
     parallel = [item for item in layer.get("parallel") or [] if isinstance(item, dict)]
     entries = [item for item in proof.get("entries") or [] if isinstance(item, dict)]
     blocks = [
-        item for item in proof.get("phrase_blocks") or [] if isinstance(item, dict)
+        item for item in proof.get("block_occurrences") or [] if isinstance(item, dict)
     ]
     entries_by_segment: dict[int, list[dict[str, Any]]] = defaultdict(list)
     entries_by_id: dict[str, dict[str, Any]] = {}
@@ -159,13 +159,13 @@ def validate(
                 f"expected={expected}, actual={actual}"
             )
 
-    blocks_by_phrase: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    blocks_by_source: dict[str, list[dict[str, Any]]] = defaultdict(list)
     seen_unit_ids: set[str] = set()
     for index, block in enumerate(blocks):
-        label = f"phrase_blocks[{index}]"
+        label = f"block_occurrences[{index}]"
         unit_id = clean(block.get("unit_id"))
         tap_id = clean(block.get("tap_unit_id"))
-        phrase_source = clean(block.get("phrase_source")).casefold()
+        block_source = clean(block.get("block_source")).casefold()
         source_form = clean(block.get("source_form"))
         word_ids = block.get("word_ids")
         if not unit_id or unit_id in seen_unit_ids:
@@ -173,8 +173,8 @@ def validate(
         seen_unit_ids.add(unit_id)
         if not tap_id or tap_id != unit_id:
             errors.append(f"{label}.tap_unit_id must equal unit_id")
-        if not phrase_source or not source_form or not clean(block.get("translation")):
-            errors.append(f"{label} requires phrase_source, source_form, translation")
+        if not block_source or not source_form or not clean(block.get("translation")):
+            errors.append(f"{label} requires block_source, source_form, translation")
         if not isinstance(word_ids, list) or len(word_ids) < 2:
             errors.append(f"{label}.word_ids requires at least two entries")
             word_ids = []
@@ -197,14 +197,14 @@ def validate(
         ]
         if len(copied) > 1:
             errors.append(f"{label} copies whole-block translation to multiple components")
-        blocks_by_phrase[phrase_source].append(block)
+        blocks_by_source[block_source].append(block)
 
-    for phrase_index, phrase in enumerate(layer.get("phrases") or []):
-        if not isinstance(phrase, dict):
+    for block_index, block in enumerate(layer.get("blocks") or []):
+        if not isinstance(block, dict):
             continue
-        source = clean(phrase.get("source")).casefold()
-        forms = [clean(item) for item in phrase.get("source_forms") or [] if clean(item)]
-        phrase_blocks = blocks_by_phrase.get(source, [])
+        source = clean(block.get("source")).casefold()
+        forms = [clean(item) for item in block.get("source_forms") or [] if clean(item)]
+        block_occurrences = blocks_by_source.get(source, [])
         expected: Counter[tuple[int, str]] = Counter()
         for segment_index, pair in enumerate(parallel):
             for form in forms:
@@ -213,33 +213,33 @@ def validate(
                 )
         actual = Counter(
             (block.get("segment_index"), clean(block.get("source_form")).casefold())
-            for block in phrase_blocks
+            for block in block_occurrences
         )
         if actual != expected:
             errors.append(
-                f"phrase {source!r} blocks disagree: expected={dict(expected)}, "
+                f"block {source!r} blocks disagree: expected={dict(expected)}, "
                 f"actual={dict(actual)}"
             )
-        for block in phrase_blocks:
+        for block in block_occurrences:
             if clean(block.get("translation")).casefold() != clean(
-                phrase.get("translation")
+                block.get("translation")
             ).casefold():
                 errors.append(
-                    f"phrase block translation disagrees with phrases[{phrase_index}]"
+                    f"block block translation disagrees with blocks[{block_index}]"
                 )
 
-    extra_sources = set(blocks_by_phrase) - {
+    extra_sources = set(blocks_by_source) - {
         clean(item.get("source")).casefold()
-        for item in layer.get("phrases") or []
+        for item in layer.get("blocks") or []
         if isinstance(item, dict)
     }
     if extra_sources:
-        errors.append(f"verification has unknown phrase blocks {sorted(extra_sources)}")
+        errors.append(f"verification has unknown block blocks {sorted(extra_sources)}")
 
     return errors, {
         "parallel": len(parallel),
         "entries": len(entries),
-        "phrase_blocks": len(blocks),
+        "block_occurrences": len(blocks),
         "unresolved": status_counts["unresolved"],
         "fallbacks": status_counts["dictionary_fallback"],
         "zero_correspondences": status_counts["zero_correspondence"],

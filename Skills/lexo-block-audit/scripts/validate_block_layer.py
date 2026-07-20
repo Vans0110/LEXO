@@ -9,7 +9,7 @@ from typing import Any
 
 TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
 SOURCE_SUFFIXES = {"s", "es", "ed", "ing"}
-PHRASE_TYPES = {
+BLOCK_TYPES = {
     "phrasal_verb",
     "fixed_expression",
     "collocation",
@@ -32,9 +32,9 @@ def source_token_matches(expected: str, actual: str) -> bool:
     return False
 
 
-def contains_source_phrase(source: str, phrase: str) -> bool:
+def contains_source_block(source: str, block: str) -> bool:
     haystack = tokens(source)
-    wanted = tokens(phrase)
+    wanted = tokens(block)
     if not wanted or len(wanted) > len(haystack):
         return False
     return any(
@@ -83,7 +83,7 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], list[str], dict[str, i
     for path in corruption_paths(payload):
         errors.append(f"encoding corruption at {path}")
     parallel = [item for item in payload.get("parallel") or [] if isinstance(item, dict)]
-    phrases = [item for item in payload.get("phrases") or [] if isinstance(item, dict)]
+    blocks = [item for item in payload.get("blocks") or [] if isinstance(item, dict)]
     parallel_pairs = {
         (
             str(item.get("source") or item.get("source_text") or "").strip(),
@@ -93,11 +93,13 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], list[str], dict[str, i
     }
 
     seen_sources: set[str] = set()
-    for index, phrase in enumerate(phrases):
-        label = f"phrases[{index}]"
-        source = str(phrase.get("source") or "").strip()
-        translation = str(phrase.get("translation") or "").strip()
-        phrase_type = str(phrase.get("type") or "").strip()
+    blocks_by_source: dict[str, dict[str, Any]] = {}
+    for index, block in enumerate(blocks):
+        label = f"blocks[{index}]"
+        source = str(block.get("source") or "").strip()
+        translation = str(block.get("translation") or "").strip()
+        block_type = str(block.get("type") or "").strip()
+        explanation = str(block.get("explanation") or "").strip()
         if not source:
             errors.append(f"{label}: missing source")
             continue
@@ -105,15 +107,18 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], list[str], dict[str, i
         if canonical in seen_sources:
             errors.append(f"{label}: duplicate canonical source: {source}")
         seen_sources.add(canonical)
+        blocks_by_source[canonical] = block
         if not translation:
             errors.append(f"{label}: missing translation")
-        if phrase_type not in PHRASE_TYPES:
-            errors.append(f"{label}: invalid or missing type: {phrase_type!r}")
+        if block_type not in BLOCK_TYPES:
+            errors.append(f"{label}: invalid or missing type: {block_type!r}")
+        if not explanation:
+            errors.append(f"{label}: missing reusable explanation")
         for forbidden in ("occurrences", "necessity"):
-            if forbidden in phrase:
+            if forbidden in block:
                 errors.append(f"{label}: {forbidden} belongs in audit metadata")
 
-        components = phrase.get("components")
+        components = block.get("components")
         if not isinstance(components, list) or not components:
             errors.append(f"{label}: components[] is required")
             components = []
@@ -135,20 +140,19 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], list[str], dict[str, i
                     f"{component_label}: empty translation requires empty_reason"
                 )
 
-        source_forms = phrase.get("source_forms")
+        source_forms = block.get("source_forms")
         if not isinstance(source_forms, list) or not source_forms:
             errors.append(f"{label}: source_forms[] is required")
         elif not any(
-            contains_source_phrase(source_text, str(form))
-            and contains_target_span(target_text, translation)
+            contains_source_block(source_text, str(form))
             for source_text, target_text in parallel_pairs
             for form in source_forms
         ):
             errors.append(f"{label}: no supporting parallel segment")
 
-    audit = payload.get("phrase_audit") or payload.get("book_layer_audit")
+    audit = payload.get("block_audit") or payload.get("book_layer_audit")
     if not isinstance(audit, dict):
-        errors.append("phrase_audit object is required")
+        errors.append("block_audit object is required")
         reviewed = []
     else:
         reviewed = [
@@ -164,15 +168,15 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], list[str], dict[str, i
         missing_reviews = sorted(parallel_pairs - reviewed_pairs)
         extra_reviews = sorted(reviewed_pairs - parallel_pairs)
         if missing_reviews:
-            errors.append(f"phrase_audit misses {len(missing_reviews)} parallel segment(s)")
+            errors.append(f"block_audit misses {len(missing_reviews)} parallel segment(s)")
         if extra_reviews:
-            errors.append(f"phrase_audit has {len(extra_reviews)} unknown segment(s)")
+            errors.append(f"block_audit has {len(extra_reviews)} unknown segment(s)")
         second_pass = audit.get("second_pass")
         if not isinstance(second_pass, dict):
-            errors.append("phrase_audit.second_pass object is required")
+            errors.append("block_audit.second_pass object is required")
         else:
             if str(second_pass.get("status") or "") != "passed":
-                errors.append("phrase_audit.second_pass.status must be 'passed'")
+                errors.append("block_audit.second_pass.status must be 'passed'")
             unresolved = second_pass.get("unresolved_omissions")
             if unresolved is None:
                 unresolved = second_pass.get("unresolved")
@@ -184,10 +188,10 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], list[str], dict[str, i
                 )
         necessity_pass = audit.get("necessity_pass") or audit.get("fourth_pass")
         if not isinstance(necessity_pass, dict):
-            errors.append("phrase_audit.necessity_pass object is required")
+            errors.append("block_audit.necessity_pass object is required")
         else:
             if str(necessity_pass.get("status") or "") != "passed":
-                errors.append("phrase_audit.necessity_pass.status must be 'passed'")
+                errors.append("block_audit.necessity_pass.status must be 'passed'")
             unresolved = necessity_pass.get("unresolved")
             if not isinstance(unresolved, list):
                 errors.append("necessity_pass.unresolved must be a list")
@@ -195,12 +199,12 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], list[str], dict[str, i
                 errors.append(f"necessity pass has {len(unresolved)} unresolved item(s)")
             accepted = {
                 " ".join(tokens(item.get("source")))
-                for item in necessity_pass.get("phrase_decisions") or []
+                for item in necessity_pass.get("block_decisions") or []
                 if isinstance(item, dict) and item.get("decision") == "accepted"
             }
             if accepted != seen_sources:
-                errors.append("necessity-pass accepted phrases disagree with phrases[]")
-            for index, item in enumerate(necessity_pass.get("phrase_decisions") or []):
+                errors.append("necessity-pass accepted blocks disagree with blocks[]")
+            for index, item in enumerate(necessity_pass.get("block_decisions") or []):
                 if not isinstance(item, dict):
                     continue
                 segment_indexes = item.get("segment_indexes")
@@ -209,8 +213,36 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], list[str], dict[str, i
                     for value in segment_indexes
                 ):
                     errors.append(
-                        f"necessity_pass.phrase_decisions[{index}].segment_indexes[] is invalid"
+                        f"necessity_pass.block_decisions[{index}].segment_indexes[] is invalid"
                     )
+                    continue
+                if item.get("decision") != "accepted":
+                    continue
+                decision_source = " ".join(tokens(item.get("source")))
+                block = blocks_by_source.get(decision_source) or {}
+                block_translation = str(block.get("translation") or "").strip()
+                for segment_index in segment_indexes:
+                    segment = parallel[segment_index]
+                    source_text = str(
+                        segment.get("source") or segment.get("source_text") or ""
+                    )
+                    target_text = str(
+                        segment.get("translation") or segment.get("target_text") or ""
+                    )
+                    if decision_source and not contains_source_block(
+                        source_text, decision_source
+                    ):
+                        errors.append(
+                            f"necessity_pass.block_decisions[{index}] source is absent "
+                            f"from parallel[{segment_index}]"
+                        )
+                    if block_translation and not contains_target_span(
+                        target_text, block_translation
+                    ):
+                        errors.append(
+                            f"blocks[{decision_source}]: occurrence translation "
+                            f"{block_translation!r} is absent from parallel[{segment_index}] target"
+                        )
 
     if len(reviewed) != len(parallel):
         warnings.append(
@@ -218,14 +250,14 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], list[str], dict[str, i
         )
     return errors, warnings, {
         "parallel": len(parallel),
-        "phrases": len(phrases),
+        "blocks": len(blocks),
         "reviewed": len(reviewed),
     }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate a semantic-necessity LEXO book phrase layer."
+        description="Validate a semantic-necessity LEXO book block layer."
     )
     parser.add_argument("book_layer", type=Path)
     args = parser.parse_args()

@@ -263,7 +263,7 @@ class MobileBookPackage {
     final matchedBy = (word['effective_matched_by'] as String? ?? '').trim();
     final alignmentKind =
         (word['effective_alignment_kind'] as String? ?? '').trim();
-    if (matchedBy != 'dictionary_alignment' || alignmentKind == 'phrase') {
+    if (matchedBy != 'dictionary_alignment' || alignmentKind == 'block') {
       return null;
     }
     final translation = _firstNonEmpty([

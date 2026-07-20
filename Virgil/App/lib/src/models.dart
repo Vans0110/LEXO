@@ -299,6 +299,12 @@ class ParagraphWordItem {
     this.effectiveAlignmentKind,
     this.effectiveCoverageStatus,
     this.dictionaryTranslations = const <String>[],
+    this.functionWordLabel,
+    this.functionWordExplanation,
+    this.blockSource,
+    this.blockTranslation,
+    this.blockType,
+    this.blockExplanation,
   });
 
   final String id;
@@ -343,6 +349,12 @@ class ParagraphWordItem {
   final String? effectiveAlignmentKind;
   final String? effectiveCoverageStatus;
   final List<String> dictionaryTranslations;
+  final String? functionWordLabel;
+  final String? functionWordExplanation;
+  final String? blockSource;
+  final String? blockTranslation;
+  final String? blockType;
+  final String? blockExplanation;
   bool get isFunctionWord => const {
         'ADP',
         'AUX',
@@ -468,6 +480,12 @@ class ParagraphWordItem {
               .map((item) => item.toString().trim())
               .where((item) => item.isNotEmpty)
               .toList(),
+      functionWordLabel: json['function_word_label'] as String?,
+      functionWordExplanation: json['function_word_explanation'] as String?,
+      blockSource: json['block_source'] as String?,
+      blockTranslation: json['block_translation'] as String?,
+      blockType: json['block_type'] as String?,
+      blockExplanation: json['block_explanation'] as String?,
     );
   }
 }

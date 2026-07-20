@@ -48,6 +48,11 @@ def _validate_records(records: dict, *, label: str) -> None:
             variant_translations.append(translation)
         if set(variant_translations) != set(translations):
             raise ValueError(f"Translations/variants mismatch: {label}:{key}")
+        if label.endswith(":block"):
+            if not str(record.get("type") or "").strip():
+                raise ValueError(f"Missing block type: {label}:{key}")
+            if not str(record.get("explanation") or "").strip():
+                raise ValueError(f"Missing block explanation: {label}:{key}")
 
 
 def _atomic_write(path: Path, payload: dict) -> None:
@@ -80,23 +85,23 @@ def rebuild(root: Path, languages: list[str], *, check: bool) -> dict:
                 target_store.merge_book_layer(payload)
 
             words = _load_object(target_store.global_words_path_for(lang))
-            phrases = _load_object(target_store.global_phrases_path_for(lang))
+            blocks = _load_object(target_store.global_blocks_path_for(lang))
             _validate_records(words, label=f"{lang}:word")
-            _validate_records(phrases, label=f"{lang}:phrase")
+            _validate_records(blocks, label=f"{lang}:block")
 
             words_path = source_store.global_words_path_for(lang)
-            phrases_path = source_store.global_phrases_path_for(lang)
+            blocks_path = source_store.global_blocks_path_for(lang)
             changed = (
                 (not words_path.exists() or _load_object(words_path) != words)
-                or (not phrases_path.exists() or _load_object(phrases_path) != phrases)
+                or (not blocks_path.exists() or _load_object(blocks_path) != blocks)
             )
             if not check:
                 _atomic_write(words_path, words)
-                _atomic_write(phrases_path, phrases)
+                _atomic_write(blocks_path, blocks)
             summary[lang] = {
                 "books": len(layer_paths),
                 "words": len(words),
-                "phrases": len(phrases),
+                "blocks": len(blocks),
                 "changed": changed,
             }
     return summary

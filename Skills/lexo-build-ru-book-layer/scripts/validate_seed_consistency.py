@@ -12,18 +12,18 @@ def clean(value: object) -> str:
     return " ".join(str(value or "").split())
 
 
-def phrase_components_cover_source(phrase: dict[str, Any]) -> bool:
+def block_components_cover_source(block: dict[str, Any]) -> bool:
     tokenize = lambda value: [
         match.group(0).casefold() for match in TOKEN_RE.finditer(str(value or ""))
     ]
-    components = phrase.get("components") or []
+    components = block.get("components") or []
     actual = [
         token
         for component in components
         if isinstance(component, dict)
         for token in tokenize(component.get("source"))
     ]
-    return actual == tokenize(phrase.get("source"))
+    return actual == tokenize(block.get("source"))
 
 
 def normalized_word_map(
@@ -61,7 +61,7 @@ def normalized_word_map(
     return result
 
 
-def normalized_phrase_map(items: object) -> dict[str, str]:
+def normalized_block_map(items: object) -> dict[str, str]:
     return {
         clean(item.get("source")).casefold(): clean(
             item.get("translation")

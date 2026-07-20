@@ -30,16 +30,20 @@ class LibraryDictionaryStore:
         return self.global_words_path_for("ru")
 
     @property
-    def global_phrases_path(self) -> Path:
-        return self.global_phrases_path_for("ru")
+    def global_blocks_path(self) -> Path:
+        return self.global_blocks_path_for("ru")
 
     def global_words_path_for(self, target_lang: str = "ru") -> Path:
         lang = self._normalize_lang(target_lang)
         return self.base_dir(lang) / f"global_words_{lang}.json"
 
-    def global_phrases_path_for(self, target_lang: str = "ru") -> Path:
+    def global_blocks_path_for(self, target_lang: str = "ru") -> Path:
         lang = self._normalize_lang(target_lang)
-        return self.base_dir(lang) / f"global_phrases_{lang}.json"
+        return self.base_dir(lang) / f"global_blocks_{lang}.json"
+
+    def global_function_words_path_for(self, target_lang: str = "ru") -> Path:
+        lang = self._normalize_lang(target_lang)
+        return self.base_dir(lang) / f"global_function_words_{lang}.json"
 
     def has_global_words(self, target_lang: str = "ru") -> bool:
         return self.global_words_path_for(target_lang).exists()
@@ -64,12 +68,12 @@ class LibraryDictionaryStore:
         target_lang = self._normalize_lang(payload.get("target_lang") or "ru")
         book_id = self._clean_text(payload.get("book_id") or "")
         words_added = self._merge_words(payload.get("words") or [], target_lang, book_id)
-        phrases_added = self._merge_phrases(payload.get("phrases") or [], target_lang, book_id)
+        blocks_added = self._merge_blocks(payload.get("blocks") or [], target_lang, book_id)
         return {
             "words_added": words_added,
-            "phrases_added": phrases_added,
+            "blocks_added": blocks_added,
             "global_words_path": str(self.global_words_path_for(target_lang)),
-            "global_phrases_path": str(self.global_phrases_path_for(target_lang)),
+            "global_blocks_path": str(self.global_blocks_path_for(target_lang)),
         }
 
     def lookup_word(self, *, surface: str, lemma: str, pos: str, target_lang: str = "ru") -> dict:
@@ -126,14 +130,14 @@ class LibraryDictionaryStore:
             "target_segment": "",
         }
 
-    def phrase_records(self, target_lang: str = "ru") -> dict[str, dict]:
+    def block_records(self, target_lang: str = "ru") -> dict[str, dict]:
         target_lang = str(target_lang or "ru").strip().lower() or "ru"
         if target_lang not in SUPPORTED_LIBRARY_DICTIONARY_LANGS:
             return {}
-        payload = self._load_json_object(self.global_phrases_path_for(target_lang))
+        payload = self._load_json_object(self.global_blocks_path_for(target_lang))
         result: dict[str, dict] = {}
         for source, record in payload.items():
-            normalized_source = self._normalize_phrase(source)
+            normalized_source = self._normalize_block(source)
             if not normalized_source or not isinstance(record, dict):
                 continue
             translations = record.get("translations")
@@ -149,12 +153,18 @@ class LibraryDictionaryStore:
                             continue
                         forms = variant.get("source_forms")
                         if isinstance(forms, list):
-                            source_forms.extend(self._normalize_phrase(item) for item in forms)
+                            source_forms.extend(self._normalize_block(item) for item in forms)
                 result[normalized_source] = {
                     "translations": clean_translations,
                     "source_forms": self._dedupe([item for item in source_forms if item]),
+                    "type": self._clean_text(record.get("type") or ""),
+                    "explanation": self._clean_text(record.get("explanation") or ""),
                 }
         return result
+
+    def function_word_records(self, target_lang: str = "ru") -> dict[str, dict]:
+        path = self.global_function_words_path_for(target_lang)
+        return self._load_json_object(path) if path.exists() else {}
 
     def _merge_words(self, words: object, target_lang: str = "ru", book_id: str = "") -> int:
         if not isinstance(words, list):
@@ -203,23 +213,33 @@ class LibraryDictionaryStore:
                 )
         self._write_json_object(path, payload)
         return added
-    def _merge_phrases(self, phrases: object, target_lang: str = "ru", book_id: str = "") -> int:
-        if not isinstance(phrases, list):
+    def _merge_blocks(self, blocks: object, target_lang: str = "ru", book_id: str = "") -> int:
+        if not isinstance(blocks, list):
             return 0
-        path = self.global_phrases_path_for(target_lang)
+        path = self.global_blocks_path_for(target_lang)
         payload = self._load_json_object(path)
         added = 0
-        for item in phrases:
+        for item in blocks:
             if not isinstance(item, dict):
                 continue
-            source = self._normalize_phrase(item.get("source") or item.get("phrase") or "")
+            source = self._normalize_block(item.get("source") or item.get("block") or "")
             translation = self._clean_text(item.get("translation") or "")
-            if not source or not translation:
+            block_type = self._clean_text(item.get("type") or "")
+            explanation = self._clean_text(item.get("explanation") or "")
+            if not source or not translation or not block_type or not explanation:
                 continue
             record = payload.get(source)
             if not isinstance(record, dict):
                 record = {"translations": [], "variants": []}
                 payload[source] = record
+            existing_type = self._clean_text(record.get("type") or "")
+            existing_explanation = self._clean_text(record.get("explanation") or "")
+            if existing_type and existing_type != block_type:
+                raise ValueError(f"Conflicting block type: {source}")
+            if existing_explanation and existing_explanation != explanation:
+                raise ValueError(f"Conflicting block explanation: {source}")
+            record["type"] = block_type
+            record["explanation"] = explanation
             translations = record.get("translations")
             if not isinstance(translations, list):
                 translations = []
@@ -237,11 +257,11 @@ class LibraryDictionaryStore:
                 book_id=book_id,
                 source_form=source,
             )
-            self._merge_phrase_components(record, item.get("components"), book_id)
+            self._merge_block_components(record, item.get("components"), book_id)
         self._write_json_object(path, payload)
         return added
 
-    def _merge_phrase_components(
+    def _merge_block_components(
         self, record: dict, components: object, book_id: str
     ) -> None:
         if not isinstance(components, list):
@@ -388,7 +408,7 @@ class LibraryDictionaryStore:
             self._append_unique(result, item)
         return result
 
-    def _normalize_phrase(self, value: object) -> str:
+    def _normalize_block(self, value: object) -> str:
         return self._clean_text(value).lower()
 
     def _clean_text(self, value: object) -> str:

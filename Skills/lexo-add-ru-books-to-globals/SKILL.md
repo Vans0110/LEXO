@@ -1,6 +1,6 @@
 ---
 name: lexo-add-ru-books-to-globals
-description: Incrementally add words and phrases from explicitly selected RU book seed files into LEXO Global word and phrase dictionaries, skip identical values with reasons, add new contextual translations as variants, and report books that are fully, partially, or not applied. Use when the user asks to add selected RU books to Globals or audit Global coverage by book.
+description: Incrementally add words and blocks from explicitly selected RU book seed files into LEXO Global word and block dictionaries, skip identical values with reasons, add new contextual translations as variants, and report books that are fully, partially, or not applied. Use when the user asks to add selected RU books to Globals or audit Global coverage by book.
 ---
 
 # LEXO Add RU Books to Globals
@@ -13,14 +13,14 @@ implicitly and never clear Globals. Manual clearing is outside this skill.
 Read only:
 
 - `seed_words_ru.json`;
-- `seed_phrases_ru.json`, when present;
-- an explicitly empty `book_layer_ru.json.phrases[]` only to prove that a
-  missing phrase seed means zero phrases.
+- `seed_blocks_ru.json`, when present;
+- an explicitly empty `book_layer_ru.json.blocks[]` only to prove that a
+  missing block seed means zero blocks.
 
 Write only:
 
 - `global_words_ru.json`;
-- `global_phrases_ru.json`.
+- `global_blocks_ru.json`.
 
 Never modify book seeds, book layers, Workbench, word-to-word files, Globals for
 another language, packages, or ZIP files.
@@ -45,7 +45,7 @@ python Skills/lexo-add-ru-books-to-globals/scripts/add_books_to_globals.py add `
 7. Run the preview once more. It must add nothing and report all identical
    contributions as `skipped_existing`.
 
-For words, identity is normalized `lemma|POS + translation`. For phrases,
+For words, identity is normalized `lemma|POS + translation`. For blocks,
 identity is normalized `source + translation`. An existing key with a different
 translation receives a new variant. An identical value is not duplicated; only
 missing `book_ids` and `source_forms` are supplemented.
@@ -74,6 +74,6 @@ Do not use a separate processed flag.
 
 ## Completion
 
-Report selected books, word and phrase counts by action, every skip reason,
+Report selected books, word and block counts by action, every skip reason,
 errors, and post-write audit results. Never claim completion when an expected
 seed contribution is missing, duplicated, or attached to the wrong translation.

@@ -95,16 +95,22 @@ Workbench создаёт языковые файлы и описывает их 
 книги одинаковое значение пропускается; новый контекстный перевод сохраняется
 как вариант.
 
-### Global Phrases
+### Global Blocks
 
-`global_phrases_<lang>.json` — накопительный источник подтверждённых
-многословных значений. Фраза нужна только тогда, когда смысл нельзя корректно
-восстановить независимыми переводами составляющих слов.
+`global_blocks_<lang>.json` — накопительный источник минимальных переиспользуемых
+многословных значений. Блок нужен только тогда, когда смысл нельзя корректно
+восстановить независимыми переводами составляющих слов. Каждый блок хранит тип,
+переводы, формы, компоненты, provenance и короткое универсальное пояснение.
+
+### Global Function Words
+
+`global_function_words_<lang>.json` хранит пояснения служебных слов. Вместе с
+Global Words и Global Blocks это третий и последний глобальный словарь языка.
 
 ### Book dictionary
 
 `dictionary_<lang>.json` создаётся Workbench для конкретной книги из текущих
-Global Words и Global Phrases. Это производный, доступный offline слой. Раздел
+Global Words, Global Blocks и Global Function Words. Это производный, доступный offline слой. Раздел
 `Words` в detail sheet получает переводы слов именно отсюда по `lemma|POS`.
 
 ### Word-to-word
@@ -122,7 +128,7 @@ Word-to-word не является словарём значений для ра
 Команда обновления Dictionary в Workbench должна выполнять только этот поток:
 
 ```text
-Global Words + Global Phrases
+Global Words + Global Blocks + Global Function Words
   -> book dictionary_<lang>.json
   -> word_to_word_<lang>.json по тексту и параллельным сегментам
   -> обновление package/ZIP

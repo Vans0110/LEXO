@@ -97,12 +97,15 @@ class VirgilWorkbenchBuilder {
     for (final entry in languagePackages.entries) {
       await _writeJson(
           outputDir, 'reader_${entry.key}.json', _readerPayload(entry.value));
-      if (!textOnly) {
-        await _writeJson(outputDir, 'dictionary_${entry.key}.json',
-            _dictionaryManifestForLang(entry.key, entry.value));
-      }
-      await _writeJson(outputDir, 'word_to_word_${entry.key}.json',
-          _buildWordToWordTemplate(bookId, entry.key, entry.value));
+      await _writeJson(
+        outputDir,
+        'reader_lexicon_${entry.key}.json',
+        _buildReaderLexicon(bookId, entry.key, entry.value),
+      );
+      await _deleteIfExists(
+          File('${outputDir.path}/dictionary_${entry.key}.json'));
+      await _deleteIfExists(
+          File('${outputDir.path}/word_to_word_${entry.key}.json'));
     }
     final defaultLang = languagePackages.containsKey('ru')
         ? 'ru'
@@ -117,8 +120,7 @@ class VirgilWorkbenchBuilder {
       await _writeJson(outputDir, 'word_audio_manifest.json',
           package['word_audio_manifest'] ?? {});
     }
-    await _writeJson(outputDir, 'word_to_word.json',
-        _buildWordToWordTemplate(bookId, defaultLang, defaultPackage));
+    await _deleteIfExists(File('${outputDir.path}/word_to_word.json'));
     if (textOnly) {
       log('Dictionary and audio kept unchanged.');
     } else {
@@ -181,17 +183,22 @@ class VirgilWorkbenchBuilder {
           'Library dictionary $lang built from Globals: '
           '$translatedWordCount/$wordCount words, '
           '$missingWordCount missing, '
-          '${result['phrase_count'] ?? 0} Global phrases',
+          '${result['block_count'] ?? 0} Global blocks',
         );
       }
       packageByLang[lang] =
           await api.downloadMobileBookPackageChunked(langBookId);
     }
     for (final entry in packageByLang.entries) {
-      await _writeJson(outputDir, 'dictionary_${entry.key}.json',
-          _dictionaryManifestForLang(entry.key, entry.value));
-      await _writeJson(outputDir, 'word_to_word_${entry.key}.json',
-          _buildWordToWordTemplate(bookId, entry.key, entry.value));
+      await _writeJson(
+        outputDir,
+        'reader_lexicon_${entry.key}.json',
+        _buildReaderLexicon(bookId, entry.key, entry.value),
+      );
+      await _deleteIfExists(
+          File('${outputDir.path}/dictionary_${entry.key}.json'));
+      await _deleteIfExists(
+          File('${outputDir.path}/word_to_word_${entry.key}.json'));
     }
     await _refreshDefaultReaderFiles(outputDir);
     await _writeJson(
@@ -280,37 +287,39 @@ class VirgilWorkbenchBuilder {
 
     for (final lang in cleanTextLangs) {
       await _deleteIfExists(File('${outputDir.path}/reader_$lang.json'));
-      await _deleteIfExists(File('${outputDir.path}/word_to_word_$lang.json'));
+      await _deleteIfExists(
+          File('${outputDir.path}/reader_lexicon_$lang.json'));
       log('Clean reader: $lang');
     }
     if (cleanTextLangs.isNotEmpty) {
       final readers = Map<String, dynamic>.from(
           files['readers'] as Map<String, dynamic>? ??
               const <String, dynamic>{});
-      final wordToWordByLang = Map<String, dynamic>.from(
-          files['word_to_word_by_lang'] as Map<String, dynamic>? ??
+      final lexicons = Map<String, dynamic>.from(
+          files['reader_lexicons'] as Map<String, dynamic>? ??
               const <String, dynamic>{});
       for (final lang in cleanTextLangs) {
         readers.remove(lang);
-        wordToWordByLang.remove(lang);
+        lexicons.remove(lang);
       }
       files['readers'] = readers;
-      files['word_to_word_by_lang'] = wordToWordByLang;
+      files['reader_lexicons'] = lexicons;
       await _refreshDefaultReaderFiles(outputDir);
     }
 
     for (final lang in cleanDictionaryLangs) {
-      await _deleteIfExists(File('${outputDir.path}/dictionary_$lang.json'));
+      await _deleteIfExists(
+          File('${outputDir.path}/reader_lexicon_$lang.json'));
       log('Clean dictionary: $lang');
     }
     if (cleanDictionaryLangs.isNotEmpty) {
-      final dictionaries = Map<String, dynamic>.from(
-          files['dictionaries'] as Map<String, dynamic>? ??
+      final lexicons = Map<String, dynamic>.from(
+          files['reader_lexicons'] as Map<String, dynamic>? ??
               const <String, dynamic>{});
       for (final lang in cleanDictionaryLangs) {
-        dictionaries.remove(lang);
+        lexicons.remove(lang);
       }
-      files['dictionaries'] = dictionaries;
+      files['reader_lexicons'] = lexicons;
     }
 
     if (cleanVoiceIds.isNotEmpty) {
@@ -353,12 +362,7 @@ class VirgilWorkbenchBuilder {
     }
     final defaultLang = langs.contains('ru') ? 'ru' : langs.first;
     await remainingReaders[defaultLang]!.copy('${outputDir.path}/reader.json');
-    final wordToWord = File('${outputDir.path}/word_to_word_$defaultLang.json');
-    if (wordToWord.existsSync()) {
-      await wordToWord.copy('${outputDir.path}/word_to_word.json');
-    } else {
-      await _deleteIfExists(File('${outputDir.path}/word_to_word.json'));
-    }
+    await _deleteIfExists(File('${outputDir.path}/word_to_word.json'));
   }
 
   Future<void> _cleanLocalVoiceArtifacts(
@@ -650,14 +654,10 @@ class VirgilWorkbenchBuilder {
         'readers': {
           for (final lang in langs) lang: 'reader_$lang.json',
         },
-        'dictionaries': {
-          for (final lang in dictionaries) lang: 'dictionary_$lang.json',
+        'reader_lexicons': {
+          for (final lang in dictionaries) lang: 'reader_lexicon_$lang.json',
         },
         'detail_manifest': 'detail_manifest.json',
-        'word_to_word': 'word_to_word.json',
-        'word_to_word_by_lang': {
-          for (final lang in langs) lang: 'word_to_word_$lang.json',
-        },
         'tts': 'tts_manifest.json',
         'word_audio': 'word_audio_manifest.json',
       },
@@ -754,17 +754,17 @@ class VirgilWorkbenchBuilder {
       'target_lang': targetLang,
       'source': dictionary['source'] ?? '',
       'entries': entries,
-      'phrases': _buildPhraseAlignment(reader, dictionary),
+      'blocks': _buildBlockAlignment(reader, dictionary),
     };
   }
 
-  List<Map<String, dynamic>> _buildPhraseAlignment(
+  List<Map<String, dynamic>> _buildBlockAlignment(
     Map<String, dynamic> reader,
     Map<String, dynamic> dictionary,
   ) {
-    final phraseRecords = dictionary['phrases'] as Map<String, dynamic>? ??
+    final blockRecords = dictionary['blocks'] as Map<String, dynamic>? ??
         const <String, dynamic>{};
-    if (phraseRecords.isEmpty) {
+    if (blockRecords.isEmpty) {
       return const <Map<String, dynamic>>[];
     }
     final result = <Map<String, dynamic>>[];
@@ -780,21 +780,21 @@ class VirgilWorkbenchBuilder {
         final sourceText = (segment['source_text'] ?? '').toString();
         final targetText = (segment['target_text'] ?? '').toString();
         final normalizedSource = _normalizePhrase(sourceText);
-        for (final phraseEntry in phraseRecords.entries) {
-          final phrase = _normalizePhrase(phraseEntry.key);
-          final record = phraseEntry.value;
+        for (final blockEntry in blockRecords.entries) {
+          final block = _normalizePhrase(blockEntry.key);
+          final record = blockEntry.value;
           final sourceForms = record is Map<String, dynamic>
               ? _stringList(record['source_forms'])
               : const <String>[];
           final normalizedForms = <String>{
-            phrase,
+            block,
             ...sourceForms.map(_normalizePhrase),
           }..removeWhere((value) => value.isEmpty);
-          if (phrase.isEmpty ||
+          if (block.isEmpty ||
               !normalizedForms.any(normalizedSource.contains)) {
             continue;
           }
-          final dedupeKey = '$segmentId|$phrase';
+          final dedupeKey = '$segmentId|$block';
           if (!seen.add(dedupeKey)) {
             continue;
           }
@@ -809,11 +809,17 @@ class VirgilWorkbenchBuilder {
           result.add({
             'segment_id': segmentId,
             'paragraph_index': paragraphIndex,
-            'source': phrase,
+            'source': block,
             'translation': selectedTranslation,
             'translations': translations,
-            'dictionary_key': phrase,
-            'alignment_kind': 'phrase',
+            'dictionary_key': block,
+            'alignment_kind': 'block',
+            'block_type': record is Map<String, dynamic>
+                ? (record['type'] ?? '').toString()
+                : '',
+            'explanation': record is Map<String, dynamic>
+                ? (record['explanation'] ?? '').toString()
+                : '',
           });
         }
       }
@@ -1018,6 +1024,58 @@ class VirgilWorkbenchBuilder {
         const <String, dynamic>{};
   }
 
+  Map<String, dynamic> _buildReaderLexicon(
+      String bookId, String targetLang, Map<String, dynamic> package) {
+    final dictionary = _dictionaryManifestForLang(targetLang, package);
+    final alignment = _buildWordToWordTemplate(bookId, targetLang, package);
+    final words = Map<String, dynamic>.from(
+        dictionary['entries'] as Map<String, dynamic>? ??
+            const <String, dynamic>{});
+    final allPhrases = Map<String, dynamic>.from(
+        dictionary['blocks'] as Map<String, dynamic>? ??
+            const <String, dynamic>{});
+    final functionWords = Map<String, dynamic>.from(
+        dictionary['function_words'] as Map<String, dynamic>? ??
+            const <String, dynamic>{});
+    final wordAlignments = (alignment['entries'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>()
+        .map((entry) {
+      final next = Map<String, dynamic>.from(entry);
+      next.remove('translations');
+      return next;
+    }).toList();
+    final blockAlignments = (alignment['blocks'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>()
+        .map((entry) {
+      final next = Map<String, dynamic>.from(entry);
+      next['block_key'] =
+          (next.remove('dictionary_key') ?? next['source'] ?? '').toString();
+      next.remove('translations');
+      next.remove('components');
+      return next;
+    }).toList();
+    final usedPhraseKeys = blockAlignments
+        .map((item) => (item['block_key'] ?? '').toString())
+        .where((key) => key.isNotEmpty)
+        .toSet();
+    final blocks = {
+      for (final entry in allPhrases.entries)
+        if (usedPhraseKeys.contains(entry.key)) entry.key: entry.value,
+    };
+    return {
+      'version': 3,
+      'book_id': bookId,
+      'source_lang': 'en',
+      'target_lang': targetLang,
+      'source': dictionary['source'] ?? alignment['source'] ?? '',
+      'words': words,
+      'blocks': blocks,
+      'function_words': functionWords,
+      'word_alignments': wordAlignments,
+      'block_alignments': blockAlignments,
+    };
+  }
+
   Map<String, dynamic> _loadManifestWithDictionaries(
     Map<String, dynamic> loadManifest,
     Iterable<String> languages,
@@ -1025,18 +1083,16 @@ class VirgilWorkbenchBuilder {
     final next = Map<String, dynamic>.from(loadManifest);
     final files = Map<String, dynamic>.from(
         next['files'] as Map<String, dynamic>? ?? const <String, dynamic>{});
-    final dictionaries = Map<String, dynamic>.from(
-        files['dictionaries'] as Map<String, dynamic>? ??
-            const <String, dynamic>{});
-    final wordToWordByLang = Map<String, dynamic>.from(
-        files['word_to_word_by_lang'] as Map<String, dynamic>? ??
+    final lexicons = Map<String, dynamic>.from(
+        files['reader_lexicons'] as Map<String, dynamic>? ??
             const <String, dynamic>{});
     for (final lang in languages) {
-      dictionaries[lang] = 'dictionary_$lang.json';
-      wordToWordByLang[lang] = 'word_to_word_$lang.json';
+      lexicons[lang] = 'reader_lexicon_$lang.json';
     }
-    files['dictionaries'] = dictionaries;
-    files['word_to_word_by_lang'] = wordToWordByLang;
+    files['reader_lexicons'] = lexicons;
+    files.remove('dictionaries');
+    files.remove('word_to_word');
+    files.remove('word_to_word_by_lang');
     next['files'] = files;
     return next;
   }

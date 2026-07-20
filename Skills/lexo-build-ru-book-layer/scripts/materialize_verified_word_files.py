@@ -70,7 +70,7 @@ def main() -> None:
     alignment = load(args.alignment.resolve())
     review = load(args.review.resolve())
     old_seed_words = load(book_dir / "seed_words_ru.json")
-    phrases = load(book_dir / "seed_phrases_ru.json")
+    blocks = load(book_dir / "seed_blocks_ru.json")
     aligned_by_id = {
         clean(item.get("word_id")): item
         for item in alignment.get("entries") or []
@@ -141,35 +141,35 @@ def main() -> None:
         layer_words.append(layer_word)
 
     entries: list[dict[str, Any]] = []
-    phrase_blocks: list[dict[str, Any]] = []
-    phrase_words: dict[str, tuple[dict[str, Any], dict[str, Any]]] = {}
-    phrase_sources_by_segment: dict[int, list[str]] = defaultdict(list)
+    block_occurrences: list[dict[str, Any]] = []
+    block_words: dict[str, tuple[dict[str, Any], dict[str, Any]]] = {}
+    block_sources_by_segment: dict[int, list[str]] = defaultdict(list)
     for segment_index, segment in enumerate(segments):
-        for phrase in phrases:
-            for source_form in phrase.get("source_forms") or []:
+        for block in blocks:
+            for source_form in block.get("source_forms") or []:
                 matched = find_form(segment["words"], clean(source_form))
                 if not matched:
                     continue
-                unit_id = f"phrase:{segment_index}:{len(phrase_blocks)}"
+                unit_id = f"block:{segment_index}:{len(block_occurrences)}"
                 word_ids = [clean(item.get("id")) for item in matched]
-                phrase_blocks.append(
+                block_occurrences.append(
                     {
                         "unit_id": unit_id,
                         "tap_unit_id": unit_id,
-                        "phrase_source": clean(phrase.get("source")),
+                        "block_source": clean(block.get("source")),
                         "source_form": clean(source_form),
-                        "translation": clean(phrase.get("translation")),
+                        "translation": clean(block.get("translation")),
                         "segment_index": segment_index,
                         "word_ids": word_ids,
                     }
                 )
-                phrase_sources_by_segment[segment_index].append(clean(phrase.get("source")))
-                components = phrase.get("components") or []
+                block_sources_by_segment[segment_index].append(clean(block.get("source")))
+                components = block.get("components") or []
                 for offset, word in enumerate(matched):
                     component = components[offset] if offset < len(components) else {}
-                    phrase_words[clean(word.get("id"))] = (
+                    block_words[clean(word.get("id"))] = (
                         {**component, "unit_id": unit_id},
-                        phrase,
+                        block,
                     )
 
     occurrence_statuses: dict[str, list[str]] = defaultdict(list)
@@ -177,7 +177,7 @@ def main() -> None:
         for source_order, word in enumerate(segment["words"]):
             word_id = clean(word.get("id"))
             key = key_for(word)
-            component_pair = phrase_words.get(word_id)
+            component_pair = block_words.get(word_id)
             contextual = ""
             status = "dictionary_fallback"
             reason = "no independent target span in this occurrence"
@@ -185,12 +185,12 @@ def main() -> None:
             tap = owner
             start = end = -1
             if component_pair:
-                component, phrase = component_pair
+                component, block = component_pair
                 contextual = clean(component.get("translation"))
                 status = (
                     "grammar_component"
-                    if clean(phrase.get("type")) == "grammar_construction"
-                    else "phrase_component"
+                    if clean(block.get("type")) == "grammar_construction"
+                    else "block_component"
                 )
                 reason = clean(component.get("empty_reason"))
                 owner = tap = clean(component.get("unit_id"))
@@ -265,34 +265,34 @@ def main() -> None:
             "target_text": pair["translation"],
             "status": "covered",
             "word_keys": sorted({key_for(word) for word in segments[index]["words"]}),
-            "phrase_sources": phrase_sources_by_segment.get(index, []),
+            "block_sources": block_sources_by_segment.get(index, []),
             "notes": "",
         }
         for index, pair in enumerate(parallel)
     ]
-    phrase_decisions = []
-    for phrase in phrases:
+    block_decisions = []
+    for block in blocks:
         indexes = [
             index
-            for index, sources in phrase_sources_by_segment.items()
-            if clean(phrase.get("source")) in sources
+            for index, sources in block_sources_by_segment.items()
+            if clean(block.get("source")) in sources
         ]
-        phrase_decisions.append(
+        block_decisions.append(
             {
-                "source": clean(phrase.get("source")),
+                "source": clean(block.get("source")),
                 "decision": "accepted",
                 "word_by_word_result": " + ".join(
                     clean(item.get("translation")) or "∅"
-                    for item in phrase.get("components") or []
+                    for item in block.get("components") or []
                 ),
                 "reason": "independent components do not preserve the complete contextual meaning",
                 "segment_indexes": indexes,
             }
         )
-    for rejected in review.get("rejected_phrases") or []:
+    for rejected in review.get("rejected_blocks") or []:
         if not isinstance(rejected, dict):
             continue
-        phrase_decisions.append(
+        block_decisions.append(
             {
                 "source": clean(rejected.get("source")),
                 "decision": "rejected",
@@ -309,14 +309,14 @@ def main() -> None:
         "target_lang": "ru",
         "parallel": parallel,
         "words": layer_words,
-        "phrases": phrases,
+        "blocks": blocks,
         "book_layer_audit": {
             "version": 4,
             "method": "codex_verified_occurrence_word_to_word",
             "reviewed_segments": reviewed,
             "second_pass": {"status": "passed", "corrections": [], "unresolved": []},
             "third_pass": {"status": "passed", "word_decisions": decisions, "corrections": [], "unresolved": []},
-            "fourth_pass": {"status": "passed", "phrase_decisions": phrase_decisions, "unresolved": []},
+            "fourth_pass": {"status": "passed", "block_decisions": block_decisions, "unresolved": []},
             "absorbed_word_keys": sorted(absorbed),
         },
     }
@@ -326,10 +326,10 @@ def main() -> None:
         "source_lang": "en",
         "target_lang": "ru",
         "entries": entries,
-        "phrase_blocks": phrase_blocks,
+        "block_occurrences": block_occurrences,
     }
     write(book_dir / "seed_words_ru.json", seed_words)
-    write(book_dir / "seed_phrases_ru.json", phrases)
+    write(book_dir / "seed_blocks_ru.json", blocks)
     write(book_dir / "book_layer_ru.json", layer)
     write(book_dir / "word_to_word_ru.json", proof)
     print(
@@ -338,8 +338,8 @@ def main() -> None:
                 "parallel": len(parallel),
                 "words": len(layer_words),
                 "occurrences": len(entries),
-                "phrases": len(phrases),
-                "phrase_blocks": len(phrase_blocks),
+                "blocks": len(blocks),
+                "block_occurrences": len(block_occurrences),
             },
             ensure_ascii=False,
         )

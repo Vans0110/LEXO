@@ -95,7 +95,7 @@ class SavedCardItem {
   final int reviewCount;
   final String lastReviewedAt;
 
-  bool get isPhrase => cardType == 'phrase';
+  bool get isBlock => cardType == 'block';
   bool get isGrammar => cardType == 'grammar';
   bool get isDeleted => deletedAt.isNotEmpty;
 

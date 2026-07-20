@@ -21,7 +21,7 @@ class LibraryDictionaryStoreTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
 
-    def test_writes_book_layer_and_merges_words_and_phrases(self) -> None:
+    def test_writes_book_layer_and_merges_words_and_blocks(self) -> None:
         payload = {
             "version": 1,
             "book_id": "book_demo",
@@ -32,10 +32,12 @@ class LibraryDictionaryStoreTests(unittest.TestCase):
                     "translation": "Даниэль входит в кабинет номер двенадцать.",
                 }
             ],
-            "phrases": [
+            "blocks": [
                 {
                     "source": "walks into",
                     "translation": "входит",
+                    "type": "phrasal_verb",
+                    "explanation": "Describes entering an enclosed place on foot.",
                     "components": [
                         {
                             "source": "walks",
@@ -74,12 +76,12 @@ class LibraryDictionaryStoreTests(unittest.TestCase):
 
         self.assertTrue(layer_path.exists())
         self.assertEqual(first_merge["words_added"], 2)
-        self.assertEqual(first_merge["phrases_added"], 1)
+        self.assertEqual(first_merge["blocks_added"], 1)
         self.assertEqual(second_merge["words_added"], 0)
-        self.assertEqual(second_merge["phrases_added"], 0)
+        self.assertEqual(second_merge["blocks_added"], 0)
 
         words = json.loads(self.store.global_words_path.read_text(encoding="utf-8"))
-        phrases = json.loads(self.store.global_phrases_path.read_text(encoding="utf-8"))
+        blocks = json.loads(self.store.global_blocks_path.read_text(encoding="utf-8"))
         self.assertEqual(words["walk|VERB"]["translations"], ["идти"])
         self.assertEqual(words["room|NOUN"]["translations"], ["кабинет"])
         self.assertEqual(
@@ -92,10 +94,10 @@ class LibraryDictionaryStoreTests(unittest.TestCase):
                 }
             ],
         )
-        self.assertEqual(phrases["walks into"]["translations"], ["входит"])
-        self.assertEqual(phrases["walks into"]["variants"][0]["book_ids"], ["book_demo"])
+        self.assertEqual(blocks["walks into"]["translations"], ["входит"])
+        self.assertEqual(blocks["walks into"]["variants"][0]["book_ids"], ["book_demo"])
         self.assertEqual(
-            [item["translation"] for item in phrases["walks into"]["components"]],
+            [item["translation"] for item in blocks["walks into"]["components"]],
             ["входит", "в"],
         )
 
@@ -113,7 +115,7 @@ class LibraryDictionaryStoreTests(unittest.TestCase):
                         "translations": ["английский", "английского"],
                     }
                 ],
-                "phrases": [],
+                "blocks": [],
             }
         )
         record = json.loads(
@@ -138,7 +140,7 @@ class LibraryDictionaryStoreTests(unittest.TestCase):
                         "translation": "идти",
                     }
                 ],
-                "phrases": [],
+                "blocks": [],
             }
         )
         core_path = (

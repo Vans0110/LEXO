@@ -1183,7 +1183,7 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
     _handleWordTap(item, word);
     final dictionaryPayload = _detailByWordId[word.id];
     final isMultiWordBlock =
-        const {'phrase', 'grammar_group'}.contains(word.effectiveAlignmentKind);
+        const {'block', 'grammar_group'}.contains(word.effectiveAlignmentKind);
     final payload = isMultiWordBlock
         ? DetailSheetPayload.fromSelection(item: item, word: word)
         : (dictionaryPayload ??
@@ -1200,8 +1200,8 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
         heightFactor: 0.78,
         child: ReaderDetailSheet(
           payload: payload,
-          onSaveDictionaryCard: (translations) =>
-              _saveDictionaryCard(payload, translations),
+          onSaveWord: (unit, translations) =>
+              _saveDictionaryCard(payload, unit, translations),
           onPlayWordAudio: () => _playDetailWordAudio(payload),
         ),
       ),
@@ -1262,12 +1262,31 @@ class _MobileReaderScreenState extends State<MobileReaderScreen> {
   }
 
   Future<void> _saveDictionaryCard(
-      DetailSheetPayload payload, List<String> translations) async {
+    DetailSheetPayload payload,
+    DetailSheetUnitItem unit,
+    List<String> translations,
+  ) async {
+    final unitPayload = DetailSheetPayload(
+      wordId: unit.id,
+      tapUnitId: unit.id,
+      sheetSourceText:
+          unit.surfaceText.trim().isNotEmpty ? unit.surfaceText : unit.text,
+      sheetTranslationText: unit.translation,
+      exampleSourceText: unit.exampleSourceText.trim().isNotEmpty
+          ? unit.exampleSourceText
+          : payload.exampleSourceText,
+      exampleTranslationText: unit.exampleTranslationText.trim().isNotEmpty
+          ? unit.exampleTranslationText
+          : payload.exampleTranslationText,
+      sourceFirst: null,
+      dictionaryEntry: null,
+      units: [unit],
+    );
     try {
       await widget.cardsRepository.saveDictionaryCard(
         deviceId: widget.deviceId,
         originBookId: _desktopBookId ?? widget.localBookId,
-        payload: payload,
+        payload: unitPayload,
         translations: translations,
       );
       widget.onCardsChanged?.call();

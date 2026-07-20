@@ -4,7 +4,18 @@
 
 ## Записи
 
+### 2026-07-20
+- Репозиторий подготовлен как полный исходный проект: добавлены актуальный Block-контур, карта Workbench/backend/mobile/Skills, безопасная граница локальных данных и инструкции запуска.
+- Phrase-контур заменён на Block-контур: введены три глобальных словаря Words/Blocks/Function Words, создан `$lexo-block-audit`; occurrence-контракт усилен точным target-span, для `the rest of` исправлено владение `конца`, обновлены backend/reader/mobile и пересобраны 10 RU/UK ZIP.
+- Файл: [2026-07-20.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-20.md)
+
+### 2026-07-16
+- `dictionary_<lang>.json` и `word_to_word_<lang>.json` объединены в нормализованный `reader_lexicon_<lang>.json` v3 без повторения словарных переводов в occurrence-alignments; пересобраны 10 RU/UK ZIP, добавлен legacy read-fallback.
+- Файл: [2026-07-16.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-16.md)
+
 ### 2026-07-15
+- POS grammar-группы переведены на полное occurrence-span покрытие всех значимых компонентов без hardcoded-слов; сохранены индексы word-to-word, `into Room → в комнату` подтверждено live.
+- Detail sheet приведён к единому формату `Words`: жёлтый dictionary-блок удалён, слова расположены вертикально и каждое получило собственную кнопку сохранения с выбором переводов.
 - GitHub push закреплён через существующий Git Credential Manager без лишнего требования `gh auth`; для mixed worktree обязателен выборочный staging.
 - Добавлена актуальная карта Virgil: расширен App README и создан подробный документ архитектуры с mobile/Workbench/R2 и dictionary data flow.
 - Detail sheet разделён по источникам: `Words` строится только из книжного dictionary/Globals, а word-to-word используется только для contextual header и параллельной подсветки.

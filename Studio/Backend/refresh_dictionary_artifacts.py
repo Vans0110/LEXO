@@ -112,8 +112,8 @@ def _select_translation(
     _, _, _, _, translation, start, end = min(candidates)
     return translation, start, end
 
-def _phrase_in_source(phrase: str, source: str) -> bool:
-    wanted = _tokens(phrase)
+def _block_in_source(block: str, source: str) -> bool:
+    wanted = _tokens(block)
     haystack = _tokens(source)
     if not wanted or len(wanted) > len(haystack):
         return False
@@ -150,6 +150,20 @@ def _canonical_dictionary_key(value: object) -> str:
     if not separator:
         return lemma.lower()
     return f"{lemma.lower()}|{pos.upper()}"
+
+
+def _manifest_with_reader_lexicons(manifest: dict, languages: list[str]) -> dict:
+    next_manifest = dict(manifest)
+    files = dict(next_manifest.get("files") or {})
+    lexicons = dict(files.get("reader_lexicons") or {})
+    for lang in languages:
+        lexicons[lang] = f"reader_lexicon_{lang}.json"
+    files["reader_lexicons"] = lexicons
+    files.pop("dictionaries", None)
+    files.pop("word_to_word", None)
+    files.pop("word_to_word_by_lang", None)
+    next_manifest["files"] = files
+    return next_manifest
 
 
 def _manifest_entry(key: str, record: dict, lang: str, existing: dict | None) -> dict:
@@ -195,9 +209,11 @@ def _refresh_language(
     lang: str,
     reader: dict,
     words: dict,
-    phrases: dict,
+    blocks: dict,
+    function_words: dict | None = None,
     absorbed_word_keys: set[str] | None = None,
-) -> tuple[dict, dict]:
+) -> dict:
+    function_words = function_words or {}
     absorbed_word_keys = {
         _canonical_dictionary_key(item) for item in (absorbed_word_keys or set())
     }
@@ -235,8 +251,8 @@ def _refresh_language(
         "source": library_dictionary_source(lang),
         "entry_count": len(entries),
         "entries": entries,
-        "phrase_count": len(phrases),
-        "phrases": phrases,
+        "block_count": len(blocks),
+        "blocks": blocks,
     }
 
     words_by_segment: dict[str, list[dict]] = {}
@@ -282,26 +298,28 @@ def _refresh_language(
                     "note": "" if selected else "no_contextual_target_match",
                 }
             )
-    phrase_entries = []
+    block_entries = []
     for segment_id, segment in segments.items():
         source_text = str(segment.get("source_text") or "")
         target_text = str(segment.get("target_text") or "")
-        for phrase, record in phrases.items():
-            if not _phrase_in_source(phrase, source_text):
+        for block, record in blocks.items():
+            if not _block_in_source(block, source_text):
                 continue
             translations = [str(value) for value in record.get("translations") or []]
             selected, _, _ = _select_translation(translations, target_text)
             if not selected:
                 continue
-            phrase_entries.append(
+            block_entries.append(
                 {
                     "segment_id": segment_id,
-                    "source": phrase,
+                    "source": block,
                     "translation": selected,
                     "translations": translations,
-                    "dictionary_key": phrase,
-                    "alignment_kind": "phrase",
+                    "dictionary_key": block,
+                    "alignment_kind": "block",
                     "components": record.get("components") or [],
+                    "block_type": str(record.get("type") or ""),
+                    "explanation": str(record.get("explanation") or ""),
                 }
             )
     word_to_word = {
@@ -311,9 +329,62 @@ def _refresh_language(
         "target_lang": lang,
         "source": library_dictionary_source(lang),
         "entries": word_entries,
-        "phrases": phrase_entries,
+        "blocks": block_entries,
     }
-    return dictionary, word_to_word
+    word_alignments = []
+    for item in word_entries:
+        next_item = dict(item)
+        next_item.pop("translations", None)
+        word_alignments.append(next_item)
+    block_alignments = []
+    for item in block_entries:
+        next_item = dict(item)
+        next_item["block_key"] = str(
+            next_item.pop("dictionary_key", None) or next_item.get("source") or ""
+        )
+        next_item.pop("translations", None)
+        next_item.pop("components", None)
+        block_alignments.append(next_item)
+    used_block_keys = {
+        str(item.get("block_key") or "") for item in block_alignments
+    }
+    book_blocks = {
+        key: value for key, value in blocks.items() if key in used_block_keys
+    }
+    book_function_words: dict[str, dict] = {}
+    for word in reader_words:
+        surface = str(word.get("text") or "").strip().lower()
+        lemma = str(word.get("lemma") or surface).strip().lower()
+        pos = str(word.get("pos") or "").strip().upper()
+        actual_key = f"{surface}|{pos}"
+        candidates = (actual_key, f"{lemma}|{pos}")
+        matched_key = next((key for key in candidates if key in function_words), "")
+        if not matched_key:
+            matched_key = next(
+                (
+                    key
+                    for key, value in function_words.items()
+                    if actual_key in (value.get("match_keys") or [])
+                ),
+                "",
+            )
+        if matched_key:
+            record = dict(function_words[matched_key])
+            record.pop("match_keys", None)
+            record["source_key"] = matched_key
+            book_function_words[actual_key] = record
+    return {
+        "version": 3,
+        "book_id": word_to_word["book_id"],
+        "source_lang": "en",
+        "target_lang": lang,
+        "source": library_dictionary_source(lang),
+        "words": entries,
+        "blocks": book_blocks,
+        "function_words": book_function_words,
+        "word_alignments": word_alignments,
+        "block_alignments": block_alignments,
+    }
 
 
 def _rebuild_zip(output_dir: Path, zip_path: Path) -> None:
@@ -339,7 +410,10 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
     globals_by_lang = {
         lang: (
             _load(store.global_words_path_for(lang)),
-            _load(store.global_phrases_path_for(lang)),
+            _load(store.global_blocks_path_for(lang)),
+            _load(store.global_function_words_path_for(lang))
+            if store.global_function_words_path_for(lang).exists()
+            else {},
         )
         for lang in ("ru", "uk")
     }
@@ -372,25 +446,27 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
                 for item in audit.get("absorbed_word_keys") or []
                 if str(item).strip()
             }
-            dictionary, word_to_word = _refresh_language(
+            lexicon = _refresh_language(
                 output_dir,
                 lang=lang,
                 reader=reader,
                 words=globals_by_lang[lang][0],
-                phrases=globals_by_lang[lang][1],
+                blocks=globals_by_lang[lang][1],
+                function_words=globals_by_lang[lang][2],
                 absorbed_word_keys=absorbed_word_keys,
             )
             changed_langs.append(lang)
             if write:
-                _write(output_dir / f"dictionary_{lang}.json", dictionary)
-                _write(output_dir / f"word_to_word_{lang}.json", word_to_word)
+                _write(output_dir / f"reader_lexicon_{lang}.json", lexicon)
+                (output_dir / f"dictionary_{lang}.json").unlink(missing_ok=True)
+                (output_dir / f"word_to_word_{lang}.json").unlink(missing_ok=True)
         if not changed_langs:
             continue
-        default_lang = "ru" if "ru" in changed_langs else changed_langs[0]
         if write:
-            shutil.copyfile(
-                output_dir / f"word_to_word_{default_lang}.json",
-                output_dir / "word_to_word.json",
+            (output_dir / "word_to_word.json").unlink(missing_ok=True)
+            _write(
+                manifest_path,
+                _manifest_with_reader_lexicons(manifest, changed_langs),
             )
         updated.append({"title": title, "languages": changed_langs})
         if write and rebuild_zips:
@@ -432,20 +508,26 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
                             for item in audit.get("absorbed_word_keys") or []
                             if str(item).strip()
                         }
-                        dictionary, word_to_word = _refresh_language(
+                        lexicon = _refresh_language(
                             package_dir,
                             lang=lang,
                             reader=reader,
                             words=globals_by_lang[lang][0],
-                            phrases=globals_by_lang[lang][1],
+                            blocks=globals_by_lang[lang][1],
+                            function_words=globals_by_lang[lang][2],
                             absorbed_word_keys=absorbed_word_keys,
                         )
-                        _write(package_dir / f"dictionary_{lang}.json", dictionary)
-                        _write(package_dir / f"word_to_word_{lang}.json", word_to_word)
-                    default_lang = "ru" if "ru" in changed_langs else changed_langs[0]
-                    shutil.copyfile(
-                        package_dir / f"word_to_word_{default_lang}.json",
-                        package_dir / "word_to_word.json",
+                        _write(package_dir / f"reader_lexicon_{lang}.json", lexicon)
+                        (package_dir / f"dictionary_{lang}.json").unlink(missing_ok=True)
+                        (package_dir / f"word_to_word_{lang}.json").unlink(missing_ok=True)
+                    (package_dir / "word_to_word.json").unlink(missing_ok=True)
+                    package_manifest_path = package_dir / "load_manifest.json"
+                    package_manifest = _load(package_manifest_path)
+                    _write(
+                        package_manifest_path,
+                        _manifest_with_reader_lexicons(
+                            package_manifest, changed_langs
+                        ),
                     )
                     if rebuild_zips:
                         _rebuild_zip(package_dir, zip_path)

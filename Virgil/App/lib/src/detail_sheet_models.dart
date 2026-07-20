@@ -402,6 +402,10 @@ class DetailSheetPayload {
     required this.sourceFirst,
     required this.dictionaryEntry,
     required this.units,
+    this.blockSource = '',
+    this.blockTranslation = '',
+    this.blockType = '',
+    this.blockExplanation = '',
   });
 
   final String wordId;
@@ -413,6 +417,10 @@ class DetailSheetPayload {
   final DetailSheetSourceFirstPayload? sourceFirst;
   final DetailSheetDictionaryEntry? dictionaryEntry;
   final List<DetailSheetUnitItem> units;
+  final String blockSource;
+  final String blockTranslation;
+  final String blockType;
+  final String blockExplanation;
 
   factory DetailSheetPayload.fromJson(Map<String, dynamic> json) {
     return DetailSheetPayload(
@@ -435,6 +443,10 @@ class DetailSheetPayload {
           .cast<Map<String, dynamic>>()
           .map(DetailSheetUnitItem.fromJson)
           .toList(),
+      blockSource: json['block_source'] as String? ?? '',
+      blockTranslation: json['block_translation'] as String? ?? '',
+      blockType: json['block_type'] as String? ?? '',
+      blockExplanation: json['block_explanation'] as String? ?? '',
     );
   }
 
@@ -497,6 +509,12 @@ class DetailSheetPayload {
           morphLabel: grouped
               .map((entry) => entry.morphLabel?.trim() ?? '')
               .firstWhere((entry) => entry.isNotEmpty, orElse: () => ''),
+          functionWordLabel: grouped
+              .map((entry) => entry.functionWordLabel?.trim() ?? '')
+              .firstWhere((entry) => entry.isNotEmpty, orElse: () => ''),
+          functionWordExplanation: grouped
+              .map((entry) => entry.functionWordExplanation?.trim() ?? '')
+              .firstWhere((entry) => entry.isNotEmpty, orElse: () => ''),
           isPrimary: lexicalUnitType != 'GRAMMAR',
           exampleSourceText: grouped.first.segmentSourceText ?? item.sourceText,
           exampleTranslationText:
@@ -522,6 +540,10 @@ class DetailSheetPayload {
       sourceFirst: sourceFirst,
       dictionaryEntry: null,
       units: units,
+      blockSource: word.blockSource ?? '',
+      blockTranslation: word.blockTranslation ?? '',
+      blockType: word.blockType ?? '',
+      blockExplanation: word.blockExplanation ?? '',
     );
   }
 }
@@ -769,6 +791,8 @@ class DetailSheetUnitItem {
     required this.translation,
     required this.grammarHint,
     required this.morphLabel,
+    this.functionWordLabel = '',
+    this.functionWordExplanation = '',
     required this.isPrimary,
     required this.exampleSourceText,
     required this.exampleTranslationText,
@@ -782,12 +806,14 @@ class DetailSheetUnitItem {
   final String translation;
   final String grammarHint;
   final String morphLabel;
+  final String functionWordLabel;
+  final String functionWordExplanation;
   final bool isPrimary;
   final String exampleSourceText;
   final String exampleTranslationText;
 
   bool get isGrammar => type == 'GRAMMAR';
-  bool get isPhrase => type == 'PHRASE';
+  bool get isBlock => type == 'BLOCK';
 
   factory DetailSheetUnitItem.fromJson(Map<String, dynamic> json) {
     return DetailSheetUnitItem(
@@ -799,6 +825,9 @@ class DetailSheetUnitItem {
       translation: json['translation'] as String? ?? '',
       grammarHint: json['grammar_hint'] as String? ?? '',
       morphLabel: json['morph_label'] as String? ?? '',
+      functionWordLabel: json['function_word_label'] as String? ?? '',
+      functionWordExplanation:
+          json['function_word_explanation'] as String? ?? '',
       isPrimary: json['is_primary'] as bool? ?? false,
       exampleSourceText: json['example_source_text'] as String? ?? '',
       exampleTranslationText: json['example_translation_text'] as String? ?? '',

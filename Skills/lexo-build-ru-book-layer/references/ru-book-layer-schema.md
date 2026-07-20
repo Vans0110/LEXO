@@ -11,7 +11,7 @@
   "target_lang": "ru",
   "parallel": [],
   "words": [],
-  "phrases": [],
+  "blocks": [],
   "book_layer_audit": {}
 }
 ```
@@ -45,7 +45,7 @@ Every input pair must appear exactly once and in reading order.
 - Every item in `translations[]` needs evidence in at least one `parallel[]` pair.
 - Keep contextually different confirmed values; do not add generic dictionary senses absent from the book.
 - `seed_words_ru.json` and `words[]` contain every source word, including function words.
-- Keep a function word with no independent Russian equivalent, but use `translation: ""`, `translations: []`, and `empty_reason`. Record the same absorption in its phrase component.
+- Keep a function word with no independent Russian equivalent, but use `translation: ""`, `translations: []`, and `empty_reason`. Record the same absorption in its block component.
 - Never give an article or other function word the translation of an adjacent lexical word. Invalid examples include `the → комната`, `a → студент`, `down → садится`, and `there → находятся` when those target spans belong to `room`, `student`, `sit`, and `be` respectively.
 
 ```json
@@ -59,7 +59,7 @@ Every input pair must appear exactly once and in reading order.
 }
 ```
 
-## Phrase record
+## Block record
 
 ```json
 {
@@ -84,7 +84,7 @@ Every input pair must appear exactly once and in reading order.
 }
 ```
 
-Allowed phrase types:
+Allowed block types:
 
 - `phrasal_verb`
 - `fixed_expression`
@@ -94,7 +94,7 @@ Allowed phrase types:
 - `name_group`
 - `reordered_block`
 
-An empty component translation requires `empty_reason` explaining structural absorption. Phrase records and `seed_phrases_ru.json` must not contain complete segment copies or audit prose. Necessity evidence belongs only to Pass 4 and references `parallel[]` through zero-based `segment_indexes[]`.
+Every block requires a concise target-language `explanation` that describes the reusable construction rather than the surrounding sentence. The source must be the shortest contiguous span that retains the exceptional meaning. An empty component translation requires `empty_reason` explaining structural absorption. Block records and `seed_blocks_ru.json` must not contain complete segment copies or audit prose. Necessity evidence belongs only to Pass 4 and references `parallel[]` through zero-based `segment_indexes[]`.
 
 ## Three-pass audit
 
@@ -109,7 +109,7 @@ An empty component translation requires `empty_reason` explaining structural abs
         "target_text": "Она входит в комнату.",
         "status": "covered",
         "word_keys": ["walk|VERB", "room|NOUN"],
-        "phrase_sources": ["walk into"],
+        "block_sources": ["walk into"],
         "notes": ""
       }
     ],
@@ -133,7 +133,7 @@ An empty component translation requires `empty_reason` explaining structural abs
     },
     "fourth_pass": {
       "status": "passed",
-      "phrase_decisions": [
+      "block_decisions": [
         {
           "source": "sit down",
           "decision": "accepted",
@@ -159,13 +159,13 @@ Every `parallel[]` pair must have a corresponding `reviewed_segments[]` entry. P
 
 An `absorbed` decision requires empty word translations and membership in `absorbed_word_keys`. A `word` decision requires non-empty translations and must not be absorbed. Use `mixed` only when the same key has independently translated and structurally absorbed occurrences; its `translations[]` contains only independently owned target spans.
 
-Phrase-component translations and word records must agree. A non-empty component translation must occur in the matching word record. An absorbed component must be empty and explain which phrase, construction, or Russian morphological relation owns its meaning. The translation of a whole construction must never be copied to one of its grammatical components; for example, `there are → находятся` does not establish `be → находятся`.
+Block-component translations and word records must agree. A non-empty component translation must occur in the matching word record. An absorbed component must be empty and explain which block, construction, or Russian morphological relation owns its meaning. The translation of a whole construction must never be copied to one of its grammatical components; for example, `there are → находятся` does not establish `be → находятся`.
 
-Pass 4 requires exactly one `accepted` decision for every retained phrase. Rejected candidates remain in audit metadata so a later rebuild does not recreate compositional groups.
+Pass 4 requires exactly one `accepted` decision for every retained block. Rejected candidates remain in audit metadata so a later rebuild does not recreate compositional groups.
 
 ## Reproducible seeds
 
-`seed_words_ru.json` and `seed_phrases_ru.json` are editable evidence sources used to regenerate the layer. Globals and package artifacts are derived outputs. Never make a global dictionary the only location of new book evidence.
+`seed_words_ru.json` and `seed_blocks_ru.json` are editable evidence sources used to regenerate the layer. Globals and package artifacts are derived outputs. Never make a global dictionary the only location of new book evidence.
 
 ## Teaching fallback
 
@@ -214,11 +214,11 @@ against every source occurrence but is not a Workbench, package, or ZIP artifact
       "empty_reason": ""
     }
   ],
-  "phrase_blocks": [
+  "block_occurrences": [
     {
-      "unit_id": "phrase:0:0",
-      "tap_unit_id": "phrase:0:0",
-      "phrase_source": "canonical phrase",
+      "unit_id": "block:0:0",
+      "tap_unit_id": "block:0:0",
+      "block_source": "canonical block",
       "source_form": "attested source form",
       "translation": "перевод всей конструкции",
       "segment_index": 0,
@@ -231,7 +231,7 @@ against every source occurrence but is not a Workbench, package, or ZIP artifact
 Allowed entry statuses:
 
 - `independent_translation`;
-- `phrase_component`;
+- `block_component`;
 - `grammar_component`;
 - `zero_correspondence`;
 - `dictionary_fallback`;
@@ -244,14 +244,14 @@ requires a contextual value and a target span. A fallback requires exactly one
 `dictionary_translation` and no contextual target span. Empty contextual values
 require `empty_reason`.
 
-Every phrase or grammar component requires `owner_unit_id` and `tap_unit_id`.
-All `word_ids` in a phrase block use that block's unit and tap ids. A whole-block
+Every block or grammar component requires `owner_unit_id` and `tap_unit_id`.
+All `word_ids` in a block block use that block's unit and tap ids. A whole-block
 translation must not be copied into a component unless that component owns the
 same target span independently.
 
-Every retained phrase occurrence attested by `source_forms[]` must have exactly
-one phrase block. Missing words, duplicate ids, unclassified entries,
-unmaterialized phrases, duplicated independent target spans, and `unresolved`
+Every retained block occurrence attested by `source_forms[]` must have exactly
+one block block. Missing words, duplicate ids, unclassified entries,
+unmaterialized blocks, duplicated independent target spans, and `unresolved`
 statuses are blocking errors.
 
 ## Scope boundary

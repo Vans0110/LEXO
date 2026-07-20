@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:virgil/src/detail_sheet_models.dart';
 import 'package:virgil/src/mobile/mobile_package_models.dart';
 import 'package:virgil/src/mobile/mobile_package_repository.dart';
+import 'package:virgil/src/mobile/virgil_bundled_book_repository.dart';
 import 'package:virgil/src/widgets/continuous_translation_strip.dart';
+import 'package:virgil/src/widgets/reader_detail_sheet.dart';
 
 Map<String, dynamic> _word(String id, String text, String pos, int index) => {
       'id': id,
@@ -89,11 +91,13 @@ Map<String, dynamic> _package() {
           'translation': 'день',
         },
       ],
-      'phrases': [
+      'blocks': [
         {
           'segment_id': 'segment_1',
           'source': 'rest of the day',
           'translation': 'до конца дня',
+          'block_type': 'grammar_construction',
+          'explanation': 'Указывает на оставшуюся часть времени.',
         },
       ],
     },
@@ -163,14 +167,58 @@ Map<String, dynamic> _grammarPackage(
   ];
   package['word_to_word'] = {
     'entries': entries,
-    'phrases': <Map<String, dynamic>>[],
+    'blocks': <Map<String, dynamic>>[],
   };
   package['dictionary_manifest'] = {'entries': dictionaryEntries};
   return package;
 }
 
 void main() {
-  test('phrase alignment owns one source block and builds a multi-word card',
+  test('reader lexicon restores runtime dictionary and alignments', () {
+    final lexicon = <String, dynamic>{
+      'version': 3,
+      'book_id': 'book-test',
+      'source_lang': 'en',
+      'target_lang': 'ru',
+      'words': {
+        'room|NOUN': {
+          'translations': ['комната', 'комнату'],
+        },
+      },
+      'blocks': {
+        'sit down': {
+          'translations': ['садится'],
+        },
+      },
+      'word_alignments': [
+        {
+          'word_id': 'word-room',
+          'dictionary_key': 'room|NOUN',
+          'translation': 'комнату',
+        },
+      ],
+      'block_alignments': [
+        {
+          'segment_id': 'segment-1',
+          'block_key': 'sit down',
+          'source': 'sit down',
+          'translation': 'садится',
+        },
+      ],
+    };
+
+    final dictionary = dictionaryManifestFromReaderLexicon(lexicon);
+    final alignment = alignmentFromReaderLexicon(lexicon);
+
+    expect((dictionary['entries'] as Map)['room|NOUN']['translations'],
+        ['комната', 'комнату']);
+    expect((alignment['entries'] as List).single['translation'], 'комнату');
+    expect(
+        (alignment['entries'] as List).single, isNot(contains('translations')));
+    expect((alignment['blocks'] as List).single['block_key'], 'sit down');
+  });
+
+  test('block alignment owns one source block and builds a multi-word card',
       () {
     final normalized = normalizeMobilePackageJsonForTest(
       normalizeMobilePackageJsonForTest(_package()),
@@ -179,65 +227,98 @@ void main() {
         .first as Map<String, dynamic>;
     final wordsJson =
         (paragraphJson['words'] as List).cast<Map<String, dynamic>>();
-    final phraseId = wordsJson.first['tap_unit_id'];
+    final blockId = wordsJson.first['tap_unit_id'];
 
-    expect(phraseId, startsWith('phrase_segment_1_'));
-    expect(wordsJson.every((word) => word['tap_unit_id'] == phraseId), isTrue);
+    expect(blockId, startsWith('block_segment_1_'));
+    expect(wordsJson.every((word) => word['tap_unit_id'] == blockId), isTrue);
     expect(
         wordsJson
             .every((word) => word['source_unit_text'] == 'rest of the day'),
         isTrue);
     expect(
         wordsJson
-            .every((word) => (word['phrase_alignments'] as List).length == 1),
+            .every((word) => (word['block_alignments'] as List).length == 1),
         isTrue);
     expect(wordsJson.map((word) => word['target_start_index']).toSet(), {2});
     expect(wordsJson.map((word) => word['target_end_index']).toSet(), {4});
 
     final package = MobileBookPackage(normalized);
     final paragraph = package.readerPayload.paragraphs.single;
-    final phraseCard = DetailSheetPayload.fromSelection(
+    final blockCard = DetailSheetPayload.fromSelection(
       item: paragraph,
       word: paragraph.words.first,
     );
-    expect(phraseCard.sheetSourceText, 'rest of the day');
-    expect(phraseCard.units.map((unit) => unit.surfaceText),
+    expect(blockCard.sheetSourceText, 'rest of the day');
+    expect(blockCard.blockType, 'grammar_construction');
+    expect(
+        blockCard.blockExplanation, 'Указывает на оставшуюся часть времени.');
+    expect(blockCard.units.map((unit) => unit.surfaceText),
         ['rest', 'of', 'the', 'day']);
-    expect(phraseCard.units.map((unit) => unit.translation),
+    expect(blockCard.units.map((unit) => unit.translation),
         ['отдых', 'из', 'этот', 'день']);
     expect(package.detailByWordId, contains('word_of'));
     expect(package.detailByWordId, contains('word_the'));
   });
 
   test('POS grammar groups attach function words to a lexical head', () {
-    final cases = <Map<String, dynamic>>[
-      _grammarPackage(
-        [('the', 'DET', 'этот'), ('classroom', 'NOUN', 'класс')],
-        ['класс'],
+    final cases = <(Map<String, dynamic>, String)>[
+      (
+        _grammarPackage(
+          [('the', 'DET', 'этот'), ('classroom', 'NOUN', 'класс')],
+          ['класс'],
+        ),
+        'класс',
       ),
-      _grammarPackage(
-        [
-          ('a', 'DET', 'один'),
-          ('new', 'ADJ', 'новый'),
-          ('student', 'NOUN', 'ученица'),
-        ],
-        ['ученица'],
+      (
+        _grammarPackage(
+          [
+            ('a', 'DET', 'один'),
+            ('new', 'ADJ', 'новая'),
+            ('student', 'NOUN', 'ученица'),
+          ],
+          ['новая', 'ученица'],
+        ),
+        'новая ученица',
       ),
-      _grammarPackage(
-        [('is', 'AUX', 'есть'), ('late', 'ADJ', 'опоздала')],
-        ['опоздала'],
+      (
+        _grammarPackage(
+          [('is', 'AUX', 'есть'), ('late', 'ADJ', 'опоздала')],
+          ['опоздала'],
+        ),
+        'опоздала',
       ),
-      _grammarPackage(
-        [
-          ('does', 'AUX', 'делает'),
-          ('not', 'PART', 'не'),
-          ('know', 'VERB', 'знает'),
-        ],
-        ['не', 'знает'],
+      (
+        _grammarPackage(
+          [
+            ('does', 'AUX', 'делает'),
+            ('not', 'PART', 'не'),
+            ('know', 'VERB', 'знает'),
+          ],
+          ['не', 'знает'],
+        ),
+        'не знает',
+      ),
+      (
+        _grammarPackage(
+          [('into', 'ADP', 'в'), ('room', 'NOUN', 'комнату')],
+          ['в', 'комнату'],
+        ),
+        'в комнату',
+      ),
+      (
+        _grammarPackage(
+          [
+            ('with', 'ADP', 'с'),
+            ('the', 'DET', 'этот'),
+            ('class', 'NOUN', 'классом'),
+          ],
+          ['с', 'классом'],
+        ),
+        'с классом',
       ),
     ];
 
-    for (final raw in cases) {
+    for (final (raw, expectedTranslation) in cases) {
       final normalized = normalizeMobilePackageJsonForTest(raw);
       final package = MobileBookPackage(normalized);
       final paragraph = package.readerPayload.paragraphs.single;
@@ -253,11 +334,37 @@ void main() {
         item: paragraph,
         word: paragraph.words.first,
       );
+      expect(card.sheetTranslationText, expectedTranslation);
       expect(card.units.length, paragraph.words.length);
       expect(card.units.first.type, 'GRAMMAR');
       expect(card.units.first.translation, isNotEmpty);
       expect(card.units.last.isPrimary, isTrue);
     }
+  });
+
+  test('grammar groups preserve occurrence spans with repeated target words',
+      () {
+    final raw = _grammarPackage(
+      [('into', 'ADP', 'в'), ('room', 'NOUN', 'комнате')],
+      ['в', 'доме', 'в', 'комнате'],
+    );
+    final entries =
+        (raw['word_to_word'] as Map<String, dynamic>)['entries'] as List;
+    entries[0]['target_start_index'] = 2;
+    entries[0]['target_end_index'] = 2;
+    entries[1]['target_start_index'] = 3;
+    entries[1]['target_end_index'] = 3;
+
+    final package = MobileBookPackage(normalizeMobilePackageJsonForTest(raw));
+    final paragraph = package.readerPayload.paragraphs.single;
+    final card = DetailSheetPayload.fromSelection(
+      item: paragraph,
+      word: paragraph.words.first,
+    );
+
+    expect(card.sheetTranslationText, 'в комнате');
+    expect(paragraph.words.first.targetStartIndex, 2);
+    expect(paragraph.words.last.targetEndIndex, 3);
   });
 
   test('unattached function word keeps its standalone tap target', () {
@@ -394,5 +501,72 @@ void main() {
     final richText = tester.widget<Text>(find.byType(Text).last);
     expect(richText.maxLines, isNull);
     expect(richText.overflow, isNull);
+  });
+
+  testWidgets('detail sheet saves each vertical Words item independently',
+      (tester) async {
+    final payload = DetailSheetPayload.fromJson({
+      'word_id': 'block_id',
+      'tap_unit_id': 'block_id',
+      'sheet_source_text': 'next to',
+      'sheet_translation_text': 'рядом с',
+      'example_source_text': 'Please sit next to Amir.',
+      'example_translation_text': 'Пожалуйста, сядьте рядом с Амиром.',
+      'dictionary_entry': {
+        'query': 'next to',
+        'lemma': 'next to',
+        'has_content': true,
+        'translations': ['рядом с'],
+      },
+      'units': [
+        {
+          'id': 'word_next',
+          'text': 'next',
+          'surface_text': 'next',
+          'lemma': 'next',
+          'translation': 'рядом',
+          'is_primary': true,
+        },
+        {
+          'id': 'word_to',
+          'text': 'to',
+          'surface_text': 'to',
+          'lemma': 'to',
+          'translation': 'на / с',
+          'is_primary': true,
+        },
+      ],
+    });
+    DetailSheetUnitItem? savedUnit;
+    List<String>? savedTranslations;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ReaderDetailSheet(
+            payload: payload,
+            onSaveWord: (unit, translations) async {
+              savedUnit = unit;
+              savedTranslations = translations;
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byTooltip('Save word'), findsNWidgets(2));
+    expect(find.text('Save'), findsNothing);
+    expect(tester.getTopLeft(find.text('next')).dy,
+        lessThan(tester.getTopLeft(find.text('to')).dy));
+
+    await tester.tap(find.byTooltip('Save word').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Select all'));
+    await tester.pump();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
+    expect(savedUnit?.id, 'word_next');
+    expect(savedTranslations, ['рядом']);
   });
 }

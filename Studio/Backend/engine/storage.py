@@ -921,7 +921,7 @@ class LexoStorage:
             "word_count": len(entries),
             "translated_word_count": translated_word_count,
             "missing_word_count": missing_word_count,
-            "phrase_count": int(manifest.get("phrase_count") or 0),
+            "block_count": int(manifest.get("block_count") or 0),
             "dictionary_entry_count": dictionary_entry_count,
         }
 
@@ -997,7 +997,7 @@ class LexoStorage:
             "source_lang": str(book["source_lang"] or "en"),
             "target_lang": target_lang,
             "parallel": parallel,
-            "phrases": self._book_phrase_seed(book_id, target_lang),
+            "blocks": self._book_block_seed(book_id, target_lang),
             "words": list(words_by_key.values()),
         }
 
@@ -1089,9 +1089,9 @@ class LexoStorage:
         return {}
 
 
-    def _book_phrase_seed(self, book_id: str, target_lang: str) -> list[dict]:
+    def _book_block_seed(self, book_id: str, target_lang: str) -> list[dict]:
         target_lang = str(target_lang or "ru").strip().lower()
-        seed_path = self.library_dictionary_store.book_layer_path(book_id, target_lang).parent / f"seed_phrases_{target_lang}.json"
+        seed_path = self.library_dictionary_store.book_layer_path(book_id, target_lang).parent / f"seed_blocks_{target_lang}.json"
         if not seed_path.exists():
             return []
         try:
@@ -1123,7 +1123,7 @@ class LexoStorage:
             for item in payload:
                 if not isinstance(item, dict):
                     continue
-                source = str(item.get("source") or item.get("phrase") or "").strip()
+                source = str(item.get("source") or item.get("block") or "").strip()
                 translations = item.get("translations")
                 if isinstance(translations, list) and translations:
                     translation = str(translations[0] or "").strip()
@@ -1137,7 +1137,7 @@ class LexoStorage:
                     }
                 )
 
-        phrases: list[dict] = []
+        blocks: list[dict] = []
         seen: set[str] = set()
         for record in records:
             source = str(record.get("source") or "").strip()
@@ -1145,13 +1145,13 @@ class LexoStorage:
             key = source.lower()
             if not key or not translation or key in seen:
                 continue
-            phrase = {"source": source, "translation": translation}
+            block = {"source": source, "translation": translation}
             components = record.get("components")
             if isinstance(components, list) and components:
-                phrase["components"] = components
-            phrases.append(phrase)
+                block["components"] = components
+            blocks.append(block)
             seen.add(key)
-        return phrases
+        return blocks
 
     def rebuild_book_quality(self, book_id: str | None = None) -> dict:
         resolved = self._resolve_required_book_id(book_id)
@@ -1522,19 +1522,44 @@ class LexoStorage:
                 target_segment,
                 target_lang,
             )
-        phrases = (
-            self.library_dictionary_store.phrase_records(target_lang)
+        blocks = (
+            self.library_dictionary_store.block_records(target_lang)
             if target_lang in {"ru", "uk"}
             else {}
         )
+        function_word_records = self.library_dictionary_store.function_word_records(
+            target_lang
+        )
+        function_words = {}
+        for surface, lemma, pos, _, _ in source_items.values():
+            actual_key = f"{str(surface).strip().lower()}|{str(pos).strip().upper()}"
+            candidates = (actual_key, f"{str(lemma).strip().lower()}|{str(pos).strip().upper()}")
+            matched_key = next(
+                (key for key in candidates if key in function_word_records), ""
+            )
+            if not matched_key:
+                matched_key = next(
+                    (
+                        key
+                        for key, value in function_word_records.items()
+                        if actual_key in (value.get("match_keys") or [])
+                    ),
+                    "",
+                )
+            if matched_key:
+                record = dict(function_word_records[matched_key])
+                record.pop("match_keys", None)
+                record["source_key"] = matched_key
+                function_words[actual_key] = record
         manifest = {
             "book_id": book_id,
             "target_lang": target_lang,
             "source": library_dictionary_source(target_lang) if target_lang in {"ru", "uk"} and self.library_dictionary_store.has_global_words(target_lang) else CONTEXT_DICTIONARY_SOURCE,
             "entry_count": len(entries),
             "entries": entries,
-            "phrase_count": len(phrases),
-            "phrases": phrases,
+            "block_count": len(blocks),
+            "blocks": blocks,
+            "function_words": function_words,
         }
         self._dictionary_manifest_cache[cache_key] = manifest
         return manifest

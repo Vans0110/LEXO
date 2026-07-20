@@ -59,7 +59,7 @@ def main() -> None:
             continue
         seen.add(key)
         if key.lower() in absorbed_word_keys:
-            reason = "meaning is absorbed by a verified phrase or grammar block"
+            reason = "meaning is absorbed by a verified block or grammar block"
             word["translation"] = ""
             word["translations"] = []
             word["empty_reason"] = reason
@@ -109,9 +109,9 @@ def main() -> None:
         words.append(word)
         seed_words[key] = {"translation": translations[0], "translations": translations}
 
-    raw_phrases = spec.get("phrases")
-    if not isinstance(raw_phrases, list):
-        raise ValueError("review spec requires phrases[]")
+    raw_blocks = spec.get("blocks")
+    if not isinstance(raw_blocks, list):
+        raise ValueError("review spec requires blocks[]")
     third_pass_word_decisions = spec.get("third_pass_word_decisions")
     if not isinstance(third_pass_word_decisions, list) or not third_pass_word_decisions:
         raise ValueError("review spec requires third_pass_word_decisions[]")
@@ -119,14 +119,14 @@ def main() -> None:
     for pair in parallel:
         source = clean(pair.get("source"))
         target = clean(pair.get("translation"))
-        phrase_sources = [
-            clean(phrase.get("source"))
-            for phrase in raw_phrases
-            if isinstance(phrase, dict)
+        block_sources = [
+            clean(block.get("source"))
+            for block in raw_blocks
+            if isinstance(block, dict)
             and any(
                 clean(occurrence.get("source_text")) == source
                 and clean(occurrence.get("target_text")) == target
-                for occurrence in phrase.get("occurrences") or []
+                for occurrence in block.get("occurrences") or []
                 if isinstance(occurrence, dict)
             )
         ]
@@ -134,32 +134,32 @@ def main() -> None:
             {
                 "source_text": source,
                 "target_text": target,
-                "status": "covered" if phrase_sources else "no_phrase_required",
+                "status": "covered" if block_sources else "no_block_required",
                 "word_keys": [],
-                "phrase_sources": phrase_sources,
+                "block_sources": block_sources,
                 "notes": "",
             }
         )
 
-    phrases: list[dict[str, Any]] = []
-    for raw_phrase in raw_phrases:
-        if not isinstance(raw_phrase, dict):
+    blocks: list[dict[str, Any]] = []
+    for raw_block in raw_blocks:
+        if not isinstance(raw_block, dict):
             continue
-        phrase = dict(raw_phrase)
+        block = dict(raw_block)
         occurrences = [
-            item for item in phrase.pop("occurrences", []) if isinstance(item, dict)
+            item for item in block.pop("occurrences", []) if isinstance(item, dict)
         ]
-        phrase.pop("necessity", None)
+        block.pop("necessity", None)
         forms = [clean(item.get("source_form")) for item in occurrences if clean(item.get("source_form"))]
-        phrase["source_forms"] = list(dict.fromkeys(forms or phrase.get("source_forms") or [clean(phrase.get("source"))]))
-        phrases.append(phrase)
-    fourth_pass_decisions = spec.get("fourth_pass_phrase_decisions")
+        block["source_forms"] = list(dict.fromkeys(forms or block.get("source_forms") or [clean(block.get("source"))]))
+        blocks.append(block)
+    fourth_pass_decisions = spec.get("fourth_pass_block_decisions")
     if not isinstance(fourth_pass_decisions, list) or not fourth_pass_decisions:
-        raise ValueError("review spec requires fourth_pass_phrase_decisions[]")
+        raise ValueError("review spec requires fourth_pass_block_decisions[]")
 
     layer["parallel"] = parallel
     layer["words"] = words
-    layer["phrases"] = phrases
+    layer["blocks"] = blocks
     layer["book_layer_audit"] = {
         "version": 3,
         "method": "codex_independent_four_pass",
@@ -177,14 +177,14 @@ def main() -> None:
         },
         "fourth_pass": {
             "status": "passed",
-            "phrase_decisions": fourth_pass_decisions,
+            "block_decisions": fourth_pass_decisions,
             "unresolved": [],
         },
         "absorbed_word_keys": sorted(absorbed_word_keys),
     }
-    seed_phrases = [
-        {key: value for key, value in phrase.items() if key != "audit_notes"}
-        for phrase in phrases
+    seed_blocks = [
+        {key: value for key, value in block.items() if key != "audit_notes"}
+        for block in blocks
     ]
     verification = spec.get("verification_word_to_word")
     if not isinstance(verification, dict):
@@ -202,7 +202,7 @@ def main() -> None:
             "verification_word_to_word is invalid: " + "; ".join(proof_errors)
         )
     write(directory / "seed_words_ru.json", seed_words)
-    write(directory / "seed_phrases_ru.json", seed_phrases)
+    write(directory / "seed_blocks_ru.json", seed_blocks)
     write(directory / "word_to_word_ru.json", verification)
     write(layer_path, layer)
     print(
@@ -210,9 +210,9 @@ def main() -> None:
             {
                 "parallel": len(parallel),
                 "words": len(words),
-                "phrases": len(phrases),
+                "blocks": len(blocks),
                 "word_occurrences": len(verification.get("entries") or []),
-                "phrase_blocks": len(verification.get("phrase_blocks") or []),
+                "block_occurrences": len(verification.get("block_occurrences") or []),
             },
             ensure_ascii=False,
         )

@@ -16,6 +16,7 @@ if errorlevel 1 (
 )
 
 git remote set-url origin https://github.com/Vans0110/LEXO.git >nul 2>nul
+git config credential.helper manager 2>nul || git config credential.helper manager-core 2>nul
 
 for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HHmmss"') do set "STAMP=%%i"
 set "COMMIT_MSG=LEXO update %STAMP%"

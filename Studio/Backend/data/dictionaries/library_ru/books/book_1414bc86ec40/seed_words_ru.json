@@ -1,0 +1,657 @@
+{
+  "a|DET": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "один",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "address|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "адрес",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "age|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "возраст",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "already|ADV": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "уже",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "an|DET": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "один",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "and|CCONJ": {
+    "translation": "и",
+    "translations": [
+      "и"
+    ],
+    "dictionary_translation": "а",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "apartment|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "квартира",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "apartment|PROPN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "квартира",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "ask|VERB": {
+    "translation": "запрашивает",
+    "translations": [
+      "запрашивает",
+      "спрашивает"
+    ],
+    "dictionary_translation": "спрашивать",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "at|ADP": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "в",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "basic|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "основной",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "be|AUX": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span"
+  },
+  "behind|ADP": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "за",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "building|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "здание",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "but|CCONJ": {
+    "translation": "но",
+    "translations": [
+      "но"
+    ],
+    "dictionary_translation": "но",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "card|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "карточка",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "come|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "приходить",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "contact|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "контакт",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "cook|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "повар",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "do|AUX": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "делать",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "email|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "электропочта",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "english|PROPN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "английский",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "entrance|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "вход",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "feel|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "щупать",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "fifteen|NUM": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "пятнадцать",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "find|VERB": {
+    "translation": "находит",
+    "translations": [
+      "находит"
+    ],
+    "dictionary_translation": "находить",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "first|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span"
+  },
+  "for|ADP": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "на",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "form|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "форма",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "four|NUM": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "четыре",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "friendly|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "дружелюбный",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "from|ADP": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "из",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "hall|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "коридор",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "have|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "иметь",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "he|PRON": {
+    "translation": "он",
+    "translations": [
+      "он"
+    ],
+    "dictionary_translation": "он",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "her|PRON": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "она",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "i|PRON": {
+    "translation": "я",
+    "translations": [
+      "я",
+      "мне"
+    ],
+    "dictionary_translation": "я",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "in|ADP": {
+    "translation": "в",
+    "translations": [
+      "в"
+    ],
+    "dictionary_translation": "в",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "information|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "информация",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "into|ADP": {
+    "translation": "в",
+    "translations": [
+      "в"
+    ],
+    "dictionary_translation": "в",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "introduce|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "знакомить",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "it|PRON": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "оно",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "language|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "язык",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "last|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span"
+  },
+  "later|ADV": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "позже",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "lee|PROPN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "Ли",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "little|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "маленький",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "maple|PROPN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "Мейпл",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "move|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "переезжать",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "mr|PROPN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "господин",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "name|NOUN": {
+    "translation": "имя",
+    "translations": [
+      "имя"
+    ],
+    "dictionary_translation": "имя",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "neighbour|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "сосед",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "new|ADJ": {
+    "translation": "новая",
+    "translations": [
+      "новая"
+    ],
+    "dictionary_translation": "новый",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "nine|NUM": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "девять",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "nora|PROPN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "Нора",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "number|NOUN": {
+    "translation": "номер",
+    "translations": [
+      "номер",
+      "номера"
+    ],
+    "dictionary_translation": "номер",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "nurse|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "медсестра",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "of|ADP": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "из",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "old|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "старый",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "on|ADP": {
+    "translation": "на",
+    "translations": [
+      "на"
+    ],
+    "dictionary_translation": "на",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "one|NUM": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "один",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "other|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "другой",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "phone|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "телефон",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "polish|PROPN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "польский",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "put|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "положить",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "say|VERB": {
+    "translation": "говорит",
+    "translations": [
+      "говорит"
+    ],
+    "dictionary_translation": "говорить",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "she|PRON": {
+    "translation": "она",
+    "translations": [
+      "она"
+    ],
+    "dictionary_translation": "она",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "sit|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "сидеть",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "six|NUM": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "шесть",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "small|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "маленький",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "speak|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "разговаривать",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "street|PROPN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "улица",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "student|NOUN": {
+    "translation": "студент",
+    "translations": [
+      "студент"
+    ],
+    "dictionary_translation": "студент",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "table|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "стол",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "the|DET": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "этот",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "they|PRON": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "они",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "to|ADP": {
+    "translation": "на",
+    "translations": [
+      "на",
+      "с"
+    ],
+    "dictionary_translation": "к",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "twenty|NUM": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "двадцать",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "two|NUM": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "два",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "ukraine|PROPN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "Украина",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "ukrainian|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "украинский",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "university|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "университет",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "useful|ADJ": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "полезный",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "we|PRON": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "мы",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "welcome|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "приветствие",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "welcome|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "приветствовать",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "what|DET": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "какой",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "where|SCONJ": {
+    "translation": "Откуда",
+    "translations": [
+      "Откуда"
+    ],
+    "dictionary_translation": "откуда",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "write|VERB": {
+    "translation": "пишет",
+    "translations": [
+      "пишет"
+    ],
+    "dictionary_translation": "записывать",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "year|NOUN": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "год",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "you|PRON": {
+    "translation": "ты",
+    "translations": [
+      "ты",
+      "вы"
+    ],
+    "dictionary_translation": "ты",
+    "dictionary_translation_source": "skill_fallback"
+  }
+}

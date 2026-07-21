@@ -1,0 +1,2438 @@
+{
+  "version": 1,
+  "book_id": "book_1414bc86ec40",
+  "title": "Welcome to Maple Street",
+  "source_lang": "en",
+  "target_lang": "ru",
+  "parallel": [
+    {
+      "source": "Welcome to Maple Street",
+      "translation": "Добро пожаловать на Мэпл Стрит."
+    },
+    {
+      "source": "Nora moves into Apartment six at fifteen Maple Street.",
+      "translation": "Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит."
+    },
+    {
+      "source": "In the entrance hall, she finds a small welcome table.",
+      "translation": "В прихожей она находит небольшой приветственный стол."
+    },
+    {
+      "source": "Mr Lee, an older neighbour, sits behind the table.",
+      "translation": "Господин Ли, пожилой сосед, сидит за столом."
+    },
+    {
+      "source": "Welcome to Maple Street,\" he says.",
+      "translation": "Добро пожаловать на Мэйпл Стрит, говорит он."
+    },
+    {
+      "source": "We have a contact form for new neighbours.",
+      "translation": "У нас есть форма контакта для новых соседей."
+    },
+    {
+      "source": "The form asks for basic information.",
+      "translation": "Форма запрашивает основную информацию."
+    },
+    {
+      "source": "Nora writes her first name, last name, age, apartment number, phone number, and email address.",
+      "translation": "Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты."
+    },
+    {
+      "source": "Where are you from?",
+      "translation": "Откуда ты?"
+    },
+    {
+      "source": " Mr Lee asks.",
+      "translation": "Мистер Ли спрашивает:."
+    },
+    {
+      "source": "I am from Ukraine.",
+      "translation": "Я Украина."
+    },
+    {
+      "source": "I am twenty years old, and I am a university student.",
+      "translation": "Мне 20 лет, и я студент университета."
+    },
+    {
+      "source": "What languages do you speak?",
+      "translation": "На каких языках вы говорите?"
+    },
+    {
+      "source": "Ukrainian, English, and a little Polish.",
+      "translation": "Украинский, английский и немного польский."
+    },
+    {
+      "source": "Two neighbours come into the hall.",
+      "translation": "Двое соседей заходят в зал."
+    },
+    {
+      "source": "Mr Lee introduces them to Nora.",
+      "translation": "Мистер Ли знакомит их с Норой."
+    },
+    {
+      "source": "One is a nurse from Apartment four.",
+      "translation": "Одна из них - медсестра из квартиры номер 4."
+    },
+    {
+      "source": "The other is a cook from Apartment nine.",
+      "translation": "Другой - повар из квартиры номер 9."
+    },
+    {
+      "source": "Later, Nora puts the welcome card on her table.",
+      "translation": "Позже Нора положила открытку на свой стол."
+    },
+    {
+      "source": "It has useful phone numbers and the names of her neighbours.",
+      "translation": "В ней есть телефонные номера и имена ее соседей."
+    },
+    {
+      "source": "Her apartment is new, but the building already feels friendly.",
+      "translation": "Ее квартира новая, но здание уже кажется дружелюбным."
+    }
+  ],
+  "words": [
+    {
+      "word": "a",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "address",
+      "lemma": "address",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "адрес",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "age",
+      "lemma": "age",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "возраст",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "already",
+      "lemma": "already",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "уже",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "an",
+      "lemma": "an",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "and",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "и",
+      "translations": [
+        "и"
+      ],
+      "dictionary_translation": "а",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "apartment",
+      "lemma": "apartment",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "квартира",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Apartment",
+      "lemma": "apartment",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "квартира",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "asks",
+      "lemma": "ask",
+      "pos": "VERB",
+      "translation": "запрашивает",
+      "translations": [
+        "запрашивает",
+        "спрашивает"
+      ],
+      "dictionary_translation": "спрашивать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "at",
+      "lemma": "at",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "в",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "basic",
+      "lemma": "basic",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "основной",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "are",
+      "lemma": "be",
+      "pos": "AUX",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span"
+    },
+    {
+      "word": "behind",
+      "lemma": "behind",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "за",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "building",
+      "lemma": "building",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "здание",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "but",
+      "lemma": "but",
+      "pos": "CCONJ",
+      "translation": "но",
+      "translations": [
+        "но"
+      ],
+      "dictionary_translation": "но",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "card",
+      "lemma": "card",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "карточка",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "come",
+      "lemma": "come",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "приходить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "contact",
+      "lemma": "contact",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "контакт",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "cook",
+      "lemma": "cook",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "повар",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "do",
+      "lemma": "do",
+      "pos": "AUX",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "делать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "email",
+      "lemma": "email",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "электропочта",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "English",
+      "lemma": "english",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "английский",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "entrance",
+      "lemma": "entrance",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "вход",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "feels",
+      "lemma": "feel",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "щупать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "fifteen",
+      "lemma": "fifteen",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "пятнадцать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "finds",
+      "lemma": "find",
+      "pos": "VERB",
+      "translation": "находит",
+      "translations": [
+        "находит"
+      ],
+      "dictionary_translation": "находить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "first",
+      "lemma": "first",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span"
+    },
+    {
+      "word": "for",
+      "lemma": "for",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "на",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "form",
+      "lemma": "form",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "форма",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "four",
+      "lemma": "four",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "четыре",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "friendly",
+      "lemma": "friendly",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "дружелюбный",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "from",
+      "lemma": "from",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "из",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "hall",
+      "lemma": "hall",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "коридор",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "have",
+      "lemma": "have",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "иметь",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "he",
+      "lemma": "he",
+      "pos": "PRON",
+      "translation": "он",
+      "translations": [
+        "он"
+      ],
+      "dictionary_translation": "он",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "her",
+      "lemma": "her",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "она",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "I",
+      "lemma": "i",
+      "pos": "PRON",
+      "translation": "я",
+      "translations": [
+        "я",
+        "мне"
+      ],
+      "dictionary_translation": "я",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "In",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "в",
+      "translations": [
+        "в"
+      ],
+      "dictionary_translation": "в",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "information",
+      "lemma": "information",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "информация",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "into",
+      "lemma": "into",
+      "pos": "ADP",
+      "translation": "в",
+      "translations": [
+        "в"
+      ],
+      "dictionary_translation": "в",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "introduces",
+      "lemma": "introduce",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "знакомить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "It",
+      "lemma": "it",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "оно",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "languages",
+      "lemma": "language",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "язык",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "last",
+      "lemma": "last",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span"
+    },
+    {
+      "word": "Later",
+      "lemma": "later",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "позже",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Lee",
+      "lemma": "lee",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Ли",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "little",
+      "lemma": "little",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "маленький",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Maple",
+      "lemma": "maple",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Мейпл",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "moves",
+      "lemma": "move",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "переезжать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Mr",
+      "lemma": "mr",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "господин",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "name",
+      "lemma": "name",
+      "pos": "NOUN",
+      "translation": "имя",
+      "translations": [
+        "имя"
+      ],
+      "dictionary_translation": "имя",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "neighbour",
+      "lemma": "neighbour",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "сосед",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "new",
+      "lemma": "new",
+      "pos": "ADJ",
+      "translation": "новая",
+      "translations": [
+        "новая"
+      ],
+      "dictionary_translation": "новый",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "nine",
+      "lemma": "nine",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "девять",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Nora",
+      "lemma": "nora",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Нора",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "number",
+      "lemma": "number",
+      "pos": "NOUN",
+      "translation": "номер",
+      "translations": [
+        "номер",
+        "номера"
+      ],
+      "dictionary_translation": "номер",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "nurse",
+      "lemma": "nurse",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "медсестра",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "of",
+      "lemma": "of",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "из",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "older",
+      "lemma": "old",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "старый",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "on",
+      "lemma": "on",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на"
+      ],
+      "dictionary_translation": "на",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "One",
+      "lemma": "one",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "other",
+      "lemma": "other",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "другой",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "phone",
+      "lemma": "phone",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "телефон",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Polish",
+      "lemma": "polish",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "польский",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "puts",
+      "lemma": "put",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "положить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "говорит",
+      "translations": [
+        "говорит"
+      ],
+      "dictionary_translation": "говорить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "she",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "она",
+      "translations": [
+        "она"
+      ],
+      "dictionary_translation": "она",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "sits",
+      "lemma": "sit",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "сидеть",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "six",
+      "lemma": "six",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "шесть",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "small",
+      "lemma": "small",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "маленький",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "speak",
+      "lemma": "speak",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "разговаривать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Street",
+      "lemma": "street",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "улица",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "student",
+      "lemma": "student",
+      "pos": "NOUN",
+      "translation": "студент",
+      "translations": [
+        "студент"
+      ],
+      "dictionary_translation": "студент",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "table",
+      "lemma": "table",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "стол",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "the",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "этот",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "them",
+      "lemma": "they",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "они",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на",
+        "с"
+      ],
+      "dictionary_translation": "к",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "twenty",
+      "lemma": "twenty",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "двадцать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Two",
+      "lemma": "two",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "два",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Ukraine",
+      "lemma": "ukraine",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Украина",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Ukrainian",
+      "lemma": "ukrainian",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "украинский",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "university",
+      "lemma": "university",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "университет",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "useful",
+      "lemma": "useful",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "полезный",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "We",
+      "lemma": "we",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "мы",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "welcome",
+      "lemma": "welcome",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "приветствие",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Welcome",
+      "lemma": "welcome",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "приветствовать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "What",
+      "lemma": "what",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "какой",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Where",
+      "lemma": "where",
+      "pos": "SCONJ",
+      "translation": "Откуда",
+      "translations": [
+        "Откуда"
+      ],
+      "dictionary_translation": "откуда",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "writes",
+      "lemma": "write",
+      "pos": "VERB",
+      "translation": "пишет",
+      "translations": [
+        "пишет"
+      ],
+      "dictionary_translation": "записывать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "years",
+      "lemma": "year",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "год",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "you",
+      "lemma": "you",
+      "pos": "PRON",
+      "translation": "ты",
+      "translations": [
+        "ты",
+        "вы"
+      ],
+      "dictionary_translation": "ты",
+      "dictionary_translation_source": "skill_fallback"
+    }
+  ],
+  "blocks": [
+    {
+      "source": "ask for",
+      "translation": "запрашивает",
+      "type": "phrasal_verb",
+      "explanation": "Означает запросить или попросить предоставить что-либо.",
+      "components": [
+        {
+          "source": "ask",
+          "lemma": "ask",
+          "pos": "VERB",
+          "translation": "запрашивает"
+        },
+        {
+          "source": "for",
+          "lemma": "for",
+          "pos": "ADP",
+          "translation": "",
+          "empty_reason": "предлог поглощён значением русского глагола"
+        }
+      ],
+      "source_forms": [
+        "asks for"
+      ]
+    },
+    {
+      "source": "first name",
+      "translation": "имя",
+      "type": "fixed_expression",
+      "explanation": "Обозначает личное имя, в отличие от фамилии.",
+      "components": [
+        {
+          "source": "first",
+          "lemma": "first",
+          "pos": "ADJ",
+          "translation": "",
+          "empty_reason": "уточняющее значение поглощено русским словом «имя»"
+        },
+        {
+          "source": "name",
+          "lemma": "name",
+          "pos": "NOUN",
+          "translation": "имя"
+        }
+      ],
+      "source_forms": [
+        "first name"
+      ]
+    },
+    {
+      "source": "last name",
+      "translation": "фамилию",
+      "dictionary_translation": "фамилия",
+      "type": "fixed_expression",
+      "explanation": "Обозначает фамилию человека.",
+      "components": [
+        {
+          "source": "last",
+          "lemma": "last",
+          "pos": "ADJ",
+          "translation": "",
+          "empty_reason": "значение определения поглощено русским словом «фамилия»"
+        },
+        {
+          "source": "name",
+          "lemma": "name",
+          "pos": "NOUN",
+          "translation": "",
+          "empty_reason": "значение всего сочетания передано отдельным русским словом"
+        }
+      ],
+      "source_forms": [
+        "last name"
+      ]
+    },
+    {
+      "source": "where are you from",
+      "translation": "Откуда ты",
+      "type": "grammar_construction",
+      "explanation": "Вопрос о стране, городе или месте происхождения человека.",
+      "components": [
+        {
+          "source": "where",
+          "lemma": "where",
+          "pos": "SCONJ",
+          "translation": "Откуда"
+        },
+        {
+          "source": "are",
+          "lemma": "be",
+          "pos": "AUX",
+          "translation": "",
+          "empty_reason": "связка отсутствует в русском вопросе"
+        },
+        {
+          "source": "you",
+          "lemma": "you",
+          "pos": "PRON",
+          "translation": "ты"
+        },
+        {
+          "source": "from",
+          "lemma": "from",
+          "pos": "ADP",
+          "translation": "",
+          "empty_reason": "направительное значение включено в русское вопросительное слово"
+        }
+      ],
+      "source_forms": [
+        "Where are you from"
+      ]
+    }
+  ],
+  "book_layer_audit": {
+    "version": 4,
+    "method": "codex_verified_occurrence_word_to_word",
+    "reviewed_segments": [
+      {
+        "source_text": "Welcome to Maple Street",
+        "target_text": "Добро пожаловать на Мэпл Стрит.",
+        "status": "covered",
+        "word_keys": [
+          "maple|PROPN",
+          "street|PROPN",
+          "to|ADP",
+          "welcome|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Nora moves into Apartment six at fifteen Maple Street.",
+        "target_text": "Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит.",
+        "status": "covered",
+        "word_keys": [
+          "apartment|PROPN",
+          "at|ADP",
+          "fifteen|NUM",
+          "into|ADP",
+          "maple|PROPN",
+          "move|VERB",
+          "nora|PROPN",
+          "six|NUM",
+          "street|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "In the entrance hall, she finds a small welcome table.",
+        "target_text": "В прихожей она находит небольшой приветственный стол.",
+        "status": "covered",
+        "word_keys": [
+          "a|DET",
+          "entrance|NOUN",
+          "find|VERB",
+          "hall|NOUN",
+          "in|ADP",
+          "she|PRON",
+          "small|ADJ",
+          "table|NOUN",
+          "the|DET",
+          "welcome|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Mr Lee, an older neighbour, sits behind the table.",
+        "target_text": "Господин Ли, пожилой сосед, сидит за столом.",
+        "status": "covered",
+        "word_keys": [
+          "an|DET",
+          "behind|ADP",
+          "lee|PROPN",
+          "mr|PROPN",
+          "neighbour|NOUN",
+          "old|ADJ",
+          "sit|VERB",
+          "table|NOUN",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Welcome to Maple Street,\" he says.",
+        "target_text": "Добро пожаловать на Мэйпл Стрит, говорит он.",
+        "status": "covered",
+        "word_keys": [
+          "he|PRON",
+          "maple|PROPN",
+          "say|VERB",
+          "street|PROPN",
+          "to|ADP",
+          "welcome|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "We have a contact form for new neighbours.",
+        "target_text": "У нас есть форма контакта для новых соседей.",
+        "status": "covered",
+        "word_keys": [
+          "a|DET",
+          "contact|NOUN",
+          "form|NOUN",
+          "for|ADP",
+          "have|VERB",
+          "neighbour|NOUN",
+          "new|ADJ",
+          "we|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "The form asks for basic information.",
+        "target_text": "Форма запрашивает основную информацию.",
+        "status": "covered",
+        "word_keys": [
+          "ask|VERB",
+          "basic|ADJ",
+          "form|NOUN",
+          "for|ADP",
+          "information|NOUN",
+          "the|DET"
+        ],
+        "block_sources": [
+          "ask for"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "Nora writes her first name, last name, age, apartment number, phone number, and email address.",
+        "target_text": "Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты.",
+        "status": "covered",
+        "word_keys": [
+          "address|NOUN",
+          "age|NOUN",
+          "and|CCONJ",
+          "apartment|NOUN",
+          "email|NOUN",
+          "first|ADJ",
+          "her|PRON",
+          "last|ADJ",
+          "name|NOUN",
+          "nora|PROPN",
+          "number|NOUN",
+          "phone|NOUN",
+          "write|VERB"
+        ],
+        "block_sources": [
+          "first name",
+          "last name"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "Where are you from?",
+        "target_text": "Откуда ты?",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "from|ADP",
+          "where|SCONJ",
+          "you|PRON"
+        ],
+        "block_sources": [
+          "where are you from"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": " Mr Lee asks.",
+        "target_text": "Мистер Ли спрашивает:.",
+        "status": "covered",
+        "word_keys": [
+          "ask|VERB",
+          "lee|PROPN",
+          "mr|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am from Ukraine.",
+        "target_text": "Я Украина.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "from|ADP",
+          "i|PRON",
+          "ukraine|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am twenty years old, and I am a university student.",
+        "target_text": "Мне 20 лет, и я студент университета.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "a|DET",
+          "be|AUX",
+          "i|PRON",
+          "old|ADJ",
+          "student|NOUN",
+          "twenty|NUM",
+          "university|NOUN",
+          "year|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "What languages do you speak?",
+        "target_text": "На каких языках вы говорите?",
+        "status": "covered",
+        "word_keys": [
+          "do|AUX",
+          "language|NOUN",
+          "speak|VERB",
+          "what|DET",
+          "you|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Ukrainian, English, and a little Polish.",
+        "target_text": "Украинский, английский и немного польский.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "a|DET",
+          "english|PROPN",
+          "little|ADJ",
+          "polish|PROPN",
+          "ukrainian|ADJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Two neighbours come into the hall.",
+        "target_text": "Двое соседей заходят в зал.",
+        "status": "covered",
+        "word_keys": [
+          "come|VERB",
+          "hall|NOUN",
+          "into|ADP",
+          "neighbour|NOUN",
+          "the|DET",
+          "two|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Mr Lee introduces them to Nora.",
+        "target_text": "Мистер Ли знакомит их с Норой.",
+        "status": "covered",
+        "word_keys": [
+          "introduce|VERB",
+          "lee|PROPN",
+          "mr|PROPN",
+          "nora|PROPN",
+          "they|PRON",
+          "to|ADP"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "One is a nurse from Apartment four.",
+        "target_text": "Одна из них - медсестра из квартиры номер 4.",
+        "status": "covered",
+        "word_keys": [
+          "apartment|PROPN",
+          "a|DET",
+          "be|AUX",
+          "four|NUM",
+          "from|ADP",
+          "nurse|NOUN",
+          "one|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "The other is a cook from Apartment nine.",
+        "target_text": "Другой - повар из квартиры номер 9.",
+        "status": "covered",
+        "word_keys": [
+          "apartment|PROPN",
+          "a|DET",
+          "be|AUX",
+          "cook|NOUN",
+          "from|ADP",
+          "nine|NUM",
+          "other|ADJ",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Later, Nora puts the welcome card on her table.",
+        "target_text": "Позже Нора положила открытку на свой стол.",
+        "status": "covered",
+        "word_keys": [
+          "card|NOUN",
+          "her|PRON",
+          "later|ADV",
+          "nora|PROPN",
+          "on|ADP",
+          "put|VERB",
+          "table|NOUN",
+          "the|DET",
+          "welcome|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "It has useful phone numbers and the names of her neighbours.",
+        "target_text": "В ней есть телефонные номера и имена ее соседей.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "have|VERB",
+          "her|PRON",
+          "it|PRON",
+          "name|NOUN",
+          "neighbour|NOUN",
+          "number|NOUN",
+          "of|ADP",
+          "phone|NOUN",
+          "the|DET",
+          "useful|ADJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Her apartment is new, but the building already feels friendly.",
+        "target_text": "Ее квартира новая, но здание уже кажется дружелюбным.",
+        "status": "covered",
+        "word_keys": [
+          "already|ADV",
+          "apartment|NOUN",
+          "be|AUX",
+          "building|NOUN",
+          "but|CCONJ",
+          "feel|VERB",
+          "friendly|ADJ",
+          "her|PRON",
+          "new|ADJ",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      }
+    ],
+    "second_pass": {
+      "status": "passed",
+      "corrections": [],
+      "unresolved": []
+    },
+    "third_pass": {
+      "status": "passed",
+      "word_decisions": [
+        {
+          "key": "a|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол.",
+            "We have a contact form for new neighbours. → У нас есть форма контакта для новых соседей.",
+            "I am twenty years old, and I am a university student. → Мне 20 лет, и я студент университета.",
+            "Ukrainian, English, and a little Polish. → Украинский, английский и немного польский.",
+            "One is a nurse from Apartment four. → Одна из них - медсестра из квартиры номер 4.",
+            "The other is a cook from Apartment nine. → Другой - повар из квартиры номер 9."
+          ]
+        },
+        {
+          "key": "address|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты."
+          ]
+        },
+        {
+          "key": "age|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты."
+          ]
+        },
+        {
+          "key": "already|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "an|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mr Lee, an older neighbour, sits behind the table. → Господин Ли, пожилой сосед, сидит за столом."
+          ]
+        },
+        {
+          "key": "and|CCONJ",
+          "ownership": "word",
+          "translations": [
+            "и"
+          ],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты.",
+            "I am twenty years old, and I am a university student. → Мне 20 лет, и я студент университета.",
+            "Ukrainian, English, and a little Polish. → Украинский, английский и немного польский.",
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей."
+          ]
+        },
+        {
+          "key": "apartment|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты.",
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "apartment|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora moves into Apartment six at fifteen Maple Street. → Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит.",
+            "One is a nurse from Apartment four. → Одна из них - медсестра из квартиры номер 4.",
+            "The other is a cook from Apartment nine. → Другой - повар из квартиры номер 9."
+          ]
+        },
+        {
+          "key": "ask|VERB",
+          "ownership": "word",
+          "translations": [
+            "запрашивает",
+            "спрашивает"
+          ],
+          "evidence": [
+            "The form asks for basic information. → Форма запрашивает основную информацию.",
+            " Mr Lee asks. → Мистер Ли спрашивает:."
+          ]
+        },
+        {
+          "key": "at|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora moves into Apartment six at fifteen Maple Street. → Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит."
+          ]
+        },
+        {
+          "key": "basic|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The form asks for basic information. → Форма запрашивает основную информацию."
+          ]
+        },
+        {
+          "key": "be|AUX",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "Where are you from? → Откуда ты?",
+            "I am from Ukraine. → Я Украина.",
+            "I am twenty years old, and I am a university student. → Мне 20 лет, и я студент университета.",
+            "One is a nurse from Apartment four. → Одна из них - медсестра из квартиры номер 4.",
+            "The other is a cook from Apartment nine. → Другой - повар из квартиры номер 9.",
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "behind|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mr Lee, an older neighbour, sits behind the table. → Господин Ли, пожилой сосед, сидит за столом."
+          ]
+        },
+        {
+          "key": "building|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "but|CCONJ",
+          "ownership": "word",
+          "translations": [
+            "но"
+          ],
+          "evidence": [
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "card|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Later, Nora puts the welcome card on her table. → Позже Нора положила открытку на свой стол."
+          ]
+        },
+        {
+          "key": "come|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Two neighbours come into the hall. → Двое соседей заходят в зал."
+          ]
+        },
+        {
+          "key": "contact|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "We have a contact form for new neighbours. → У нас есть форма контакта для новых соседей."
+          ]
+        },
+        {
+          "key": "cook|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The other is a cook from Apartment nine. → Другой - повар из квартиры номер 9."
+          ]
+        },
+        {
+          "key": "do|AUX",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "What languages do you speak? → На каких языках вы говорите?"
+          ]
+        },
+        {
+          "key": "email|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты."
+          ]
+        },
+        {
+          "key": "english|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ukrainian, English, and a little Polish. → Украинский, английский и немного польский."
+          ]
+        },
+        {
+          "key": "entrance|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол."
+          ]
+        },
+        {
+          "key": "feel|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "fifteen|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora moves into Apartment six at fifteen Maple Street. → Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит."
+          ]
+        },
+        {
+          "key": "find|VERB",
+          "ownership": "word",
+          "translations": [
+            "находит"
+          ],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол."
+          ]
+        },
+        {
+          "key": "first|ADJ",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты."
+          ]
+        },
+        {
+          "key": "for|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "We have a contact form for new neighbours. → У нас есть форма контакта для новых соседей.",
+            "The form asks for basic information. → Форма запрашивает основную информацию."
+          ]
+        },
+        {
+          "key": "form|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "We have a contact form for new neighbours. → У нас есть форма контакта для новых соседей.",
+            "The form asks for basic information. → Форма запрашивает основную информацию."
+          ]
+        },
+        {
+          "key": "four|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "One is a nurse from Apartment four. → Одна из них - медсестра из квартиры номер 4."
+          ]
+        },
+        {
+          "key": "friendly|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "from|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Where are you from? → Откуда ты?",
+            "I am from Ukraine. → Я Украина.",
+            "One is a nurse from Apartment four. → Одна из них - медсестра из квартиры номер 4.",
+            "The other is a cook from Apartment nine. → Другой - повар из квартиры номер 9."
+          ]
+        },
+        {
+          "key": "hall|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол.",
+            "Two neighbours come into the hall. → Двое соседей заходят в зал."
+          ]
+        },
+        {
+          "key": "have|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "We have a contact form for new neighbours. → У нас есть форма контакта для новых соседей.",
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей."
+          ]
+        },
+        {
+          "key": "he|PRON",
+          "ownership": "word",
+          "translations": [
+            "он"
+          ],
+          "evidence": [
+            "Welcome to Maple Street,\" he says. → Добро пожаловать на Мэйпл Стрит, говорит он."
+          ]
+        },
+        {
+          "key": "her|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты.",
+            "Later, Nora puts the welcome card on her table. → Позже Нора положила открытку на свой стол.",
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей.",
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "i|PRON",
+          "ownership": "word",
+          "translations": [
+            "я",
+            "мне"
+          ],
+          "evidence": [
+            "I am from Ukraine. → Я Украина.",
+            "I am twenty years old, and I am a university student. → Мне 20 лет, и я студент университета."
+          ]
+        },
+        {
+          "key": "in|ADP",
+          "ownership": "word",
+          "translations": [
+            "в"
+          ],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол."
+          ]
+        },
+        {
+          "key": "information|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The form asks for basic information. → Форма запрашивает основную информацию."
+          ]
+        },
+        {
+          "key": "into|ADP",
+          "ownership": "word",
+          "translations": [
+            "в"
+          ],
+          "evidence": [
+            "Nora moves into Apartment six at fifteen Maple Street. → Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит.",
+            "Two neighbours come into the hall. → Двое соседей заходят в зал."
+          ]
+        },
+        {
+          "key": "introduce|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mr Lee introduces them to Nora. → Мистер Ли знакомит их с Норой."
+          ]
+        },
+        {
+          "key": "it|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей."
+          ]
+        },
+        {
+          "key": "language|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "What languages do you speak? → На каких языках вы говорите?"
+          ]
+        },
+        {
+          "key": "last|ADJ",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты."
+          ]
+        },
+        {
+          "key": "later|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Later, Nora puts the welcome card on her table. → Позже Нора положила открытку на свой стол."
+          ]
+        },
+        {
+          "key": "lee|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mr Lee, an older neighbour, sits behind the table. → Господин Ли, пожилой сосед, сидит за столом.",
+            " Mr Lee asks. → Мистер Ли спрашивает:.",
+            "Mr Lee introduces them to Nora. → Мистер Ли знакомит их с Норой."
+          ]
+        },
+        {
+          "key": "little|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ukrainian, English, and a little Polish. → Украинский, английский и немного польский."
+          ]
+        },
+        {
+          "key": "maple|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Welcome to Maple Street → Добро пожаловать на Мэпл Стрит.",
+            "Nora moves into Apartment six at fifteen Maple Street. → Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит.",
+            "Welcome to Maple Street,\" he says. → Добро пожаловать на Мэйпл Стрит, говорит он."
+          ]
+        },
+        {
+          "key": "move|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora moves into Apartment six at fifteen Maple Street. → Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит."
+          ]
+        },
+        {
+          "key": "mr|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mr Lee, an older neighbour, sits behind the table. → Господин Ли, пожилой сосед, сидит за столом.",
+            " Mr Lee asks. → Мистер Ли спрашивает:.",
+            "Mr Lee introduces them to Nora. → Мистер Ли знакомит их с Норой."
+          ]
+        },
+        {
+          "key": "name|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "имя"
+          ],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты.",
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей."
+          ]
+        },
+        {
+          "key": "neighbour|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mr Lee, an older neighbour, sits behind the table. → Господин Ли, пожилой сосед, сидит за столом.",
+            "We have a contact form for new neighbours. → У нас есть форма контакта для новых соседей.",
+            "Two neighbours come into the hall. → Двое соседей заходят в зал.",
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей."
+          ]
+        },
+        {
+          "key": "new|ADJ",
+          "ownership": "mixed",
+          "translations": [
+            "новая"
+          ],
+          "evidence": [
+            "We have a contact form for new neighbours. → У нас есть форма контакта для новых соседей.",
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "nine|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The other is a cook from Apartment nine. → Другой - повар из квартиры номер 9."
+          ]
+        },
+        {
+          "key": "nora|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora moves into Apartment six at fifteen Maple Street. → Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит.",
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты.",
+            "Mr Lee introduces them to Nora. → Мистер Ли знакомит их с Норой.",
+            "Later, Nora puts the welcome card on her table. → Позже Нора положила открытку на свой стол."
+          ]
+        },
+        {
+          "key": "number|NOUN",
+          "ownership": "word",
+          "translations": [
+            "номер",
+            "номера"
+          ],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты.",
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей."
+          ]
+        },
+        {
+          "key": "nurse|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "One is a nurse from Apartment four. → Одна из них - медсестра из квартиры номер 4."
+          ]
+        },
+        {
+          "key": "of|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей."
+          ]
+        },
+        {
+          "key": "old|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mr Lee, an older neighbour, sits behind the table. → Господин Ли, пожилой сосед, сидит за столом.",
+            "I am twenty years old, and I am a university student. → Мне 20 лет, и я студент университета."
+          ]
+        },
+        {
+          "key": "on|ADP",
+          "ownership": "word",
+          "translations": [
+            "на"
+          ],
+          "evidence": [
+            "Later, Nora puts the welcome card on her table. → Позже Нора положила открытку на свой стол."
+          ]
+        },
+        {
+          "key": "one|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "One is a nurse from Apartment four. → Одна из них - медсестра из квартиры номер 4."
+          ]
+        },
+        {
+          "key": "other|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The other is a cook from Apartment nine. → Другой - повар из квартиры номер 9."
+          ]
+        },
+        {
+          "key": "phone|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты.",
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей."
+          ]
+        },
+        {
+          "key": "polish|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ukrainian, English, and a little Polish. → Украинский, английский и немного польский."
+          ]
+        },
+        {
+          "key": "put|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Later, Nora puts the welcome card on her table. → Позже Нора положила открытку на свой стол."
+          ]
+        },
+        {
+          "key": "say|VERB",
+          "ownership": "word",
+          "translations": [
+            "говорит"
+          ],
+          "evidence": [
+            "Welcome to Maple Street,\" he says. → Добро пожаловать на Мэйпл Стрит, говорит он."
+          ]
+        },
+        {
+          "key": "she|PRON",
+          "ownership": "word",
+          "translations": [
+            "она"
+          ],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол."
+          ]
+        },
+        {
+          "key": "sit|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mr Lee, an older neighbour, sits behind the table. → Господин Ли, пожилой сосед, сидит за столом."
+          ]
+        },
+        {
+          "key": "six|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Nora moves into Apartment six at fifteen Maple Street. → Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит."
+          ]
+        },
+        {
+          "key": "small|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол."
+          ]
+        },
+        {
+          "key": "speak|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "What languages do you speak? → На каких языках вы говорите?"
+          ]
+        },
+        {
+          "key": "street|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Welcome to Maple Street → Добро пожаловать на Мэпл Стрит.",
+            "Nora moves into Apartment six at fifteen Maple Street. → Нора переезжает в квартиру номер шесть, 15 Мэпл-стрит.",
+            "Welcome to Maple Street,\" he says. → Добро пожаловать на Мэйпл Стрит, говорит он."
+          ]
+        },
+        {
+          "key": "student|NOUN",
+          "ownership": "word",
+          "translations": [
+            "студент"
+          ],
+          "evidence": [
+            "I am twenty years old, and I am a university student. → Мне 20 лет, и я студент университета."
+          ]
+        },
+        {
+          "key": "table|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол.",
+            "Mr Lee, an older neighbour, sits behind the table. → Господин Ли, пожилой сосед, сидит за столом.",
+            "Later, Nora puts the welcome card on her table. → Позже Нора положила открытку на свой стол."
+          ]
+        },
+        {
+          "key": "the|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол.",
+            "Mr Lee, an older neighbour, sits behind the table. → Господин Ли, пожилой сосед, сидит за столом.",
+            "The form asks for basic information. → Форма запрашивает основную информацию.",
+            "Two neighbours come into the hall. → Двое соседей заходят в зал.",
+            "The other is a cook from Apartment nine. → Другой - повар из квартиры номер 9.",
+            "Later, Nora puts the welcome card on her table. → Позже Нора положила открытку на свой стол.",
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей.",
+            "Her apartment is new, but the building already feels friendly. → Ее квартира новая, но здание уже кажется дружелюбным."
+          ]
+        },
+        {
+          "key": "they|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mr Lee introduces them to Nora. → Мистер Ли знакомит их с Норой."
+          ]
+        },
+        {
+          "key": "to|ADP",
+          "ownership": "word",
+          "translations": [
+            "на",
+            "с"
+          ],
+          "evidence": [
+            "Welcome to Maple Street → Добро пожаловать на Мэпл Стрит.",
+            "Welcome to Maple Street,\" he says. → Добро пожаловать на Мэйпл Стрит, говорит он.",
+            "Mr Lee introduces them to Nora. → Мистер Ли знакомит их с Норой."
+          ]
+        },
+        {
+          "key": "twenty|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I am twenty years old, and I am a university student. → Мне 20 лет, и я студент университета."
+          ]
+        },
+        {
+          "key": "two|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Two neighbours come into the hall. → Двое соседей заходят в зал."
+          ]
+        },
+        {
+          "key": "ukraine|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I am from Ukraine. → Я Украина."
+          ]
+        },
+        {
+          "key": "ukrainian|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ukrainian, English, and a little Polish. → Украинский, английский и немного польский."
+          ]
+        },
+        {
+          "key": "university|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I am twenty years old, and I am a university student. → Мне 20 лет, и я студент университета."
+          ]
+        },
+        {
+          "key": "useful|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "It has useful phone numbers and the names of her neighbours. → В ней есть телефонные номера и имена ее соседей."
+          ]
+        },
+        {
+          "key": "we|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "We have a contact form for new neighbours. → У нас есть форма контакта для новых соседей."
+          ]
+        },
+        {
+          "key": "welcome|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "In the entrance hall, she finds a small welcome table. → В прихожей она находит небольшой приветственный стол.",
+            "Later, Nora puts the welcome card on her table. → Позже Нора положила открытку на свой стол."
+          ]
+        },
+        {
+          "key": "welcome|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Welcome to Maple Street → Добро пожаловать на Мэпл Стрит.",
+            "Welcome to Maple Street,\" he says. → Добро пожаловать на Мэйпл Стрит, говорит он."
+          ]
+        },
+        {
+          "key": "what|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "What languages do you speak? → На каких языках вы говорите?"
+          ]
+        },
+        {
+          "key": "where|SCONJ",
+          "ownership": "word",
+          "translations": [
+            "Откуда"
+          ],
+          "evidence": [
+            "Where are you from? → Откуда ты?"
+          ]
+        },
+        {
+          "key": "write|VERB",
+          "ownership": "word",
+          "translations": [
+            "пишет"
+          ],
+          "evidence": [
+            "Nora writes her first name, last name, age, apartment number, phone number, and email address. → Нора пишет свое имя, фамилию, возраст, номер квартиры, номер телефона и адрес электронной почты."
+          ]
+        },
+        {
+          "key": "year|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I am twenty years old, and I am a university student. → Мне 20 лет, и я студент университета."
+          ]
+        },
+        {
+          "key": "you|PRON",
+          "ownership": "word",
+          "translations": [
+            "ты",
+            "вы"
+          ],
+          "evidence": [
+            "Where are you from? → Откуда ты?",
+            "What languages do you speak? → На каких языках вы говорите?"
+          ]
+        }
+      ],
+      "corrections": [],
+      "unresolved": []
+    },
+    "fourth_pass": {
+      "status": "passed",
+      "block_decisions": [
+        {
+          "source": "ask for",
+          "decision": "accepted",
+          "word_by_word_result": "запрашивает + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            6
+          ]
+        },
+        {
+          "source": "first name",
+          "decision": "accepted",
+          "word_by_word_result": "∅ + имя",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            7
+          ]
+        },
+        {
+          "source": "last name",
+          "decision": "accepted",
+          "word_by_word_result": "∅ + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            7
+          ]
+        },
+        {
+          "source": "where are you from",
+          "decision": "accepted",
+          "word_by_word_result": "Откуда + ∅ + ты + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            8
+          ]
+        },
+        {
+          "source": "welcome to",
+          "decision": "rejected",
+          "word_by_word_result": "добро пожаловать + на",
+          "reason": "отдельные значения полностью сохраняют смысл",
+          "segment_indexes": [
+            0,
+            4
+          ]
+        },
+        {
+          "source": "move into",
+          "decision": "rejected",
+          "word_by_word_result": "переезжать + в",
+          "reason": "глагол и предлог независимо сохраняют значение",
+          "segment_indexes": [
+            1
+          ]
+        },
+        {
+          "source": "entrance hall",
+          "decision": "rejected",
+          "word_by_word_result": "прихожая",
+          "reason": "обычное предметное сочетание без смыслового исключения",
+          "segment_indexes": [
+            2
+          ]
+        },
+        {
+          "source": "contact form",
+          "decision": "rejected",
+          "word_by_word_result": "форма + контакта",
+          "reason": "обычное композиционное сочетание",
+          "segment_indexes": [
+            5
+          ]
+        },
+        {
+          "source": "come into",
+          "decision": "rejected",
+          "word_by_word_result": "заходить + в",
+          "reason": "глагол и предлог независимо сохраняют значение",
+          "segment_indexes": [
+            14
+          ]
+        },
+        {
+          "source": "introduce to",
+          "decision": "rejected",
+          "word_by_word_result": "знакомить + с",
+          "reason": "контекстные значения компонентов сохраняют полный смысл",
+          "segment_indexes": [
+            15
+          ]
+        }
+      ],
+      "unresolved": []
+    },
+    "absorbed_word_keys": [
+      "be|aux",
+      "first|adj",
+      "last|adj"
+    ]
+  }
+}

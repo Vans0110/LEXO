@@ -1,0 +1,239 @@
+{
+  "about|ADP": {
+    "translation": "про"
+  },
+  "and|CCONJ": {
+    "translation": "і"
+  },
+  "at|ADP": {
+    "translation": "біля"
+  },
+  "a|DET": {
+    "translation": "один"
+  },
+  "be|AUX": {
+    "translation": "бути"
+  },
+  "book|NOUN": {
+    "translation": "книга"
+  },
+  "bus|NOUN": {
+    "translation": "автобус"
+  },
+  "by|ADP": {
+    "translation": "на"
+  },
+  "city|NOUN": {
+    "translation": "місто"
+  },
+  "classroom|NOUN": {
+    "translation": "клас"
+  },
+  "david|PROPN": {
+    "translation": "Девід"
+  },
+  "day|NOUN": {
+    "translation": "день"
+  },
+  "do|AUX": {
+    "translation": "робити"
+  },
+  "eighteen|NUM": {
+    "translation": "вісімнадцять"
+  },
+  "emma|PROPN": {
+    "translation": "Емма"
+  },
+  "evening|NOUN": {
+    "translation": "вечір"
+  },
+  "every|DET": {
+    "translation": "кожний"
+  },
+  "father|NOUN": {
+    "translation": "батько"
+  },
+  "feel|VERB": {
+    "translation": "відчувати"
+  },
+  "find|VERB": {
+    "translation": "знаходити"
+  },
+  "first|ADJ": {
+    "translation": "перший"
+  },
+  "friendly|ADJ": {
+    "translation": "дружній"
+  },
+  "friend|NOUN": {
+    "translation": "друг"
+  },
+  "game|NOUN": {
+    "translation": "гра"
+  },
+  "good|ADJ": {
+    "translation": "добрий"
+  },
+  "go|VERB": {
+    "translation": "йти"
+  },
+  "great|ADJ": {
+    "translation": "чудовий"
+  },
+  "happily|ADV": {
+    "translation": "щасливо"
+  },
+  "hello|INTJ": {
+    "translation": "привіт"
+  },
+  "help|VERB": {
+    "translation": "допомагати"
+  },
+  "her|PRON": {
+    "translation": "її"
+  },
+  "he|PRON": {
+    "translation": "він"
+  },
+  "his|PRON": {
+    "translation": "його"
+  },
+  "hi|INTJ": {
+    "translation": "привіт"
+  },
+  "home|NOUN": {
+    "translation": "дім"
+  },
+  "in|ADP": {
+    "translation": "у"
+  },
+  "i|PRON": {
+    "translation": "я"
+  },
+  "kind|ADJ": {
+    "translation": "добрий"
+  },
+  "know|VERB": {
+    "translation": "знати"
+  },
+  "like|VERB": {
+    "translation": "подобатися"
+  },
+  "live|VERB": {
+    "translation": "жити"
+  },
+  "lunch|NOUN": {
+    "translation": "обід"
+  },
+  "morning|NOUN": {
+    "translation": "ранок"
+  },
+  "mother|NOUN": {
+    "translation": "мати"
+  },
+  "movie|NOUN": {
+    "translation": "фільм"
+  },
+  "music|NOUN": {
+    "translation": "музика"
+  },
+  "my|PRON": {
+    "translation": "мій"
+  },
+  "name|NOUN": {
+    "translation": "ім’я"
+  },
+  "nervous|ADJ": {
+    "translation": "нервовий"
+  },
+  "new|ADJ": {
+    "translation": "новий"
+  },
+  "new|PROPN": {
+    "translation": "Новий"
+  },
+  "not|PART": {
+    "translation": "не"
+  },
+  "now|ADV": {
+    "translation": "зараз"
+  },
+  "old|ADJ": {
+    "translation": "старий"
+  },
+  "or|CCONJ": {
+    "translation": "або"
+  },
+  "parent|NOUN": {
+    "translation": "батько"
+  },
+  "say|VERB": {
+    "translation": "казати"
+  },
+  "school|NOUN": {
+    "translation": "школа"
+  },
+  "she|PRON": {
+    "translation": "вона"
+  },
+  "show|VERB": {
+    "translation": "показувати"
+  },
+  "sit|VERB": {
+    "translation": "сидіти"
+  },
+  "small|ADJ": {
+    "translation": "малий"
+  },
+  "smile|VERB": {
+    "translation": "усміхатися"
+  },
+  "student|NOUN": {
+    "translation": "учень"
+  },
+  "student|PROPN": {
+    "translation": "Студент"
+  },
+  "talk|NOUN": {
+    "translation": "розмова"
+  },
+  "talk|VERB": {
+    "translation": "говорити"
+  },
+  "teacher|NOUN": {
+    "translation": "учитель"
+  },
+  "they|PRON": {
+    "translation": "вони"
+  },
+  "the|DET": {
+    "translation": "цей"
+  },
+  "time|NOUN": {
+    "translation": "час"
+  },
+  "today|NOUN": {
+    "translation": "сьогодні"
+  },
+  "to|ADP": {
+    "translation": "до"
+  },
+  "very|ADV": {
+    "translation": "дуже"
+  },
+  "walk|VERB": {
+    "translation": "ходити"
+  },
+  "with|ADP": {
+    "translation": "з"
+  },
+  "woman|NOUN": {
+    "translation": "жінка"
+  },
+  "year|NOUN": {
+    "translation": "рік"
+  },
+  "young|ADJ": {
+    "translation": "молодий"
+  }
+}

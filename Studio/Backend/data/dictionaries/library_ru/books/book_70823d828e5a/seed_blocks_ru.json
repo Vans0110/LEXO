@@ -1,0 +1,240 @@
+[
+  {
+    "source": "years old",
+    "translation": "лет",
+    "type": "grammar_construction",
+    "explanation": "Используется после числа, чтобы назвать возраст человека.",
+    "components": [
+      {
+        "source": "years",
+        "lemma": "year",
+        "pos": "NOUN",
+        "translation": "лет"
+      },
+      {
+        "source": "old",
+        "lemma": "old",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значение возраста выражено всей конструкцией"
+      }
+    ],
+    "source_forms": [
+      "years old"
+    ]
+  },
+  {
+    "source": "what is your name",
+    "translation": "Как вас зовут",
+    "type": "fixed_expression",
+    "explanation": "Устойчивый вопрос, с помощью которого узнают имя собеседника.",
+    "components": [
+      {
+        "source": "what",
+        "lemma": "what",
+        "pos": "PRON",
+        "translation": "Как"
+      },
+      {
+        "source": "is",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "связка не имеет отдельного русского соответствия в вопросе"
+      },
+      {
+        "source": "your",
+        "lemma": "your",
+        "pos": "PRON",
+        "translation": "вас"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "",
+        "empty_reason": "глагольное значение принадлежит всей конструкции"
+      }
+    ],
+    "source_forms": [
+      "What is your name"
+    ]
+  },
+  {
+    "source": "my name is",
+    "translation": "Меня зовут",
+    "type": "fixed_expression",
+    "explanation": "Устойчивая конструкция для сообщения своего имени.",
+    "components": [
+      {
+        "source": "my",
+        "lemma": "my",
+        "pos": "PRON",
+        "translation": "Меня"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "",
+        "empty_reason": "глагольное значение принадлежит всей конструкции"
+      },
+      {
+        "source": "is",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "связка отсутствует в русской конструкции"
+      }
+    ],
+    "source_forms": [
+      "My name is"
+    ]
+  },
+  {
+    "source": "what is your age",
+    "translation": "сколько вам лет",
+    "type": "fixed_expression",
+    "explanation": "Устойчивый вопрос о возрасте собеседника.",
+    "components": [
+      {
+        "source": "what",
+        "lemma": "what",
+        "pos": "PRON",
+        "translation": "сколько"
+      },
+      {
+        "source": "is",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "связка не имеет отдельного русского соответствия в вопросе"
+      },
+      {
+        "source": "your",
+        "lemma": "your",
+        "pos": "PRON",
+        "translation": "вам"
+      },
+      {
+        "source": "age",
+        "lemma": "age",
+        "pos": "NOUN",
+        "translation": "лет"
+      }
+    ],
+    "source_forms": [
+      "what is your age"
+    ]
+  },
+  {
+    "source": "first name",
+    "translation": "имя",
+    "type": "fixed_expression",
+    "explanation": "Обозначает личное имя, в отличие от фамилии.",
+    "components": [
+      {
+        "source": "first",
+        "lemma": "first",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "уточняющее значение поглощено русским словом «имя»"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "имя"
+      }
+    ],
+    "source_forms": [
+      "first name"
+    ]
+  },
+  {
+    "source": "last name",
+    "translation": "фамилию",
+    "dictionary_translation": "фамилия",
+    "type": "fixed_expression",
+    "explanation": "Обозначает фамилию человека.",
+    "components": [
+      {
+        "source": "last",
+        "lemma": "last",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значение определения поглощено русским словом «фамилия»"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "",
+        "empty_reason": "значение всего сочетания передано отдельным русским словом"
+      }
+    ],
+    "source_forms": [
+      "last name"
+    ]
+  },
+  {
+    "source": "next to",
+    "translation": "рядом с",
+    "type": "prepositional_group",
+    "explanation": "Указывает на положение непосредственно рядом с человеком, местом или предметом.",
+    "components": [
+      {
+        "source": "next",
+        "lemma": "next",
+        "pos": "ADV",
+        "translation": "рядом"
+      },
+      {
+        "source": "to",
+        "lemma": "to",
+        "pos": "ADP",
+        "translation": "с"
+      }
+    ],
+    "source_forms": [
+      "next to"
+    ]
+  },
+  {
+    "source": "nice to meet you",
+    "translation": "Приятно познакомиться",
+    "type": "fixed_expression",
+    "explanation": "Вежливая фраза при знакомстве с человеком.",
+    "components": [
+      {
+        "source": "nice",
+        "lemma": "nice",
+        "pos": "ADJ",
+        "translation": "Приятно"
+      },
+      {
+        "source": "to",
+        "lemma": "to",
+        "pos": "PART",
+        "translation": "",
+        "empty_reason": "частица инфинитива не имеет отдельного русского соответствия"
+      },
+      {
+        "source": "meet",
+        "lemma": "meet",
+        "pos": "VERB",
+        "translation": "познакомиться"
+      },
+      {
+        "source": "you",
+        "lemma": "you",
+        "pos": "PRON",
+        "translation": "",
+        "empty_reason": "объект подразумевается русской формулой знакомства"
+      }
+    ],
+    "source_forms": [
+      "Nice to meet you"
+    ]
+  }
+]

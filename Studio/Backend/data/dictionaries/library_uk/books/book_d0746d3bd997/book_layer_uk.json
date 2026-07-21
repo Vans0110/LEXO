@@ -1,0 +1,887 @@
+{
+  "version": 1,
+  "book_id": "book_d0746d3bd997",
+  "title": "New Apartment",
+  "source_lang": "en",
+  "target_lang": "uk",
+  "parallel": [
+    {
+      "source": "After work, Oliver goes to a furniture shop and buys two chairs.",
+      "translation": "Після роботи Олівер йде у магазин меблів і купує два стільці."
+    },
+    {
+      "source": "The chairs are simple but nice.",
+      "translation": "Крісла прості, але гарні."
+    },
+    {
+      "source": "In the bedroom, there is a bed and a small lamp.",
+      "translation": "У спальні є ліжко і маленька лампа."
+    },
+    {
+      "source": "Oliver likes the yellow walls because they make the room feel warm.",
+      "translation": "Олівер любить жовті стіни, тому що вони роблять кімнату теплою."
+    },
+    {
+      "source": "In the evening, his friend Mia visits the apartment.",
+      "translation": "Ввечері його подруга Мія відвідує квартиру."
+    },
+    {
+      "source": "New Apartment",
+      "translation": "Нова квартира"
+    },
+    {
+      "source": "Oliver smiles.",
+      "translation": "Олівер посміхнувся."
+    },
+    {
+      "source": "He feels happy because everything is clean and quiet.",
+      "translation": "Він відчуває себе щасливим, тому що все чисте і тихе."
+    },
+    {
+      "source": "They drink tea and talk for a long time.",
+      "translation": "Вони п'ють чай і довго розмовляють."
+    },
+    {
+      "source": "“I really like your new home,” she says.",
+      "translation": "Мені дуже подобається ваш новий будинок, каже вона."
+    },
+    {
+      "source": "Oliver moves into a new apartment in the city.",
+      "translation": "Олівер переїхав у нову квартиру в місті."
+    },
+    {
+      "source": "The apartment is small but comfortable.",
+      "translation": "Квартира маленька, але комфортна."
+    },
+    {
+      "source": "Before sleep, Oliver sits on the sofa and reads a book.",
+      "translation": "Перед сном Олівер сидить на дивані і читає книгу."
+    },
+    {
+      "source": "It feels like home now.",
+      "translation": "Відчуваю себе як дома."
+    },
+    {
+      "source": "There is a sofa near the window and a table in the kitchen.",
+      "translation": "Є диван біля вікна і столик на кухні."
+    },
+    {
+      "source": "Oliver puts his books on a shelf and his clothes in a wardrobe.",
+      "translation": "Олівер кладе свої книги на полицю, а одяг - у гардероб."
+    }
+  ],
+  "blocks": [
+    {
+      "source": "after work",
+      "translation": "після роботи"
+    },
+    {
+      "source": "feels happy",
+      "translation": "почувається щасливим"
+    },
+    {
+      "source": "furniture shop",
+      "translation": "меблевий магазин"
+    },
+    {
+      "source": "in the city",
+      "translation": "у місті"
+    },
+    {
+      "source": "in the evening",
+      "translation": "увечері"
+    },
+    {
+      "source": "in the kitchen",
+      "translation": "на кухні"
+    },
+    {
+      "source": "moves into",
+      "translation": "переїжджає в"
+    },
+    {
+      "source": "near the window",
+      "translation": "біля вікна"
+    },
+    {
+      "source": "new apartment",
+      "translation": "нова квартира"
+    },
+    {
+      "source": "yellow walls",
+      "translation": "жовті стіни"
+    }
+  ],
+  "words": [
+    {
+      "word": "New",
+      "lemma": "new",
+      "pos": "PROPN",
+      "translation": "Новий",
+      "translations": [
+        "Новий",
+        "Нова",
+        "нову"
+      ]
+    },
+    {
+      "word": "Oliver",
+      "lemma": "oliver",
+      "pos": "PROPN",
+      "translation": "Олівер",
+      "translations": [
+        "Олівер"
+      ]
+    },
+    {
+      "word": "There",
+      "lemma": "there",
+      "pos": "PRON",
+      "translation": "там",
+      "translations": [
+        "там"
+      ]
+    },
+    {
+      "word": "In",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "у",
+      "translations": [
+        "у"
+      ]
+    },
+    {
+      "word": "After",
+      "lemma": "after",
+      "pos": "ADP",
+      "translation": "після",
+      "translations": [
+        "після"
+      ]
+    },
+    {
+      "word": "I",
+      "lemma": "i",
+      "pos": "PRON",
+      "translation": "я",
+      "translations": [
+        "я"
+      ]
+    },
+    {
+      "word": "Before",
+      "lemma": "before",
+      "pos": "ADP",
+      "translation": "до",
+      "translations": [
+        "до"
+      ]
+    },
+    {
+      "word": "Apartment",
+      "lemma": "apartment",
+      "pos": "PROPN",
+      "translation": "Квартира",
+      "translations": [
+        "Квартира",
+        "квартиру"
+      ]
+    },
+    {
+      "word": "moves",
+      "lemma": "move",
+      "pos": "VERB",
+      "translation": "переїжджати",
+      "translations": [
+        "переїжджати",
+        "переїхав"
+      ]
+    },
+    {
+      "word": "is",
+      "lemma": "be",
+      "pos": "VERB",
+      "translation": "бути",
+      "translations": [
+        "бути"
+      ]
+    },
+    {
+      "word": "the",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "цей",
+      "translations": [
+        "цей"
+      ]
+    },
+    {
+      "word": "work",
+      "lemma": "work",
+      "pos": "NOUN",
+      "translation": "робота",
+      "translations": [
+        "робота",
+        "роботи"
+      ]
+    },
+    {
+      "word": "really",
+      "lemma": "really",
+      "pos": "ADV",
+      "translation": "справді",
+      "translations": [
+        "справді"
+      ]
+    },
+    {
+      "word": "smiles",
+      "lemma": "smile",
+      "pos": "VERB",
+      "translation": "усміхатися",
+      "translations": [
+        "усміхатися"
+      ]
+    },
+    {
+      "word": "sleep",
+      "lemma": "sleep",
+      "pos": "NOUN",
+      "translation": "сон",
+      "translations": [
+        "сон"
+      ]
+    },
+    {
+      "word": "into",
+      "lemma": "into",
+      "pos": "ADP",
+      "translation": "всередину",
+      "translations": [
+        "всередину"
+      ]
+    },
+    {
+      "word": "a",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "один",
+      "translations": [
+        "один"
+      ]
+    },
+    {
+      "word": "bedroom",
+      "lemma": "bedroom",
+      "pos": "NOUN",
+      "translation": "спальня",
+      "translations": [
+        "спальня",
+        "спальні"
+      ]
+    },
+    {
+      "word": "evening",
+      "lemma": "evening",
+      "pos": "NOUN",
+      "translation": "вечір",
+      "translations": [
+        "вечір"
+      ]
+    },
+    {
+      "word": "like",
+      "lemma": "like",
+      "pos": "VERB",
+      "translation": "подобатися",
+      "translations": [
+        "подобатися",
+        "подобається"
+      ]
+    },
+    {
+      "word": "He",
+      "lemma": "he",
+      "pos": "PRON",
+      "translation": "він",
+      "translations": [
+        "він"
+      ]
+    },
+    {
+      "word": "sofa",
+      "lemma": "sofa",
+      "pos": "NOUN",
+      "translation": "диван",
+      "translations": [
+        "диван",
+        "дивані"
+      ]
+    },
+    {
+      "word": "goes",
+      "lemma": "go",
+      "pos": "VERB",
+      "translation": "йти",
+      "translations": [
+        "йти"
+      ]
+    },
+    {
+      "word": "his",
+      "lemma": "his",
+      "pos": "PRON",
+      "translation": "його",
+      "translations": [
+        "його"
+      ]
+    },
+    {
+      "word": "your",
+      "lemma": "your",
+      "pos": "PRON",
+      "translation": "твій",
+      "translations": [
+        "твій"
+      ]
+    },
+    {
+      "word": "feels",
+      "lemma": "feel",
+      "pos": "VERB",
+      "translation": "відчувати",
+      "translations": [
+        "відчувати",
+        "відчуває",
+        "Відчуваю"
+      ]
+    },
+    {
+      "word": "sits",
+      "lemma": "sit",
+      "pos": "VERB",
+      "translation": "сидіти",
+      "translations": [
+        "сидіти"
+      ]
+    },
+    {
+      "word": "new",
+      "lemma": "new",
+      "pos": "ADJ",
+      "translation": "новий",
+      "translations": [
+        "новий",
+        "Нова",
+        "нову"
+      ]
+    },
+    {
+      "word": "near",
+      "lemma": "near",
+      "pos": "ADP",
+      "translation": "біля",
+      "translations": [
+        "біля"
+      ]
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "ADP",
+      "translation": "до",
+      "translations": [
+        "до"
+      ]
+    },
+    {
+      "word": "friend",
+      "lemma": "friend",
+      "pos": "NOUN",
+      "translation": "друг",
+      "translations": [
+        "друг"
+      ]
+    },
+    {
+      "word": "happy",
+      "lemma": "happy",
+      "pos": "ADJ",
+      "translation": "щасливий",
+      "translations": [
+        "щасливий",
+        "щасливим"
+      ]
+    },
+    {
+      "word": "on",
+      "lemma": "on",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на"
+      ]
+    },
+    {
+      "word": "apartment",
+      "lemma": "apartment",
+      "pos": "NOUN",
+      "translation": "квартира",
+      "translations": [
+        "квартира",
+        "квартиру"
+      ]
+    },
+    {
+      "word": "Mia",
+      "lemma": "mia",
+      "pos": "PROPN",
+      "translation": "Мія",
+      "translations": [
+        "Мія"
+      ]
+    },
+    {
+      "word": "home",
+      "lemma": "home",
+      "pos": "NOUN",
+      "translation": "дім",
+      "translations": [
+        "дім"
+      ]
+    },
+    {
+      "word": "because",
+      "lemma": "because",
+      "pos": "SCONJ",
+      "translation": "тому що"
+    },
+    {
+      "word": "window",
+      "lemma": "window",
+      "pos": "NOUN",
+      "translation": "вікно",
+      "translations": [
+        "вікно",
+        "вікна"
+      ]
+    },
+    {
+      "word": "bed",
+      "lemma": "bed",
+      "pos": "NOUN",
+      "translation": "ліжко",
+      "translations": [
+        "ліжко"
+      ]
+    },
+    {
+      "word": "furniture",
+      "lemma": "furniture",
+      "pos": "NOUN",
+      "translation": "меблі",
+      "translations": [
+        "меблі",
+        "меблів"
+      ]
+    },
+    {
+      "word": "visits",
+      "lemma": "visit",
+      "pos": "VERB",
+      "translation": "відвідувати",
+      "translations": [
+        "відвідувати",
+        "відвідує"
+      ]
+    },
+    {
+      "word": "she",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "вона",
+      "translations": [
+        "вона"
+      ]
+    },
+    {
+      "word": "everything",
+      "lemma": "everything",
+      "pos": "PRON",
+      "translation": "усе",
+      "translations": [
+        "усе"
+      ]
+    },
+    {
+      "word": "and",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "і",
+      "translations": [
+        "і"
+      ]
+    },
+    {
+      "word": "shop",
+      "lemma": "shop",
+      "pos": "NOUN",
+      "translation": "магазин",
+      "translations": [
+        "магазин"
+      ]
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "казати",
+      "translations": [
+        "казати"
+      ]
+    },
+    {
+      "word": "is",
+      "lemma": "be",
+      "pos": "AUX",
+      "translation": "бути",
+      "translations": [
+        "бути"
+      ]
+    },
+    {
+      "word": "city",
+      "lemma": "city",
+      "pos": "NOUN",
+      "translation": "місто",
+      "translations": [
+        "місто",
+        "місті"
+      ]
+    },
+    {
+      "word": "clean",
+      "lemma": "clean",
+      "pos": "ADJ",
+      "translation": "чистий",
+      "translations": [
+        "чистий",
+        "чисте"
+      ]
+    },
+    {
+      "word": "reads",
+      "lemma": "read",
+      "pos": "VERB",
+      "translation": "читати",
+      "translations": [
+        "читати",
+        "читає"
+      ]
+    },
+    {
+      "word": "table",
+      "lemma": "table",
+      "pos": "NOUN",
+      "translation": "стіл",
+      "translations": [
+        "стіл"
+      ]
+    },
+    {
+      "word": "small",
+      "lemma": "small",
+      "pos": "ADJ",
+      "translation": "малий",
+      "translations": [
+        "малий",
+        "маленька"
+      ]
+    },
+    {
+      "word": "buys",
+      "lemma": "buy",
+      "pos": "VERB",
+      "translation": "купувати",
+      "translations": [
+        "купувати",
+        "купує"
+      ]
+    },
+    {
+      "word": "lamp",
+      "lemma": "lamp",
+      "pos": "NOUN",
+      "translation": "лампа",
+      "translations": [
+        "лампа"
+      ]
+    },
+    {
+      "word": "two",
+      "lemma": "two",
+      "pos": "NUM",
+      "translation": "два",
+      "translations": [
+        "два"
+      ]
+    },
+    {
+      "word": "quiet",
+      "lemma": "quiet",
+      "pos": "ADJ",
+      "translation": "тихий",
+      "translations": [
+        "тихий",
+        "тихе"
+      ]
+    },
+    {
+      "word": "book",
+      "lemma": "book",
+      "pos": "NOUN",
+      "translation": "книга",
+      "translations": [
+        "книга",
+        "книгу",
+        "книги"
+      ]
+    },
+    {
+      "word": "chairs",
+      "lemma": "chair",
+      "pos": "NOUN",
+      "translation": "стілець",
+      "translations": [
+        "стілець"
+      ]
+    },
+    {
+      "word": "They",
+      "lemma": "they",
+      "pos": "PRON",
+      "translation": "вони",
+      "translations": [
+        "вони"
+      ]
+    },
+    {
+      "word": "It",
+      "lemma": "it",
+      "pos": "PRON",
+      "translation": "це",
+      "translations": [
+        "це"
+      ]
+    },
+    {
+      "word": "kitchen",
+      "lemma": "kitchen",
+      "pos": "NOUN",
+      "translation": "кухня",
+      "translations": [
+        "кухня",
+        "кухні"
+      ]
+    },
+    {
+      "word": "drink",
+      "lemma": "drink",
+      "pos": "VERB",
+      "translation": "пити",
+      "translations": [
+        "пити"
+      ]
+    },
+    {
+      "word": "but",
+      "lemma": "but",
+      "pos": "CCONJ",
+      "translation": "але",
+      "translations": [
+        "але"
+      ]
+    },
+    {
+      "word": "tea",
+      "lemma": "tea",
+      "pos": "NOUN",
+      "translation": "чай",
+      "translations": [
+        "чай"
+      ]
+    },
+    {
+      "word": "like",
+      "lemma": "like",
+      "pos": "ADP",
+      "translation": "подобатися",
+      "translations": [
+        "подобатися",
+        "подобається"
+      ]
+    },
+    {
+      "word": "comfortable",
+      "lemma": "comfortable",
+      "pos": "ADJ",
+      "translation": "зручний",
+      "translations": [
+        "зручний"
+      ]
+    },
+    {
+      "word": "puts",
+      "lemma": "put",
+      "pos": "VERB",
+      "translation": "класти",
+      "translations": [
+        "класти",
+        "кладе"
+      ]
+    },
+    {
+      "word": "yellow",
+      "lemma": "yellow",
+      "pos": "ADJ",
+      "translation": "жовтий",
+      "translations": [
+        "жовтий",
+        "жовті"
+      ]
+    },
+    {
+      "word": "walls",
+      "lemma": "wall",
+      "pos": "NOUN",
+      "translation": "стіна",
+      "translations": [
+        "стіна",
+        "стіни"
+      ]
+    },
+    {
+      "word": "simple",
+      "lemma": "simple",
+      "pos": "ADJ",
+      "translation": "простий",
+      "translations": [
+        "простий",
+        "прості"
+      ]
+    },
+    {
+      "word": "talk",
+      "lemma": "talk",
+      "pos": "VERB",
+      "translation": "говорити",
+      "translations": [
+        "говорити"
+      ]
+    },
+    {
+      "word": "now",
+      "lemma": "now",
+      "pos": "ADV",
+      "translation": "зараз",
+      "translations": [
+        "зараз"
+      ]
+    },
+    {
+      "word": "for",
+      "lemma": "for",
+      "pos": "ADP",
+      "translation": "для",
+      "translations": [
+        "для"
+      ]
+    },
+    {
+      "word": "nice",
+      "lemma": "nice",
+      "pos": "ADJ",
+      "translation": "приємний",
+      "translations": [
+        "приємний"
+      ]
+    },
+    {
+      "word": "make",
+      "lemma": "make",
+      "pos": "VERB",
+      "translation": "робити",
+      "translations": [
+        "робити"
+      ]
+    },
+    {
+      "word": "long",
+      "lemma": "long",
+      "pos": "ADJ",
+      "translation": "довгий",
+      "translations": [
+        "довгий",
+        "довго"
+      ]
+    },
+    {
+      "word": "shelf",
+      "lemma": "shelf",
+      "pos": "NOUN",
+      "translation": "полиця",
+      "translations": [
+        "полиця",
+        "полицю"
+      ]
+    },
+    {
+      "word": "time",
+      "lemma": "time",
+      "pos": "NOUN",
+      "translation": "час",
+      "translations": [
+        "час"
+      ]
+    },
+    {
+      "word": "room",
+      "lemma": "room",
+      "pos": "NOUN",
+      "translation": "кімната",
+      "translations": [
+        "кімната",
+        "кімнату"
+      ]
+    },
+    {
+      "word": "clothes",
+      "lemma": "clothe",
+      "pos": "NOUN",
+      "translation": "одяг",
+      "translations": [
+        "одяг"
+      ]
+    },
+    {
+      "word": "warm",
+      "lemma": "warm",
+      "pos": "ADJ",
+      "translation": "теплий",
+      "translations": [
+        "теплий",
+        "теплою"
+      ]
+    },
+    {
+      "word": "wardrobe",
+      "lemma": "wardrobe",
+      "pos": "NOUN",
+      "translation": "шафа",
+      "translations": [
+        "шафа"
+      ]
+    }
+  ]
+}

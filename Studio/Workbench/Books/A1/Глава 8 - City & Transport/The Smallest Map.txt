@@ -1,0 +1,19 @@
+The Smallest Map
+
+Ada has a very small city map. It fits inside her ticket holder and shows the full metro route.
+
+She is at South Station and wants to visit North Museum. The map shows two metro lines: blue and yellow.
+
+Ada takes the blue line from Platform two. After four stops, she changes at City Hall. Signs point to the yellow line upstairs.
+
+"Which platform goes north?" she asks a worker.
+
+"Platform five."
+
+The yellow train arrives in two minutes. North Museum is the third stop.
+
+The fare is three dollars, and the journey takes twenty-five minutes. When Ada leaves the station, the museum is on her right.
+
+Her small map has no pictures of restaurants or shops. It only has lines, stations, and numbers. That is enough.
+
+On the return journey, Ada helps another visitor change from the yellow line to the blue one.

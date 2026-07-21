@@ -1,0 +1,5496 @@
+{
+  "about|ADP": {
+    "lemma": "about",
+    "pos": "ADP",
+    "translations": [
+      "о"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "about"
+        ],
+        "translation": "о",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "address|NOUN": {
+    "lemma": "address",
+    "pos": "NOUN",
+    "translations": [
+      "адрес"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "address"
+        ],
+        "translation": "адрес",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "age|NOUN": {
+    "lemma": "age",
+    "pos": "NOUN",
+    "translations": [
+      "лет",
+      "возраст"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "age"
+        ],
+        "translation": "лет",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "age"
+        ],
+        "translation": "возраст",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "already|ADV": {
+    "lemma": "already",
+    "pos": "ADV",
+    "translations": [
+      "уже"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "already"
+        ],
+        "translation": "уже",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "amir|PROPN": {
+    "lemma": "amir",
+    "pos": "PROPN",
+    "translations": [
+      "Амиром"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "amir"
+        ],
+        "translation": "Амиром",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "and|CCONJ": {
+    "lemma": "and",
+    "pos": "CCONJ",
+    "translations": [
+      "и"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "and"
+        ],
+        "translation": "и",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "another|DET": {
+    "lemma": "another",
+    "pos": "DET",
+    "translations": [
+      "другой"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "another"
+        ],
+        "translation": "другой",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "answer|VERB": {
+    "lemma": "answer",
+    "pos": "VERB",
+    "translations": [
+      "отвечать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "answer"
+        ],
+        "translation": "отвечать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "anymore|ADV": {
+    "lemma": "anymore",
+    "pos": "ADV",
+    "translations": [
+      "больше"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "anymore"
+        ],
+        "translation": "больше",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "an|DET": {
+    "lemma": "an",
+    "pos": "DET",
+    "translations": [
+      "один"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "an"
+        ],
+        "translation": "один",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "apartment|NOUN": {
+    "lemma": "apartment",
+    "pos": "NOUN",
+    "translations": [
+      "квартира"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "apartment"
+        ],
+        "translation": "квартира",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "apartment|PROPN": {
+    "lemma": "apartment",
+    "pos": "PROPN",
+    "translations": [
+      "квартира"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "apartment"
+        ],
+        "translation": "квартира",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "appear|VERB": {
+    "lemma": "appear",
+    "pos": "VERB",
+    "translations": [
+      "появляться"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "appear"
+        ],
+        "translation": "появляться",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "arrive|VERB": {
+    "lemma": "arrive",
+    "pos": "VERB",
+    "translations": [
+      "приезжать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "arrive"
+        ],
+        "translation": "приезжать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "art|NOUN": {
+    "lemma": "art",
+    "pos": "NOUN",
+    "translations": [
+      "искусство"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "art"
+        ],
+        "translation": "искусство",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "ask|VERB": {
+    "lemma": "ask",
+    "pos": "VERB",
+    "translations": [
+      "спрашивает",
+      "запрашивает"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "ask"
+        ],
+        "translation": "спрашивает",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "ask"
+        ],
+        "translation": "запрашивает",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "as|ADP": {
+    "lemma": "as",
+    "pos": "ADP",
+    "translations": [
+      "как"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "as"
+        ],
+        "translation": "как",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "at|ADP": {
+    "lemma": "at",
+    "pos": "ADP",
+    "translations": [
+      "на",
+      "в"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "at"
+        ],
+        "translation": "на",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "at"
+        ],
+        "translation": "в",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "australia|PROPN": {
+    "lemma": "australia",
+    "pos": "PROPN",
+    "translations": [
+      "Австралия"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "australia"
+        ],
+        "translation": "Австралия",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "a|DET": {
+    "lemma": "a",
+    "pos": "DET",
+    "translations": [
+      "один"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "a"
+        ],
+        "translation": "один",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "back|ADV": {
+    "lemma": "back",
+    "pos": "ADV",
+    "translations": [
+      "назад"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "back"
+        ],
+        "translation": "назад",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "basic|ADJ": {
+    "lemma": "basic",
+    "pos": "ADJ",
+    "translations": [
+      "основной"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "basic"
+        ],
+        "translation": "основной",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "behind|ADP": {
+    "lemma": "behind",
+    "pos": "ADP",
+    "translations": [
+      "за"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "behind"
+        ],
+        "translation": "за",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "ben|PROPN": {
+    "lemma": "ben",
+    "pos": "PROPN",
+    "translations": [
+      "Бен"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "ben"
+        ],
+        "translation": "Бен",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "be|AUX": {
+    "lemma": "be",
+    "pos": "AUX",
+    "translations": [
+      "быть"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "be"
+        ],
+        "translation": "быть",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "be|VERB": {
+    "lemma": "be",
+    "pos": "VERB",
+    "translations": [
+      "быть"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "be"
+        ],
+        "translation": "быть",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "board|NOUN": {
+    "lemma": "board",
+    "pos": "NOUN",
+    "translations": [
+      "доске"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "board"
+        ],
+        "translation": "доске",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "book|NOUN": {
+    "lemma": "book",
+    "pos": "NOUN",
+    "translations": [
+      "книги"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "book"
+        ],
+        "translation": "книги",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "both|DET": {
+    "lemma": "both",
+    "pos": "DET",
+    "translations": [
+      "оба"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "both"
+        ],
+        "translation": "оба",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "both|PRON": {
+    "lemma": "both",
+    "pos": "PRON",
+    "translations": [
+      "оба"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "both"
+        ],
+        "translation": "оба",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "building|NOUN": {
+    "lemma": "building",
+    "pos": "NOUN",
+    "translations": [
+      "здание"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "building"
+        ],
+        "translation": "здание",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "bus|NOUN": {
+    "lemma": "bus",
+    "pos": "NOUN",
+    "translations": [
+      "автобус"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "bus"
+        ],
+        "translation": "автобус",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "but|CCONJ": {
+    "lemma": "but",
+    "pos": "CCONJ",
+    "translations": [
+      "но"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "but"
+        ],
+        "translation": "но",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "call|NOUN": {
+    "lemma": "call",
+    "pos": "NOUN",
+    "translations": [
+      "звонок"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "call"
+        ],
+        "translation": "звонок",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "call|VERB": {
+    "lemma": "call",
+    "pos": "VERB",
+    "translations": [
+      "звонить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "call"
+        ],
+        "translation": "звонить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "canada|PROPN": {
+    "lemma": "canada",
+    "pos": "PROPN",
+    "translations": [
+      "Канада"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "canada"
+        ],
+        "translation": "Канада",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "can|AUX": {
+    "lemma": "can",
+    "pos": "AUX",
+    "translations": [
+      "Не могли бы"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "can"
+        ],
+        "translation": "Не могли бы",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "card|NOUN": {
+    "lemma": "card",
+    "pos": "NOUN",
+    "translations": [
+      "карточку",
+      "карточка"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "card"
+        ],
+        "translation": "карточку",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "card"
+        ],
+        "translation": "карточка",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "carefully|ADV": {
+    "lemma": "carefully",
+    "pos": "ADV",
+    "translations": [
+      "внимательно"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "carefully"
+        ],
+        "translation": "внимательно",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "check|VERB": {
+    "lemma": "check",
+    "pos": "VERB",
+    "translations": [
+      "проверяет",
+      "проверять"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "check"
+        ],
+        "translation": "проверяет",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "check"
+        ],
+        "translation": "проверять",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "city|NOUN": {
+    "lemma": "city",
+    "pos": "NOUN",
+    "translations": [
+      "город"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "city"
+        ],
+        "translation": "город",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "city|PROPN": {
+    "lemma": "city",
+    "pos": "PROPN",
+    "translations": [
+      "город"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "city"
+        ],
+        "translation": "город",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "classroom|NOUN": {
+    "lemma": "classroom",
+    "pos": "NOUN",
+    "translations": [
+      "класс"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "classroom"
+        ],
+        "translation": "класс",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "classroom|PROPN": {
+    "lemma": "classroom",
+    "pos": "PROPN",
+    "translations": [
+      "класс"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "classroom"
+        ],
+        "translation": "класс",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "class|NOUN": {
+    "lemma": "class",
+    "pos": "NOUN",
+    "translations": [
+      "урок",
+      "классе"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "class"
+        ],
+        "translation": "урок",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "class"
+        ],
+        "translation": "классе",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "college|PROPN": {
+    "lemma": "college",
+    "pos": "PROPN",
+    "translations": [
+      "колледж"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "college"
+        ],
+        "translation": "колледж",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "come|VERB": {
+    "lemma": "come",
+    "pos": "VERB",
+    "translations": [
+      "приходить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "come"
+        ],
+        "translation": "приходить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "contact|NOUN": {
+    "lemma": "contact",
+    "pos": "NOUN",
+    "translations": [
+      "контакт"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "contact"
+        ],
+        "translation": "контакт",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "cook|NOUN": {
+    "lemma": "cook",
+    "pos": "NOUN",
+    "translations": [
+      "повар"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "cook"
+        ],
+        "translation": "повар",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "correct|ADJ": {
+    "lemma": "correct",
+    "pos": "ADJ",
+    "translations": [
+      "правильный"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "correct"
+        ],
+        "translation": "правильный",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "country|NOUN": {
+    "lemma": "country",
+    "pos": "NOUN",
+    "translations": [
+      "страна"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "country"
+        ],
+        "translation": "страна",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "course|NOUN": {
+    "lemma": "course",
+    "pos": "NOUN",
+    "translations": [
+      "курс"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "course"
+        ],
+        "translation": "курс",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "daniel|PROPN": {
+    "lemma": "daniel",
+    "pos": "PROPN",
+    "translations": [
+      "Даниил"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "daniel"
+        ],
+        "translation": "Даниил",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "day|NOUN": {
+    "lemma": "day",
+    "pos": "NOUN",
+    "translations": [
+      "дня",
+      "день"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "day"
+        ],
+        "translation": "дня",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "day"
+        ],
+        "translation": "день",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "day|PROPN": {
+    "lemma": "day",
+    "pos": "PROPN",
+    "translations": [
+      "день"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "day"
+        ],
+        "translation": "день",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "digit|NOUN": {
+    "lemma": "digit",
+    "pos": "NOUN",
+    "translations": [
+      "цифра"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "digit"
+        ],
+        "translation": "цифра",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "door|NOUN": {
+    "lemma": "door",
+    "pos": "NOUN",
+    "translations": [
+      "дверь"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "door"
+        ],
+        "translation": "дверь",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "downstairs|ADJ": {
+    "lemma": "downstairs",
+    "pos": "ADJ",
+    "translations": [
+      "внизу"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "downstairs"
+        ],
+        "translation": "внизу",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "downstair|NOUN": {
+    "lemma": "downstair",
+    "pos": "NOUN",
+    "translations": [
+      "внизу"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "downstair"
+        ],
+        "translation": "внизу",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "down|ADP": {
+    "lemma": "down",
+    "pos": "ADP",
+    "translations": [
+      "вниз"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "down"
+        ],
+        "translation": "вниз",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "do|AUX": {
+    "lemma": "do",
+    "pos": "AUX",
+    "translations": [
+      "делать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "do"
+        ],
+        "translation": "делать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "eighteen|NUM": {
+    "lemma": "eighteen",
+    "pos": "NUM",
+    "translations": [
+      "восемнадцать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "eighteen"
+        ],
+        "translation": "восемнадцать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "eight|NUM": {
+    "lemma": "eight",
+    "pos": "NUM",
+    "translations": [
+      "восемь"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "eight"
+        ],
+        "translation": "восемь",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "email|NOUN": {
+    "lemma": "email",
+    "pos": "NOUN",
+    "translations": [
+      "электропочта"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "email"
+        ],
+        "translation": "электропочта",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "end|NOUN": {
+    "lemma": "end",
+    "pos": "NOUN",
+    "translations": [
+      "конец"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "end"
+        ],
+        "translation": "конец",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "english|ADJ": {
+    "lemma": "english",
+    "pos": "ADJ",
+    "translations": [
+      "английского языка"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "english"
+        ],
+        "translation": "английского языка",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "english|PROPN": {
+    "lemma": "english",
+    "pos": "PROPN",
+    "translations": [
+      "английский"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "english"
+        ],
+        "translation": "английский",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "entrance|NOUN": {
+    "lemma": "entrance",
+    "pos": "NOUN",
+    "translations": [
+      "вход"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "entrance"
+        ],
+        "translation": "вход",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "every|DET": {
+    "lemma": "every",
+    "pos": "DET",
+    "translations": [
+      "всех",
+      "каждый"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "every"
+        ],
+        "translation": "всех",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "every"
+        ],
+        "translation": "каждый",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "excuse|VERB": {
+    "lemma": "excuse",
+    "pos": "VERB",
+    "translations": [
+      "простить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "excuse"
+        ],
+        "translation": "простить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "face|NOUN": {
+    "lemma": "face",
+    "pos": "NOUN",
+    "translations": [
+      "лицо"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "face"
+        ],
+        "translation": "лицо",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "feel|VERB": {
+    "lemma": "feel",
+    "pos": "VERB",
+    "translations": [
+      "щупать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "feel"
+        ],
+        "translation": "щупать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "fifteen|NUM": {
+    "lemma": "fifteen",
+    "pos": "NUM",
+    "translations": [
+      "пятнадцать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "fifteen"
+        ],
+        "translation": "пятнадцать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "find|VERB": {
+    "lemma": "find",
+    "pos": "VERB",
+    "translations": [
+      "находит"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "find"
+        ],
+        "translation": "находит",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "first|ADJ": {
+    "lemma": "first",
+    "pos": "ADJ",
+    "translations": [
+      "первый"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "first"
+        ],
+        "translation": "первый",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "first|ADV": {
+    "lemma": "first",
+    "pos": "ADV",
+    "translations": [
+      "сначала"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "first"
+        ],
+        "translation": "сначала",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "first|PROPN": {
+    "lemma": "first",
+    "pos": "PROPN",
+    "translations": [
+      "первый"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "first"
+        ],
+        "translation": "первый",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "five|NUM": {
+    "lemma": "five",
+    "pos": "NUM",
+    "translations": [
+      "пять"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "five"
+        ],
+        "translation": "пять",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "floor|NOUN": {
+    "lemma": "floor",
+    "pos": "NOUN",
+    "translations": [
+      "этаж",
+      "этаже"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "floor"
+        ],
+        "translation": "этаж",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "floor"
+        ],
+        "translation": "этаже",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "form|NOUN": {
+    "lemma": "form",
+    "pos": "NOUN",
+    "translations": [
+      "форма"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "form"
+        ],
+        "translation": "форма",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "forty-one|NUM": {
+    "lemma": "forty-one",
+    "pos": "NUM",
+    "translations": [
+      "сорок один"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "forty-one"
+        ],
+        "translation": "сорок один",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "for|ADP": {
+    "lemma": "for",
+    "pos": "ADP",
+    "translations": [
+      "до",
+      "на"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "for"
+        ],
+        "translation": "до",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "for"
+        ],
+        "translation": "на",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "fourteen|NUM": {
+    "lemma": "fourteen",
+    "pos": "NUM",
+    "translations": [
+      "четырнадцать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "fourteen"
+        ],
+        "translation": "четырнадцать",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "fourth|ADJ": {
+    "lemma": "fourth",
+    "pos": "ADJ",
+    "translations": [
+      "четвёртом"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "fourth"
+        ],
+        "translation": "четвёртом",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "four|NUM": {
+    "lemma": "four",
+    "pos": "NUM",
+    "translations": [
+      "четыре"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "four"
+        ],
+        "translation": "четыре",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "friendly|ADJ": {
+    "lemma": "friendly",
+    "pos": "ADJ",
+    "translations": [
+      "дружелюбный"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "friendly"
+        ],
+        "translation": "дружелюбный",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "friend|NOUN": {
+    "lemma": "friend",
+    "pos": "NOUN",
+    "translations": [
+      "друг"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "friend"
+        ],
+        "translation": "друг",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "from|ADP": {
+    "lemma": "from",
+    "pos": "ADP",
+    "translations": [
+      "из"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "from"
+        ],
+        "translation": "из",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "girl|NOUN": {
+    "lemma": "girl",
+    "pos": "NOUN",
+    "translations": [
+      "девочка"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "girl"
+        ],
+        "translation": "девочка",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "give|VERB": {
+    "lemma": "give",
+    "pos": "VERB",
+    "translations": [
+      "давать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "give"
+        ],
+        "translation": "давать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "good|ADJ": {
+    "lemma": "good",
+    "pos": "ADJ",
+    "translations": [
+      "доброе"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "good"
+        ],
+        "translation": "доброе",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "green|PROPN": {
+    "lemma": "green",
+    "pos": "PROPN",
+    "translations": [
+      "Грин"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "green"
+        ],
+        "translation": "Грин",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "hall|NOUN": {
+    "lemma": "hall",
+    "pos": "NOUN",
+    "translations": [
+      "коридор"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "hall"
+        ],
+        "translation": "коридор",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "have|VERB": {
+    "lemma": "have",
+    "pos": "VERB",
+    "translations": [
+      "иметь"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "have"
+        ],
+        "translation": "иметь",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "hello|INTJ": {
+    "lemma": "hello",
+    "pos": "INTJ",
+    "translations": [
+      "здравствуй"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "hello"
+        ],
+        "translation": "здравствуй",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "her|PRON": {
+    "lemma": "her",
+    "pos": "PRON",
+    "translations": [
+      "свою",
+      "её",
+      "она"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "her"
+        ],
+        "translation": "свою",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "her"
+        ],
+        "translation": "её",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "her"
+        ],
+        "translation": "она",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "he|PRON": {
+    "lemma": "he",
+    "pos": "PRON",
+    "translations": [
+      "он"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "he"
+        ],
+        "translation": "он",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "hill|PROPN": {
+    "lemma": "hill",
+    "pos": "PROPN",
+    "translations": [
+      "Хилл"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "hill"
+        ],
+        "translation": "Хилл",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "his|PRON": {
+    "lemma": "his",
+    "pos": "PRON",
+    "translations": [
+      "его"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "his"
+        ],
+        "translation": "его",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "hi|INTJ": {
+    "lemma": "hi",
+    "pos": "INTJ",
+    "translations": [
+      "привет"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "hi"
+        ],
+        "translation": "привет",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "home|NOUN": {
+    "lemma": "home",
+    "pos": "NOUN",
+    "translations": [
+      "родина"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "home"
+        ],
+        "translation": "родина",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "information|NOUN": {
+    "lemma": "information",
+    "pos": "NOUN",
+    "translations": [
+      "информация"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "information"
+        ],
+        "translation": "информация",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "into|ADP": {
+    "lemma": "into",
+    "pos": "ADP",
+    "translations": [
+      "в"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "into"
+        ],
+        "translation": "в",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "introduce|VERB": {
+    "lemma": "introduce",
+    "pos": "VERB",
+    "translations": [
+      "знакомить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "introduce"
+        ],
+        "translation": "знакомить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "in|ADP": {
+    "lemma": "in",
+    "pos": "ADP",
+    "translations": [
+      "в"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "in"
+        ],
+        "translation": "в",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "italy|PROPN": {
+    "lemma": "italy",
+    "pos": "PROPN",
+    "translations": [
+      "Италия"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "italy"
+        ],
+        "translation": "Италия",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "it|PRON": {
+    "lemma": "it",
+    "pos": "PRON",
+    "translations": [
+      "там",
+      "оно",
+      "это"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "it"
+        ],
+        "translation": "там",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "it"
+        ],
+        "translation": "оно",
+        "translation_kind": "dictionary_fallback"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "it"
+        ],
+        "translation": "это",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "i|PRON": {
+    "lemma": "i",
+    "pos": "PRON",
+    "translations": [
+      "я",
+      "мне"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "i"
+        ],
+        "translation": "я",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "i"
+        ],
+        "translation": "мне",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "japan|PROPN": {
+    "lemma": "japan",
+    "pos": "PROPN",
+    "translations": [
+      "Япония"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "japan"
+        ],
+        "translation": "Япония",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "kate|PROPN": {
+    "lemma": "kate",
+    "pos": "PROPN",
+    "translations": [
+      "Кейт"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "kate"
+        ],
+        "translation": "Кейт",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "kind|ADJ": {
+    "lemma": "kind",
+    "pos": "ADJ",
+    "translations": [
+      "добрый"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "kind"
+        ],
+        "translation": "добрый",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "language|NOUN": {
+    "lemma": "language",
+    "pos": "NOUN",
+    "translations": [
+      "язык"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "language"
+        ],
+        "translation": "язык",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "later|ADV": {
+    "lemma": "later",
+    "pos": "ADV",
+    "translations": [
+      "позже"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "later"
+        ],
+        "translation": "позже",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "late|ADJ": {
+    "lemma": "late",
+    "pos": "ADJ",
+    "translations": [
+      "поздний"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "late"
+        ],
+        "translation": "поздний",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "late|ADV": {
+    "lemma": "late",
+    "pos": "ADV",
+    "translations": [
+      "опоздала"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "late"
+        ],
+        "translation": "опоздала",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "laugh|NOUN": {
+    "lemma": "laugh",
+    "pos": "NOUN",
+    "translations": [
+      "смех"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "laugh"
+        ],
+        "translation": "смех",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "lee|PROPN": {
+    "lemma": "lee",
+    "pos": "PROPN",
+    "translations": [
+      "Ли"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "lee"
+        ],
+        "translation": "Ли",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "leo|PROPN": {
+    "lemma": "leo",
+    "pos": "PROPN",
+    "translations": [
+      "Лео"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "leo"
+        ],
+        "translation": "Лео",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "little|ADJ": {
+    "lemma": "little",
+    "pos": "ADJ",
+    "translations": [
+      "маленький"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "little"
+        ],
+        "translation": "маленький",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "live|VERB": {
+    "lemma": "live",
+    "pos": "VERB",
+    "translations": [
+      "жить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "live"
+        ],
+        "translation": "жить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "long|ADV": {
+    "lemma": "long",
+    "pos": "ADV",
+    "translations": [
+      "долго"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "long"
+        ],
+        "translation": "долго",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "look|VERB": {
+    "lemma": "look",
+    "pos": "VERB",
+    "translations": [
+      "смотрит"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "look"
+        ],
+        "translation": "смотрит",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "lunch|NOUN": {
+    "lemma": "lunch",
+    "pos": "NOUN",
+    "translations": [
+      "обед"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "lunch"
+        ],
+        "translation": "обед",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "man|NOUN": {
+    "lemma": "man",
+    "pos": "NOUN",
+    "translations": [
+      "мужчина"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "man"
+        ],
+        "translation": "мужчина",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "maple|PROPN": {
+    "lemma": "maple",
+    "pos": "PROPN",
+    "translations": [
+      "Мейпл"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "maple"
+        ],
+        "translation": "Мейпл",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "map|NOUN": {
+    "lemma": "map",
+    "pos": "NOUN",
+    "translations": [
+      "карты"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "map"
+        ],
+        "translation": "карты",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "math|NOUN": {
+    "lemma": "math",
+    "pos": "NOUN",
+    "translations": [
+      "математики"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "math"
+        ],
+        "translation": "математики",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "meet|VERB": {
+    "lemma": "meet",
+    "pos": "VERB",
+    "translations": [
+      "познакомиться",
+      "встрече"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "meet"
+        ],
+        "translation": "познакомиться",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "meet"
+        ],
+        "translation": "встрече",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "mina|PROPN": {
+    "lemma": "mina",
+    "pos": "PROPN",
+    "translations": [
+      "Мина"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "mina"
+        ],
+        "translation": "Мина",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "minute|NOUN": {
+    "lemma": "minute",
+    "pos": "NOUN",
+    "translations": [
+      "минут"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "minute"
+        ],
+        "translation": "минут",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "morning|NOUN": {
+    "lemma": "morning",
+    "pos": "NOUN",
+    "translations": [
+      "утро"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "morning"
+        ],
+        "translation": "утро",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "move|VERB": {
+    "lemma": "move",
+    "pos": "VERB",
+    "translations": [
+      "переезжать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "move"
+        ],
+        "translation": "переезжать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "mr|PROPN": {
+    "lemma": "mr",
+    "pos": "PROPN",
+    "translations": [
+      "господин"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "mr"
+        ],
+        "translation": "господин",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "ms|PROPN": {
+    "lemma": "ms",
+    "pos": "PROPN",
+    "translations": [
+      "госпожа"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "ms"
+        ],
+        "translation": "госпожа",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "my|PRON": {
+    "lemma": "my",
+    "pos": "PRON",
+    "translations": [
+      "Меня",
+      "мой"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "my"
+        ],
+        "translation": "Меня",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "my"
+        ],
+        "translation": "мой",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "name|NOUN": {
+    "lemma": "name",
+    "pos": "NOUN",
+    "translations": [
+      "имя"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "name"
+        ],
+        "translation": "имя",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "near|ADP": {
+    "lemma": "near",
+    "pos": "ADP",
+    "translations": [
+      "около",
+      "рядом"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "near"
+        ],
+        "translation": "около",
+        "translation_kind": "dictionary_fallback"
+      },
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "near"
+        ],
+        "translation": "рядом",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "neighbour|NOUN": {
+    "lemma": "neighbour",
+    "pos": "NOUN",
+    "translations": [
+      "сосед"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "neighbour"
+        ],
+        "translation": "сосед",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "nervous|ADJ": {
+    "lemma": "nervous",
+    "pos": "ADJ",
+    "translations": [
+      "нервный"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "nervous"
+        ],
+        "translation": "нервный",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "new|ADJ": {
+    "lemma": "new",
+    "pos": "ADJ",
+    "translations": [
+      "новая",
+      "новый"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "new"
+        ],
+        "translation": "новая",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "new"
+        ],
+        "translation": "новый",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "next|ADJ": {
+    "lemma": "next",
+    "pos": "ADJ",
+    "translations": [
+      "следующий"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "next"
+        ],
+        "translation": "следующий",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "next|ADV": {
+    "lemma": "next",
+    "pos": "ADV",
+    "translations": [
+      "рядом"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "next"
+        ],
+        "translation": "рядом",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "nice|ADJ": {
+    "lemma": "nice",
+    "pos": "ADJ",
+    "translations": [
+      "Приятно",
+      "Рад"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "nice"
+        ],
+        "translation": "Приятно",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "nice"
+        ],
+        "translation": "Рад",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "nineteen|NUM": {
+    "lemma": "nineteen",
+    "pos": "NUM",
+    "translations": [
+      "девятнадцать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "nineteen"
+        ],
+        "translation": "девятнадцать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "nine|NUM": {
+    "lemma": "nine",
+    "pos": "NUM",
+    "translations": [
+      "девять"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "nine"
+        ],
+        "translation": "девять",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "nora|PROPN": {
+    "lemma": "nora",
+    "pos": "PROPN",
+    "translations": [
+      "Нора"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "nora"
+        ],
+        "translation": "Нора",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "not|PART": {
+    "lemma": "not",
+    "pos": "PART",
+    "translations": [
+      "не"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "not"
+        ],
+        "translation": "не",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "now|ADV": {
+    "lemma": "now",
+    "pos": "ADV",
+    "translations": [
+      "теперь",
+      "сейчас"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "now"
+        ],
+        "translation": "теперь",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "now"
+        ],
+        "translation": "сейчас",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "number|NOUN": {
+    "lemma": "number",
+    "pos": "NOUN",
+    "translations": [
+      "номер",
+      "номера",
+      "цифры"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "number"
+        ],
+        "translation": "номер",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "number"
+        ],
+        "translation": "номера",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "number"
+        ],
+        "translation": "цифры",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "nurse|NOUN": {
+    "lemma": "nurse",
+    "pos": "NOUN",
+    "translations": [
+      "медсестра"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "nurse"
+        ],
+        "translation": "медсестра",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "o'clock|NOUN": {
+    "lemma": "o'clock",
+    "pos": "NOUN",
+    "translations": [
+      "час"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "o'clock"
+        ],
+        "translation": "час",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "of|ADP": {
+    "lemma": "of",
+    "pos": "ADP",
+    "translations": [
+      "из"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "of"
+        ],
+        "translation": "из",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "old|ADJ": {
+    "lemma": "old",
+    "pos": "ADJ",
+    "translations": [
+      "старый"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "old"
+        ],
+        "translation": "старый",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "one|NUM": {
+    "lemma": "one",
+    "pos": "NUM",
+    "translations": [
+      "один"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "one"
+        ],
+        "translation": "один",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "online|ADJ": {
+    "lemma": "online",
+    "pos": "ADJ",
+    "translations": [
+      "онлайновый"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "online"
+        ],
+        "translation": "онлайновый",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "online|PROPN": {
+    "lemma": "online",
+    "pos": "PROPN",
+    "translations": [
+      "онлайновый"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "online"
+        ],
+        "translation": "онлайновый",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "only|ADV": {
+    "lemma": "only",
+    "pos": "ADV",
+    "translations": [
+      "всего"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "only"
+        ],
+        "translation": "всего",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "on|ADP": {
+    "lemma": "on",
+    "pos": "ADP",
+    "translations": [
+      "на"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "on"
+        ],
+        "translation": "на",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "ortiz|PROPN": {
+    "lemma": "ortiz",
+    "pos": "PROPN",
+    "translations": [
+      "Ортис"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "ortiz"
+        ],
+        "translation": "Ортис",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "other|ADJ": {
+    "lemma": "other",
+    "pos": "ADJ",
+    "translations": [
+      "другой"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "other"
+        ],
+        "translation": "другой",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "partner|NOUN": {
+    "lemma": "partner",
+    "pos": "NOUN",
+    "translations": [
+      "партнёр"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "partner"
+        ],
+        "translation": "партнёр",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "people|PROPN": {
+    "lemma": "people",
+    "pos": "PROPN",
+    "translations": [
+      "люди"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "people"
+        ],
+        "translation": "люди",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "phone|NOUN": {
+    "lemma": "phone",
+    "pos": "NOUN",
+    "translations": [
+      "телефон"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "phone"
+        ],
+        "translation": "телефон",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "pine|PROPN": {
+    "lemma": "pine",
+    "pos": "PROPN",
+    "translations": [
+      "Пайн"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "pine"
+        ],
+        "translation": "Пайн",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "plan|VERB": {
+    "lemma": "plan",
+    "pos": "VERB",
+    "translations": [
+      "планировать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "plan"
+        ],
+        "translation": "планировать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "please|INTJ": {
+    "lemma": "please",
+    "pos": "INTJ",
+    "translations": [
+      "пожалуйста"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "please"
+        ],
+        "translation": "пожалуйста",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "polish|PROPN": {
+    "lemma": "polish",
+    "pos": "PROPN",
+    "translations": [
+      "польский"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "polish"
+        ],
+        "translation": "польский",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "put|VERB": {
+    "lemma": "put",
+    "pos": "VERB",
+    "translations": [
+      "положить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "put"
+        ],
+        "translation": "положить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "read|VERB": {
+    "lemma": "read",
+    "pos": "VERB",
+    "translations": [
+      "читать",
+      "перечитывает"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "read"
+        ],
+        "translation": "читать",
+        "translation_kind": "dictionary_fallback"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "read"
+        ],
+        "translation": "перечитывает",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "really|ADV": {
+    "lemma": "really",
+    "pos": "ADV",
+    "translations": [
+      "действительно"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "really"
+        ],
+        "translation": "действительно",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "real|ADJ": {
+    "lemma": "real",
+    "pos": "ADJ",
+    "translations": [
+      "настоящий"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "real"
+        ],
+        "translation": "настоящий",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "repeat|VERB": {
+    "lemma": "repeat",
+    "pos": "VERB",
+    "translations": [
+      "повторить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "repeat"
+        ],
+        "translation": "повторить",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "rest|NOUN": {
+    "lemma": "rest",
+    "pos": "NOUN",
+    "translations": [
+      "конца"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "rest"
+        ],
+        "translation": "конца",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "right|ADJ": {
+    "lemma": "right",
+    "pos": "ADJ",
+    "translations": [
+      "нужный",
+      "нужном",
+      "правильный"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "right"
+        ],
+        "translation": "нужный",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "right"
+        ],
+        "translation": "нужном",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "right"
+        ],
+        "translation": "правильный",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "room|NOUN": {
+    "lemma": "room",
+    "pos": "NOUN",
+    "translations": [
+      "комната",
+      "комнате",
+      "комнату",
+      "комнат"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "room"
+        ],
+        "translation": "комната",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "room"
+        ],
+        "translation": "комнате",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "room"
+        ],
+        "translation": "комнату",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "room"
+        ],
+        "translation": "комнат",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "room|PROPN": {
+    "lemma": "room",
+    "pos": "PROPN",
+    "translations": [
+      "комната",
+      "комнате",
+      "комнату"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "room"
+        ],
+        "translation": "комната",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "room"
+        ],
+        "translation": "комнате",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "room"
+        ],
+        "translation": "комнату",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "sara|PROPN": {
+    "lemma": "sara",
+    "pos": "PROPN",
+    "translations": [
+      "Сара",
+      "Саре"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "sara"
+        ],
+        "translation": "Сара",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "sara"
+        ],
+        "translation": "Саре",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "say|VERB": {
+    "lemma": "say",
+    "pos": "VERB",
+    "translations": [
+      "говорит",
+      "написано"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "say"
+        ],
+        "translation": "говорит",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "say"
+        ],
+        "translation": "написано",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "school|NOUN": {
+    "lemma": "school",
+    "pos": "NOUN",
+    "translations": [
+      "школа"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "school"
+        ],
+        "translation": "школа",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "school|PROPN": {
+    "lemma": "school",
+    "pos": "PROPN",
+    "translations": [
+      "школы"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "school"
+        ],
+        "translation": "школы",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "seven|NUM": {
+    "lemma": "seven",
+    "pos": "NUM",
+    "translations": [
+      "семь"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "seven"
+        ],
+        "translation": "семь",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "she|PRON": {
+    "lemma": "she",
+    "pos": "PRON",
+    "translations": [
+      "она"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "she"
+        ],
+        "translation": "она",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "show|VERB": {
+    "lemma": "show",
+    "pos": "VERB",
+    "translations": [
+      "показывает"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "show"
+        ],
+        "translation": "показывает",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "sit|VERB": {
+    "lemma": "sit",
+    "pos": "VERB",
+    "translations": [
+      "садится",
+      "сядьте",
+      "сидеть"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "sit"
+        ],
+        "translation": "садится",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "sit"
+        ],
+        "translation": "сядьте",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "sit"
+        ],
+        "translation": "сидеть",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "six|NUM": {
+    "lemma": "six",
+    "pos": "NUM",
+    "translations": [
+      "шесть"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "six"
+        ],
+        "translation": "шесть",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "slowly|ADV": {
+    "lemma": "slowly",
+    "pos": "ADV",
+    "translations": [
+      "медленно"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "slowly"
+        ],
+        "translation": "медленно",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "small|ADJ": {
+    "lemma": "small",
+    "pos": "ADJ",
+    "translations": [
+      "маленький"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "small"
+        ],
+        "translation": "маленький",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "smile|VERB": {
+    "lemma": "smile",
+    "pos": "VERB",
+    "translations": [
+      "улыбается"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "smile"
+        ],
+        "translation": "улыбается",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "sorry|ADJ": {
+    "lemma": "sorry",
+    "pos": "ADJ",
+    "translations": [
+      "жаль"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "sorry"
+        ],
+        "translation": "жаль",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "spain|PROPN": {
+    "lemma": "spain",
+    "pos": "PROPN",
+    "translations": [
+      "Испания"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "spain"
+        ],
+        "translation": "Испания",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "spanish|PROPN": {
+    "lemma": "spanish",
+    "pos": "PROPN",
+    "translations": [
+      "испанский"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "spanish"
+        ],
+        "translation": "испанский",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "speak|VERB": {
+    "lemma": "speak",
+    "pos": "VERB",
+    "translations": [
+      "разговаривать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "speak"
+        ],
+        "translation": "разговаривать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "spell|VERB": {
+    "lemma": "spell",
+    "pos": "VERB",
+    "translations": [
+      "произносить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "spell"
+        ],
+        "translation": "произносить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "stair|NOUN": {
+    "lemma": "stair",
+    "pos": "NOUN",
+    "translations": [
+      "лестницу"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "stair"
+        ],
+        "translation": "лестницу",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "stand|VERB": {
+    "lemma": "stand",
+    "pos": "VERB",
+    "translations": [
+      "стоять"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "stand"
+        ],
+        "translation": "стоять",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "stop|NOUN": {
+    "lemma": "stop",
+    "pos": "NOUN",
+    "translations": [
+      "остановка"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "stop"
+        ],
+        "translation": "остановка",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "stranger|NOUN": {
+    "lemma": "stranger",
+    "pos": "NOUN",
+    "translations": [
+      "незнакомец"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "stranger"
+        ],
+        "translation": "незнакомец",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "street|NOUN": {
+    "lemma": "street",
+    "pos": "NOUN",
+    "translations": [
+      "улица"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "street"
+        ],
+        "translation": "улица",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "street|PROPN": {
+    "lemma": "street",
+    "pos": "PROPN",
+    "translations": [
+      "улица"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "street"
+        ],
+        "translation": "улица",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "student|NOUN": {
+    "lemma": "student",
+    "pos": "NOUN",
+    "translations": [
+      "ученица",
+      "учеников",
+      "студент"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "student"
+        ],
+        "translation": "ученица",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "student"
+        ],
+        "translation": "учеников",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "student"
+        ],
+        "translation": "студент",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "studies|PROPN": {
+    "lemma": "studies",
+    "pos": "PROPN",
+    "translations": [
+      "учение"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "studies"
+        ],
+        "translation": "учение",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "study|VERB": {
+    "lemma": "study",
+    "pos": "VERB",
+    "translations": [
+      "учить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "study"
+        ],
+        "translation": "учить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "table|NOUN": {
+    "lemma": "table",
+    "pos": "NOUN",
+    "translations": [
+      "стол"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "table"
+        ],
+        "translation": "стол",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "tag|NOUN": {
+    "lemma": "tag",
+    "pos": "NOUN",
+    "translations": [
+      "бирка"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "tag"
+        ],
+        "translation": "бирка",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "talk|VERB": {
+    "lemma": "talk",
+    "pos": "VERB",
+    "translations": [
+      "говорить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "talk"
+        ],
+        "translation": "говорить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "teacher|NOUN": {
+    "lemma": "teacher",
+    "pos": "NOUN",
+    "translations": [
+      "учитель"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "teacher"
+        ],
+        "translation": "учитель",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "ten|NUM": {
+    "lemma": "ten",
+    "pos": "NUM",
+    "translations": [
+      "десять"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "ten"
+        ],
+        "translation": "десять",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "thank|VERB": {
+    "lemma": "thank",
+    "pos": "VERB",
+    "translations": [
+      "благодарить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "thank"
+        ],
+        "translation": "благодарить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "that|PRON": {
+    "lemma": "that",
+    "pos": "PRON",
+    "translations": [
+      "это"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "that"
+        ],
+        "translation": "это",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "their|PRON": {
+    "lemma": "their",
+    "pos": "PRON",
+    "translations": [
+      "их"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "their"
+        ],
+        "translation": "их",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "then|ADV": {
+    "lemma": "then",
+    "pos": "ADV",
+    "translations": [
+      "потом"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "then"
+        ],
+        "translation": "потом",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "there|PRON": {
+    "lemma": "there",
+    "pos": "PRON",
+    "translations": [
+      "там"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "there"
+        ],
+        "translation": "там",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "they|PRON": {
+    "lemma": "they",
+    "pos": "PRON",
+    "translations": [
+      "они"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "they"
+        ],
+        "translation": "они",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "the|DET": {
+    "lemma": "the",
+    "pos": "DET",
+    "translations": [
+      "этот"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "the"
+        ],
+        "translation": "этот",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "this|DET": {
+    "lemma": "this",
+    "pos": "DET",
+    "translations": [
+      "это"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "this"
+        ],
+        "translation": "это",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "this|PRON": {
+    "lemma": "this",
+    "pos": "PRON",
+    "translations": [
+      "это"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "this"
+        ],
+        "translation": "это",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "today|NOUN": {
+    "lemma": "today",
+    "pos": "NOUN",
+    "translations": [
+      "сегодня"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "today"
+        ],
+        "translation": "сегодня",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "together|ADV": {
+    "lemma": "together",
+    "pos": "ADV",
+    "translations": [
+      "вместе"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "together"
+        ],
+        "translation": "вместе",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "to|ADP": {
+    "lemma": "to",
+    "pos": "ADP",
+    "translations": [
+      "на",
+      "с"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "to"
+        ],
+        "translation": "на",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "to"
+        ],
+        "translation": "с",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "tuesday|PROPN": {
+    "lemma": "tuesday",
+    "pos": "PROPN",
+    "translations": [
+      "вторник"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "tuesday"
+        ],
+        "translation": "вторник",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "twelve|NUM": {
+    "lemma": "twelve",
+    "pos": "NUM",
+    "translations": [
+      "двенадцать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "twelve"
+        ],
+        "translation": "двенадцать",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "twenty-four|NUM": {
+    "lemma": "twenty-four",
+    "pos": "NUM",
+    "translations": [
+      "24"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "twenty-four"
+        ],
+        "translation": "24",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "twenty|NUM": {
+    "lemma": "twenty",
+    "pos": "NUM",
+    "translations": [
+      "двадцать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "twenty"
+        ],
+        "translation": "двадцать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "two|NUM": {
+    "lemma": "two",
+    "pos": "NUM",
+    "translations": [
+      "два"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "two"
+        ],
+        "translation": "два",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "ukraine|PROPN": {
+    "lemma": "ukraine",
+    "pos": "PROPN",
+    "translations": [
+      "Украина"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "ukraine"
+        ],
+        "translation": "Украина",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "ukrainian|ADJ": {
+    "lemma": "ukrainian",
+    "pos": "ADJ",
+    "translations": [
+      "украинский"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "ukrainian"
+        ],
+        "translation": "украинский",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "understand|VERB": {
+    "lemma": "understand",
+    "pos": "VERB",
+    "translations": [
+      "понимать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "understand"
+        ],
+        "translation": "понимать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "university|NOUN": {
+    "lemma": "university",
+    "pos": "NOUN",
+    "translations": [
+      "университет"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "university"
+        ],
+        "translation": "университет",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "upstairs|ADV": {
+    "lemma": "upstairs",
+    "pos": "ADV",
+    "translations": [
+      "наверху"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "upstairs"
+        ],
+        "translation": "наверху",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "useful|ADJ": {
+    "lemma": "useful",
+    "pos": "ADJ",
+    "translations": [
+      "полезный"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "useful"
+        ],
+        "translation": "полезный",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "use|VERB": {
+    "lemma": "use",
+    "pos": "VERB",
+    "translations": [
+      "использовать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "use"
+        ],
+        "translation": "использовать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "voice|PROPN": {
+    "lemma": "voice",
+    "pos": "PROPN",
+    "translations": [
+      "голос"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "voice"
+        ],
+        "translation": "голос",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "wait|VERB": {
+    "lemma": "wait",
+    "pos": "VERB",
+    "translations": [
+      "ждать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "wait"
+        ],
+        "translation": "ждать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "walker|PROPN": {
+    "lemma": "walker",
+    "pos": "PROPN",
+    "translations": [
+      "Уокер"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "walker"
+        ],
+        "translation": "Уокер",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "walk|VERB": {
+    "lemma": "walk",
+    "pos": "VERB",
+    "translations": [
+      "входит",
+      "ходить"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "walk"
+        ],
+        "translation": "входит",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "walk"
+        ],
+        "translation": "ходить",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "welcome|INTJ": {
+    "lemma": "welcome",
+    "pos": "INTJ",
+    "translations": [
+      "добро пожаловать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "welcome"
+        ],
+        "translation": "добро пожаловать",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "welcome|NOUN": {
+    "lemma": "welcome",
+    "pos": "NOUN",
+    "translations": [
+      "приветствие"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "welcome"
+        ],
+        "translation": "приветствие",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "welcome|VERB": {
+    "lemma": "welcome",
+    "pos": "VERB",
+    "translations": [
+      "приветствовать"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "welcome"
+        ],
+        "translation": "приветствовать",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "westbridge|PROPN": {
+    "lemma": "westbridge",
+    "pos": "PROPN",
+    "translations": [
+      "Уэстбридж"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "westbridge"
+        ],
+        "translation": "Уэстбридж",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "we|PRON": {
+    "lemma": "we",
+    "pos": "PRON",
+    "translations": [
+      "мы"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "we"
+        ],
+        "translation": "мы",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "what|DET": {
+    "lemma": "what",
+    "pos": "DET",
+    "translations": [
+      "какой"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "what"
+        ],
+        "translation": "какой",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "what|PRON": {
+    "lemma": "what",
+    "pos": "PRON",
+    "translations": [
+      "Как",
+      "сколько",
+      "что"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "what"
+        ],
+        "translation": "Как",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "what"
+        ],
+        "translation": "сколько",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "what"
+        ],
+        "translation": "что",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "when|SCONJ": {
+    "lemma": "when",
+    "pos": "SCONJ",
+    "translations": [
+      "когда"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "when"
+        ],
+        "translation": "когда",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "where|SCONJ": {
+    "lemma": "where",
+    "pos": "SCONJ",
+    "translations": [
+      "Откуда"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "where"
+        ],
+        "translation": "Откуда",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "while|SCONJ": {
+    "lemma": "while",
+    "pos": "SCONJ",
+    "translations": [
+      "пока"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "while"
+        ],
+        "translation": "пока",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "write|VERB": {
+    "lemma": "write",
+    "pos": "VERB",
+    "translations": [
+      "пишет",
+      "записывает"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_70823d828e5a",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "write"
+        ],
+        "translation": "пишет",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "write"
+        ],
+        "translation": "записывает",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "wrong|ADJ": {
+    "lemma": "wrong",
+    "pos": "ADJ",
+    "translations": [
+      "не в той",
+      "той"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "wrong"
+        ],
+        "translation": "не в той",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "wrong"
+        ],
+        "translation": "той",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "wrong|PROPN": {
+    "lemma": "wrong",
+    "pos": "PROPN",
+    "translations": [
+      "неправильный"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779"
+        ],
+        "source_forms": [
+          "wrong"
+        ],
+        "translation": "неправильный",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "year|NOUN": {
+    "lemma": "year",
+    "pos": "NOUN",
+    "translations": [
+      "лет",
+      "год"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "year"
+        ],
+        "translation": "лет",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "year"
+        ],
+        "translation": "год",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "yes|INTJ": {
+    "lemma": "yes",
+    "pos": "INTJ",
+    "translations": [
+      "да"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "yes"
+        ],
+        "translation": "да",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "young|ADJ": {
+    "lemma": "young",
+    "pos": "ADJ",
+    "translations": [
+      "молодой"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_21b2a5a230d7"
+        ],
+        "source_forms": [
+          "young"
+        ],
+        "translation": "молодой",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "your|PRON": {
+    "lemma": "your",
+    "pos": "PRON",
+    "translations": [
+      "вас",
+      "вам",
+      "твой"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "your"
+        ],
+        "translation": "вас",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_70823d828e5a"
+        ],
+        "source_forms": [
+          "your"
+        ],
+        "translation": "вам",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_21b2a5a230d7",
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "your"
+        ],
+        "translation": "твой",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  },
+  "you|PRON": {
+    "lemma": "you",
+    "pos": "PRON",
+    "translations": [
+      "вы",
+      "ты"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_cad03a8f1779",
+          "book_07a16679df53",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "you"
+        ],
+        "translation": "вы",
+        "translation_kind": "contextual"
+      },
+      {
+        "book_ids": [
+          "book_70823d828e5a",
+          "book_21b2a5a230d7",
+          "book_1414bc86ec40"
+        ],
+        "source_forms": [
+          "you"
+        ],
+        "translation": "ты",
+        "translation_kind": "contextual"
+      }
+    ]
+  },
+  "yuki|PROPN": {
+    "lemma": "yuki",
+    "pos": "PROPN",
+    "translations": [
+      "Юки"
+    ],
+    "variants": [
+      {
+        "book_ids": [
+          "book_07a16679df53"
+        ],
+        "source_forms": [
+          "yuki"
+        ],
+        "translation": "Юки",
+        "translation_kind": "dictionary_fallback"
+      }
+    ]
+  }
+}

@@ -1,0 +1,752 @@
+{
+  "a|DET": {
+    "translation": "один",
+    "translations": [
+      "один"
+    ],
+    "dictionary_translation": "один",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "address|NOUN": {
+    "translation": "адреса",
+    "translations": [
+      "адреса",
+      "адресу"
+    ],
+    "dictionary_translation": "адреса",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "and|CCONJ": {
+    "translation": "а",
+    "translations": [
+      "а",
+      "і"
+    ],
+    "dictionary_translation": "а",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "answer|VERB": {
+    "translation": "відповідати",
+    "translations": [
+      "відповідати",
+      "відповідає"
+    ],
+    "dictionary_translation": "відповідати",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "arrive|VERB": {
+    "translation": "приїжджати",
+    "translations": [
+      "приїжджати",
+      "приїжджає",
+      "прибувати",
+      "прибуває"
+    ],
+    "dictionary_translation": "приїжджати",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "art|NOUN": {
+    "translation": "мистецтво",
+    "translations": [
+      "мистецтво"
+    ],
+    "dictionary_translation": "мистецтво",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "as|ADP": {
+    "translation": "як",
+    "translations": [
+      "як"
+    ],
+    "dictionary_translation": "як",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "at|ADP": {
+    "translation": "о",
+    "translations": [
+      "о",
+      "біля",
+      "під"
+    ],
+    "dictionary_translation": "о",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "back|ADV": {
+    "translation": "назад",
+    "translations": [
+      "назад"
+    ],
+    "dictionary_translation": "назад",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "be|AUX": {
+    "translation": "бути",
+    "translations": [
+      "бути"
+    ],
+    "dictionary_translation": "бути",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "both|PRON": {
+    "translation": "обидва",
+    "translations": [
+      "обидва",
+      "обидві"
+    ],
+    "dictionary_translation": "обидва",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "building|NOUN": {
+    "translation": "будівля",
+    "translations": [
+      "будівля",
+      "будівлею"
+    ],
+    "dictionary_translation": "будівля",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "bus|NOUN": {
+    "translation": "автобус",
+    "translations": [
+      "автобус",
+      "автобусной",
+      "автобусі",
+      "автобусом"
+    ],
+    "dictionary_translation": "автобус",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "but|CCONJ": {
+    "translation": "але",
+    "translations": [
+      "але"
+    ],
+    "dictionary_translation": "але",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "city|NOUN": {
+    "translation": "місто",
+    "translations": [
+      "місто",
+      "міському",
+      "місті",
+      "міста"
+    ],
+    "dictionary_translation": "місто",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "city|PROPN": {
+    "translation": "місто",
+    "translations": [
+      "місто",
+      "міському",
+      "місті"
+    ],
+    "dictionary_translation": "місто",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "college|PROPN": {
+    "translation": "коледж",
+    "translations": [
+      "коледж",
+      "коледжі"
+    ],
+    "dictionary_translation": "коледж",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "come|VERB": {
+    "translation": "приходити",
+    "translations": [
+      "приходити"
+    ],
+    "dictionary_translation": "приходити",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "correct|ADJ": {
+    "translation": "правильний",
+    "translations": [
+      "правильний",
+      "правильні"
+    ],
+    "dictionary_translation": "правильний",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "country|NOUN": {
+    "translation": "країна",
+    "translations": [
+      "країна",
+      "країні"
+    ],
+    "dictionary_translation": "країна",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "digit|NOUN": {
+    "translation": "цифра",
+    "translations": [
+      "цифра",
+      "цифри"
+    ],
+    "dictionary_translation": "цифра",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "eight|NUM": {
+    "translation": "вісім",
+    "translations": [
+      "вісім"
+    ],
+    "dictionary_translation": "вісім",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "english|PROPN": {
+    "translation": "англійська мова",
+    "translations": [
+      "англійська мова"
+    ]
+  },
+  "excuse|VERB": {
+    "translation": "вибачати",
+    "translations": [
+      "вибачати",
+      "Вибачте"
+    ],
+    "dictionary_translation": "вибачати",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "friend|NOUN": {
+    "translation": "друг",
+    "translations": [
+      "друг",
+      "друзями"
+    ],
+    "dictionary_translation": "друг",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "give|VERB": {
+    "translation": "давати",
+    "translations": [
+      "давати"
+    ],
+    "dictionary_translation": "давати",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "have|VERB": {
+    "translation": "у/в мене",
+    "translations": [
+      "у/в мене",
+      "мати"
+    ]
+  },
+  "he|PRON": {
+    "translation": "він",
+    "translations": [
+      "він"
+    ],
+    "dictionary_translation": "він",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "her|PRON": {
+    "translation": "її",
+    "translations": [
+      "її"
+    ],
+    "dictionary_translation": "її",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "home|NOUN": {
+    "translation": "дім",
+    "translations": [
+      "дім"
+    ],
+    "dictionary_translation": "дім",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "i|PRON": {
+    "translation": "я",
+    "translations": [
+      "я"
+    ],
+    "dictionary_translation": "я",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "in|ADP": {
+    "translation": "в",
+    "translations": [
+      "в",
+      "у"
+    ],
+    "dictionary_translation": "в",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "it|PRON": {
+    "translation": "воно",
+    "translations": [
+      "воно",
+      "це"
+    ],
+    "dictionary_translation": "воно",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "italy|PROPN": {
+    "translation": "Італія",
+    "translations": [
+      "Італія"
+    ],
+    "dictionary_translation": "Італія",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "late|ADJ": {
+    "translation": "пізній",
+    "translations": [
+      "пізній",
+      "пізно"
+    ],
+    "dictionary_translation": "пізній",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "later|ADV": {
+    "translation": "пізніше",
+    "translations": [
+      "пізніше"
+    ],
+    "dictionary_translation": "пізніше",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "laugh|NOUN": {
+    "translation": "сміх",
+    "translations": [
+      "сміх",
+      "сміється"
+    ],
+    "dictionary_translation": "сміх",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "leo|PROPN": {
+    "translation": "Лео",
+    "translations": [
+      "Лео"
+    ],
+    "dictionary_translation": "Лео",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "live|VERB": {
+    "translation": "жити",
+    "translations": [
+      "жити"
+    ],
+    "dictionary_translation": "жити",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "look|VERB": {
+    "translation": "дивитися",
+    "translations": [
+      "дивитися",
+      "дивиться"
+    ],
+    "dictionary_translation": "дивитися",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "man|NOUN": {
+    "translation": "чоловік",
+    "translations": [
+      "чоловік"
+    ],
+    "dictionary_translation": "чоловік",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "mina|PROPN": {
+    "translation": "Міна",
+    "translations": [
+      "Міна"
+    ],
+    "dictionary_translation": "Міна",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "minute|NOUN": {
+    "translation": "хвилина",
+    "translations": [
+      "хвилина",
+      "хвилин"
+    ],
+    "dictionary_translation": "хвилина",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "my|PRON": {
+    "translation": "мій",
+    "translations": [
+      "мій"
+    ],
+    "dictionary_translation": "мій",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "near|ADP": {
+    "translation": "біля",
+    "translations": [
+      "біля"
+    ],
+    "dictionary_translation": "біля",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "neighbour|NOUN": {
+    "translation": "сусід",
+    "translations": [
+      "сусід",
+      "сусідів",
+      "сусіди"
+    ],
+    "dictionary_translation": "сусід",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "new|ADJ": {
+    "translation": "новий",
+    "translations": [
+      "новий",
+      "нових",
+      "нова",
+      "нову",
+      "новій",
+      "новою"
+    ],
+    "dictionary_translation": "новий",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "nineteen|NUM": {
+    "translation": "дев’ятнадцять",
+    "translations": [
+      "дев’ятнадцять"
+    ]
+  },
+  "number|NOUN": {
+    "translation": "номер",
+    "translations": [
+      "номер",
+      "номери"
+    ],
+    "dictionary_translation": "номер",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "old|ADJ": {
+    "translation": "старий",
+    "translations": [
+      "старий",
+      "старший",
+      "старі"
+    ],
+    "dictionary_translation": "старий",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "one|NUM": {
+    "translation": "один",
+    "translations": [
+      "один"
+    ],
+    "dictionary_translation": "один",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "people|PROPN": {
+    "translation": "люди",
+    "translations": [
+      "люди",
+      "людей"
+    ],
+    "dictionary_translation": "люди",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "phone|NOUN": {
+    "translation": "телефон",
+    "translations": [
+      "телефон",
+      "телефону",
+      "телефонів"
+    ],
+    "dictionary_translation": "телефон",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "pine|PROPN": {
+    "translation": "Пайн",
+    "translations": [
+      "Пайн"
+    ],
+    "dictionary_translation": "Пайн",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "read|VERB": {
+    "translation": "читати",
+    "translations": [
+      "читати",
+      "читає"
+    ],
+    "dictionary_translation": "читати",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "really|ADV": {
+    "translation": "дійсно",
+    "translations": [
+      "дійсно",
+      "справді"
+    ],
+    "dictionary_translation": "дійсно",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "say|VERB": {
+    "translation": "казати",
+    "translations": [
+      "казати"
+    ],
+    "dictionary_translation": "казати",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "she|PRON": {
+    "translation": "вона",
+    "translations": [
+      "вона",
+      "вони",
+      "їй"
+    ],
+    "dictionary_translation": "вона",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "sit|VERB": {
+    "translation": "сидіти",
+    "translations": [
+      "сидіти"
+    ],
+    "dictionary_translation": "сидіти",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "stop|NOUN": {
+    "translation": "зупинка",
+    "translations": [
+      "зупинка",
+      "зупинці",
+      "зупинку"
+    ],
+    "dictionary_translation": "зупинка",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "stranger|NOUN": {
+    "translation": "незнайомець",
+    "translations": [
+      "незнайомець",
+      "незнайомце"
+    ],
+    "dictionary_translation": "незнайомець",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "street|NOUN": {
+    "translation": "вулиця",
+    "translations": [
+      "вулиця",
+      "вулиць"
+    ],
+    "dictionary_translation": "вулиця",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "street|PROPN": {
+    "translation": "вулиця",
+    "translations": [
+      "вулиця",
+      "вулиць"
+    ],
+    "dictionary_translation": "вулиця",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "studies|PROPN": {
+    "translation": "дослідження",
+    "translations": [
+      "дослідження"
+    ],
+    "dictionary_translation": "дослідження",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "study|VERB": {
+    "translation": "навчатися",
+    "translations": [
+      "навчатися"
+    ],
+    "dictionary_translation": "навчатися",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "talk|VERB": {
+    "translation": "говорити",
+    "translations": [
+      "говорити",
+      "говорять"
+    ],
+    "dictionary_translation": "говорити",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "ten|NUM": {
+    "translation": "десять",
+    "translations": [
+      "десять"
+    ],
+    "dictionary_translation": "десять",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "thank|VERB": {
+    "translation": "дякувати",
+    "translations": [
+      "дякувати",
+      "Дякую"
+    ],
+    "dictionary_translation": "дякувати",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "the|DET": {
+    "translation": "цей",
+    "translations": [
+      "цей"
+    ],
+    "dictionary_translation": "цей",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "their|PRON": {
+    "translation": "їхній",
+    "translations": [
+      "їхній"
+    ],
+    "dictionary_translation": "їхній",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "they|PRON": {
+    "translation": "вони",
+    "translations": [
+      "вони"
+    ],
+    "dictionary_translation": "вони",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "this|DET": {
+    "translation": "це",
+    "translations": [
+      "це"
+    ],
+    "dictionary_translation": "це",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "to|ADP": {
+    "translation": "до",
+    "translations": [
+      "до",
+      "на"
+    ],
+    "dictionary_translation": "до",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "together|ADV": {
+    "translation": "разом",
+    "translations": [
+      "разом"
+    ],
+    "dictionary_translation": "разом",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "twenty|NUM": {
+    "translation": "двадцять",
+    "translations": [
+      "двадцять",
+      "двадцятому"
+    ],
+    "dictionary_translation": "двадцять",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "twenty-four|NUM": {
+    "translation": "двадцять чотири",
+    "translations": [
+      "двадцять чотири"
+    ]
+  },
+  "two|NUM": {
+    "translation": "два",
+    "translations": [
+      "два"
+    ],
+    "dictionary_translation": "два",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "wait|VERB": {
+    "translation": "чекати",
+    "translations": [
+      "чекати",
+      "чекають",
+      "чекає"
+    ],
+    "dictionary_translation": "чекати",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "we|PRON": {
+    "translation": "ми",
+    "translations": [
+      "ми"
+    ],
+    "dictionary_translation": "ми",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "what|PRON": {
+    "translation": "що",
+    "translations": [
+      "що"
+    ],
+    "dictionary_translation": "що",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "when|SCONJ": {
+    "translation": "коли",
+    "translations": [
+      "коли"
+    ],
+    "dictionary_translation": "коли",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "while|SCONJ": {
+    "translation": "поки",
+    "translations": [
+      "поки"
+    ],
+    "dictionary_translation": "поки",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "year|NOUN": {
+    "translation": "рік",
+    "translations": [
+      "рік",
+      "років"
+    ],
+    "dictionary_translation": "рік",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "yes|INTJ": {
+    "translation": "так",
+    "translations": [
+      "так"
+    ],
+    "dictionary_translation": "так",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "you|PRON": {
+    "translation": "ти",
+    "translations": [
+      "ти"
+    ],
+    "dictionary_translation": "ти",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "young|ADJ": {
+    "translation": "молодий",
+    "translations": [
+      "молодий",
+      "молодший",
+      "молода"
+    ],
+    "dictionary_translation": "молодий",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "your|PRON": {
+    "translation": "твій",
+    "translations": [
+      "твій"
+    ],
+    "dictionary_translation": "твій",
+    "dictionary_translation_source": "skill_fallback"
+  }
+}

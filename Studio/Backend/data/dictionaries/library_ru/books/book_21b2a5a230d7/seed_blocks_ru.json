@@ -1,0 +1,26 @@
+[
+  {
+    "source": "years old",
+    "translation": "лет",
+    "type": "grammar_construction",
+    "explanation": "Используется после числа, чтобы назвать возраст человека.",
+    "components": [
+      {
+        "source": "years",
+        "lemma": "year",
+        "pos": "NOUN",
+        "translation": "лет"
+      },
+      {
+        "source": "old",
+        "lemma": "old",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значение возраста выражено всей конструкцией"
+      }
+    ],
+    "source_forms": [
+      "years old"
+    ]
+  }
+]

@@ -4,8 +4,17 @@ Studio/Backend/.venv_kokoro/
 **/__pycache__/
 *.pyc
 
-# Backend runtime data
-Studio/Backend/data/
+# Backend runtime data & MT/ML models (All MT models explicitly excluded)
+Studio/Backend/data/models/
+Studio/Backend/data/tts/
+Studio/Backend/data/logs/
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.engine
+*.gguf
 
 # Flutter generated files
 Virgil/App/.dart_tool/
@@ -21,8 +30,7 @@ Virgil/App/android/.kotlin/
 Virgil/App/android/key.properties
 Virgil/App/keys/
 
-# Local books, cloud mirror and generated output
-Studio/Workbench/Books/
+# Cloud mirror and generated output
 Studio/Runtime/
 Studio/CloudLibrary/
 

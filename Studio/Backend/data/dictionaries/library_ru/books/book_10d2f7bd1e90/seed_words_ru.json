@@ -1,0 +1,251 @@
+{
+  "after|ADP": {
+    "translation": "после"
+  },
+  "already|ADV": {
+    "translation": "уже"
+  },
+  "and|CCONJ": {
+    "translation": "и"
+  },
+  "answer|VERB": {
+    "translation": "отвечать"
+  },
+  "an|DET": {
+    "translation": "один"
+  },
+  "arrive|VERB": {
+    "translation": "прибывать"
+  },
+  "at|ADP": {
+    "translation": "у"
+  },
+  "a|DET": {
+    "translation": "один"
+  },
+  "bag|NOUN": {
+    "translation": "сумка"
+  },
+  "bed|NOUN": {
+    "translation": "кровать"
+  },
+  "before|SCONJ": {
+    "translation": "до"
+  },
+  "be|AUX": {
+    "translation": "быть"
+  },
+  "bus|NOUN": {
+    "translation": "автобус"
+  },
+  "but|CCONJ": {
+    "translation": "но"
+  },
+  "calm|ADJ": {
+    "translation": "спокойный"
+  },
+  "check|VERB": {
+    "translation": "проверять"
+  },
+  "classroom|NOUN": {
+    "translation": "класс"
+  },
+  "class|NOUN": {
+    "translation": "занятие"
+  },
+  "clock|NOUN": {
+    "translation": "часы"
+  },
+  "clothe|NOUN": {
+    "translation": "одежда"
+  },
+  "door|NOUN": {
+    "translation": "дверь"
+  },
+  "evening|NOUN": {
+    "translation": "вечер"
+  },
+  "every|DET": {
+    "translation": "каждый"
+  },
+  "exam|NOUN": {
+    "translation": "экзамен"
+  },
+  "feel|VERB": {
+    "translation": "чувствовать"
+  },
+  "finally|ADV": {
+    "translation": "наконец"
+  },
+  "for|ADP": {
+    "translation": "для"
+  },
+  "friend|NOUN": {
+    "translation": "друг"
+  },
+  "get|VERB": {
+    "translation": "вставать"
+  },
+  "good|ADJ": {
+    "translation": "хороший"
+  },
+  "go|VERB": {
+    "translation": "идти"
+  },
+  "her|PRON": {
+    "translation": "её"
+  },
+  "he|PRON": {
+    "translation": "он"
+  },
+  "home|ADV": {
+    "translation": "домой"
+  },
+  "important|ADJ": {
+    "translation": "важный"
+  },
+  "in|ADP": {
+    "translation": "в"
+  },
+  "i|PRON": {
+    "translation": "я"
+  },
+  "late|ADJ": {
+    "translation": "поздний"
+  },
+  "late|ADV": {
+    "translation": "поздно"
+  },
+  "leave|VERB": {
+    "translation": "уходить"
+  },
+  "lesson|NOUN": {
+    "translation": "урок"
+  },
+  "library|NOUN": {
+    "translation": "библиотека"
+  },
+  "look|VERB": {
+    "translation": "смотреть"
+  },
+  "many|ADJ": {
+    "translation": "много"
+  },
+  "mia|PROPN": {
+    "translation": "Миа"
+  },
+  "morning|NOUN": {
+    "translation": "утро"
+  },
+  "next|ADJ": {
+    "translation": "следующий"
+  },
+  "no|INTJ": {
+    "translation": "нет"
+  },
+  "of|ADP": {
+    "translation": "из"
+  },
+  "oh|INTJ": {
+    "translation": "ох"
+  },
+  "on|ADP": {
+    "translation": "на"
+  },
+  "open|VERB": {
+    "translation": "открывать"
+  },
+  "outside|ADV": {
+    "translation": "снаружи"
+  },
+  "out|ADP": {
+    "translation": "наружу"
+  },
+  "phone|NOUN": {
+    "translation": "телефон"
+  },
+  "prepare|VERB": {
+    "translation": "готовить"
+  },
+  "put|VERB": {
+    "translation": "класть"
+  },
+  "quickly|ADV": {
+    "translation": "быстро"
+  },
+  "quietly|ADV": {
+    "translation": "тихо"
+  },
+  "run|VERB": {
+    "translation": "бежать"
+  },
+  "say|VERB": {
+    "translation": "говорить"
+  },
+  "she|PRON": {
+    "translation": "она"
+  },
+  "smile|VERB": {
+    "translation": "улыбаться"
+  },
+  "sorry|INTJ": {
+    "translation": "извините"
+  },
+  "start|VERB": {
+    "translation": "начинать"
+  },
+  "stress|VERB": {
+    "translation": "переживать"
+  },
+  "student|NOUN": {
+    "translation": "ученик"
+  },
+  "study|NOUN": {
+    "translation": "учёба"
+  },
+  "take|VERB": {
+    "translation": "брать"
+  },
+  "teacher|NOUN": {
+    "translation": "учитель"
+  },
+  "they|PRON": {
+    "translation": "они"
+  },
+  "the|DET": {
+    "translation": "этот"
+  },
+  "time|NOUN": {
+    "translation": "время"
+  },
+  "tired|ADJ": {
+    "translation": "усталый"
+  },
+  "today|NOUN": {
+    "translation": "сегодня"
+  },
+  "to|ADP": {
+    "translation": "к"
+  },
+  "university|NOUN": {
+    "translation": "университет"
+  },
+  "up|ADP": {
+    "translation": "вверх"
+  },
+  "wait|VERB": {
+    "translation": "ждать"
+  },
+  "wake|VERB": {
+    "translation": "просыпаться"
+  },
+  "week|NOUN": {
+    "translation": "неделя"
+  },
+  "when|SCONJ": {
+    "translation": "когда"
+  },
+  "with|ADP": {
+    "translation": "с"
+  }
+}

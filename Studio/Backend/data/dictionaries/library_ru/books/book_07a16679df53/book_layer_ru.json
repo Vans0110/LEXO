@@ -1,0 +1,2515 @@
+{
+  "version": 1,
+  "book_id": "book_07a16679df53",
+  "title": "A Voice from Online",
+  "source_lang": "en",
+  "target_lang": "ru",
+  "parallel": [
+    {
+      "source": "A Voice from Online",
+      "translation": "Голос из интернета"
+    },
+    {
+      "source": "Yuki is in Japan, and Ben is in Australia.",
+      "translation": "Юки находится в Японии, а Бен — в Австралии."
+    },
+    {
+      "source": "They are language partners.",
+      "translation": "Они являются языковыми партнерами."
+    },
+    {
+      "source": "Today is their first online call.",
+      "translation": "Сегодня у них первый онлайн-звонок."
+    },
+    {
+      "source": "Ben calls at seven o'clock.",
+      "translation": "Бен позвонит в семь часов."
+    },
+    {
+      "source": "A friendly face appears on Yuki's phone.",
+      "translation": "На экране телефона Юки появляется дружелюбное лицо."
+    },
+    {
+      "source": "Hello!",
+      "translation": "Привет!"
+    },
+    {
+      "source": "Am I speaking to Yuki?",
+      "translation": "Я говорю с Юки?"
+    },
+    {
+      "source": "Yes.",
+      "translation": "Да."
+    },
+    {
+      "source": "And you are Ben?",
+      "translation": "А вы Бен?"
+    },
+    {
+      "source": "That is right.",
+      "translation": "Верно."
+    },
+    {
+      "source": "Nice to meet you.",
+      "translation": "Рад встрече."
+    },
+    {
+      "source": "They talk about their countries and cities.",
+      "translation": "Они рассказывают о своих странах и городах."
+    },
+    {
+      "source": "Ben speaks slowly.",
+      "translation": "Бен говорит медленно."
+    },
+    {
+      "source": "When Yuki does not understand, she asks, \"Can you repeat that, please?",
+      "translation": "Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»"
+    },
+    {
+      "source": "At the end, Ben gives Yuki his email address.",
+      "translation": "В конце Бен сообщает Юки свой адрес электронной почты."
+    },
+    {
+      "source": "Can you spell your first name and last name?",
+      "translation": "Вы можете произнести по буквам свое имя и фамилию?"
+    },
+    {
+      "source": " Yuki asks.",
+      "translation": "Юки спрашивает."
+    },
+    {
+      "source": "WALKER,\" Ben says.",
+      "translation": "«Уокер», — говорит Бен."
+    },
+    {
+      "source": "Yuki writes it down and reads it back.",
+      "translation": "Юки записывает это и перечитывает."
+    },
+    {
+      "source": "Then she gives Ben her phone number.",
+      "translation": "Затем она дает Бену свой номер телефона."
+    },
+    {
+      "source": "They check every digit.",
+      "translation": "Они проверяют каждую цифру."
+    },
+    {
+      "source": "The call is only fifteen minutes long, but both students use real English.",
+      "translation": "Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+    },
+    {
+      "source": "They plan another call for next Tuesday.",
+      "translation": "Они планируют еще один звонок на следующий вторник."
+    }
+  ],
+  "words": [
+    {
+      "word": "A",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "about",
+      "lemma": "about",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "о",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "address",
+      "lemma": "address",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "адрес",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "and",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "и",
+      "translations": [
+        "и"
+      ],
+      "dictionary_translation": "а",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "another",
+      "lemma": "another",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "другой",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "appears",
+      "lemma": "appear",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "появляться",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "asks",
+      "lemma": "ask",
+      "pos": "VERB",
+      "translation": "спрашивает",
+      "translations": [
+        "спрашивает"
+      ],
+      "dictionary_translation": "спрашивать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "at",
+      "lemma": "at",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "в",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Australia",
+      "lemma": "australia",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Австралия",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "back",
+      "lemma": "back",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span"
+    },
+    {
+      "word": "is",
+      "lemma": "be",
+      "pos": "AUX",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "быть",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Ben",
+      "lemma": "ben",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Бен",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "both",
+      "lemma": "both",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "оба",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "but",
+      "lemma": "but",
+      "pos": "CCONJ",
+      "translation": "но",
+      "translations": [
+        "но"
+      ],
+      "dictionary_translation": "но",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "call",
+      "lemma": "call",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "звонок",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "calls",
+      "lemma": "call",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "звонить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Can",
+      "lemma": "can",
+      "pos": "AUX",
+      "translation": "Не могли бы",
+      "translations": [
+        "Не могли бы"
+      ],
+      "dictionary_translation": "мочь",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "check",
+      "lemma": "check",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "проверять",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "cities",
+      "lemma": "city",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "город",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "countries",
+      "lemma": "country",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "страна",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "digit",
+      "lemma": "digit",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "цифра",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "does",
+      "lemma": "do",
+      "pos": "AUX",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "делать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "down",
+      "lemma": "down",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span"
+    },
+    {
+      "word": "email",
+      "lemma": "email",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "электропочта",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "end",
+      "lemma": "end",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "конец",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "English",
+      "lemma": "english",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "английский",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "every",
+      "lemma": "every",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "каждый",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "face",
+      "lemma": "face",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "лицо",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "fifteen",
+      "lemma": "fifteen",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "пятнадцать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "first",
+      "lemma": "first",
+      "pos": "ADJ",
+      "translation": "первый",
+      "translations": [
+        "первый"
+      ],
+      "dictionary_translation": "первый",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "for",
+      "lemma": "for",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "на",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "friendly",
+      "lemma": "friendly",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "дружелюбный",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "from",
+      "lemma": "from",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "из",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "gives",
+      "lemma": "give",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "давать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Hello",
+      "lemma": "hello",
+      "pos": "INTJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "здравствуй",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "her",
+      "lemma": "her",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "она",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "his",
+      "lemma": "his",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "его",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "I",
+      "lemma": "i",
+      "pos": "PRON",
+      "translation": "я",
+      "translations": [
+        "я"
+      ],
+      "dictionary_translation": "я",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "in",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "в",
+      "translations": [
+        "в"
+      ],
+      "dictionary_translation": "в",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "it",
+      "lemma": "it",
+      "pos": "PRON",
+      "translation": "это",
+      "translations": [
+        "это"
+      ],
+      "dictionary_translation": "оно",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Japan",
+      "lemma": "japan",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Япония",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "language",
+      "lemma": "language",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "язык",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "last",
+      "lemma": "last",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span"
+    },
+    {
+      "word": "long",
+      "lemma": "long",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "долго",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "meet",
+      "lemma": "meet",
+      "pos": "VERB",
+      "translation": "встрече",
+      "translations": [
+        "встрече"
+      ],
+      "dictionary_translation": "встречать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "minutes",
+      "lemma": "minute",
+      "pos": "NOUN",
+      "translation": "минут",
+      "translations": [
+        "минут"
+      ],
+      "dictionary_translation": "минута",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "name",
+      "lemma": "name",
+      "pos": "NOUN",
+      "translation": "имя",
+      "translations": [
+        "имя"
+      ],
+      "dictionary_translation": "имя",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "next",
+      "lemma": "next",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "следующий",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Nice",
+      "lemma": "nice",
+      "pos": "ADJ",
+      "translation": "Рад",
+      "translations": [
+        "Рад"
+      ],
+      "dictionary_translation": "приятный",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "not",
+      "lemma": "not",
+      "pos": "PART",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "не",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "number",
+      "lemma": "number",
+      "pos": "NOUN",
+      "translation": "номер",
+      "translations": [
+        "номер"
+      ],
+      "dictionary_translation": "номер",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "o'clock",
+      "lemma": "o'clock",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "час",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "on",
+      "lemma": "on",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на"
+      ],
+      "dictionary_translation": "на",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "online",
+      "lemma": "online",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "онлайновый",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Online",
+      "lemma": "online",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "онлайновый",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "only",
+      "lemma": "only",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "всего",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "partners",
+      "lemma": "partner",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "партнёр",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "phone",
+      "lemma": "phone",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "телефон",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "plan",
+      "lemma": "plan",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "планировать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "please",
+      "lemma": "please",
+      "pos": "INTJ",
+      "translation": "пожалуйста",
+      "translations": [
+        "пожалуйста"
+      ],
+      "dictionary_translation": "пожалуйста",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "reads",
+      "lemma": "read",
+      "pos": "VERB",
+      "translation": "перечитывает",
+      "translations": [
+        "перечитывает"
+      ],
+      "dictionary_translation": "читать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "real",
+      "lemma": "real",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "настоящий",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "repeat",
+      "lemma": "repeat",
+      "pos": "VERB",
+      "translation": "повторить",
+      "translations": [
+        "повторить"
+      ],
+      "dictionary_translation": "повторять",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "right",
+      "lemma": "right",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "правильный",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "говорит",
+      "translations": [
+        "говорит"
+      ],
+      "dictionary_translation": "говорить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "seven",
+      "lemma": "seven",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "семь",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "she",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "она",
+      "translations": [
+        "она"
+      ],
+      "dictionary_translation": "она",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "slowly",
+      "lemma": "slowly",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "медленно",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "speaking",
+      "lemma": "speak",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "разговаривать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "spell",
+      "lemma": "spell",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "произносить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "students",
+      "lemma": "student",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "студент",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "talk",
+      "lemma": "talk",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "говорить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "That",
+      "lemma": "that",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "это",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "the",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "этот",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "their",
+      "lemma": "their",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "их",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Then",
+      "lemma": "then",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "потом",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "They",
+      "lemma": "they",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "они",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "ADP",
+      "translation": "с",
+      "translations": [
+        "с"
+      ],
+      "dictionary_translation": "к",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "PART",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span"
+    },
+    {
+      "word": "Today",
+      "lemma": "today",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "сегодня",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Tuesday",
+      "lemma": "tuesday",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "вторник",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "understand",
+      "lemma": "understand",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "понимать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "use",
+      "lemma": "use",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "использовать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Voice",
+      "lemma": "voice",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "голос",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "WALKER",
+      "lemma": "walker",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Уокер",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "When",
+      "lemma": "when",
+      "pos": "SCONJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "когда",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "writes",
+      "lemma": "write",
+      "pos": "VERB",
+      "translation": "записывает",
+      "translations": [
+        "записывает"
+      ],
+      "dictionary_translation": "записывать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Yes",
+      "lemma": "yes",
+      "pos": "INTJ",
+      "translation": "да",
+      "translations": [
+        "да"
+      ],
+      "dictionary_translation": "да",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "you",
+      "lemma": "you",
+      "pos": "PRON",
+      "translation": "вы",
+      "translations": [
+        "вы"
+      ],
+      "dictionary_translation": "ты",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "your",
+      "lemma": "your",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "твой",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Yuki",
+      "lemma": "yuki",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Юки",
+      "dictionary_translation_source": "skill_fallback"
+    }
+  ],
+  "blocks": [
+    {
+      "source": "nice to meet you",
+      "translation": "Рад встрече",
+      "type": "fixed_expression",
+      "explanation": "Вежливая фраза при знакомстве с человеком.",
+      "components": [
+        {
+          "source": "nice",
+          "lemma": "nice",
+          "pos": "ADJ",
+          "translation": "Рад"
+        },
+        {
+          "source": "to",
+          "lemma": "to",
+          "pos": "PART",
+          "translation": "",
+          "empty_reason": "частица инфинитива не имеет отдельного русского соответствия"
+        },
+        {
+          "source": "meet",
+          "lemma": "meet",
+          "pos": "VERB",
+          "translation": "встрече"
+        },
+        {
+          "source": "you",
+          "lemma": "you",
+          "pos": "PRON",
+          "translation": "",
+          "empty_reason": "собеседник подразумевается русской формулой знакомства"
+        }
+      ],
+      "source_forms": [
+        "Nice to meet you"
+      ]
+    },
+    {
+      "source": "can you repeat",
+      "translation": "Не могли бы вы повторить",
+      "type": "grammar_construction",
+      "explanation": "Вежливая просьба повторить сказанное.",
+      "components": [
+        {
+          "source": "Can",
+          "lemma": "can",
+          "pos": "AUX",
+          "translation": "Не могли бы"
+        },
+        {
+          "source": "you",
+          "lemma": "you",
+          "pos": "PRON",
+          "translation": "вы"
+        },
+        {
+          "source": "repeat",
+          "lemma": "repeat",
+          "pos": "VERB",
+          "translation": "повторить"
+        }
+      ],
+      "source_forms": [
+        "Can you repeat"
+      ]
+    },
+    {
+      "source": "first name",
+      "translation": "имя",
+      "type": "fixed_expression",
+      "explanation": "Обозначает личное имя, в отличие от фамилии.",
+      "components": [
+        {
+          "source": "first",
+          "lemma": "first",
+          "pos": "ADJ",
+          "translation": "",
+          "empty_reason": "уточняющее значение поглощено русским словом «имя»"
+        },
+        {
+          "source": "name",
+          "lemma": "name",
+          "pos": "NOUN",
+          "translation": "имя"
+        }
+      ],
+      "source_forms": [
+        "first name"
+      ]
+    },
+    {
+      "source": "last name",
+      "translation": "фамилию",
+      "dictionary_translation": "фамилия",
+      "type": "fixed_expression",
+      "explanation": "Обозначает фамилию человека.",
+      "components": [
+        {
+          "source": "last",
+          "lemma": "last",
+          "pos": "ADJ",
+          "translation": "",
+          "empty_reason": "значение определения поглощено русским словом «фамилия»"
+        },
+        {
+          "source": "name",
+          "lemma": "name",
+          "pos": "NOUN",
+          "translation": "",
+          "empty_reason": "значение всего сочетания передано отдельным русским словом"
+        }
+      ],
+      "source_forms": [
+        "last name"
+      ]
+    },
+    {
+      "source": "write it down",
+      "translation": "записывает это",
+      "type": "phrasal_verb",
+      "explanation": "Означает записать информацию, чтобы сохранить её.",
+      "components": [
+        {
+          "source": "write",
+          "lemma": "write",
+          "pos": "VERB",
+          "translation": "записывает"
+        },
+        {
+          "source": "it",
+          "lemma": "it",
+          "pos": "PRON",
+          "translation": "это"
+        },
+        {
+          "source": "down",
+          "lemma": "down",
+          "pos": "ADP",
+          "translation": "",
+          "empty_reason": "частица поглощена русским глаголом"
+        }
+      ],
+      "source_forms": [
+        "writes it down"
+      ]
+    },
+    {
+      "source": "read it back",
+      "translation": "перечитывает",
+      "type": "phrasal_verb",
+      "explanation": "Означает прочитать записанное снова для проверки.",
+      "components": [
+        {
+          "source": "read",
+          "lemma": "read",
+          "pos": "VERB",
+          "translation": "перечитывает"
+        },
+        {
+          "source": "it",
+          "lemma": "it",
+          "pos": "PRON",
+          "translation": "",
+          "empty_reason": "объект включён в значение русского глагола"
+        },
+        {
+          "source": "back",
+          "lemma": "back",
+          "pos": "ADP",
+          "translation": "",
+          "empty_reason": "частица поглощена русским глаголом"
+        }
+      ],
+      "source_forms": [
+        "reads it back"
+      ]
+    }
+  ],
+  "book_layer_audit": {
+    "version": 4,
+    "method": "codex_verified_occurrence_word_to_word",
+    "reviewed_segments": [
+      {
+        "source_text": "A Voice from Online",
+        "target_text": "Голос из интернета",
+        "status": "covered",
+        "word_keys": [
+          "a|DET",
+          "from|ADP",
+          "online|PROPN",
+          "voice|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Yuki is in Japan, and Ben is in Australia.",
+        "target_text": "Юки находится в Японии, а Бен — в Австралии.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "australia|PROPN",
+          "ben|PROPN",
+          "be|AUX",
+          "in|ADP",
+          "japan|PROPN",
+          "yuki|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "They are language partners.",
+        "target_text": "Они являются языковыми партнерами.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "language|NOUN",
+          "partner|NOUN",
+          "they|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Today is their first online call.",
+        "target_text": "Сегодня у них первый онлайн-звонок.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "call|NOUN",
+          "first|ADJ",
+          "online|ADJ",
+          "their|PRON",
+          "today|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Ben calls at seven o'clock.",
+        "target_text": "Бен позвонит в семь часов.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "ben|PROPN",
+          "call|VERB",
+          "o'clock|NOUN",
+          "seven|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "A friendly face appears on Yuki's phone.",
+        "target_text": "На экране телефона Юки появляется дружелюбное лицо.",
+        "status": "covered",
+        "word_keys": [
+          "appear|VERB",
+          "a|DET",
+          "face|NOUN",
+          "friendly|ADJ",
+          "on|ADP",
+          "phone|NOUN",
+          "yuki|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Hello!",
+        "target_text": "Привет!",
+        "status": "covered",
+        "word_keys": [
+          "hello|INTJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Am I speaking to Yuki?",
+        "target_text": "Я говорю с Юки?",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "i|PRON",
+          "speak|VERB",
+          "to|ADP",
+          "yuki|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Yes.",
+        "target_text": "Да.",
+        "status": "covered",
+        "word_keys": [
+          "yes|INTJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "And you are Ben?",
+        "target_text": "А вы Бен?",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "ben|PROPN",
+          "be|AUX",
+          "you|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "That is right.",
+        "target_text": "Верно.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "right|ADJ",
+          "that|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Nice to meet you.",
+        "target_text": "Рад встрече.",
+        "status": "covered",
+        "word_keys": [
+          "meet|VERB",
+          "nice|ADJ",
+          "to|PART",
+          "you|PRON"
+        ],
+        "block_sources": [
+          "nice to meet you"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "They talk about their countries and cities.",
+        "target_text": "Они рассказывают о своих странах и городах.",
+        "status": "covered",
+        "word_keys": [
+          "about|ADP",
+          "and|CCONJ",
+          "city|NOUN",
+          "country|NOUN",
+          "talk|VERB",
+          "their|PRON",
+          "they|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Ben speaks slowly.",
+        "target_text": "Бен говорит медленно.",
+        "status": "covered",
+        "word_keys": [
+          "ben|PROPN",
+          "slowly|ADV",
+          "speak|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "When Yuki does not understand, she asks, \"Can you repeat that, please?",
+        "target_text": "Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»",
+        "status": "covered",
+        "word_keys": [
+          "ask|VERB",
+          "can|AUX",
+          "do|AUX",
+          "not|PART",
+          "please|INTJ",
+          "repeat|VERB",
+          "she|PRON",
+          "that|PRON",
+          "understand|VERB",
+          "when|SCONJ",
+          "you|PRON",
+          "yuki|PROPN"
+        ],
+        "block_sources": [
+          "can you repeat"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "At the end, Ben gives Yuki his email address.",
+        "target_text": "В конце Бен сообщает Юки свой адрес электронной почты.",
+        "status": "covered",
+        "word_keys": [
+          "address|NOUN",
+          "at|ADP",
+          "ben|PROPN",
+          "email|NOUN",
+          "end|NOUN",
+          "give|VERB",
+          "his|PRON",
+          "the|DET",
+          "yuki|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Can you spell your first name and last name?",
+        "target_text": "Вы можете произнести по буквам свое имя и фамилию?",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "can|AUX",
+          "first|ADJ",
+          "last|ADJ",
+          "name|NOUN",
+          "spell|VERB",
+          "your|PRON",
+          "you|PRON"
+        ],
+        "block_sources": [
+          "first name",
+          "last name"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": " Yuki asks.",
+        "target_text": "Юки спрашивает.",
+        "status": "covered",
+        "word_keys": [
+          "ask|VERB",
+          "yuki|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "WALKER,\" Ben says.",
+        "target_text": "«Уокер», — говорит Бен.",
+        "status": "covered",
+        "word_keys": [
+          "ben|PROPN",
+          "say|VERB",
+          "walker|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Yuki writes it down and reads it back.",
+        "target_text": "Юки записывает это и перечитывает.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "back|ADP",
+          "down|ADP",
+          "it|PRON",
+          "read|VERB",
+          "write|VERB",
+          "yuki|PROPN"
+        ],
+        "block_sources": [
+          "write it down",
+          "read it back"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "Then she gives Ben her phone number.",
+        "target_text": "Затем она дает Бену свой номер телефона.",
+        "status": "covered",
+        "word_keys": [
+          "ben|PROPN",
+          "give|VERB",
+          "her|PRON",
+          "number|NOUN",
+          "phone|NOUN",
+          "she|PRON",
+          "then|ADV"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "They check every digit.",
+        "target_text": "Они проверяют каждую цифру.",
+        "status": "covered",
+        "word_keys": [
+          "check|VERB",
+          "digit|NOUN",
+          "every|DET",
+          "they|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "The call is only fifteen minutes long, but both students use real English.",
+        "target_text": "Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "both|DET",
+          "but|CCONJ",
+          "call|NOUN",
+          "english|PROPN",
+          "fifteen|NUM",
+          "long|ADV",
+          "minute|NOUN",
+          "only|ADV",
+          "real|ADJ",
+          "student|NOUN",
+          "the|DET",
+          "use|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "They plan another call for next Tuesday.",
+        "target_text": "Они планируют еще один звонок на следующий вторник.",
+        "status": "covered",
+        "word_keys": [
+          "another|DET",
+          "call|NOUN",
+          "for|ADP",
+          "next|ADJ",
+          "plan|VERB",
+          "they|PRON",
+          "tuesday|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      }
+    ],
+    "second_pass": {
+      "status": "passed",
+      "corrections": [],
+      "unresolved": []
+    },
+    "third_pass": {
+      "status": "passed",
+      "word_decisions": [
+        {
+          "key": "a|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A Voice from Online → Голос из интернета",
+            "A friendly face appears on Yuki's phone. → На экране телефона Юки появляется дружелюбное лицо."
+          ]
+        },
+        {
+          "key": "about|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They talk about their countries and cities. → Они рассказывают о своих странах и городах."
+          ]
+        },
+        {
+          "key": "address|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "At the end, Ben gives Yuki his email address. → В конце Бен сообщает Юки свой адрес электронной почты."
+          ]
+        },
+        {
+          "key": "and|CCONJ",
+          "ownership": "mixed",
+          "translations": [
+            "и"
+          ],
+          "evidence": [
+            "Yuki is in Japan, and Ben is in Australia. → Юки находится в Японии, а Бен — в Австралии.",
+            "And you are Ben? → А вы Бен?",
+            "They talk about their countries and cities. → Они рассказывают о своих странах и городах.",
+            "Can you spell your first name and last name? → Вы можете произнести по буквам свое имя и фамилию?",
+            "Yuki writes it down and reads it back. → Юки записывает это и перечитывает."
+          ]
+        },
+        {
+          "key": "another|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They plan another call for next Tuesday. → Они планируют еще один звонок на следующий вторник."
+          ]
+        },
+        {
+          "key": "appear|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A friendly face appears on Yuki's phone. → На экране телефона Юки появляется дружелюбное лицо."
+          ]
+        },
+        {
+          "key": "ask|VERB",
+          "ownership": "word",
+          "translations": [
+            "спрашивает"
+          ],
+          "evidence": [
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»",
+            " Yuki asks. → Юки спрашивает."
+          ]
+        },
+        {
+          "key": "at|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ben calls at seven o'clock. → Бен позвонит в семь часов.",
+            "At the end, Ben gives Yuki his email address. → В конце Бен сообщает Юки свой адрес электронной почты."
+          ]
+        },
+        {
+          "key": "australia|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Yuki is in Japan, and Ben is in Australia. → Юки находится в Японии, а Бен — в Австралии."
+          ]
+        },
+        {
+          "key": "back|ADP",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "Yuki writes it down and reads it back. → Юки записывает это и перечитывает."
+          ]
+        },
+        {
+          "key": "be|AUX",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Yuki is in Japan, and Ben is in Australia. → Юки находится в Японии, а Бен — в Австралии.",
+            "They are language partners. → Они являются языковыми партнерами.",
+            "Today is their first online call. → Сегодня у них первый онлайн-звонок.",
+            "Am I speaking to Yuki? → Я говорю с Юки?",
+            "And you are Ben? → А вы Бен?",
+            "That is right. → Верно.",
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "ben|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Yuki is in Japan, and Ben is in Australia. → Юки находится в Японии, а Бен — в Австралии.",
+            "Ben calls at seven o'clock. → Бен позвонит в семь часов.",
+            "And you are Ben? → А вы Бен?",
+            "Ben speaks slowly. → Бен говорит медленно.",
+            "At the end, Ben gives Yuki his email address. → В конце Бен сообщает Юки свой адрес электронной почты.",
+            "WALKER,\" Ben says. → «Уокер», — говорит Бен.",
+            "Then she gives Ben her phone number. → Затем она дает Бену свой номер телефона."
+          ]
+        },
+        {
+          "key": "both|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "but|CCONJ",
+          "ownership": "word",
+          "translations": [
+            "но"
+          ],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "call|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Today is their first online call. → Сегодня у них первый онлайн-звонок.",
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке.",
+            "They plan another call for next Tuesday. → Они планируют еще один звонок на следующий вторник."
+          ]
+        },
+        {
+          "key": "call|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ben calls at seven o'clock. → Бен позвонит в семь часов."
+          ]
+        },
+        {
+          "key": "can|AUX",
+          "ownership": "mixed",
+          "translations": [
+            "Не могли бы"
+          ],
+          "evidence": [
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»",
+            "Can you spell your first name and last name? → Вы можете произнести по буквам свое имя и фамилию?"
+          ]
+        },
+        {
+          "key": "check|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They check every digit. → Они проверяют каждую цифру."
+          ]
+        },
+        {
+          "key": "city|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They talk about their countries and cities. → Они рассказывают о своих странах и городах."
+          ]
+        },
+        {
+          "key": "country|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They talk about their countries and cities. → Они рассказывают о своих странах и городах."
+          ]
+        },
+        {
+          "key": "digit|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They check every digit. → Они проверяют каждую цифру."
+          ]
+        },
+        {
+          "key": "do|AUX",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»"
+          ]
+        },
+        {
+          "key": "down|ADP",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "Yuki writes it down and reads it back. → Юки записывает это и перечитывает."
+          ]
+        },
+        {
+          "key": "email|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "At the end, Ben gives Yuki his email address. → В конце Бен сообщает Юки свой адрес электронной почты."
+          ]
+        },
+        {
+          "key": "end|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "At the end, Ben gives Yuki his email address. → В конце Бен сообщает Юки свой адрес электронной почты."
+          ]
+        },
+        {
+          "key": "english|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "every|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They check every digit. → Они проверяют каждую цифру."
+          ]
+        },
+        {
+          "key": "face|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A friendly face appears on Yuki's phone. → На экране телефона Юки появляется дружелюбное лицо."
+          ]
+        },
+        {
+          "key": "fifteen|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "first|ADJ",
+          "ownership": "word",
+          "translations": [
+            "первый"
+          ],
+          "evidence": [
+            "Today is their first online call. → Сегодня у них первый онлайн-звонок.",
+            "Can you spell your first name and last name? → Вы можете произнести по буквам свое имя и фамилию?"
+          ]
+        },
+        {
+          "key": "for|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They plan another call for next Tuesday. → Они планируют еще один звонок на следующий вторник."
+          ]
+        },
+        {
+          "key": "friendly|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A friendly face appears on Yuki's phone. → На экране телефона Юки появляется дружелюбное лицо."
+          ]
+        },
+        {
+          "key": "from|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A Voice from Online → Голос из интернета"
+          ]
+        },
+        {
+          "key": "give|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "At the end, Ben gives Yuki his email address. → В конце Бен сообщает Юки свой адрес электронной почты.",
+            "Then she gives Ben her phone number. → Затем она дает Бену свой номер телефона."
+          ]
+        },
+        {
+          "key": "hello|INTJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Hello! → Привет!"
+          ]
+        },
+        {
+          "key": "her|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Then she gives Ben her phone number. → Затем она дает Бену свой номер телефона."
+          ]
+        },
+        {
+          "key": "his|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "At the end, Ben gives Yuki his email address. → В конце Бен сообщает Юки свой адрес электронной почты."
+          ]
+        },
+        {
+          "key": "i|PRON",
+          "ownership": "word",
+          "translations": [
+            "я"
+          ],
+          "evidence": [
+            "Am I speaking to Yuki? → Я говорю с Юки?"
+          ]
+        },
+        {
+          "key": "in|ADP",
+          "ownership": "word",
+          "translations": [
+            "в"
+          ],
+          "evidence": [
+            "Yuki is in Japan, and Ben is in Australia. → Юки находится в Японии, а Бен — в Австралии."
+          ]
+        },
+        {
+          "key": "it|PRON",
+          "ownership": "word",
+          "translations": [
+            "это"
+          ],
+          "evidence": [
+            "Yuki writes it down and reads it back. → Юки записывает это и перечитывает."
+          ]
+        },
+        {
+          "key": "japan|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Yuki is in Japan, and Ben is in Australia. → Юки находится в Японии, а Бен — в Австралии."
+          ]
+        },
+        {
+          "key": "language|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They are language partners. → Они являются языковыми партнерами."
+          ]
+        },
+        {
+          "key": "last|ADJ",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "Can you spell your first name and last name? → Вы можете произнести по буквам свое имя и фамилию?"
+          ]
+        },
+        {
+          "key": "long|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "meet|VERB",
+          "ownership": "word",
+          "translations": [
+            "встрече"
+          ],
+          "evidence": [
+            "Nice to meet you. → Рад встрече."
+          ]
+        },
+        {
+          "key": "minute|NOUN",
+          "ownership": "word",
+          "translations": [
+            "минут"
+          ],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "name|NOUN",
+          "ownership": "word",
+          "translations": [
+            "имя"
+          ],
+          "evidence": [
+            "Can you spell your first name and last name? → Вы можете произнести по буквам свое имя и фамилию?"
+          ]
+        },
+        {
+          "key": "next|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They plan another call for next Tuesday. → Они планируют еще один звонок на следующий вторник."
+          ]
+        },
+        {
+          "key": "nice|ADJ",
+          "ownership": "word",
+          "translations": [
+            "Рад"
+          ],
+          "evidence": [
+            "Nice to meet you. → Рад встрече."
+          ]
+        },
+        {
+          "key": "not|PART",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»"
+          ]
+        },
+        {
+          "key": "number|NOUN",
+          "ownership": "word",
+          "translations": [
+            "номер"
+          ],
+          "evidence": [
+            "Then she gives Ben her phone number. → Затем она дает Бену свой номер телефона."
+          ]
+        },
+        {
+          "key": "o'clock|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ben calls at seven o'clock. → Бен позвонит в семь часов."
+          ]
+        },
+        {
+          "key": "on|ADP",
+          "ownership": "word",
+          "translations": [
+            "на"
+          ],
+          "evidence": [
+            "A friendly face appears on Yuki's phone. → На экране телефона Юки появляется дружелюбное лицо."
+          ]
+        },
+        {
+          "key": "online|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Today is their first online call. → Сегодня у них первый онлайн-звонок."
+          ]
+        },
+        {
+          "key": "online|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A Voice from Online → Голос из интернета"
+          ]
+        },
+        {
+          "key": "only|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "partner|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They are language partners. → Они являются языковыми партнерами."
+          ]
+        },
+        {
+          "key": "phone|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A friendly face appears on Yuki's phone. → На экране телефона Юки появляется дружелюбное лицо.",
+            "Then she gives Ben her phone number. → Затем она дает Бену свой номер телефона."
+          ]
+        },
+        {
+          "key": "plan|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They plan another call for next Tuesday. → Они планируют еще один звонок на следующий вторник."
+          ]
+        },
+        {
+          "key": "please|INTJ",
+          "ownership": "word",
+          "translations": [
+            "пожалуйста"
+          ],
+          "evidence": [
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»"
+          ]
+        },
+        {
+          "key": "read|VERB",
+          "ownership": "word",
+          "translations": [
+            "перечитывает"
+          ],
+          "evidence": [
+            "Yuki writes it down and reads it back. → Юки записывает это и перечитывает."
+          ]
+        },
+        {
+          "key": "real|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "repeat|VERB",
+          "ownership": "word",
+          "translations": [
+            "повторить"
+          ],
+          "evidence": [
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»"
+          ]
+        },
+        {
+          "key": "right|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "That is right. → Верно."
+          ]
+        },
+        {
+          "key": "say|VERB",
+          "ownership": "word",
+          "translations": [
+            "говорит"
+          ],
+          "evidence": [
+            "WALKER,\" Ben says. → «Уокер», — говорит Бен."
+          ]
+        },
+        {
+          "key": "seven|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ben calls at seven o'clock. → Бен позвонит в семь часов."
+          ]
+        },
+        {
+          "key": "she|PRON",
+          "ownership": "word",
+          "translations": [
+            "она"
+          ],
+          "evidence": [
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»",
+            "Then she gives Ben her phone number. → Затем она дает Бену свой номер телефона."
+          ]
+        },
+        {
+          "key": "slowly|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ben speaks slowly. → Бен говорит медленно."
+          ]
+        },
+        {
+          "key": "speak|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Am I speaking to Yuki? → Я говорю с Юки?",
+            "Ben speaks slowly. → Бен говорит медленно."
+          ]
+        },
+        {
+          "key": "spell|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Can you spell your first name and last name? → Вы можете произнести по буквам свое имя и фамилию?"
+          ]
+        },
+        {
+          "key": "student|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "talk|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They talk about their countries and cities. → Они рассказывают о своих странах и городах."
+          ]
+        },
+        {
+          "key": "that|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "That is right. → Верно.",
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»"
+          ]
+        },
+        {
+          "key": "the|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "At the end, Ben gives Yuki his email address. → В конце Бен сообщает Юки свой адрес электронной почты.",
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "their|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Today is their first online call. → Сегодня у них первый онлайн-звонок.",
+            "They talk about their countries and cities. → Они рассказывают о своих странах и городах."
+          ]
+        },
+        {
+          "key": "then|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Then she gives Ben her phone number. → Затем она дает Бену свой номер телефона."
+          ]
+        },
+        {
+          "key": "they|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They are language partners. → Они являются языковыми партнерами.",
+            "They talk about their countries and cities. → Они рассказывают о своих странах и городах.",
+            "They check every digit. → Они проверяют каждую цифру.",
+            "They plan another call for next Tuesday. → Они планируют еще один звонок на следующий вторник."
+          ]
+        },
+        {
+          "key": "to|ADP",
+          "ownership": "word",
+          "translations": [
+            "с"
+          ],
+          "evidence": [
+            "Am I speaking to Yuki? → Я говорю с Юки?"
+          ]
+        },
+        {
+          "key": "to|PART",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "Nice to meet you. → Рад встрече."
+          ]
+        },
+        {
+          "key": "today|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Today is their first online call. → Сегодня у них первый онлайн-звонок."
+          ]
+        },
+        {
+          "key": "tuesday|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They plan another call for next Tuesday. → Они планируют еще один звонок на следующий вторник."
+          ]
+        },
+        {
+          "key": "understand|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»"
+          ]
+        },
+        {
+          "key": "use|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The call is only fifteen minutes long, but both students use real English. → Разговор длится всего пятнадцать минут, но оба студента говорят на настоящем английском языке."
+          ]
+        },
+        {
+          "key": "voice|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A Voice from Online → Голос из интернета"
+          ]
+        },
+        {
+          "key": "walker|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "WALKER,\" Ben says. → «Уокер», — говорит Бен."
+          ]
+        },
+        {
+          "key": "when|SCONJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»"
+          ]
+        },
+        {
+          "key": "write|VERB",
+          "ownership": "word",
+          "translations": [
+            "записывает"
+          ],
+          "evidence": [
+            "Yuki writes it down and reads it back. → Юки записывает это и перечитывает."
+          ]
+        },
+        {
+          "key": "yes|INTJ",
+          "ownership": "word",
+          "translations": [
+            "да"
+          ],
+          "evidence": [
+            "Yes. → Да."
+          ]
+        },
+        {
+          "key": "you|PRON",
+          "ownership": "word",
+          "translations": [
+            "вы"
+          ],
+          "evidence": [
+            "And you are Ben? → А вы Бен?",
+            "Nice to meet you. → Рад встрече.",
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»",
+            "Can you spell your first name and last name? → Вы можете произнести по буквам свое имя и фамилию?"
+          ]
+        },
+        {
+          "key": "your|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Can you spell your first name and last name? → Вы можете произнести по буквам свое имя и фамилию?"
+          ]
+        },
+        {
+          "key": "yuki|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Yuki is in Japan, and Ben is in Australia. → Юки находится в Японии, а Бен — в Австралии.",
+            "A friendly face appears on Yuki's phone. → На экране телефона Юки появляется дружелюбное лицо.",
+            "Am I speaking to Yuki? → Я говорю с Юки?",
+            "When Yuki does not understand, she asks, \"Can you repeat that, please? → Когда Юки не понимает, она спрашивает: «Не могли бы вы повторить, пожалуйста?»",
+            "At the end, Ben gives Yuki his email address. → В конце Бен сообщает Юки свой адрес электронной почты.",
+            " Yuki asks. → Юки спрашивает.",
+            "Yuki writes it down and reads it back. → Юки записывает это и перечитывает."
+          ]
+        }
+      ],
+      "corrections": [],
+      "unresolved": []
+    },
+    "fourth_pass": {
+      "status": "passed",
+      "block_decisions": [
+        {
+          "source": "nice to meet you",
+          "decision": "accepted",
+          "word_by_word_result": "Рад + ∅ + встрече + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            11
+          ]
+        },
+        {
+          "source": "can you repeat",
+          "decision": "accepted",
+          "word_by_word_result": "Не могли бы + вы + повторить",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            14
+          ]
+        },
+        {
+          "source": "first name",
+          "decision": "accepted",
+          "word_by_word_result": "∅ + имя",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            16
+          ]
+        },
+        {
+          "source": "last name",
+          "decision": "accepted",
+          "word_by_word_result": "∅ + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            16
+          ]
+        },
+        {
+          "source": "write it down",
+          "decision": "accepted",
+          "word_by_word_result": "записывает + это + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            19
+          ]
+        },
+        {
+          "source": "read it back",
+          "decision": "accepted",
+          "word_by_word_result": "перечитывает + ∅ + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            19
+          ]
+        },
+        {
+          "source": "language partners",
+          "decision": "rejected",
+          "word_by_word_result": "языковые + партнёры",
+          "reason": "обычное композиционное сочетание",
+          "segment_indexes": [
+            2
+          ]
+        },
+        {
+          "source": "online call",
+          "decision": "rejected",
+          "word_by_word_result": "онлайн + звонок",
+          "reason": "обычное композиционное сочетание",
+          "segment_indexes": [
+            3
+          ]
+        },
+        {
+          "source": "talk about",
+          "decision": "rejected",
+          "word_by_word_result": "рассказывать + о",
+          "reason": "глагол и предлог независимо сохраняют значение",
+          "segment_indexes": [
+            12
+          ]
+        },
+        {
+          "source": "email address",
+          "decision": "rejected",
+          "word_by_word_result": "электронный + адрес",
+          "reason": "значение восстанавливается из отдельных слов",
+          "segment_indexes": [
+            15
+          ]
+        },
+        {
+          "source": "fifteen minutes long",
+          "decision": "rejected",
+          "word_by_word_result": "пятнадцать + минут + длится",
+          "reason": "длительность выражается отдельными словами и перестановкой; минимального непрерывного исключения нет",
+          "segment_indexes": [
+            22
+          ]
+        }
+      ],
+      "unresolved": []
+    },
+    "absorbed_word_keys": [
+      "back|adp",
+      "down|adp",
+      "last|adj",
+      "to|part"
+    ]
+  }
+}

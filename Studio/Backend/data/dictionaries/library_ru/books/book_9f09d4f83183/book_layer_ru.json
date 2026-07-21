@@ -1,0 +1,944 @@
+{
+  "version": 1,
+  "book_id": "book_9f09d4f83183",
+  "title": "The Cooking Problem",
+  "source_lang": "en",
+  "target_lang": "ru",
+  "parallel": [
+    {
+      "source": "“This is much better,” Liam says happily.",
+      "translation": "Это намного лучше, Лиам говорит счастливо."
+    },
+    {
+      "source": "The Cooking Problem",
+      "translation": "Проблема с кулинарией"
+    },
+    {
+      "source": "Liam feels embarrassed, but Sophie laughs when she arrives.",
+      "translation": "Лиам смущается, но Софи смеется, когда она приезжает."
+    },
+    {
+      "source": "The bread is black because it stays in the oven too long.",
+      "translation": "Хлеб черный, потому что остается в духовке слишком долго."
+    },
+    {
+      "source": "At home, Liam starts cooking.",
+      "translation": "Дома Лиам начинает готовить."
+    },
+    {
+      "source": "He cuts vegetables and puts them into a pan.",
+      "translation": "Он разрезает овощи и кладет их в кастрюлю."
+    },
+    {
+      "source": "But suddenly, he smells something strange.",
+      "translation": "Но вдруг он почувствовал странный запах."
+    },
+    {
+      "source": "“Oh no!",
+      "translation": "Ой, нет."
+    },
+    {
+      "source": "” Liam says.",
+      "translation": "Лиам сказал:."
+    },
+    {
+      "source": "Later, they sit at the table and eat together.",
+      "translation": "Потом они сидят за столом и едят вместе."
+    },
+    {
+      "source": "The food is very good.",
+      "translation": "Еда очень хорошая."
+    },
+    {
+      "source": "“It’s okay,” she says kindly.",
+      "translation": "Все в порядке, говорит она вежливо."
+    },
+    {
+      "source": "“We can cook together.",
+      "translation": "Мы можем готовить вместе."
+    },
+    {
+      "source": "”",
+      "translation": ""
+    },
+    {
+      "source": "They make a new dinner with pasta and salad.",
+      "translation": "Они делают новый ужин с макаронами и салатами."
+    },
+    {
+      "source": "Sophie shows Liam how to cook the sauce correctly.",
+      "translation": "Софи показывает Лиаму, как правильно готовить соус."
+    },
+    {
+      "source": "Liam wants to cook dinner for his friend Sophie.",
+      "translation": "Лиам хочет приготовить ужин для своей подруги Софи."
+    },
+    {
+      "source": "He buys tomatoes, cheese, bread, and juice at a small shop near his house.",
+      "translation": "Он покупает помидоры, сыр, хлеб и сок в небольшом магазине рядом с его домом."
+    },
+    {
+      "source": "Sophie smiles.",
+      "translation": "София улыбается."
+    },
+    {
+      "source": "“Cooking is easier with two people.",
+      "translation": "Готовить легче с двумя людьми."
+    },
+    {
+      "source": "”",
+      "translation": ""
+    }
+  ],
+  "blocks": [
+    {
+      "source": "at home",
+      "translation": "дома"
+    },
+    {
+      "source": "cook dinner",
+      "translation": "готовить ужин"
+    },
+    {
+      "source": "cuts vegetables",
+      "translation": "режет овощи"
+    },
+    {
+      "source": "much better",
+      "translation": "намного лучше"
+    },
+    {
+      "source": "oh no",
+      "translation": "о нет"
+    },
+    {
+      "source": "puts them into",
+      "translation": "кладёт их в"
+    },
+    {
+      "source": "small shop",
+      "translation": "маленький магазин"
+    },
+    {
+      "source": "starts cooking",
+      "translation": "начинает готовить"
+    },
+    {
+      "source": "too long",
+      "translation": "слишком долго"
+    },
+    {
+      "source": "with two people",
+      "translation": "с двумя людьми"
+    }
+  ],
+  "words": [
+    {
+      "word": "The",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "этот",
+      "translations": [
+        "этот"
+      ]
+    },
+    {
+      "word": "Liam",
+      "lemma": "liam",
+      "pos": "PROPN",
+      "translation": "Лиам",
+      "translations": [
+        "Лиам",
+        "Лиаму"
+      ]
+    },
+    {
+      "word": "At",
+      "lemma": "at",
+      "pos": "ADP",
+      "translation": "у",
+      "translations": [
+        "у"
+      ]
+    },
+    {
+      "word": "Oh",
+      "lemma": "oh",
+      "pos": "INTJ",
+      "translation": "ох",
+      "translations": [
+        "ох"
+      ]
+    },
+    {
+      "word": "It",
+      "lemma": "it",
+      "pos": "PRON",
+      "translation": "это",
+      "translations": [
+        "это"
+      ]
+    },
+    {
+      "word": "They",
+      "lemma": "they",
+      "pos": "PRON",
+      "translation": "они",
+      "translations": [
+        "они"
+      ]
+    },
+    {
+      "word": "Later",
+      "lemma": "later",
+      "pos": "ADV",
+      "translation": "позже",
+      "translations": [
+        "позже"
+      ]
+    },
+    {
+      "word": "This",
+      "lemma": "this",
+      "pos": "PRON",
+      "translation": "это",
+      "translations": [
+        "это"
+      ]
+    },
+    {
+      "word": "Sophie",
+      "lemma": "sophie",
+      "pos": "NOUN",
+      "translation": "Софи",
+      "translations": [
+        "Софи",
+        "София"
+      ]
+    },
+    {
+      "word": "Cooking",
+      "lemma": "cooking",
+      "pos": "PROPN",
+      "translation": "Готовка",
+      "translations": [
+        "Готовка",
+        "готовить"
+      ]
+    },
+    {
+      "word": "wants",
+      "lemma": "want",
+      "pos": "VERB",
+      "translation": "хотеть",
+      "translations": [
+        "хотеть"
+      ]
+    },
+    {
+      "word": "home",
+      "lemma": "home",
+      "pos": "NOUN",
+      "translation": "дом",
+      "translations": [
+        "дом",
+        "Дома"
+      ]
+    },
+    {
+      "word": "no",
+      "lemma": "no",
+      "pos": "INTJ",
+      "translation": "нет",
+      "translations": [
+        "нет"
+      ]
+    },
+    {
+      "word": "bread",
+      "lemma": "bread",
+      "pos": "NOUN",
+      "translation": "хлеб",
+      "translations": [
+        "хлеб"
+      ]
+    },
+    {
+      "word": "feels",
+      "lemma": "feel",
+      "pos": "VERB",
+      "translation": "чувствовать",
+      "translations": [
+        "чувствовать"
+      ]
+    },
+    {
+      "word": "s",
+      "lemma": "s",
+      "pos": "",
+      "translation": "принадлежность",
+      "translations": [
+        "принадлежность"
+      ]
+    },
+    {
+      "word": "make",
+      "lemma": "make",
+      "pos": "VERB",
+      "translation": "делать",
+      "translations": [
+        "делать",
+        "делают"
+      ]
+    },
+    {
+      "word": "is",
+      "lemma": "be",
+      "pos": "AUX",
+      "translation": "быть",
+      "translations": [
+        "быть"
+      ]
+    },
+    {
+      "word": "smiles",
+      "lemma": "smile",
+      "pos": "VERB",
+      "translation": "улыбаться",
+      "translations": [
+        "улыбаться"
+      ]
+    },
+    {
+      "word": "Problem",
+      "lemma": "problem",
+      "pos": "PROPN",
+      "translation": "Проблема",
+      "translations": [
+        "Проблема"
+      ]
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "PART",
+      "translation": "чтобы",
+      "translations": [
+        "чтобы"
+      ]
+    },
+    {
+      "word": "embarrassed",
+      "lemma": "embarrassed",
+      "pos": "ADJ",
+      "translation": "смущённый",
+      "translations": [
+        "смущённый"
+      ]
+    },
+    {
+      "word": "okay",
+      "lemma": "okay",
+      "pos": "ADJ",
+      "translation": "хорошо",
+      "translations": [
+        "хорошо"
+      ]
+    },
+    {
+      "word": "a",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "один",
+      "translations": [
+        "один"
+      ]
+    },
+    {
+      "word": "sit",
+      "lemma": "sit",
+      "pos": "VERB",
+      "translation": "сидеть",
+      "translations": [
+        "сидеть",
+        "сидят"
+      ]
+    },
+    {
+      "word": "much",
+      "lemma": "much",
+      "pos": "ADV",
+      "translation": "много",
+      "translations": [
+        "много"
+      ]
+    },
+    {
+      "word": "Cooking",
+      "lemma": "cooking",
+      "pos": "NOUN",
+      "translation": "готовка",
+      "translations": [
+        "готовка",
+        "готовить"
+      ]
+    },
+    {
+      "word": "cook",
+      "lemma": "cook",
+      "pos": "VERB",
+      "translation": "готовить",
+      "translations": [
+        "готовить"
+      ]
+    },
+    {
+      "word": "starts",
+      "lemma": "start",
+      "pos": "VERB",
+      "translation": "начинать",
+      "translations": [
+        "начинать",
+        "начинает"
+      ]
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "говорить",
+      "translations": [
+        "говорить",
+        "говорит"
+      ]
+    },
+    {
+      "word": "black",
+      "lemma": "black",
+      "pos": "ADJ",
+      "translation": "чёрный",
+      "translations": [
+        "чёрный"
+      ]
+    },
+    {
+      "word": "but",
+      "lemma": "but",
+      "pos": "CCONJ",
+      "translation": "но",
+      "translations": [
+        "но"
+      ]
+    },
+    {
+      "word": "she",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "она",
+      "translations": [
+        "она"
+      ]
+    },
+    {
+      "word": "new",
+      "lemma": "new",
+      "pos": "ADJ",
+      "translation": "новый",
+      "translations": [
+        "новый"
+      ]
+    },
+    {
+      "word": "better",
+      "lemma": "well",
+      "pos": "ADJ",
+      "translation": "хорошо",
+      "translations": [
+        "хорошо"
+      ]
+    },
+    {
+      "word": "dinner",
+      "lemma": "dinner",
+      "pos": "NOUN",
+      "translation": "ужин",
+      "translations": [
+        "ужин"
+      ]
+    },
+    {
+      "word": "because",
+      "lemma": "because",
+      "pos": "SCONJ",
+      "translation": "потому что"
+    },
+    {
+      "word": "Sophie",
+      "lemma": "sophie",
+      "pos": "PROPN",
+      "translation": "Софи",
+      "translations": [
+        "Софи",
+        "София"
+      ]
+    },
+    {
+      "word": "easier",
+      "lemma": "easy",
+      "pos": "ADJ",
+      "translation": "лёгкий",
+      "translations": [
+        "лёгкий"
+      ]
+    },
+    {
+      "word": "for",
+      "lemma": "for",
+      "pos": "ADP",
+      "translation": "для",
+      "translations": [
+        "для"
+      ]
+    },
+    {
+      "word": "He",
+      "lemma": "he",
+      "pos": "PRON",
+      "translation": "он",
+      "translations": [
+        "он"
+      ]
+    },
+    {
+      "word": "laughs",
+      "lemma": "laugh",
+      "pos": "VERB",
+      "translation": "смеяться",
+      "translations": [
+        "смеяться"
+      ]
+    },
+    {
+      "word": "kindly",
+      "lemma": "kindly",
+      "pos": "ADV",
+      "translation": "добро",
+      "translations": [
+        "добро"
+      ]
+    },
+    {
+      "word": "with",
+      "lemma": "with",
+      "pos": "ADP",
+      "translation": "с",
+      "translations": [
+        "с"
+      ]
+    },
+    {
+      "word": "table",
+      "lemma": "table",
+      "pos": "NOUN",
+      "translation": "стол",
+      "translations": [
+        "стол",
+        "столом"
+      ]
+    },
+    {
+      "word": "his",
+      "lemma": "his",
+      "pos": "PRON",
+      "translation": "его",
+      "translations": [
+        "его"
+      ]
+    },
+    {
+      "word": "cuts",
+      "lemma": "cut",
+      "pos": "VERB",
+      "translation": "резать",
+      "translations": [
+        "резать"
+      ]
+    },
+    {
+      "word": "stays",
+      "lemma": "stay",
+      "pos": "VERB",
+      "translation": "оставаться",
+      "translations": [
+        "оставаться"
+      ]
+    },
+    {
+      "word": "when",
+      "lemma": "when",
+      "pos": "SCONJ",
+      "translation": "когда",
+      "translations": [
+        "когда"
+      ]
+    },
+    {
+      "word": "We",
+      "lemma": "we",
+      "pos": "PRON",
+      "translation": "мы",
+      "translations": [
+        "мы"
+      ]
+    },
+    {
+      "word": "pasta",
+      "lemma": "pasta",
+      "pos": "NOUN",
+      "translation": "паста",
+      "translations": [
+        "паста"
+      ]
+    },
+    {
+      "word": "and",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "и",
+      "translations": [
+        "и"
+      ]
+    },
+    {
+      "word": "happily",
+      "lemma": "happily",
+      "pos": "ADV",
+      "translation": "счастливо",
+      "translations": [
+        "счастливо"
+      ]
+    },
+    {
+      "word": "two",
+      "lemma": "two",
+      "pos": "NUM",
+      "translation": "два",
+      "translations": [
+        "два"
+      ]
+    },
+    {
+      "word": "friend",
+      "lemma": "friend",
+      "pos": "NOUN",
+      "translation": "друг",
+      "translations": [
+        "друг"
+      ]
+    },
+    {
+      "word": "vegetables",
+      "lemma": "vegetable",
+      "pos": "NOUN",
+      "translation": "овощ",
+      "translations": [
+        "овощ",
+        "овощи"
+      ]
+    },
+    {
+      "word": "in",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "в",
+      "translations": [
+        "в"
+      ]
+    },
+    {
+      "word": "can",
+      "lemma": "can",
+      "pos": "AUX",
+      "translation": "мочь",
+      "translations": [
+        "мочь"
+      ]
+    },
+    {
+      "word": "eat",
+      "lemma": "eat",
+      "pos": "VERB",
+      "translation": "есть",
+      "translations": [
+        "есть"
+      ]
+    },
+    {
+      "word": "people",
+      "lemma": "people",
+      "pos": "NOUN",
+      "translation": "люди",
+      "translations": [
+        "люди",
+        "людьми"
+      ]
+    },
+    {
+      "word": "arrives",
+      "lemma": "arrive",
+      "pos": "VERB",
+      "translation": "прибывать",
+      "translations": [
+        "прибывать"
+      ]
+    },
+    {
+      "word": "salad",
+      "lemma": "salad",
+      "pos": "NOUN",
+      "translation": "салат",
+      "translations": [
+        "салат",
+        "салатами"
+      ]
+    },
+    {
+      "word": "together",
+      "lemma": "together",
+      "pos": "ADV",
+      "translation": "вместе",
+      "translations": [
+        "вместе"
+      ]
+    },
+    {
+      "word": "puts",
+      "lemma": "put",
+      "pos": "VERB",
+      "translation": "класть",
+      "translations": [
+        "класть"
+      ]
+    },
+    {
+      "word": "oven",
+      "lemma": "oven",
+      "pos": "ADJ",
+      "translation": "духовой",
+      "translations": [
+        "духовой",
+        "духовке"
+      ]
+    },
+    {
+      "word": "buys",
+      "lemma": "buy",
+      "pos": "VERB",
+      "translation": "покупать",
+      "translations": [
+        "покупать",
+        "покупает"
+      ]
+    },
+    {
+      "word": "too",
+      "lemma": "too",
+      "pos": "ADV",
+      "translation": "слишком",
+      "translations": [
+        "слишком"
+      ]
+    },
+    {
+      "word": "shows",
+      "lemma": "show",
+      "pos": "VERB",
+      "translation": "показывать",
+      "translations": [
+        "показывать",
+        "показывает"
+      ]
+    },
+    {
+      "word": "food",
+      "lemma": "food",
+      "pos": "NOUN",
+      "translation": "еда",
+      "translations": [
+        "еда"
+      ]
+    },
+    {
+      "word": "tomatoes",
+      "lemma": "tomato",
+      "pos": "NOUN",
+      "translation": "помидор",
+      "translations": [
+        "помидор",
+        "помидоры"
+      ]
+    },
+    {
+      "word": "into",
+      "lemma": "into",
+      "pos": "ADP",
+      "translation": "внутрь",
+      "translations": [
+        "внутрь"
+      ]
+    },
+    {
+      "word": "long",
+      "lemma": "long",
+      "pos": "ADJ",
+      "translation": "длинный",
+      "translations": [
+        "длинный"
+      ]
+    },
+    {
+      "word": "cheese",
+      "lemma": "cheese",
+      "pos": "NOUN",
+      "translation": "сыр",
+      "translations": [
+        "сыр"
+      ]
+    },
+    {
+      "word": "how",
+      "lemma": "how",
+      "pos": "SCONJ",
+      "translation": "как",
+      "translations": [
+        "как"
+      ]
+    },
+    {
+      "word": "very",
+      "lemma": "very",
+      "pos": "ADV",
+      "translation": "очень",
+      "translations": [
+        "очень"
+      ]
+    },
+    {
+      "word": "pan",
+      "lemma": "pan",
+      "pos": "NOUN",
+      "translation": "сковорода",
+      "translations": [
+        "сковорода"
+      ]
+    },
+    {
+      "word": "good",
+      "lemma": "good",
+      "pos": "ADJ",
+      "translation": "хороший",
+      "translations": [
+        "хороший",
+        "хорошая"
+      ]
+    },
+    {
+      "word": "juice",
+      "lemma": "juice",
+      "pos": "NOUN",
+      "translation": "сок",
+      "translations": [
+        "сок"
+      ]
+    },
+    {
+      "word": "suddenly",
+      "lemma": "suddenly",
+      "pos": "ADV",
+      "translation": "вдруг",
+      "translations": [
+        "вдруг"
+      ]
+    },
+    {
+      "word": "sauce",
+      "lemma": "sauce",
+      "pos": "NOUN",
+      "translation": "соус",
+      "translations": [
+        "соус"
+      ]
+    },
+    {
+      "word": "smells",
+      "lemma": "smell",
+      "pos": "VERB",
+      "translation": "пахнуть",
+      "translations": [
+        "пахнуть"
+      ]
+    },
+    {
+      "word": "correctly",
+      "lemma": "correctly",
+      "pos": "ADV",
+      "translation": "правильно",
+      "translations": [
+        "правильно"
+      ]
+    },
+    {
+      "word": "small",
+      "lemma": "small",
+      "pos": "ADJ",
+      "translation": "маленький",
+      "translations": [
+        "маленький"
+      ]
+    },
+    {
+      "word": "something",
+      "lemma": "something",
+      "pos": "PRON",
+      "translation": "что-то"
+    },
+    {
+      "word": "shop",
+      "lemma": "shop",
+      "pos": "NOUN",
+      "translation": "магазин",
+      "translations": [
+        "магазин",
+        "магазине"
+      ]
+    },
+    {
+      "word": "strange",
+      "lemma": "strange",
+      "pos": "ADJ",
+      "translation": "странный",
+      "translations": [
+        "странный"
+      ]
+    },
+    {
+      "word": "near",
+      "lemma": "near",
+      "pos": "ADP",
+      "translation": "рядом",
+      "translations": [
+        "рядом"
+      ]
+    },
+    {
+      "word": "house",
+      "lemma": "house",
+      "pos": "NOUN",
+      "translation": "дом",
+      "translations": [
+        "дом",
+        "домом"
+      ]
+    }
+  ]
+}

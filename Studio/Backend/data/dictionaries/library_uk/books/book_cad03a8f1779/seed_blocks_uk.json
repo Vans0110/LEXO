@@ -1,0 +1,136 @@
+[
+  {
+    "source": "sit down",
+    "type": "phrasal_verb",
+    "source_forms": [
+      "sits down"
+    ],
+    "translation": "сідає",
+    "explanation": "Означає перейти в сидяче положення.",
+    "components": [
+      {
+        "source": "sit",
+        "lemma": "sit",
+        "pos": "VERB",
+        "translation": "сідає"
+      },
+      {
+        "source": "down",
+        "lemma": "down",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "there are",
+    "type": "grammar_construction",
+    "source_forms": [
+      "There are"
+    ],
+    "translation": "є",
+    "explanation": "Повідомляє про наявність людей або предметів.",
+    "components": [
+      {
+        "source": "there",
+        "lemma": "there",
+        "pos": "PRON",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "are",
+        "lemma": "be",
+        "pos": "VERB",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "i am sorry",
+    "type": "fixed_expression",
+    "source_forms": [
+      "I am sorry"
+    ],
+    "translation": "Вибачте",
+    "explanation": "Усталена формула вибачення.",
+    "components": [
+      {
+        "source": "I",
+        "lemma": "i",
+        "pos": "PRON",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "am",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "sorry",
+        "lemma": "sorry",
+        "pos": "ADJ",
+        "translation": "Вибачте"
+      }
+    ]
+  },
+  {
+    "source": "next to",
+    "type": "prepositional_group",
+    "source_forms": [
+      "next to"
+    ],
+    "translation": "поруч з",
+    "explanation": "Указує на розташування безпосередньо біля когось.",
+    "components": [
+      {
+        "source": "next",
+        "lemma": "next",
+        "pos": "ADV",
+        "translation": "поруч"
+      },
+      {
+        "source": "to",
+        "lemma": "to",
+        "pos": "ADP",
+        "translation": "з"
+      }
+    ]
+  },
+  {
+    "source": "the rest of",
+    "type": "grammar_construction",
+    "source_forms": [
+      "the rest of"
+    ],
+    "translation": "кінця",
+    "explanation": "Указує на частину часу або кількості, що залишилася.",
+    "components": [
+      {
+        "source": "the",
+        "lemma": "the",
+        "pos": "DET",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "rest",
+        "lemma": "rest",
+        "pos": "NOUN",
+        "translation": "кінця"
+      },
+      {
+        "source": "of",
+        "lemma": "of",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  }
+]

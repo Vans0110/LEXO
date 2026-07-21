@@ -1,0 +1,2299 @@
+{
+  "version": 1,
+  "book_id": "book_21b2a5a230d7",
+  "title": "Two People, One City",
+  "source_lang": "en",
+  "target_lang": "ru",
+  "parallel": [
+    {
+      "source": "Two People, One City",
+      "translation": "Два народа, один город"
+    },
+    {
+      "source": "Mina is at a bus stop.",
+      "translation": "Мина на автобусной остановке."
+    },
+    {
+      "source": "A young man looks at the street numbers.",
+      "translation": "Молодой человек смотрит на номера улиц."
+    },
+    {
+      "source": "Excuse me,\" he says.",
+      "translation": "Простите меня, он говорит."
+    },
+    {
+      "source": "Is this Pine Street?",
+      "translation": "Это Пайн Стрит?"
+    },
+    {
+      "source": "Yes, it is,\" Mina answers.",
+      "translation": "Да, это так, отвечает Мина."
+    },
+    {
+      "source": "Thank you.",
+      "translation": "Благодарю вас."
+    },
+    {
+      "source": "I am Leo.",
+      "translation": "Я Лео."
+    },
+    {
+      "source": "I am new in this city.",
+      "translation": "Я новый в этом городе."
+    },
+    {
+      "source": "I am Mina.",
+      "translation": "Я - Мина."
+    },
+    {
+      "source": "What is your home country?",
+      "translation": "Какая у вас родина?"
+    },
+    {
+      "source": "Italy.",
+      "translation": "Италия."
+    },
+    {
+      "source": "My new address is twenty-four Pine Street.",
+      "translation": "Мой новый адрес - Pine Street двадцать четыре."
+    },
+    {
+      "source": "Mina laughs.",
+      "translation": "Мина смеется."
+    },
+    {
+      "source": "Really?",
+      "translation": "Серьезно?"
+    },
+    {
+      "source": "I live at number twenty, near your building.",
+      "translation": "Я живу под номером двадцать, рядом с вашим зданием."
+    },
+    {
+      "source": "We are neighbours.",
+      "translation": "Мы - соседи."
+    },
+    {
+      "source": "Leo is twenty years old.",
+      "translation": "Лео - двадцать лет."
+    },
+    {
+      "source": "Mina is nineteen.",
+      "translation": "У Мины девятнадцать."
+    },
+    {
+      "source": "They both study at City College.",
+      "translation": "Они оба учатся в Сити Колледже."
+    },
+    {
+      "source": "Leo studies art, and Mina studies English.",
+      "translation": "Лео изучает искусство, а Мина - английский."
+    },
+    {
+      "source": "Their bus is number eight, but it is late.",
+      "translation": "Их автобус номер восемь, но уже поздно."
+    },
+    {
+      "source": "They talk while they wait.",
+      "translation": "Они разговаривают, пока ждут."
+    },
+    {
+      "source": "Mina gives Leo her phone number.",
+      "translation": "Мина дает Лео свой номер телефона."
+    },
+    {
+      "source": "He reads the digits back to her, and Mina says they are correct.",
+      "translation": "Он читает ей цифры, и Мина говорит, что они верны."
+    },
+    {
+      "source": "When the bus arrives, they sit together.",
+      "translation": "Когда приезжает автобус, они сидят вместе."
+    },
+    {
+      "source": "Leo came to the stop as a stranger.",
+      "translation": "Лео пришел на остановку как незнакомец."
+    },
+    {
+      "source": "Ten minutes later, he has a new neighbour and a new friend.",
+      "translation": "Спустя десять минут у него появился новый сосед и новый друг."
+    }
+  ],
+  "words": [
+    {
+      "word": "a",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "address",
+      "lemma": "address",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "адрес",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "and",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "и",
+      "translations": [
+        "и"
+      ],
+      "dictionary_translation": "а",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "answers",
+      "lemma": "answer",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "отвечать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "arrives",
+      "lemma": "arrive",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "приезжать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "art",
+      "lemma": "art",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "искусство",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "as",
+      "lemma": "as",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "как",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "at",
+      "lemma": "at",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на"
+      ],
+      "dictionary_translation": "в",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "back",
+      "lemma": "back",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "назад",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "is",
+      "lemma": "be",
+      "pos": "AUX",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span"
+    },
+    {
+      "word": "both",
+      "lemma": "both",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "оба",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "building",
+      "lemma": "building",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "здание",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "bus",
+      "lemma": "bus",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "автобус",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "but",
+      "lemma": "but",
+      "pos": "CCONJ",
+      "translation": "но",
+      "translations": [
+        "но"
+      ],
+      "dictionary_translation": "но",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "City",
+      "lemma": "city",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "город",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "City",
+      "lemma": "city",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "город",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "College",
+      "lemma": "college",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "колледж",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "came",
+      "lemma": "come",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "приходить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "correct",
+      "lemma": "correct",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "правильный",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "country",
+      "lemma": "country",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "страна",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "digits",
+      "lemma": "digit",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "цифра",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "eight",
+      "lemma": "eight",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "восемь",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "English",
+      "lemma": "english",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "английский",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Excuse",
+      "lemma": "excuse",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "простить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "friend",
+      "lemma": "friend",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "друг",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "gives",
+      "lemma": "give",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "давать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "has",
+      "lemma": "have",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "иметь",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "he",
+      "lemma": "he",
+      "pos": "PRON",
+      "translation": "он",
+      "translations": [
+        "он"
+      ],
+      "dictionary_translation": "он",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "her",
+      "lemma": "her",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "она",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "home",
+      "lemma": "home",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "родина",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "me",
+      "lemma": "i",
+      "pos": "PRON",
+      "translation": "я",
+      "translations": [
+        "я"
+      ],
+      "dictionary_translation": "я",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "in",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "в",
+      "translations": [
+        "в"
+      ],
+      "dictionary_translation": "в",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "it",
+      "lemma": "it",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "оно",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Italy",
+      "lemma": "italy",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Италия",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "late",
+      "lemma": "late",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "поздний",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "later",
+      "lemma": "later",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "позже",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "laughs",
+      "lemma": "laugh",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "смех",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Leo",
+      "lemma": "leo",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Лео",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "live",
+      "lemma": "live",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "жить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "looks",
+      "lemma": "look",
+      "pos": "VERB",
+      "translation": "смотрит",
+      "translations": [
+        "смотрит"
+      ],
+      "dictionary_translation": "смотреть",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "man",
+      "lemma": "man",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "мужчина",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Mina",
+      "lemma": "mina",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Мина",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "minutes",
+      "lemma": "minute",
+      "pos": "NOUN",
+      "translation": "минут",
+      "translations": [
+        "минут"
+      ],
+      "dictionary_translation": "минута",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "My",
+      "lemma": "my",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "мой",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "near",
+      "lemma": "near",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "рядом",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "neighbours",
+      "lemma": "neighbour",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "сосед",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "new",
+      "lemma": "new",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "новый",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "nineteen",
+      "lemma": "nineteen",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "девятнадцать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "numbers",
+      "lemma": "number",
+      "pos": "NOUN",
+      "translation": "номера",
+      "translations": [
+        "номера",
+        "номер"
+      ],
+      "dictionary_translation": "номер",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "old",
+      "lemma": "old",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span"
+    },
+    {
+      "word": "One",
+      "lemma": "one",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "People",
+      "lemma": "people",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "люди",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "phone",
+      "lemma": "phone",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "телефон",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Pine",
+      "lemma": "pine",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "Пайн",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "reads",
+      "lemma": "read",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "читать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Really",
+      "lemma": "really",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "действительно",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "говорит",
+      "translations": [
+        "говорит"
+      ],
+      "dictionary_translation": "говорить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "her",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "она",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "sit",
+      "lemma": "sit",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "сидеть",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "stop",
+      "lemma": "stop",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "остановка",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "stranger",
+      "lemma": "stranger",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "незнакомец",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "street",
+      "lemma": "street",
+      "pos": "NOUN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "улица",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Street",
+      "lemma": "street",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "улица",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "studies",
+      "lemma": "studies",
+      "pos": "PROPN",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "учение",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "study",
+      "lemma": "study",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "учить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "talk",
+      "lemma": "talk",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "говорить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Ten",
+      "lemma": "ten",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "десять",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Thank",
+      "lemma": "thank",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "благодарить",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "the",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "этот",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Their",
+      "lemma": "their",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "их",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "They",
+      "lemma": "they",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "они",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "this",
+      "lemma": "this",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "это",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на"
+      ],
+      "dictionary_translation": "к",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "together",
+      "lemma": "together",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "вместе",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "twenty",
+      "lemma": "twenty",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "двадцать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "twenty-four",
+      "lemma": "twenty-four",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "24",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Two",
+      "lemma": "two",
+      "pos": "NUM",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "два",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "wait",
+      "lemma": "wait",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "ждать",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "We",
+      "lemma": "we",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "мы",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "What",
+      "lemma": "what",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "что",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "When",
+      "lemma": "when",
+      "pos": "SCONJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "когда",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "while",
+      "lemma": "while",
+      "pos": "SCONJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "пока",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "years",
+      "lemma": "year",
+      "pos": "NOUN",
+      "translation": "лет",
+      "translations": [
+        "лет"
+      ],
+      "dictionary_translation": "год",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Yes",
+      "lemma": "yes",
+      "pos": "INTJ",
+      "translation": "да",
+      "translations": [
+        "да"
+      ],
+      "dictionary_translation": "да",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "you",
+      "lemma": "you",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "ты",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "young",
+      "lemma": "young",
+      "pos": "ADJ",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "молодой",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "your",
+      "lemma": "your",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "твой",
+      "dictionary_translation_source": "skill_fallback"
+    }
+  ],
+  "blocks": [
+    {
+      "source": "years old",
+      "translation": "лет",
+      "type": "grammar_construction",
+      "explanation": "Используется после числа, чтобы назвать возраст человека.",
+      "components": [
+        {
+          "source": "years",
+          "lemma": "year",
+          "pos": "NOUN",
+          "translation": "лет"
+        },
+        {
+          "source": "old",
+          "lemma": "old",
+          "pos": "ADJ",
+          "translation": "",
+          "empty_reason": "значение возраста выражено всей конструкцией"
+        }
+      ],
+      "source_forms": [
+        "years old"
+      ]
+    }
+  ],
+  "book_layer_audit": {
+    "version": 4,
+    "method": "codex_verified_occurrence_word_to_word",
+    "reviewed_segments": [
+      {
+        "source_text": "Two People, One City",
+        "target_text": "Два народа, один город",
+        "status": "covered",
+        "word_keys": [
+          "city|NOUN",
+          "one|NUM",
+          "people|PROPN",
+          "two|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Mina is at a bus stop.",
+        "target_text": "Мина на автобусной остановке.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "a|DET",
+          "be|AUX",
+          "bus|NOUN",
+          "mina|PROPN",
+          "stop|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "A young man looks at the street numbers.",
+        "target_text": "Молодой человек смотрит на номера улиц.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "a|DET",
+          "look|VERB",
+          "man|NOUN",
+          "number|NOUN",
+          "street|NOUN",
+          "the|DET",
+          "young|ADJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Excuse me,\" he says.",
+        "target_text": "Простите меня, он говорит.",
+        "status": "covered",
+        "word_keys": [
+          "excuse|VERB",
+          "he|PRON",
+          "i|PRON",
+          "say|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Is this Pine Street?",
+        "target_text": "Это Пайн Стрит?",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "pine|PROPN",
+          "street|PROPN",
+          "this|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Yes, it is,\" Mina answers.",
+        "target_text": "Да, это так, отвечает Мина.",
+        "status": "covered",
+        "word_keys": [
+          "answer|VERB",
+          "be|AUX",
+          "it|PRON",
+          "mina|PROPN",
+          "yes|INTJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Thank you.",
+        "target_text": "Благодарю вас.",
+        "status": "covered",
+        "word_keys": [
+          "thank|VERB",
+          "you|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am Leo.",
+        "target_text": "Я Лео.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "i|PRON",
+          "leo|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am new in this city.",
+        "target_text": "Я новый в этом городе.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "city|NOUN",
+          "in|ADP",
+          "i|PRON",
+          "new|ADJ",
+          "this|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am Mina.",
+        "target_text": "Я - Мина.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "i|PRON",
+          "mina|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "What is your home country?",
+        "target_text": "Какая у вас родина?",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "country|NOUN",
+          "home|NOUN",
+          "what|PRON",
+          "your|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Italy.",
+        "target_text": "Италия.",
+        "status": "covered",
+        "word_keys": [
+          "italy|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "My new address is twenty-four Pine Street.",
+        "target_text": "Мой новый адрес - Pine Street двадцать четыре.",
+        "status": "covered",
+        "word_keys": [
+          "address|NOUN",
+          "be|AUX",
+          "my|PRON",
+          "new|ADJ",
+          "pine|PROPN",
+          "street|PROPN",
+          "twenty-four|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Mina laughs.",
+        "target_text": "Мина смеется.",
+        "status": "covered",
+        "word_keys": [
+          "laugh|NOUN",
+          "mina|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Really?",
+        "target_text": "Серьезно?",
+        "status": "covered",
+        "word_keys": [
+          "really|ADV"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I live at number twenty, near your building.",
+        "target_text": "Я живу под номером двадцать, рядом с вашим зданием.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "building|NOUN",
+          "i|PRON",
+          "live|VERB",
+          "near|ADP",
+          "number|NOUN",
+          "twenty|NUM",
+          "your|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "We are neighbours.",
+        "target_text": "Мы - соседи.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "neighbour|NOUN",
+          "we|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Leo is twenty years old.",
+        "target_text": "Лео - двадцать лет.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "leo|PROPN",
+          "old|ADJ",
+          "twenty|NUM",
+          "year|NOUN"
+        ],
+        "block_sources": [
+          "years old"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "Mina is nineteen.",
+        "target_text": "У Мины девятнадцать.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "mina|PROPN",
+          "nineteen|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "They both study at City College.",
+        "target_text": "Они оба учатся в Сити Колледже.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "both|PRON",
+          "city|PROPN",
+          "college|PROPN",
+          "study|VERB",
+          "they|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Leo studies art, and Mina studies English.",
+        "target_text": "Лео изучает искусство, а Мина - английский.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "art|NOUN",
+          "english|PROPN",
+          "leo|PROPN",
+          "mina|PROPN",
+          "studies|PROPN",
+          "study|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Their bus is number eight, but it is late.",
+        "target_text": "Их автобус номер восемь, но уже поздно.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "bus|NOUN",
+          "but|CCONJ",
+          "eight|NUM",
+          "it|PRON",
+          "late|ADJ",
+          "number|NOUN",
+          "their|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "They talk while they wait.",
+        "target_text": "Они разговаривают, пока ждут.",
+        "status": "covered",
+        "word_keys": [
+          "talk|VERB",
+          "they|PRON",
+          "wait|VERB",
+          "while|SCONJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Mina gives Leo her phone number.",
+        "target_text": "Мина дает Лео свой номер телефона.",
+        "status": "covered",
+        "word_keys": [
+          "give|VERB",
+          "her|PRON",
+          "leo|PROPN",
+          "mina|PROPN",
+          "number|NOUN",
+          "phone|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "He reads the digits back to her, and Mina says they are correct.",
+        "target_text": "Он читает ей цифры, и Мина говорит, что они верны.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "back|ADV",
+          "be|AUX",
+          "correct|ADJ",
+          "digit|NOUN",
+          "he|PRON",
+          "mina|PROPN",
+          "read|VERB",
+          "say|VERB",
+          "she|PRON",
+          "they|PRON",
+          "the|DET",
+          "to|ADP"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "When the bus arrives, they sit together.",
+        "target_text": "Когда приезжает автобус, они сидят вместе.",
+        "status": "covered",
+        "word_keys": [
+          "arrive|VERB",
+          "bus|NOUN",
+          "sit|VERB",
+          "they|PRON",
+          "the|DET",
+          "together|ADV",
+          "when|SCONJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Leo came to the stop as a stranger.",
+        "target_text": "Лео пришел на остановку как незнакомец.",
+        "status": "covered",
+        "word_keys": [
+          "as|ADP",
+          "a|DET",
+          "come|VERB",
+          "leo|PROPN",
+          "stop|NOUN",
+          "stranger|NOUN",
+          "the|DET",
+          "to|ADP"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Ten minutes later, he has a new neighbour and a new friend.",
+        "target_text": "Спустя десять минут у него появился новый сосед и новый друг.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "a|DET",
+          "friend|NOUN",
+          "have|VERB",
+          "he|PRON",
+          "later|ADV",
+          "minute|NOUN",
+          "neighbour|NOUN",
+          "new|ADJ",
+          "ten|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      }
+    ],
+    "second_pass": {
+      "status": "passed",
+      "corrections": [],
+      "unresolved": []
+    },
+    "third_pass": {
+      "status": "passed",
+      "word_decisions": [
+        {
+          "key": "a|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mina is at a bus stop. → Мина на автобусной остановке.",
+            "A young man looks at the street numbers. → Молодой человек смотрит на номера улиц.",
+            "Leo came to the stop as a stranger. → Лео пришел на остановку как незнакомец.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "address|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "My new address is twenty-four Pine Street. → Мой новый адрес - Pine Street двадцать четыре."
+          ]
+        },
+        {
+          "key": "and|CCONJ",
+          "ownership": "mixed",
+          "translations": [
+            "и"
+          ],
+          "evidence": [
+            "Leo studies art, and Mina studies English. → Лео изучает искусство, а Мина - английский.",
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "answer|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Yes, it is,\" Mina answers. → Да, это так, отвечает Мина."
+          ]
+        },
+        {
+          "key": "arrive|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "When the bus arrives, they sit together. → Когда приезжает автобус, они сидят вместе."
+          ]
+        },
+        {
+          "key": "art|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Leo studies art, and Mina studies English. → Лео изучает искусство, а Мина - английский."
+          ]
+        },
+        {
+          "key": "as|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Leo came to the stop as a stranger. → Лео пришел на остановку как незнакомец."
+          ]
+        },
+        {
+          "key": "at|ADP",
+          "ownership": "mixed",
+          "translations": [
+            "на"
+          ],
+          "evidence": [
+            "Mina is at a bus stop. → Мина на автобусной остановке.",
+            "A young man looks at the street numbers. → Молодой человек смотрит на номера улиц.",
+            "I live at number twenty, near your building. → Я живу под номером двадцать, рядом с вашим зданием.",
+            "They both study at City College. → Они оба учатся в Сити Колледже."
+          ]
+        },
+        {
+          "key": "back|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны."
+          ]
+        },
+        {
+          "key": "be|AUX",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "Mina is at a bus stop. → Мина на автобусной остановке.",
+            "Is this Pine Street? → Это Пайн Стрит?",
+            "Yes, it is,\" Mina answers. → Да, это так, отвечает Мина.",
+            "I am Leo. → Я Лео.",
+            "I am new in this city. → Я новый в этом городе.",
+            "I am Mina. → Я - Мина.",
+            "What is your home country? → Какая у вас родина?",
+            "My new address is twenty-four Pine Street. → Мой новый адрес - Pine Street двадцать четыре.",
+            "We are neighbours. → Мы - соседи.",
+            "Leo is twenty years old. → Лео - двадцать лет.",
+            "Mina is nineteen. → У Мины девятнадцать.",
+            "Their bus is number eight, but it is late. → Их автобус номер восемь, но уже поздно.",
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны."
+          ]
+        },
+        {
+          "key": "both|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They both study at City College. → Они оба учатся в Сити Колледже."
+          ]
+        },
+        {
+          "key": "building|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I live at number twenty, near your building. → Я живу под номером двадцать, рядом с вашим зданием."
+          ]
+        },
+        {
+          "key": "bus|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mina is at a bus stop. → Мина на автобусной остановке.",
+            "Their bus is number eight, but it is late. → Их автобус номер восемь, но уже поздно.",
+            "When the bus arrives, they sit together. → Когда приезжает автобус, они сидят вместе."
+          ]
+        },
+        {
+          "key": "but|CCONJ",
+          "ownership": "word",
+          "translations": [
+            "но"
+          ],
+          "evidence": [
+            "Their bus is number eight, but it is late. → Их автобус номер восемь, но уже поздно."
+          ]
+        },
+        {
+          "key": "city|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Two People, One City → Два народа, один город",
+            "I am new in this city. → Я новый в этом городе."
+          ]
+        },
+        {
+          "key": "city|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They both study at City College. → Они оба учатся в Сити Колледже."
+          ]
+        },
+        {
+          "key": "college|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They both study at City College. → Они оба учатся в Сити Колледже."
+          ]
+        },
+        {
+          "key": "come|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Leo came to the stop as a stranger. → Лео пришел на остановку как незнакомец."
+          ]
+        },
+        {
+          "key": "correct|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны."
+          ]
+        },
+        {
+          "key": "country|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "What is your home country? → Какая у вас родина?"
+          ]
+        },
+        {
+          "key": "digit|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны."
+          ]
+        },
+        {
+          "key": "eight|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Their bus is number eight, but it is late. → Их автобус номер восемь, но уже поздно."
+          ]
+        },
+        {
+          "key": "english|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Leo studies art, and Mina studies English. → Лео изучает искусство, а Мина - английский."
+          ]
+        },
+        {
+          "key": "excuse|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Excuse me,\" he says. → Простите меня, он говорит."
+          ]
+        },
+        {
+          "key": "friend|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "give|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mina gives Leo her phone number. → Мина дает Лео свой номер телефона."
+          ]
+        },
+        {
+          "key": "have|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "he|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "он"
+          ],
+          "evidence": [
+            "Excuse me,\" he says. → Простите меня, он говорит.",
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "her|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mina gives Leo her phone number. → Мина дает Лео свой номер телефона."
+          ]
+        },
+        {
+          "key": "home|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "What is your home country? → Какая у вас родина?"
+          ]
+        },
+        {
+          "key": "i|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "я"
+          ],
+          "evidence": [
+            "Excuse me,\" he says. → Простите меня, он говорит.",
+            "I am Leo. → Я Лео.",
+            "I am new in this city. → Я новый в этом городе.",
+            "I am Mina. → Я - Мина.",
+            "I live at number twenty, near your building. → Я живу под номером двадцать, рядом с вашим зданием."
+          ]
+        },
+        {
+          "key": "in|ADP",
+          "ownership": "word",
+          "translations": [
+            "в"
+          ],
+          "evidence": [
+            "I am new in this city. → Я новый в этом городе."
+          ]
+        },
+        {
+          "key": "it|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Yes, it is,\" Mina answers. → Да, это так, отвечает Мина.",
+            "Their bus is number eight, but it is late. → Их автобус номер восемь, но уже поздно."
+          ]
+        },
+        {
+          "key": "italy|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Italy. → Италия."
+          ]
+        },
+        {
+          "key": "late|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Their bus is number eight, but it is late. → Их автобус номер восемь, но уже поздно."
+          ]
+        },
+        {
+          "key": "later|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "laugh|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mina laughs. → Мина смеется."
+          ]
+        },
+        {
+          "key": "leo|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I am Leo. → Я Лео.",
+            "Leo is twenty years old. → Лео - двадцать лет.",
+            "Leo studies art, and Mina studies English. → Лео изучает искусство, а Мина - английский.",
+            "Mina gives Leo her phone number. → Мина дает Лео свой номер телефона.",
+            "Leo came to the stop as a stranger. → Лео пришел на остановку как незнакомец."
+          ]
+        },
+        {
+          "key": "live|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I live at number twenty, near your building. → Я живу под номером двадцать, рядом с вашим зданием."
+          ]
+        },
+        {
+          "key": "look|VERB",
+          "ownership": "word",
+          "translations": [
+            "смотрит"
+          ],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодой человек смотрит на номера улиц."
+          ]
+        },
+        {
+          "key": "man|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодой человек смотрит на номера улиц."
+          ]
+        },
+        {
+          "key": "mina|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mina is at a bus stop. → Мина на автобусной остановке.",
+            "Yes, it is,\" Mina answers. → Да, это так, отвечает Мина.",
+            "I am Mina. → Я - Мина.",
+            "Mina laughs. → Мина смеется.",
+            "Mina is nineteen. → У Мины девятнадцать.",
+            "Leo studies art, and Mina studies English. → Лео изучает искусство, а Мина - английский.",
+            "Mina gives Leo her phone number. → Мина дает Лео свой номер телефона.",
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны."
+          ]
+        },
+        {
+          "key": "minute|NOUN",
+          "ownership": "word",
+          "translations": [
+            "минут"
+          ],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "my|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "My new address is twenty-four Pine Street. → Мой новый адрес - Pine Street двадцать четыре."
+          ]
+        },
+        {
+          "key": "near|ADP",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I live at number twenty, near your building. → Я живу под номером двадцать, рядом с вашим зданием."
+          ]
+        },
+        {
+          "key": "neighbour|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "We are neighbours. → Мы - соседи.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "new|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I am new in this city. → Я новый в этом городе.",
+            "My new address is twenty-four Pine Street. → Мой новый адрес - Pine Street двадцать четыре.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "nineteen|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mina is nineteen. → У Мины девятнадцать."
+          ]
+        },
+        {
+          "key": "number|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "номера",
+            "номер"
+          ],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодой человек смотрит на номера улиц.",
+            "I live at number twenty, near your building. → Я живу под номером двадцать, рядом с вашим зданием.",
+            "Their bus is number eight, but it is late. → Их автобус номер восемь, но уже поздно.",
+            "Mina gives Leo her phone number. → Мина дает Лео свой номер телефона."
+          ]
+        },
+        {
+          "key": "old|ADJ",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "Leo is twenty years old. → Лео - двадцать лет."
+          ]
+        },
+        {
+          "key": "one|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Two People, One City → Два народа, один город"
+          ]
+        },
+        {
+          "key": "people|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Two People, One City → Два народа, один город"
+          ]
+        },
+        {
+          "key": "phone|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mina gives Leo her phone number. → Мина дает Лео свой номер телефона."
+          ]
+        },
+        {
+          "key": "pine|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Is this Pine Street? → Это Пайн Стрит?",
+            "My new address is twenty-four Pine Street. → Мой новый адрес - Pine Street двадцать четыре."
+          ]
+        },
+        {
+          "key": "read|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны."
+          ]
+        },
+        {
+          "key": "really|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Really? → Серьезно?"
+          ]
+        },
+        {
+          "key": "say|VERB",
+          "ownership": "word",
+          "translations": [
+            "говорит"
+          ],
+          "evidence": [
+            "Excuse me,\" he says. → Простите меня, он говорит.",
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны."
+          ]
+        },
+        {
+          "key": "she|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны."
+          ]
+        },
+        {
+          "key": "sit|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "When the bus arrives, they sit together. → Когда приезжает автобус, они сидят вместе."
+          ]
+        },
+        {
+          "key": "stop|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Mina is at a bus stop. → Мина на автобусной остановке.",
+            "Leo came to the stop as a stranger. → Лео пришел на остановку как незнакомец."
+          ]
+        },
+        {
+          "key": "stranger|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Leo came to the stop as a stranger. → Лео пришел на остановку как незнакомец."
+          ]
+        },
+        {
+          "key": "street|NOUN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодой человек смотрит на номера улиц."
+          ]
+        },
+        {
+          "key": "street|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Is this Pine Street? → Это Пайн Стрит?",
+            "My new address is twenty-four Pine Street. → Мой новый адрес - Pine Street двадцать четыре."
+          ]
+        },
+        {
+          "key": "studies|PROPN",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Leo studies art, and Mina studies English. → Лео изучает искусство, а Мина - английский."
+          ]
+        },
+        {
+          "key": "study|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They both study at City College. → Они оба учатся в Сити Колледже.",
+            "Leo studies art, and Mina studies English. → Лео изучает искусство, а Мина - английский."
+          ]
+        },
+        {
+          "key": "talk|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They talk while they wait. → Они разговаривают, пока ждут."
+          ]
+        },
+        {
+          "key": "ten|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Спустя десять минут у него появился новый сосед и новый друг."
+          ]
+        },
+        {
+          "key": "thank|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Thank you. → Благодарю вас."
+          ]
+        },
+        {
+          "key": "the|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодой человек смотрит на номера улиц.",
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны.",
+            "When the bus arrives, they sit together. → Когда приезжает автобус, они сидят вместе.",
+            "Leo came to the stop as a stranger. → Лео пришел на остановку как незнакомец."
+          ]
+        },
+        {
+          "key": "their|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Their bus is number eight, but it is late. → Их автобус номер восемь, но уже поздно."
+          ]
+        },
+        {
+          "key": "they|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They both study at City College. → Они оба учатся в Сити Колледже.",
+            "They talk while they wait. → Они разговаривают, пока ждут.",
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны.",
+            "When the bus arrives, they sit together. → Когда приезжает автобус, они сидят вместе."
+          ]
+        },
+        {
+          "key": "this|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Is this Pine Street? → Это Пайн Стрит?",
+            "I am new in this city. → Я новый в этом городе."
+          ]
+        },
+        {
+          "key": "to|ADP",
+          "ownership": "mixed",
+          "translations": [
+            "на"
+          ],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Он читает ей цифры, и Мина говорит, что они верны.",
+            "Leo came to the stop as a stranger. → Лео пришел на остановку как незнакомец."
+          ]
+        },
+        {
+          "key": "together|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "When the bus arrives, they sit together. → Когда приезжает автобус, они сидят вместе."
+          ]
+        },
+        {
+          "key": "twenty|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "I live at number twenty, near your building. → Я живу под номером двадцать, рядом с вашим зданием.",
+            "Leo is twenty years old. → Лео - двадцать лет."
+          ]
+        },
+        {
+          "key": "twenty-four|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "My new address is twenty-four Pine Street. → Мой новый адрес - Pine Street двадцать четыре."
+          ]
+        },
+        {
+          "key": "two|NUM",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Two People, One City → Два народа, один город"
+          ]
+        },
+        {
+          "key": "wait|VERB",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They talk while they wait. → Они разговаривают, пока ждут."
+          ]
+        },
+        {
+          "key": "we|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "We are neighbours. → Мы - соседи."
+          ]
+        },
+        {
+          "key": "what|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "What is your home country? → Какая у вас родина?"
+          ]
+        },
+        {
+          "key": "when|SCONJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "When the bus arrives, they sit together. → Когда приезжает автобус, они сидят вместе."
+          ]
+        },
+        {
+          "key": "while|SCONJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "They talk while they wait. → Они разговаривают, пока ждут."
+          ]
+        },
+        {
+          "key": "year|NOUN",
+          "ownership": "word",
+          "translations": [
+            "лет"
+          ],
+          "evidence": [
+            "Leo is twenty years old. → Лео - двадцать лет."
+          ]
+        },
+        {
+          "key": "yes|INTJ",
+          "ownership": "word",
+          "translations": [
+            "да"
+          ],
+          "evidence": [
+            "Yes, it is,\" Mina answers. → Да, это так, отвечает Мина."
+          ]
+        },
+        {
+          "key": "you|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Thank you. → Благодарю вас."
+          ]
+        },
+        {
+          "key": "young|ADJ",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодой человек смотрит на номера улиц."
+          ]
+        },
+        {
+          "key": "your|PRON",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "What is your home country? → Какая у вас родина?",
+            "I live at number twenty, near your building. → Я живу под номером двадцать, рядом с вашим зданием."
+          ]
+        }
+      ],
+      "corrections": [],
+      "unresolved": []
+    },
+    "fourth_pass": {
+      "status": "passed",
+      "block_decisions": [
+        {
+          "source": "years old",
+          "decision": "accepted",
+          "word_by_word_result": "лет + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            17
+          ]
+        },
+        {
+          "source": "bus stop",
+          "decision": "rejected",
+          "word_by_word_result": "автобусная + остановка",
+          "reason": "обычное композиционное сочетание",
+          "segment_indexes": [
+            1
+          ]
+        },
+        {
+          "source": "look at",
+          "decision": "rejected",
+          "word_by_word_result": "смотреть + на",
+          "reason": "глагол и предлог независимо сохраняют значение",
+          "segment_indexes": [
+            2
+          ]
+        },
+        {
+          "source": "home country",
+          "decision": "rejected",
+          "word_by_word_result": "родина",
+          "reason": "контекстное значение полностью принадлежит слову country; отдельный блок не нужен",
+          "segment_indexes": [
+            10
+          ]
+        },
+        {
+          "source": "read the digits back",
+          "decision": "rejected",
+          "word_by_word_result": "читать + цифры",
+          "reason": "частица отделена объектом, а полный контекстный фрагмент не является минимальным переиспользуемым блоком",
+          "segment_indexes": [
+            24
+          ]
+        },
+        {
+          "source": "ten minutes later",
+          "decision": "rejected",
+          "word_by_word_result": "спустя + десять + минут",
+          "reason": "значение сохраняется отдельными словами при изменении порядка",
+          "segment_indexes": [
+            27
+          ]
+        }
+      ],
+      "unresolved": []
+    },
+    "absorbed_word_keys": [
+      "be|aux",
+      "old|adj"
+    ]
+  }
+}

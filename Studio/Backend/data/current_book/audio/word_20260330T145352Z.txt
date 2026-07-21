@@ -1,0 +1,3 @@
+Stub audio placeholder.
+scope=word
+text=paragraph

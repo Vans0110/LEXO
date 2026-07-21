@@ -1,0 +1,237 @@
+[
+  {
+    "source": "years old",
+    "type": "grammar_construction",
+    "source_forms": [
+      "years old"
+    ],
+    "translation": "років",
+    "explanation": "Конструкція для повідомлення віку.",
+    "components": [
+      {
+        "source": "years",
+        "lemma": "year",
+        "pos": "NOUN",
+        "translation": "років"
+      },
+      {
+        "source": "old",
+        "lemma": "old",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "what is your name",
+    "type": "fixed_expression",
+    "source_forms": [
+      "What is your name"
+    ],
+    "translation": "Як тебе звати",
+    "explanation": "Усталене запитання про ім’я.",
+    "components": [
+      {
+        "source": "what",
+        "lemma": "what",
+        "pos": "PRON",
+        "translation": "Як"
+      },
+      {
+        "source": "is",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "your",
+        "lemma": "your",
+        "pos": "PRON",
+        "translation": "тебе"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "звати"
+      }
+    ]
+  },
+  {
+    "source": "my name is",
+    "type": "fixed_expression",
+    "source_forms": [
+      "My name is"
+    ],
+    "translation": "Мене звати",
+    "explanation": "Усталена конструкція для повідомлення свого імені.",
+    "components": [
+      {
+        "source": "my",
+        "lemma": "my",
+        "pos": "PRON",
+        "translation": "Мене"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "звати"
+      },
+      {
+        "source": "is",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "what is your age",
+    "type": "fixed_expression",
+    "source_forms": [
+      "what is your age"
+    ],
+    "translation": "скільки тобі років",
+    "explanation": "Усталене запитання про вік.",
+    "components": [
+      {
+        "source": "what",
+        "lemma": "what",
+        "pos": "PRON",
+        "translation": "скільки"
+      },
+      {
+        "source": "is",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "your",
+        "lemma": "your",
+        "pos": "PRON",
+        "translation": "тобі"
+      },
+      {
+        "source": "age",
+        "lemma": "age",
+        "pos": "NOUN",
+        "translation": "років"
+      }
+    ]
+  },
+  {
+    "source": "first name",
+    "type": "fixed_expression",
+    "source_forms": [
+      "first name"
+    ],
+    "translation": "ім’я",
+    "explanation": "Позначає особове ім’я людини.",
+    "components": [
+      {
+        "source": "first",
+        "lemma": "first",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "ім’я"
+      }
+    ]
+  },
+  {
+    "source": "last name",
+    "type": "fixed_expression",
+    "source_forms": [
+      "last name"
+    ],
+    "translation": "прізвище",
+    "explanation": "Позначає прізвище людини.",
+    "components": [
+      {
+        "source": "last",
+        "lemma": "last",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "next to",
+    "type": "prepositional_group",
+    "source_forms": [
+      "next to"
+    ],
+    "translation": "поруч із",
+    "explanation": "Указує на розташування безпосередньо біля когось.",
+    "components": [
+      {
+        "source": "next",
+        "lemma": "next",
+        "pos": "ADV",
+        "translation": "поруч"
+      },
+      {
+        "source": "to",
+        "lemma": "to",
+        "pos": "ADP",
+        "translation": "із"
+      }
+    ]
+  },
+  {
+    "source": "nice to meet you",
+    "type": "fixed_expression",
+    "source_forms": [
+      "Nice to meet you"
+    ],
+    "translation": "Приємно познайомитися",
+    "explanation": "Ввічлива формула під час знайомства.",
+    "components": [
+      {
+        "source": "nice",
+        "lemma": "nice",
+        "pos": "ADJ",
+        "translation": "Приємно"
+      },
+      {
+        "source": "to",
+        "lemma": "to",
+        "pos": "PART",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "meet",
+        "lemma": "meet",
+        "pos": "VERB",
+        "translation": "познайомитися"
+      },
+      {
+        "source": "you",
+        "lemma": "you",
+        "pos": "PRON",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  }
+]

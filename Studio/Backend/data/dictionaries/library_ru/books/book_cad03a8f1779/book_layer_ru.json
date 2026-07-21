@@ -1,0 +1,2329 @@
+{
+  "version": 1,
+  "book_id": "book_cad03a8f1779",
+  "title": "The Wrong Classroom",
+  "source_lang": "en",
+  "target_lang": "ru",
+  "parallel": [
+    {
+      "source": "The Wrong Classroom",
+      "translation": "Неправильный класс"
+    },
+    {
+      "source": "Sara is a new student at Hill School.",
+      "translation": "Сара — новая ученица школы Хилл."
+    },
+    {
+      "source": "Her English class is in Room fourteen.",
+      "translation": "Её урок английского языка проходит в комнате номер четырнадцать."
+    },
+    {
+      "source": "She walks into Room forty-one and sits down.",
+      "translation": "Она входит в комнату номер сорок один и садится."
+    },
+    {
+      "source": "There are books, maps, and twelve students in the room.",
+      "translation": "В комнате находятся книги, карты и двенадцать учеников."
+    },
+    {
+      "source": "A man writes numbers on the board.",
+      "translation": "Мужчина пишет цифры на доске."
+    },
+    {
+      "source": "Good morning,\" he says.",
+      "translation": "Доброе утро, — говорит он."
+    },
+    {
+      "source": "Welcome to the maths class.",
+      "translation": "Добро пожаловать на урок математики."
+    },
+    {
+      "source": "Sara looks at her card.",
+      "translation": "Сара смотрит на свою карточку."
+    },
+    {
+      "source": "It says: English course, Room fourteen, first floor.",
+      "translation": "Там написано: курс английского языка, комната четырнадцать, первый этаж."
+    },
+    {
+      "source": "I am sorry,\" Sara says.",
+      "translation": "«Мне очень жаль», — говорит Сара."
+    },
+    {
+      "source": "I am in the wrong room.",
+      "translation": "Я не в той комнате."
+    },
+    {
+      "source": "The teacher smiles.",
+      "translation": "Учитель улыбается."
+    },
+    {
+      "source": "Room fourteen is downstairs.",
+      "translation": "Комната номер четырнадцать находится внизу."
+    },
+    {
+      "source": "This is Room forty-one upstairs, on the fourth floor.",
+      "translation": "Это комната номер сорок один, расположенная на четвёртом этаже."
+    },
+    {
+      "source": "A student shows Sara the stairs.",
+      "translation": "Студент показывает Саре лестницу."
+    },
+    {
+      "source": "Downstairs, Sara finds the right classroom.",
+      "translation": "Внизу Сара находит нужный класс."
+    },
+    {
+      "source": "Are you Sara?",
+      "translation": "Вы Сара?"
+    },
+    {
+      "source": " the English teacher asks.",
+      "translation": "— спрашивает учитель английского языка."
+    },
+    {
+      "source": "Yes, I am.",
+      "translation": "Да, это я."
+    },
+    {
+      "source": "Welcome, Sara.",
+      "translation": "Добро пожаловать, Сара."
+    },
+    {
+      "source": "Please sit next to Amir.",
+      "translation": "Пожалуйста, сядьте рядом с Амиром."
+    },
+    {
+      "source": "Sara is five minutes late, but she is now in the right class.",
+      "translation": "Сара опоздала на пять минут, но теперь она в нужном классе."
+    },
+    {
+      "source": "She checks every room number carefully for the rest of the day.",
+      "translation": "Она внимательно проверяет номера всех комнат до конца дня."
+    }
+  ],
+  "words": [
+    {
+      "word": "Sara",
+      "lemma": "sara",
+      "pos": "PROPN",
+      "translation": "Сара",
+      "translations": [
+        "Сара",
+        "Саре"
+      ]
+    },
+    {
+      "word": "She",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "она",
+      "translations": [
+        "она"
+      ]
+    },
+    {
+      "word": "Good",
+      "lemma": "good",
+      "pos": "ADJ",
+      "translation": "доброе",
+      "translations": [
+        "доброе"
+      ]
+    },
+    {
+      "word": "I",
+      "lemma": "i",
+      "pos": "PRON",
+      "translation": "я",
+      "translations": [
+        "я",
+        "мне"
+      ]
+    },
+    {
+      "word": "Yes",
+      "lemma": "yes",
+      "pos": "INTJ",
+      "translation": "да",
+      "translations": [
+        "да"
+      ]
+    },
+    {
+      "word": "Welcome",
+      "lemma": "welcome",
+      "pos": "INTJ",
+      "translation": "добро пожаловать",
+      "translations": [
+        "добро пожаловать"
+      ]
+    },
+    {
+      "word": "Wrong",
+      "lemma": "wrong",
+      "pos": "PROPN",
+      "translation": "неправильный",
+      "translations": [
+        "неправильный"
+      ]
+    },
+    {
+      "word": "walks",
+      "lemma": "walk",
+      "pos": "VERB",
+      "translation": "входит",
+      "translations": [
+        "входит"
+      ]
+    },
+    {
+      "word": "morning",
+      "lemma": "morning",
+      "pos": "NOUN",
+      "translation": "утро",
+      "translations": [
+        "утро"
+      ]
+    },
+    {
+      "word": "looks",
+      "lemma": "look",
+      "pos": "VERB",
+      "translation": "смотрит",
+      "translations": [
+        "смотрит"
+      ]
+    },
+    {
+      "word": "teacher",
+      "lemma": "teacher",
+      "pos": "NOUN",
+      "translation": "учитель",
+      "translations": [
+        "учитель"
+      ]
+    },
+    {
+      "word": "student",
+      "lemma": "student",
+      "pos": "NOUN",
+      "translation": "ученица",
+      "translations": [
+        "ученица",
+        "учеников",
+        "студент"
+      ]
+    },
+    {
+      "word": "you",
+      "lemma": "you",
+      "pos": "PRON",
+      "translation": "вы",
+      "translations": [
+        "вы"
+      ]
+    },
+    {
+      "word": "Classroom",
+      "lemma": "classroom",
+      "pos": "PROPN",
+      "translation": "класс",
+      "translations": [
+        "класс"
+      ]
+    },
+    {
+      "word": "into",
+      "lemma": "into",
+      "pos": "ADP",
+      "translation": "в",
+      "translations": [
+        "в"
+      ]
+    },
+    {
+      "word": "he",
+      "lemma": "he",
+      "pos": "PRON",
+      "translation": "он",
+      "translations": [
+        "он"
+      ]
+    },
+    {
+      "word": "sorry",
+      "lemma": "sorry",
+      "pos": "ADJ",
+      "translation": "жаль",
+      "translations": [
+        "жаль"
+      ]
+    },
+    {
+      "word": "smiles",
+      "lemma": "smile",
+      "pos": "VERB",
+      "translation": "улыбается",
+      "translations": [
+        "улыбается"
+      ]
+    },
+    {
+      "word": "shows",
+      "lemma": "show",
+      "pos": "VERB",
+      "translation": "показывает",
+      "translations": [
+        "показывает"
+      ]
+    },
+    {
+      "word": "Please",
+      "lemma": "please",
+      "pos": "INTJ",
+      "translation": "пожалуйста",
+      "translations": [
+        "пожалуйста"
+      ]
+    },
+    {
+      "word": "five",
+      "lemma": "five",
+      "pos": "NUM",
+      "translation": "пять",
+      "translations": [
+        "пять"
+      ]
+    },
+    {
+      "word": "new",
+      "lemma": "new",
+      "pos": "ADJ",
+      "translation": "новая",
+      "translations": [
+        "новая"
+      ]
+    },
+    {
+      "word": "Room",
+      "lemma": "room",
+      "pos": "PROPN",
+      "translation": "комната",
+      "translations": [
+        "комната",
+        "комнате",
+        "комнату"
+      ]
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "говорит",
+      "translations": [
+        "говорит",
+        "написано"
+      ]
+    },
+    {
+      "word": "Her",
+      "lemma": "her",
+      "pos": "PRON",
+      "translation": "свою",
+      "translations": [
+        "свою",
+        "её"
+      ]
+    },
+    {
+      "word": "room",
+      "lemma": "room",
+      "pos": "NOUN",
+      "translation": "комната",
+      "translations": [
+        "комната",
+        "комнате",
+        "комнату",
+        "комнат"
+      ]
+    },
+    {
+      "word": "sits",
+      "lemma": "sit",
+      "pos": "VERB",
+      "translation": "садится",
+      "translations": [
+        "садится",
+        "сядьте"
+      ]
+    },
+    {
+      "word": "minutes",
+      "lemma": "minute",
+      "pos": "NOUN",
+      "translation": "минут",
+      "translations": [
+        "минут"
+      ]
+    },
+    {
+      "word": "forty-one",
+      "lemma": "forty-one",
+      "pos": "NUM",
+      "translation": "сорок один",
+      "translations": [
+        "сорок один"
+      ]
+    },
+    {
+      "word": "card",
+      "lemma": "card",
+      "pos": "NOUN",
+      "translation": "карточку",
+      "translations": [
+        "карточку"
+      ]
+    },
+    {
+      "word": "fourteen",
+      "lemma": "fourteen",
+      "pos": "NUM",
+      "translation": "четырнадцать",
+      "translations": [
+        "четырнадцать"
+      ]
+    },
+    {
+      "word": "English",
+      "lemma": "english",
+      "pos": "ADJ",
+      "translation": "английского языка",
+      "translations": [
+        "английского языка"
+      ]
+    },
+    {
+      "word": "next",
+      "lemma": "next",
+      "pos": "ADV",
+      "translation": "рядом",
+      "translations": [
+        "рядом"
+      ]
+    },
+    {
+      "word": "late",
+      "lemma": "late",
+      "pos": "ADV",
+      "translation": "опоздала",
+      "translations": [
+        "опоздала"
+      ]
+    },
+    {
+      "word": "and",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "и",
+      "translations": [
+        "и"
+      ]
+    },
+    {
+      "word": "It",
+      "lemma": "it",
+      "pos": "PRON",
+      "translation": "там",
+      "translations": [
+        "там"
+      ]
+    },
+    {
+      "word": "stairs",
+      "lemma": "stair",
+      "pos": "NOUN",
+      "translation": "лестницу",
+      "translations": [
+        "лестницу"
+      ]
+    },
+    {
+      "word": "but",
+      "lemma": "but",
+      "pos": "CCONJ",
+      "translation": "но",
+      "translations": [
+        "но"
+      ]
+    },
+    {
+      "word": "Hill",
+      "lemma": "hill",
+      "pos": "PROPN",
+      "translation": "Хилл",
+      "translations": [
+        "Хилл"
+      ]
+    },
+    {
+      "word": "downstairs",
+      "lemma": "downstairs",
+      "pos": "ADJ",
+      "translation": "внизу",
+      "translations": [
+        "внизу"
+      ]
+    },
+    {
+      "word": "Downstairs",
+      "lemma": "downstair",
+      "pos": "NOUN",
+      "translation": "внизу",
+      "translations": [
+        "внизу"
+      ]
+    },
+    {
+      "word": "asks",
+      "lemma": "ask",
+      "pos": "VERB",
+      "translation": "спрашивает",
+      "translations": [
+        "спрашивает"
+      ]
+    },
+    {
+      "word": "Amir",
+      "lemma": "amir",
+      "pos": "PROPN",
+      "translation": "Амиром",
+      "translations": [
+        "Амиром"
+      ]
+    },
+    {
+      "word": "School",
+      "lemma": "school",
+      "pos": "PROPN",
+      "translation": "школы",
+      "translations": [
+        "школы"
+      ]
+    },
+    {
+      "word": "maths",
+      "lemma": "math",
+      "pos": "NOUN",
+      "translation": "математики",
+      "translations": [
+        "математики"
+      ]
+    },
+    {
+      "word": "in",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "в",
+      "translations": [
+        "в"
+      ]
+    },
+    {
+      "word": "This",
+      "lemma": "this",
+      "pos": "PRON",
+      "translation": "это",
+      "translations": [
+        "это"
+      ]
+    },
+    {
+      "word": "class",
+      "lemma": "class",
+      "pos": "NOUN",
+      "translation": "урок",
+      "translations": [
+        "урок",
+        "классе"
+      ]
+    },
+    {
+      "word": "course",
+      "lemma": "course",
+      "pos": "NOUN",
+      "translation": "курс",
+      "translations": [
+        "курс"
+      ]
+    },
+    {
+      "word": "finds",
+      "lemma": "find",
+      "pos": "VERB",
+      "translation": "находит",
+      "translations": [
+        "находит"
+      ]
+    },
+    {
+      "word": "now",
+      "lemma": "now",
+      "pos": "ADV",
+      "translation": "теперь",
+      "translations": [
+        "теперь"
+      ]
+    },
+    {
+      "word": "wrong",
+      "lemma": "wrong",
+      "pos": "ADJ",
+      "translation": "не в той",
+      "translations": [
+        "не в той",
+        "той"
+      ]
+    },
+    {
+      "word": "books",
+      "lemma": "book",
+      "pos": "NOUN",
+      "translation": "книги",
+      "translations": [
+        "книги"
+      ]
+    },
+    {
+      "word": "right",
+      "lemma": "right",
+      "pos": "ADJ",
+      "translation": "нужный",
+      "translations": [
+        "нужный",
+        "нужном"
+      ]
+    },
+    {
+      "word": "maps",
+      "lemma": "map",
+      "pos": "NOUN",
+      "translation": "карты",
+      "translations": [
+        "карты"
+      ]
+    },
+    {
+      "word": "first",
+      "lemma": "first",
+      "pos": "ADJ",
+      "translation": "первый",
+      "translations": [
+        "первый"
+      ]
+    },
+    {
+      "word": "classroom",
+      "lemma": "classroom",
+      "pos": "NOUN",
+      "translation": "класс",
+      "translations": [
+        "класс"
+      ]
+    },
+    {
+      "word": "floor",
+      "lemma": "floor",
+      "pos": "NOUN",
+      "translation": "этаж",
+      "translations": [
+        "этаж",
+        "этаже"
+      ]
+    },
+    {
+      "word": "on",
+      "lemma": "on",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на"
+      ]
+    },
+    {
+      "word": "twelve",
+      "lemma": "twelve",
+      "pos": "NUM",
+      "translation": "двенадцать",
+      "translations": [
+        "двенадцать"
+      ]
+    },
+    {
+      "word": "fourth",
+      "lemma": "fourth",
+      "pos": "ADJ",
+      "translation": "четвёртом",
+      "translations": [
+        "четвёртом"
+      ]
+    },
+    {
+      "word": "checks",
+      "lemma": "check",
+      "pos": "VERB",
+      "translation": "проверяет",
+      "translations": [
+        "проверяет"
+      ]
+    },
+    {
+      "word": "every",
+      "lemma": "every",
+      "pos": "DET",
+      "translation": "всех",
+      "translations": [
+        "всех"
+      ]
+    },
+    {
+      "word": "numbers",
+      "lemma": "number",
+      "pos": "NOUN",
+      "translation": "номер",
+      "translations": [
+        "номер",
+        "номера",
+        "цифры"
+      ]
+    },
+    {
+      "word": "carefully",
+      "lemma": "carefully",
+      "pos": "ADV",
+      "translation": "внимательно",
+      "translations": [
+        "внимательно"
+      ]
+    },
+    {
+      "word": "man",
+      "lemma": "man",
+      "pos": "NOUN",
+      "translation": "мужчина",
+      "translations": [
+        "мужчина"
+      ]
+    },
+    {
+      "word": "writes",
+      "lemma": "write",
+      "pos": "VERB",
+      "translation": "пишет",
+      "translations": [
+        "пишет"
+      ]
+    },
+    {
+      "word": "rest",
+      "lemma": "rest",
+      "pos": "NOUN",
+      "translation": "конца",
+      "translations": [
+        "конца"
+      ]
+    },
+    {
+      "word": "board",
+      "lemma": "board",
+      "pos": "NOUN",
+      "translation": "доске",
+      "translations": [
+        "доске"
+      ]
+    },
+    {
+      "word": "day",
+      "lemma": "day",
+      "pos": "NOUN",
+      "translation": "дня",
+      "translations": [
+        "дня"
+      ]
+    },
+    {
+      "word": "at",
+      "lemma": "at",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на"
+      ]
+    },
+    {
+      "word": "a",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "meaning is absorbed by a verified block or grammar block",
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "is",
+      "lemma": "be",
+      "pos": "AUX",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "meaning is absorbed by a verified block or grammar block",
+      "dictionary_translation": "быть",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "are",
+      "lemma": "be",
+      "pos": "VERB",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "meaning is absorbed by a verified block or grammar block",
+      "dictionary_translation": "быть",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "down",
+      "lemma": "down",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "meaning is absorbed by a verified block or grammar block",
+      "dictionary_translation": "вниз",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "for",
+      "lemma": "for",
+      "pos": "ADP",
+      "translation": "до",
+      "translations": [
+        "до"
+      ]
+    },
+    {
+      "word": "of",
+      "lemma": "of",
+      "pos": "ADP",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "meaning is absorbed by a verified block or grammar block",
+      "dictionary_translation": "из",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "There",
+      "lemma": "there",
+      "pos": "PRON",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "meaning is absorbed by a verified block or grammar block",
+      "dictionary_translation": "там",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "The",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "meaning is absorbed by a verified block or grammar block",
+      "dictionary_translation": "этот",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на",
+        "с"
+      ]
+    },
+    {
+      "word": "upstairs",
+      "lemma": "upstairs",
+      "pos": "ADV",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "meaning is absorbed by a verified block or grammar block",
+      "dictionary_translation": "наверху",
+      "dictionary_translation_source": "skill_fallback"
+    }
+  ],
+  "blocks": [
+    {
+      "source": "sit down",
+      "translation": "садится",
+      "type": "phrasal_verb",
+      "explanation": "Означает перейти из положения стоя в положение сидя.",
+      "components": [
+        {
+          "source": "sit",
+          "lemma": "sit",
+          "pos": "VERB",
+          "translation": "садится"
+        },
+        {
+          "source": "down",
+          "lemma": "down",
+          "pos": "ADP",
+          "translation": "",
+          "empty_reason": "particle is absorbed by the Russian verb"
+        }
+      ],
+      "source_forms": [
+        "sits down"
+      ]
+    },
+    {
+      "source": "there are",
+      "translation": "находятся",
+      "type": "grammar_construction",
+      "explanation": "Сообщает, что несколько людей или предметов существуют либо находятся где-то.",
+      "components": [
+        {
+          "source": "there",
+          "lemma": "there",
+          "pos": "PRON",
+          "translation": "",
+          "empty_reason": "existential marker is absorbed by the construction"
+        },
+        {
+          "source": "are",
+          "lemma": "be",
+          "pos": "VERB",
+          "translation": "",
+          "empty_reason": "the Russian predicate belongs to the existential construction, not to be as a standalone dictionary word"
+        }
+      ],
+      "source_forms": [
+        "There are"
+      ]
+    },
+    {
+      "source": "i am sorry",
+      "translation": "мне очень жаль",
+      "type": "fixed_expression",
+      "explanation": "Устойчивое выражение для извинения или сожаления.",
+      "components": [
+        {
+          "source": "I",
+          "lemma": "i",
+          "pos": "PRON",
+          "translation": "мне"
+        },
+        {
+          "source": "am",
+          "lemma": "be",
+          "pos": "AUX",
+          "translation": "",
+          "empty_reason": "copula is absent in the Russian expression"
+        },
+        {
+          "source": "sorry",
+          "lemma": "sorry",
+          "pos": "ADJ",
+          "translation": "очень жаль"
+        }
+      ],
+      "source_forms": [
+        "I am sorry"
+      ]
+    },
+    {
+      "source": "next to",
+      "translation": "рядом с",
+      "type": "prepositional_group",
+      "explanation": "Указывает на положение непосредственно рядом с человеком, местом или предметом.",
+      "components": [
+        {
+          "source": "next",
+          "lemma": "next",
+          "pos": "ADV",
+          "translation": "рядом"
+        },
+        {
+          "source": "to",
+          "lemma": "to",
+          "pos": "ADP",
+          "translation": "с"
+        }
+      ],
+      "source_forms": [
+        "next to"
+      ]
+    },
+    {
+      "source": "the rest of",
+      "translation": "конца",
+      "dictionary_translation": "оставшаяся часть чего-либо",
+      "type": "grammar_construction",
+      "explanation": "Указывает на часть времени, количества или предмета, которая ещё осталась.",
+      "components": [
+        {
+          "source": "the",
+          "lemma": "the",
+          "pos": "DET",
+          "translation": "",
+          "empty_reason": "article is absent in Russian"
+        },
+        {
+          "source": "rest",
+          "lemma": "rest",
+          "pos": "NOUN",
+          "translation": "конца"
+        },
+        {
+          "source": "of",
+          "lemma": "of",
+          "pos": "ADP",
+          "translation": "",
+          "empty_reason": "relation to the following noun is expressed by the target-language construction"
+        }
+      ],
+      "source_forms": [
+        "the rest of"
+      ]
+    }
+  ],
+  "book_layer_audit": {
+    "version": 4,
+    "method": "codex_verified_occurrence_word_to_word",
+    "reviewed_segments": [
+      {
+        "source_text": "The Wrong Classroom",
+        "target_text": "Неправильный класс",
+        "status": "covered",
+        "word_keys": [
+          "classroom|PROPN",
+          "the|DET",
+          "wrong|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Sara is a new student at Hill School.",
+        "target_text": "Сара — новая ученица школы Хилл.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "a|DET",
+          "be|AUX",
+          "hill|PROPN",
+          "new|ADJ",
+          "sara|PROPN",
+          "school|PROPN",
+          "student|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Her English class is in Room fourteen.",
+        "target_text": "Её урок английского языка проходит в комнате номер четырнадцать.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "class|NOUN",
+          "english|ADJ",
+          "fourteen|NUM",
+          "her|PRON",
+          "in|ADP",
+          "room|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "She walks into Room forty-one and sits down.",
+        "target_text": "Она входит в комнату номер сорок один и садится.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "down|ADP",
+          "forty-one|NUM",
+          "into|ADP",
+          "room|PROPN",
+          "she|PRON",
+          "sit|VERB",
+          "walk|VERB"
+        ],
+        "block_sources": [
+          "sit down"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "There are books, maps, and twelve students in the room.",
+        "target_text": "В комнате находятся книги, карты и двенадцать учеников.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "be|VERB",
+          "book|NOUN",
+          "in|ADP",
+          "map|NOUN",
+          "room|NOUN",
+          "student|NOUN",
+          "there|PRON",
+          "the|DET",
+          "twelve|NUM"
+        ],
+        "block_sources": [
+          "there are"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "A man writes numbers on the board.",
+        "target_text": "Мужчина пишет цифры на доске.",
+        "status": "covered",
+        "word_keys": [
+          "a|DET",
+          "board|NOUN",
+          "man|NOUN",
+          "number|NOUN",
+          "on|ADP",
+          "the|DET",
+          "write|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Good morning,\" he says.",
+        "target_text": "Доброе утро, — говорит он.",
+        "status": "covered",
+        "word_keys": [
+          "good|ADJ",
+          "he|PRON",
+          "morning|NOUN",
+          "say|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Welcome to the maths class.",
+        "target_text": "Добро пожаловать на урок математики.",
+        "status": "covered",
+        "word_keys": [
+          "class|NOUN",
+          "math|NOUN",
+          "the|DET",
+          "to|ADP",
+          "welcome|INTJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Sara looks at her card.",
+        "target_text": "Сара смотрит на свою карточку.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "card|NOUN",
+          "her|PRON",
+          "look|VERB",
+          "sara|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "It says: English course, Room fourteen, first floor.",
+        "target_text": "Там написано: курс английского языка, комната четырнадцать, первый этаж.",
+        "status": "covered",
+        "word_keys": [
+          "course|NOUN",
+          "english|ADJ",
+          "first|ADJ",
+          "floor|NOUN",
+          "fourteen|NUM",
+          "it|PRON",
+          "room|PROPN",
+          "say|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am sorry,\" Sara says.",
+        "target_text": "«Мне очень жаль», — говорит Сара.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "i|PRON",
+          "sara|PROPN",
+          "say|VERB",
+          "sorry|ADJ"
+        ],
+        "block_sources": [
+          "i am sorry"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "I am in the wrong room.",
+        "target_text": "Я не в той комнате.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "in|ADP",
+          "i|PRON",
+          "room|NOUN",
+          "the|DET",
+          "wrong|ADJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "The teacher smiles.",
+        "target_text": "Учитель улыбается.",
+        "status": "covered",
+        "word_keys": [
+          "smile|VERB",
+          "teacher|NOUN",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Room fourteen is downstairs.",
+        "target_text": "Комната номер четырнадцать находится внизу.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "downstairs|ADJ",
+          "fourteen|NUM",
+          "room|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "This is Room forty-one upstairs, on the fourth floor.",
+        "target_text": "Это комната номер сорок один, расположенная на четвёртом этаже.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "floor|NOUN",
+          "forty-one|NUM",
+          "fourth|ADJ",
+          "on|ADP",
+          "room|PROPN",
+          "the|DET",
+          "this|PRON",
+          "upstairs|ADV"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "A student shows Sara the stairs.",
+        "target_text": "Студент показывает Саре лестницу.",
+        "status": "covered",
+        "word_keys": [
+          "a|DET",
+          "sara|PROPN",
+          "show|VERB",
+          "stair|NOUN",
+          "student|NOUN",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Downstairs, Sara finds the right classroom.",
+        "target_text": "Внизу Сара находит нужный класс.",
+        "status": "covered",
+        "word_keys": [
+          "classroom|NOUN",
+          "downstair|NOUN",
+          "find|VERB",
+          "right|ADJ",
+          "sara|PROPN",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Are you Sara?",
+        "target_text": "Вы Сара?",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "sara|PROPN",
+          "you|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": " the English teacher asks.",
+        "target_text": "— спрашивает учитель английского языка.",
+        "status": "covered",
+        "word_keys": [
+          "ask|VERB",
+          "english|ADJ",
+          "teacher|NOUN",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Yes, I am.",
+        "target_text": "Да, это я.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "i|PRON",
+          "yes|INTJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Welcome, Sara.",
+        "target_text": "Добро пожаловать, Сара.",
+        "status": "covered",
+        "word_keys": [
+          "sara|PROPN",
+          "welcome|INTJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Please sit next to Amir.",
+        "target_text": "Пожалуйста, сядьте рядом с Амиром.",
+        "status": "covered",
+        "word_keys": [
+          "amir|PROPN",
+          "next|ADV",
+          "please|INTJ",
+          "sit|VERB",
+          "to|ADP"
+        ],
+        "block_sources": [
+          "next to"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "Sara is five minutes late, but she is now in the right class.",
+        "target_text": "Сара опоздала на пять минут, но теперь она в нужном классе.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "but|CCONJ",
+          "class|NOUN",
+          "five|NUM",
+          "in|ADP",
+          "late|ADV",
+          "minute|NOUN",
+          "now|ADV",
+          "right|ADJ",
+          "sara|PROPN",
+          "she|PRON",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "She checks every room number carefully for the rest of the day.",
+        "target_text": "Она внимательно проверяет номера всех комнат до конца дня.",
+        "status": "covered",
+        "word_keys": [
+          "carefully|ADV",
+          "check|VERB",
+          "day|NOUN",
+          "every|DET",
+          "for|ADP",
+          "number|NOUN",
+          "of|ADP",
+          "rest|NOUN",
+          "room|NOUN",
+          "she|PRON",
+          "the|DET"
+        ],
+        "block_sources": [
+          "the rest of"
+        ],
+        "notes": ""
+      }
+    ],
+    "second_pass": {
+      "status": "passed",
+      "corrections": [],
+      "unresolved": []
+    },
+    "third_pass": {
+      "status": "passed",
+      "word_decisions": [
+        {
+          "key": "sara|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Сара",
+            "Саре"
+          ],
+          "evidence": [
+            "Sara is a new student at Hill School. → Сара — новая ученица школы Хилл.",
+            "Sara looks at her card. → Сара смотрит на свою карточку.",
+            "I am sorry,\" Sara says. → «Мне очень жаль», — говорит Сара.",
+            "A student shows Sara the stairs. → Студент показывает Саре лестницу.",
+            "Downstairs, Sara finds the right classroom. → Внизу Сара находит нужный класс.",
+            "Are you Sara? → Вы Сара?",
+            "Welcome, Sara. → Добро пожаловать, Сара.",
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "she|PRON",
+          "ownership": "word",
+          "translations": [
+            "она"
+          ],
+          "evidence": [
+            "She walks into Room forty-one and sits down. → Она входит в комнату номер сорок один и садится.",
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе.",
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "good|ADJ",
+          "ownership": "word",
+          "translations": [
+            "доброе"
+          ],
+          "evidence": [
+            "Good morning,\" he says. → Доброе утро, — говорит он."
+          ]
+        },
+        {
+          "key": "i|PRON",
+          "ownership": "word",
+          "translations": [
+            "я",
+            "мне"
+          ],
+          "evidence": [
+            "I am sorry,\" Sara says. → «Мне очень жаль», — говорит Сара.",
+            "I am in the wrong room. → Я не в той комнате.",
+            "Yes, I am. → Да, это я."
+          ]
+        },
+        {
+          "key": "yes|INTJ",
+          "ownership": "word",
+          "translations": [
+            "да"
+          ],
+          "evidence": [
+            "Yes, I am. → Да, это я."
+          ]
+        },
+        {
+          "key": "welcome|INTJ",
+          "ownership": "word",
+          "translations": [
+            "добро пожаловать"
+          ],
+          "evidence": [
+            "Welcome to the maths class. → Добро пожаловать на урок математики.",
+            "Welcome, Sara. → Добро пожаловать, Сара."
+          ]
+        },
+        {
+          "key": "wrong|PROPN",
+          "ownership": "word",
+          "translations": [
+            "неправильный"
+          ],
+          "evidence": [
+            "The Wrong Classroom → Неправильный класс"
+          ]
+        },
+        {
+          "key": "walk|VERB",
+          "ownership": "word",
+          "translations": [
+            "входит"
+          ],
+          "evidence": [
+            "She walks into Room forty-one and sits down. → Она входит в комнату номер сорок один и садится."
+          ]
+        },
+        {
+          "key": "morning|NOUN",
+          "ownership": "word",
+          "translations": [
+            "утро"
+          ],
+          "evidence": [
+            "Good morning,\" he says. → Доброе утро, — говорит он."
+          ]
+        },
+        {
+          "key": "look|VERB",
+          "ownership": "word",
+          "translations": [
+            "смотрит"
+          ],
+          "evidence": [
+            "Sara looks at her card. → Сара смотрит на свою карточку."
+          ]
+        },
+        {
+          "key": "teacher|NOUN",
+          "ownership": "word",
+          "translations": [
+            "учитель"
+          ],
+          "evidence": [
+            "The teacher smiles. → Учитель улыбается.",
+            " the English teacher asks. → — спрашивает учитель английского языка."
+          ]
+        },
+        {
+          "key": "student|NOUN",
+          "ownership": "word",
+          "translations": [
+            "ученица",
+            "учеников",
+            "студент"
+          ],
+          "evidence": [
+            "Sara is a new student at Hill School. → Сара — новая ученица школы Хилл.",
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников.",
+            "A student shows Sara the stairs. → Студент показывает Саре лестницу."
+          ]
+        },
+        {
+          "key": "you|PRON",
+          "ownership": "word",
+          "translations": [
+            "вы"
+          ],
+          "evidence": [
+            "Are you Sara? → Вы Сара?"
+          ]
+        },
+        {
+          "key": "classroom|PROPN",
+          "ownership": "word",
+          "translations": [
+            "класс"
+          ],
+          "evidence": [
+            "The Wrong Classroom → Неправильный класс"
+          ]
+        },
+        {
+          "key": "into|ADP",
+          "ownership": "word",
+          "translations": [
+            "в"
+          ],
+          "evidence": [
+            "She walks into Room forty-one and sits down. → Она входит в комнату номер сорок один и садится."
+          ]
+        },
+        {
+          "key": "he|PRON",
+          "ownership": "word",
+          "translations": [
+            "он"
+          ],
+          "evidence": [
+            "Good morning,\" he says. → Доброе утро, — говорит он."
+          ]
+        },
+        {
+          "key": "sorry|ADJ",
+          "ownership": "word",
+          "translations": [
+            "жаль"
+          ],
+          "evidence": [
+            "I am sorry,\" Sara says. → «Мне очень жаль», — говорит Сара."
+          ]
+        },
+        {
+          "key": "smile|VERB",
+          "ownership": "word",
+          "translations": [
+            "улыбается"
+          ],
+          "evidence": [
+            "The teacher smiles. → Учитель улыбается."
+          ]
+        },
+        {
+          "key": "show|VERB",
+          "ownership": "word",
+          "translations": [
+            "показывает"
+          ],
+          "evidence": [
+            "A student shows Sara the stairs. → Студент показывает Саре лестницу."
+          ]
+        },
+        {
+          "key": "please|INTJ",
+          "ownership": "word",
+          "translations": [
+            "пожалуйста"
+          ],
+          "evidence": [
+            "Please sit next to Amir. → Пожалуйста, сядьте рядом с Амиром."
+          ]
+        },
+        {
+          "key": "five|NUM",
+          "ownership": "word",
+          "translations": [
+            "пять"
+          ],
+          "evidence": [
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "new|ADJ",
+          "ownership": "word",
+          "translations": [
+            "новая"
+          ],
+          "evidence": [
+            "Sara is a new student at Hill School. → Сара — новая ученица школы Хилл."
+          ]
+        },
+        {
+          "key": "room|PROPN",
+          "ownership": "word",
+          "translations": [
+            "комната",
+            "комнате",
+            "комнату"
+          ],
+          "evidence": [
+            "Her English class is in Room fourteen. → Её урок английского языка проходит в комнате номер четырнадцать.",
+            "She walks into Room forty-one and sits down. → Она входит в комнату номер сорок один и садится.",
+            "It says: English course, Room fourteen, first floor. → Там написано: курс английского языка, комната четырнадцать, первый этаж.",
+            "This is Room forty-one upstairs, on the fourth floor. → Это комната номер сорок один, расположенная на четвёртом этаже."
+          ]
+        },
+        {
+          "key": "say|VERB",
+          "ownership": "word",
+          "translations": [
+            "говорит",
+            "написано"
+          ],
+          "evidence": [
+            "Good morning,\" he says. → Доброе утро, — говорит он.",
+            "It says: English course, Room fourteen, first floor. → Там написано: курс английского языка, комната четырнадцать, первый этаж.",
+            "I am sorry,\" Sara says. → «Мне очень жаль», — говорит Сара."
+          ]
+        },
+        {
+          "key": "her|PRON",
+          "ownership": "word",
+          "translations": [
+            "свою",
+            "её"
+          ],
+          "evidence": [
+            "Her English class is in Room fourteen. → Её урок английского языка проходит в комнате номер четырнадцать.",
+            "Sara looks at her card. → Сара смотрит на свою карточку."
+          ]
+        },
+        {
+          "key": "room|NOUN",
+          "ownership": "word",
+          "translations": [
+            "комната",
+            "комнате",
+            "комнату",
+            "комнат"
+          ],
+          "evidence": [
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников.",
+            "I am in the wrong room. → Я не в той комнате.",
+            "Room fourteen is downstairs. → Комната номер четырнадцать находится внизу.",
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "sit|VERB",
+          "ownership": "word",
+          "translations": [
+            "садится",
+            "сядьте"
+          ],
+          "evidence": [
+            "She walks into Room forty-one and sits down. → Она входит в комнату номер сорок один и садится.",
+            "Please sit next to Amir. → Пожалуйста, сядьте рядом с Амиром."
+          ]
+        },
+        {
+          "key": "minute|NOUN",
+          "ownership": "word",
+          "translations": [
+            "минут"
+          ],
+          "evidence": [
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "forty-one|NUM",
+          "ownership": "word",
+          "translations": [
+            "сорок один"
+          ],
+          "evidence": [
+            "She walks into Room forty-one and sits down. → Она входит в комнату номер сорок один и садится.",
+            "This is Room forty-one upstairs, on the fourth floor. → Это комната номер сорок один, расположенная на четвёртом этаже."
+          ]
+        },
+        {
+          "key": "card|NOUN",
+          "ownership": "word",
+          "translations": [
+            "карточку"
+          ],
+          "evidence": [
+            "Sara looks at her card. → Сара смотрит на свою карточку."
+          ]
+        },
+        {
+          "key": "fourteen|NUM",
+          "ownership": "word",
+          "translations": [
+            "четырнадцать"
+          ],
+          "evidence": [
+            "Her English class is in Room fourteen. → Её урок английского языка проходит в комнате номер четырнадцать.",
+            "It says: English course, Room fourteen, first floor. → Там написано: курс английского языка, комната четырнадцать, первый этаж.",
+            "Room fourteen is downstairs. → Комната номер четырнадцать находится внизу."
+          ]
+        },
+        {
+          "key": "english|ADJ",
+          "ownership": "word",
+          "translations": [
+            "английского языка"
+          ],
+          "evidence": [
+            "Her English class is in Room fourteen. → Её урок английского языка проходит в комнате номер четырнадцать.",
+            "It says: English course, Room fourteen, first floor. → Там написано: курс английского языка, комната четырнадцать, первый этаж.",
+            " the English teacher asks. → — спрашивает учитель английского языка."
+          ]
+        },
+        {
+          "key": "next|ADV",
+          "ownership": "word",
+          "translations": [
+            "рядом"
+          ],
+          "evidence": [
+            "Please sit next to Amir. → Пожалуйста, сядьте рядом с Амиром."
+          ]
+        },
+        {
+          "key": "late|ADV",
+          "ownership": "word",
+          "translations": [
+            "опоздала"
+          ],
+          "evidence": [
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "and|CCONJ",
+          "ownership": "word",
+          "translations": [
+            "и"
+          ],
+          "evidence": [
+            "She walks into Room forty-one and sits down. → Она входит в комнату номер сорок один и садится.",
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников."
+          ]
+        },
+        {
+          "key": "it|PRON",
+          "ownership": "word",
+          "translations": [
+            "там"
+          ],
+          "evidence": [
+            "It says: English course, Room fourteen, first floor. → Там написано: курс английского языка, комната четырнадцать, первый этаж."
+          ]
+        },
+        {
+          "key": "stair|NOUN",
+          "ownership": "word",
+          "translations": [
+            "лестницу"
+          ],
+          "evidence": [
+            "A student shows Sara the stairs. → Студент показывает Саре лестницу."
+          ]
+        },
+        {
+          "key": "but|CCONJ",
+          "ownership": "word",
+          "translations": [
+            "но"
+          ],
+          "evidence": [
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "hill|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Хилл"
+          ],
+          "evidence": [
+            "Sara is a new student at Hill School. → Сара — новая ученица школы Хилл."
+          ]
+        },
+        {
+          "key": "downstairs|ADJ",
+          "ownership": "word",
+          "translations": [
+            "внизу"
+          ],
+          "evidence": [
+            "Room fourteen is downstairs. → Комната номер четырнадцать находится внизу."
+          ]
+        },
+        {
+          "key": "downstair|NOUN",
+          "ownership": "word",
+          "translations": [
+            "внизу"
+          ],
+          "evidence": [
+            "Downstairs, Sara finds the right classroom. → Внизу Сара находит нужный класс."
+          ]
+        },
+        {
+          "key": "ask|VERB",
+          "ownership": "word",
+          "translations": [
+            "спрашивает"
+          ],
+          "evidence": [
+            " the English teacher asks. → — спрашивает учитель английского языка."
+          ]
+        },
+        {
+          "key": "amir|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Амиром"
+          ],
+          "evidence": [
+            "Please sit next to Amir. → Пожалуйста, сядьте рядом с Амиром."
+          ]
+        },
+        {
+          "key": "school|PROPN",
+          "ownership": "word",
+          "translations": [
+            "школы"
+          ],
+          "evidence": [
+            "Sara is a new student at Hill School. → Сара — новая ученица школы Хилл."
+          ]
+        },
+        {
+          "key": "math|NOUN",
+          "ownership": "word",
+          "translations": [
+            "математики"
+          ],
+          "evidence": [
+            "Welcome to the maths class. → Добро пожаловать на урок математики."
+          ]
+        },
+        {
+          "key": "in|ADP",
+          "ownership": "word",
+          "translations": [
+            "в"
+          ],
+          "evidence": [
+            "Her English class is in Room fourteen. → Её урок английского языка проходит в комнате номер четырнадцать.",
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников.",
+            "I am in the wrong room. → Я не в той комнате.",
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "this|PRON",
+          "ownership": "word",
+          "translations": [
+            "это"
+          ],
+          "evidence": [
+            "This is Room forty-one upstairs, on the fourth floor. → Это комната номер сорок один, расположенная на четвёртом этаже."
+          ]
+        },
+        {
+          "key": "class|NOUN",
+          "ownership": "word",
+          "translations": [
+            "урок",
+            "классе"
+          ],
+          "evidence": [
+            "Her English class is in Room fourteen. → Её урок английского языка проходит в комнате номер четырнадцать.",
+            "Welcome to the maths class. → Добро пожаловать на урок математики.",
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "course|NOUN",
+          "ownership": "word",
+          "translations": [
+            "курс"
+          ],
+          "evidence": [
+            "It says: English course, Room fourteen, first floor. → Там написано: курс английского языка, комната четырнадцать, первый этаж."
+          ]
+        },
+        {
+          "key": "find|VERB",
+          "ownership": "word",
+          "translations": [
+            "находит"
+          ],
+          "evidence": [
+            "Downstairs, Sara finds the right classroom. → Внизу Сара находит нужный класс."
+          ]
+        },
+        {
+          "key": "now|ADV",
+          "ownership": "word",
+          "translations": [
+            "теперь"
+          ],
+          "evidence": [
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "wrong|ADJ",
+          "ownership": "word",
+          "translations": [
+            "не в той",
+            "той"
+          ],
+          "evidence": [
+            "I am in the wrong room. → Я не в той комнате."
+          ]
+        },
+        {
+          "key": "book|NOUN",
+          "ownership": "word",
+          "translations": [
+            "книги"
+          ],
+          "evidence": [
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников."
+          ]
+        },
+        {
+          "key": "right|ADJ",
+          "ownership": "word",
+          "translations": [
+            "нужный",
+            "нужном"
+          ],
+          "evidence": [
+            "Downstairs, Sara finds the right classroom. → Внизу Сара находит нужный класс.",
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "map|NOUN",
+          "ownership": "word",
+          "translations": [
+            "карты"
+          ],
+          "evidence": [
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников."
+          ]
+        },
+        {
+          "key": "first|ADJ",
+          "ownership": "word",
+          "translations": [
+            "первый"
+          ],
+          "evidence": [
+            "It says: English course, Room fourteen, first floor. → Там написано: курс английского языка, комната четырнадцать, первый этаж."
+          ]
+        },
+        {
+          "key": "classroom|NOUN",
+          "ownership": "word",
+          "translations": [
+            "класс"
+          ],
+          "evidence": [
+            "Downstairs, Sara finds the right classroom. → Внизу Сара находит нужный класс."
+          ]
+        },
+        {
+          "key": "floor|NOUN",
+          "ownership": "word",
+          "translations": [
+            "этаж",
+            "этаже"
+          ],
+          "evidence": [
+            "It says: English course, Room fourteen, first floor. → Там написано: курс английского языка, комната четырнадцать, первый этаж.",
+            "This is Room forty-one upstairs, on the fourth floor. → Это комната номер сорок один, расположенная на четвёртом этаже."
+          ]
+        },
+        {
+          "key": "on|ADP",
+          "ownership": "word",
+          "translations": [
+            "на"
+          ],
+          "evidence": [
+            "A man writes numbers on the board. → Мужчина пишет цифры на доске.",
+            "This is Room forty-one upstairs, on the fourth floor. → Это комната номер сорок один, расположенная на четвёртом этаже."
+          ]
+        },
+        {
+          "key": "twelve|NUM",
+          "ownership": "word",
+          "translations": [
+            "двенадцать"
+          ],
+          "evidence": [
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников."
+          ]
+        },
+        {
+          "key": "fourth|ADJ",
+          "ownership": "word",
+          "translations": [
+            "четвёртом"
+          ],
+          "evidence": [
+            "This is Room forty-one upstairs, on the fourth floor. → Это комната номер сорок один, расположенная на четвёртом этаже."
+          ]
+        },
+        {
+          "key": "check|VERB",
+          "ownership": "word",
+          "translations": [
+            "проверяет"
+          ],
+          "evidence": [
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "every|DET",
+          "ownership": "word",
+          "translations": [
+            "всех"
+          ],
+          "evidence": [
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "number|NOUN",
+          "ownership": "word",
+          "translations": [
+            "номер",
+            "номера",
+            "цифры"
+          ],
+          "evidence": [
+            "A man writes numbers on the board. → Мужчина пишет цифры на доске.",
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "carefully|ADV",
+          "ownership": "word",
+          "translations": [
+            "внимательно"
+          ],
+          "evidence": [
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "man|NOUN",
+          "ownership": "word",
+          "translations": [
+            "мужчина"
+          ],
+          "evidence": [
+            "A man writes numbers on the board. → Мужчина пишет цифры на доске."
+          ]
+        },
+        {
+          "key": "write|VERB",
+          "ownership": "word",
+          "translations": [
+            "пишет"
+          ],
+          "evidence": [
+            "A man writes numbers on the board. → Мужчина пишет цифры на доске."
+          ]
+        },
+        {
+          "key": "rest|NOUN",
+          "ownership": "word",
+          "translations": [
+            "конца"
+          ],
+          "evidence": [
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "board|NOUN",
+          "ownership": "word",
+          "translations": [
+            "доске"
+          ],
+          "evidence": [
+            "A man writes numbers on the board. → Мужчина пишет цифры на доске."
+          ]
+        },
+        {
+          "key": "day|NOUN",
+          "ownership": "word",
+          "translations": [
+            "дня"
+          ],
+          "evidence": [
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "at|ADP",
+          "ownership": "word",
+          "translations": [
+            "на"
+          ],
+          "evidence": [
+            "Sara is a new student at Hill School. → Сара — новая ученица школы Хилл.",
+            "Sara looks at her card. → Сара смотрит на свою карточку."
+          ]
+        },
+        {
+          "key": "a|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Sara is a new student at Hill School. → Сара — новая ученица школы Хилл.",
+            "A man writes numbers on the board. → Мужчина пишет цифры на доске.",
+            "A student shows Sara the stairs. → Студент показывает Саре лестницу."
+          ]
+        },
+        {
+          "key": "be|AUX",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "Sara is a new student at Hill School. → Сара — новая ученица школы Хилл.",
+            "Her English class is in Room fourteen. → Её урок английского языка проходит в комнате номер четырнадцать.",
+            "I am sorry,\" Sara says. → «Мне очень жаль», — говорит Сара.",
+            "I am in the wrong room. → Я не в той комнате.",
+            "Room fourteen is downstairs. → Комната номер четырнадцать находится внизу.",
+            "This is Room forty-one upstairs, on the fourth floor. → Это комната номер сорок один, расположенная на четвёртом этаже.",
+            "Are you Sara? → Вы Сара?",
+            "Yes, I am. → Да, это я.",
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе."
+          ]
+        },
+        {
+          "key": "be|VERB",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников."
+          ]
+        },
+        {
+          "key": "down|ADP",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "She walks into Room forty-one and sits down. → Она входит в комнату номер сорок один и садится."
+          ]
+        },
+        {
+          "key": "for|ADP",
+          "ownership": "word",
+          "translations": [
+            "до"
+          ],
+          "evidence": [
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "of|ADP",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "there|PRON",
+          "ownership": "absorbed",
+          "translations": [],
+          "evidence": [
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников."
+          ]
+        },
+        {
+          "key": "the|DET",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "The Wrong Classroom → Неправильный класс",
+            "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников.",
+            "A man writes numbers on the board. → Мужчина пишет цифры на доске.",
+            "Welcome to the maths class. → Добро пожаловать на урок математики.",
+            "I am in the wrong room. → Я не в той комнате.",
+            "The teacher smiles. → Учитель улыбается.",
+            "This is Room forty-one upstairs, on the fourth floor. → Это комната номер сорок один, расположенная на четвёртом этаже.",
+            "A student shows Sara the stairs. → Студент показывает Саре лестницу.",
+            "Downstairs, Sara finds the right classroom. → Внизу Сара находит нужный класс.",
+            " the English teacher asks. → — спрашивает учитель английского языка.",
+            "Sara is five minutes late, but she is now in the right class. → Сара опоздала на пять минут, но теперь она в нужном классе.",
+            "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
+          ]
+        },
+        {
+          "key": "to|ADP",
+          "ownership": "word",
+          "translations": [
+            "на",
+            "с"
+          ],
+          "evidence": [
+            "Welcome to the maths class. → Добро пожаловать на урок математики.",
+            "Please sit next to Amir. → Пожалуйста, сядьте рядом с Амиром."
+          ]
+        },
+        {
+          "key": "upstairs|ADV",
+          "ownership": "noncontextual",
+          "translations": [],
+          "evidence": [
+            "This is Room forty-one upstairs, on the fourth floor. → Это комната номер сорок один, расположенная на четвёртом этаже."
+          ]
+        }
+      ],
+      "corrections": [],
+      "unresolved": []
+    },
+    "fourth_pass": {
+      "status": "passed",
+      "block_decisions": [
+        {
+          "source": "sit down",
+          "decision": "accepted",
+          "word_by_word_result": "садится + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            3
+          ]
+        },
+        {
+          "source": "there are",
+          "decision": "accepted",
+          "word_by_word_result": "∅ + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            4
+          ]
+        },
+        {
+          "source": "i am sorry",
+          "decision": "accepted",
+          "word_by_word_result": "мне + ∅ + очень жаль",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            10
+          ]
+        },
+        {
+          "source": "next to",
+          "decision": "accepted",
+          "word_by_word_result": "рядом + с",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            21
+          ]
+        },
+        {
+          "source": "the rest of",
+          "decision": "accepted",
+          "word_by_word_result": "the + rest + of",
+          "reason": "the shorter reusable construction owns the non-compositional meaning",
+          "segment_indexes": [
+            23
+          ]
+        },
+        {
+          "source": "five minutes late",
+          "decision": "rejected",
+          "word_by_word_result": "пять + минут + опоздала",
+          "reason": "The independent word meanings preserve the complete target meaning; only target order changes.",
+          "segment_indexes": [
+            22
+          ]
+        }
+      ],
+      "unresolved": []
+    },
+    "absorbed_word_keys": [
+      "be|verb",
+      "down|adp",
+      "of|adp",
+      "there|pron"
+    ]
+  }
+}

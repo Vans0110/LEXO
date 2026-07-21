@@ -1,0 +1,113 @@
+[
+  {
+    "source": "ask for",
+    "translation": "запрашивает",
+    "type": "phrasal_verb",
+    "explanation": "Означает запросить или попросить предоставить что-либо.",
+    "components": [
+      {
+        "source": "ask",
+        "lemma": "ask",
+        "pos": "VERB",
+        "translation": "запрашивает"
+      },
+      {
+        "source": "for",
+        "lemma": "for",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "предлог поглощён значением русского глагола"
+      }
+    ],
+    "source_forms": [
+      "asks for"
+    ]
+  },
+  {
+    "source": "first name",
+    "translation": "имя",
+    "type": "fixed_expression",
+    "explanation": "Обозначает личное имя, в отличие от фамилии.",
+    "components": [
+      {
+        "source": "first",
+        "lemma": "first",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "уточняющее значение поглощено русским словом «имя»"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "имя"
+      }
+    ],
+    "source_forms": [
+      "first name"
+    ]
+  },
+  {
+    "source": "last name",
+    "translation": "фамилию",
+    "dictionary_translation": "фамилия",
+    "type": "fixed_expression",
+    "explanation": "Обозначает фамилию человека.",
+    "components": [
+      {
+        "source": "last",
+        "lemma": "last",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значение определения поглощено русским словом «фамилия»"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "",
+        "empty_reason": "значение всего сочетания передано отдельным русским словом"
+      }
+    ],
+    "source_forms": [
+      "last name"
+    ]
+  },
+  {
+    "source": "where are you from",
+    "translation": "Откуда ты",
+    "type": "grammar_construction",
+    "explanation": "Вопрос о стране, городе или месте происхождения человека.",
+    "components": [
+      {
+        "source": "where",
+        "lemma": "where",
+        "pos": "SCONJ",
+        "translation": "Откуда"
+      },
+      {
+        "source": "are",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "связка отсутствует в русском вопросе"
+      },
+      {
+        "source": "you",
+        "lemma": "you",
+        "pos": "PRON",
+        "translation": "ты"
+      },
+      {
+        "source": "from",
+        "lemma": "from",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "направительное значение включено в русское вопросительное слово"
+      }
+    ],
+    "source_forms": [
+      "Where are you from"
+    ]
+  }
+]

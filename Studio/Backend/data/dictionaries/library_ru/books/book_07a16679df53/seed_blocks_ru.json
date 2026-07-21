@@ -1,0 +1,179 @@
+[
+  {
+    "source": "nice to meet you",
+    "translation": "Рад встрече",
+    "type": "fixed_expression",
+    "explanation": "Вежливая фраза при знакомстве с человеком.",
+    "components": [
+      {
+        "source": "nice",
+        "lemma": "nice",
+        "pos": "ADJ",
+        "translation": "Рад"
+      },
+      {
+        "source": "to",
+        "lemma": "to",
+        "pos": "PART",
+        "translation": "",
+        "empty_reason": "частица инфинитива не имеет отдельного русского соответствия"
+      },
+      {
+        "source": "meet",
+        "lemma": "meet",
+        "pos": "VERB",
+        "translation": "встрече"
+      },
+      {
+        "source": "you",
+        "lemma": "you",
+        "pos": "PRON",
+        "translation": "",
+        "empty_reason": "собеседник подразумевается русской формулой знакомства"
+      }
+    ],
+    "source_forms": [
+      "Nice to meet you"
+    ]
+  },
+  {
+    "source": "can you repeat",
+    "translation": "Не могли бы вы повторить",
+    "type": "grammar_construction",
+    "explanation": "Вежливая просьба повторить сказанное.",
+    "components": [
+      {
+        "source": "Can",
+        "lemma": "can",
+        "pos": "AUX",
+        "translation": "Не могли бы"
+      },
+      {
+        "source": "you",
+        "lemma": "you",
+        "pos": "PRON",
+        "translation": "вы"
+      },
+      {
+        "source": "repeat",
+        "lemma": "repeat",
+        "pos": "VERB",
+        "translation": "повторить"
+      }
+    ],
+    "source_forms": [
+      "Can you repeat"
+    ]
+  },
+  {
+    "source": "first name",
+    "translation": "имя",
+    "type": "fixed_expression",
+    "explanation": "Обозначает личное имя, в отличие от фамилии.",
+    "components": [
+      {
+        "source": "first",
+        "lemma": "first",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "уточняющее значение поглощено русским словом «имя»"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "имя"
+      }
+    ],
+    "source_forms": [
+      "first name"
+    ]
+  },
+  {
+    "source": "last name",
+    "translation": "фамилию",
+    "dictionary_translation": "фамилия",
+    "type": "fixed_expression",
+    "explanation": "Обозначает фамилию человека.",
+    "components": [
+      {
+        "source": "last",
+        "lemma": "last",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значение определения поглощено русским словом «фамилия»"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "",
+        "empty_reason": "значение всего сочетания передано отдельным русским словом"
+      }
+    ],
+    "source_forms": [
+      "last name"
+    ]
+  },
+  {
+    "source": "write it down",
+    "translation": "записывает это",
+    "type": "phrasal_verb",
+    "explanation": "Означает записать информацию, чтобы сохранить её.",
+    "components": [
+      {
+        "source": "write",
+        "lemma": "write",
+        "pos": "VERB",
+        "translation": "записывает"
+      },
+      {
+        "source": "it",
+        "lemma": "it",
+        "pos": "PRON",
+        "translation": "это"
+      },
+      {
+        "source": "down",
+        "lemma": "down",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "частица поглощена русским глаголом"
+      }
+    ],
+    "source_forms": [
+      "writes it down"
+    ]
+  },
+  {
+    "source": "read it back",
+    "translation": "перечитывает",
+    "type": "phrasal_verb",
+    "explanation": "Означает прочитать записанное снова для проверки.",
+    "components": [
+      {
+        "source": "read",
+        "lemma": "read",
+        "pos": "VERB",
+        "translation": "перечитывает"
+      },
+      {
+        "source": "it",
+        "lemma": "it",
+        "pos": "PRON",
+        "translation": "",
+        "empty_reason": "объект включён в значение русского глагола"
+      },
+      {
+        "source": "back",
+        "lemma": "back",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "частица поглощена русским глаголом"
+      }
+    ],
+    "source_forms": [
+      "reads it back"
+    ]
+  }
+]

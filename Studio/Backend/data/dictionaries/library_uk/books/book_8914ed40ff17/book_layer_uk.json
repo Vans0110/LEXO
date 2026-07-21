@@ -1,0 +1,890 @@
+{
+  "version": 1,
+  "book_id": "book_8914ed40ff17",
+  "title": "Grandma’s Dinner",
+  "source_lang": "en",
+  "target_lang": "uk",
+  "parallel": [
+    {
+      "source": "Today, Emma and her parents go to her grandmother’s house in the afternoon.",
+      "translation": "Сьогодні після полудня Емма і її батьки їдуть до бабусі."
+    },
+    {
+      "source": "Her grandmother cooks chicken, rice, and vegetables.",
+      "translation": "Її бабуся готує курятину, рис і овочі."
+    },
+    {
+      "source": "The food smells very good.",
+      "translation": "Їжа смачно пахне."
+    },
+    {
+      "source": "“See you next Sunday!",
+      "translation": "Побачимось наступної неділі!"
+    },
+    {
+      "source": "” she says.",
+      "translation": "вона каже."
+    },
+    {
+      "source": "During dinner, the family talks and laughs.",
+      "translation": "Під час вечері сім'я розмовляє і сміється."
+    },
+    {
+      "source": "Emma’s grandfather tells funny stories about his old job.",
+      "translation": "Дід Емми розповідає смішні історії про свою колишню роботу."
+    },
+    {
+      "source": "Everyone listens carefully.",
+      "translation": "Усе уважно слухають."
+    },
+    {
+      "source": "At night, Emma says goodbye and hugs her grandparents.",
+      "translation": "Увечері Емма прощається і обіймає дідуся та бабусю."
+    },
+    {
+      "source": "Emma has a big family.",
+      "translation": "Емма має велику сім'ю."
+    },
+    {
+      "source": "Every Sunday, her family visits her grandmother.",
+      "translation": "Кожні неділі її сім'я відвідує її бабусю."
+    },
+    {
+      "source": "Grandma’s Dinner",
+      "translation": "Вечеря бабусі"
+    },
+    {
+      "source": "Emma helps set the table.",
+      "translation": "Емма допомагає накрити стіл."
+    },
+    {
+      "source": "Her younger brother brings juice and bread.",
+      "translation": "Її молодший брат приносить сок і хліб."
+    },
+    {
+      "source": "After dinner, Emma looks at old family photos with her grandmother.",
+      "translation": "Після обіду Емма дивиться на старі сімейні фотографії зі своєю бабусею."
+    },
+    {
+      "source": "There are pictures of birthdays, holidays, and small children.",
+      "translation": "Тут зображені дні народження, свята і маленькі діти."
+    },
+    {
+      "source": "Emma likes these evenings very much.",
+      "translation": "Емма дуже любить ці вечори."
+    },
+    {
+      "source": "She feels warm and happy with her family.",
+      "translation": "Вона відчуває тепло і радість зі своєю сім'єю."
+    }
+  ],
+  "blocks": [
+    {
+      "source": "after dinner",
+      "translation": "після обіду"
+    },
+    {
+      "source": "big family",
+      "translation": "велика сім’я"
+    },
+    {
+      "source": "during dinner",
+      "translation": "під час вечері"
+    },
+    {
+      "source": "every sunday",
+      "translation": "кожні неділі"
+    },
+    {
+      "source": "funny stories",
+      "translation": "смішні історії"
+    },
+    {
+      "source": "grandmother’s house",
+      "translation": "до бабусі"
+    },
+    {
+      "source": "looks at",
+      "translation": "дивиться на"
+    },
+    {
+      "source": "old job",
+      "translation": "колишня робота"
+    },
+    {
+      "source": "says goodbye",
+      "translation": "прощається"
+    },
+    {
+      "source": "very good",
+      "translation": "смачно"
+    }
+  ],
+  "words": [
+    {
+      "word": "Grandma",
+      "lemma": "grandma",
+      "pos": "PROPN",
+      "translation": "бабуся",
+      "translations": [
+        "бабуся",
+        "бабусі"
+      ]
+    },
+    {
+      "word": "Emma",
+      "lemma": "emma",
+      "pos": "PROPN",
+      "translation": "Емма",
+      "translations": [
+        "Емма",
+        "Емми"
+      ]
+    },
+    {
+      "word": "Today",
+      "lemma": "today",
+      "pos": "NOUN",
+      "translation": "сьогодні",
+      "translations": [
+        "сьогодні"
+      ]
+    },
+    {
+      "word": "During",
+      "lemma": "during",
+      "pos": "ADP",
+      "translation": "під час"
+    },
+    {
+      "word": "After",
+      "lemma": "after",
+      "pos": "ADP",
+      "translation": "після",
+      "translations": [
+        "після"
+      ]
+    },
+    {
+      "word": "At",
+      "lemma": "at",
+      "pos": "ADP",
+      "translation": "біля",
+      "translations": [
+        "біля"
+      ]
+    },
+    {
+      "word": "See",
+      "lemma": "see",
+      "pos": "VERB",
+      "translation": "бачити",
+      "translations": [
+        "бачити"
+      ]
+    },
+    {
+      "word": "s",
+      "lemma": "s",
+      "pos": "",
+      "translation": "належність",
+      "translations": [
+        "належність"
+      ]
+    },
+    {
+      "word": "has",
+      "lemma": "have",
+      "pos": "VERB",
+      "translation": "мати",
+      "translations": [
+        "мати"
+      ]
+    },
+    {
+      "word": "helps",
+      "lemma": "help",
+      "pos": "VERB",
+      "translation": "допомагати",
+      "translations": [
+        "допомагати",
+        "допомагає"
+      ]
+    },
+    {
+      "word": "dinner",
+      "lemma": "dinner",
+      "pos": "NOUN",
+      "translation": "вечеря",
+      "translations": [
+        "вечеря",
+        "вечері"
+      ]
+    },
+    {
+      "word": "likes",
+      "lemma": "like",
+      "pos": "VERB",
+      "translation": "подобатися",
+      "translations": [
+        "подобатися"
+      ]
+    },
+    {
+      "word": "night",
+      "lemma": "night",
+      "pos": "NOUN",
+      "translation": "ніч",
+      "translations": [
+        "ніч"
+      ]
+    },
+    {
+      "word": "you",
+      "lemma": "you",
+      "pos": "PRON",
+      "translation": "ти",
+      "translations": [
+        "ти"
+      ]
+    },
+    {
+      "word": "Dinner",
+      "lemma": "dinner",
+      "pos": "PROPN",
+      "translation": "Вечеря",
+      "translations": [
+        "Вечеря",
+        "вечері"
+      ]
+    },
+    {
+      "word": "a",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "один",
+      "translations": [
+        "один"
+      ]
+    },
+    {
+      "word": "and",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "і",
+      "translations": [
+        "і"
+      ]
+    },
+    {
+      "word": "set",
+      "lemma": "set",
+      "pos": "VERB",
+      "translation": "накривати",
+      "translations": [
+        "накривати",
+        "накрити"
+      ]
+    },
+    {
+      "word": "the",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "цей",
+      "translations": [
+        "цей"
+      ]
+    },
+    {
+      "word": "these",
+      "lemma": "these",
+      "pos": "DET",
+      "translation": "ці",
+      "translations": [
+        "ці"
+      ]
+    },
+    {
+      "word": "next",
+      "lemma": "next",
+      "pos": "ADJ",
+      "translation": "наступний",
+      "translations": [
+        "наступний",
+        "наступної"
+      ]
+    },
+    {
+      "word": "big",
+      "lemma": "big",
+      "pos": "ADJ",
+      "translation": "великий",
+      "translations": [
+        "великий",
+        "велику"
+      ]
+    },
+    {
+      "word": "her",
+      "lemma": "her",
+      "pos": "PRON",
+      "translation": "її",
+      "translations": [
+        "її"
+      ]
+    },
+    {
+      "word": "family",
+      "lemma": "family",
+      "pos": "NOUN",
+      "translation": "сім’я"
+    },
+    {
+      "word": "looks",
+      "lemma": "look",
+      "pos": "VERB",
+      "translation": "дивитися",
+      "translations": [
+        "дивитися",
+        "дивиться"
+      ]
+    },
+    {
+      "word": "evenings",
+      "lemma": "evening",
+      "pos": "NOUN",
+      "translation": "вечір",
+      "translations": [
+        "вечір",
+        "вечори"
+      ]
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "казати",
+      "translations": [
+        "казати"
+      ]
+    },
+    {
+      "word": "Sunday",
+      "lemma": "sunday",
+      "pos": "PROPN",
+      "translation": "неділя",
+      "translations": [
+        "неділя",
+        "неділі"
+      ]
+    },
+    {
+      "word": "parents",
+      "lemma": "parent",
+      "pos": "NOUN",
+      "translation": "батько",
+      "translations": [
+        "батько",
+        "батьки"
+      ]
+    },
+    {
+      "word": "table",
+      "lemma": "table",
+      "pos": "NOUN",
+      "translation": "стіл",
+      "translations": [
+        "стіл"
+      ]
+    },
+    {
+      "word": "talks",
+      "lemma": "talk",
+      "pos": "NOUN",
+      "translation": "розмова",
+      "translations": [
+        "розмова",
+        "розмовляє"
+      ]
+    },
+    {
+      "word": "very",
+      "lemma": "very",
+      "pos": "ADV",
+      "translation": "дуже",
+      "translations": [
+        "дуже"
+      ]
+    },
+    {
+      "word": "goodbye",
+      "lemma": "goodbye",
+      "pos": "NOUN",
+      "translation": "прощання",
+      "translations": [
+        "прощання",
+        "прощається"
+      ]
+    },
+    {
+      "word": "she",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "вона",
+      "translations": [
+        "вона"
+      ]
+    },
+    {
+      "word": "Every",
+      "lemma": "every",
+      "pos": "DET",
+      "translation": "кожний",
+      "translations": [
+        "кожний",
+        "Кожні"
+      ]
+    },
+    {
+      "word": "go",
+      "lemma": "go",
+      "pos": "VERB",
+      "translation": "йти",
+      "translations": [
+        "йти"
+      ]
+    },
+    {
+      "word": "old",
+      "lemma": "old",
+      "pos": "ADJ",
+      "translation": "старий",
+      "translations": [
+        "старий",
+        "старі"
+      ]
+    },
+    {
+      "word": "much",
+      "lemma": "much",
+      "pos": "ADV",
+      "translation": "багато",
+      "translations": [
+        "багато"
+      ]
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "ADP",
+      "translation": "до",
+      "translations": [
+        "до"
+      ]
+    },
+    {
+      "word": "younger",
+      "lemma": "young",
+      "pos": "ADJ",
+      "translation": "молодий",
+      "translations": [
+        "молодий",
+        "молодший"
+      ]
+    },
+    {
+      "word": "laughs",
+      "lemma": "laugh",
+      "pos": "NOUN",
+      "translation": "сміх",
+      "translations": [
+        "сміх",
+        "сміється"
+      ]
+    },
+    {
+      "word": "hugs",
+      "lemma": "hug",
+      "pos": "VERB",
+      "translation": "обіймати",
+      "translations": [
+        "обіймати",
+        "обіймає"
+      ]
+    },
+    {
+      "word": "brother",
+      "lemma": "brother",
+      "pos": "NOUN",
+      "translation": "брат",
+      "translations": [
+        "брат"
+      ]
+    },
+    {
+      "word": "photos",
+      "lemma": "photo",
+      "pos": "NOUN",
+      "translation": "фото",
+      "translations": [
+        "фото",
+        "фотографії"
+      ]
+    },
+    {
+      "word": "feels",
+      "lemma": "feel",
+      "pos": "VERB",
+      "translation": "відчувати",
+      "translations": [
+        "відчувати",
+        "відчуває"
+      ]
+    },
+    {
+      "word": "grandmother",
+      "lemma": "grandmother",
+      "pos": "NOUN",
+      "translation": "бабуся",
+      "translations": [
+        "бабуся",
+        "бабусі",
+        "бабусю",
+        "бабусею"
+      ]
+    },
+    {
+      "word": "brings",
+      "lemma": "bring",
+      "pos": "VERB",
+      "translation": "приносити",
+      "translations": [
+        "приносити",
+        "приносить"
+      ]
+    },
+    {
+      "word": "with",
+      "lemma": "with",
+      "pos": "ADP",
+      "translation": "з",
+      "translations": [
+        "з"
+      ]
+    },
+    {
+      "word": "warm",
+      "lemma": "warm",
+      "pos": "ADJ",
+      "translation": "теплий",
+      "translations": [
+        "теплий",
+        "тепло"
+      ]
+    },
+    {
+      "word": "grandparents",
+      "lemma": "grandparent",
+      "pos": "NOUN",
+      "translation": "дідусь і бабуся"
+    },
+    {
+      "word": "visits",
+      "lemma": "visit",
+      "pos": "VERB",
+      "translation": "відвідувати",
+      "translations": [
+        "відвідувати",
+        "відвідує"
+      ]
+    },
+    {
+      "word": "juice",
+      "lemma": "juice",
+      "pos": "NOUN",
+      "translation": "сік",
+      "translations": [
+        "сік"
+      ]
+    },
+    {
+      "word": "grandfather",
+      "lemma": "grandfather",
+      "pos": "NOUN",
+      "translation": "дідусь",
+      "translations": [
+        "дідусь",
+        "Дід"
+      ]
+    },
+    {
+      "word": "house",
+      "lemma": "house",
+      "pos": "NOUN",
+      "translation": "дім",
+      "translations": [
+        "дім"
+      ]
+    },
+    {
+      "word": "tells",
+      "lemma": "tell",
+      "pos": "VERB",
+      "translation": "розповідати",
+      "translations": [
+        "розповідати",
+        "розповідає"
+      ]
+    },
+    {
+      "word": "happy",
+      "lemma": "happy",
+      "pos": "ADJ",
+      "translation": "щасливий",
+      "translations": [
+        "щасливий"
+      ]
+    },
+    {
+      "word": "in",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "у",
+      "translations": [
+        "у"
+      ]
+    },
+    {
+      "word": "bread",
+      "lemma": "bread",
+      "pos": "NOUN",
+      "translation": "хліб",
+      "translations": [
+        "хліб"
+      ]
+    },
+    {
+      "word": "funny",
+      "lemma": "funny",
+      "pos": "ADJ",
+      "translation": "смішний",
+      "translations": [
+        "смішний",
+        "смішні"
+      ]
+    },
+    {
+      "word": "There",
+      "lemma": "there",
+      "pos": "PRON",
+      "translation": "там",
+      "translations": [
+        "там"
+      ]
+    },
+    {
+      "word": "stories",
+      "lemma": "story",
+      "pos": "NOUN",
+      "translation": "історія",
+      "translations": [
+        "історія",
+        "історії"
+      ]
+    },
+    {
+      "word": "are",
+      "lemma": "be",
+      "pos": "VERB",
+      "translation": "бути",
+      "translations": [
+        "бути"
+      ]
+    },
+    {
+      "word": "afternoon",
+      "lemma": "afternoon",
+      "pos": "NOUN",
+      "translation": "день",
+      "translations": [
+        "день"
+      ]
+    },
+    {
+      "word": "about",
+      "lemma": "about",
+      "pos": "ADP",
+      "translation": "про",
+      "translations": [
+        "про"
+      ]
+    },
+    {
+      "word": "pictures",
+      "lemma": "picture",
+      "pos": "NOUN",
+      "translation": "картинка",
+      "translations": [
+        "картинка"
+      ]
+    },
+    {
+      "word": "his",
+      "lemma": "his",
+      "pos": "PRON",
+      "translation": "його",
+      "translations": [
+        "його"
+      ]
+    },
+    {
+      "word": "of",
+      "lemma": "of",
+      "pos": "ADP",
+      "translation": "з",
+      "translations": [
+        "з"
+      ]
+    },
+    {
+      "word": "birthdays",
+      "lemma": "birthday",
+      "pos": "NOUN",
+      "translation": "день народження"
+    },
+    {
+      "word": "cooks",
+      "lemma": "cook",
+      "pos": "VERB",
+      "translation": "готувати",
+      "translations": [
+        "готувати",
+        "готує"
+      ]
+    },
+    {
+      "word": "job",
+      "lemma": "job",
+      "pos": "NOUN",
+      "translation": "робота",
+      "translations": [
+        "робота",
+        "роботу"
+      ]
+    },
+    {
+      "word": "holidays",
+      "lemma": "holiday",
+      "pos": "NOUN",
+      "translation": "свято",
+      "translations": [
+        "свято",
+        "свята"
+      ]
+    },
+    {
+      "word": "chicken",
+      "lemma": "chicken",
+      "pos": "NOUN",
+      "translation": "курка",
+      "translations": [
+        "курка",
+        "курятину"
+      ]
+    },
+    {
+      "word": "Everyone",
+      "lemma": "everyone",
+      "pos": "PRON",
+      "translation": "усі",
+      "translations": [
+        "усі"
+      ]
+    },
+    {
+      "word": "rice",
+      "lemma": "rice",
+      "pos": "NOUN",
+      "translation": "рис",
+      "translations": [
+        "рис"
+      ]
+    },
+    {
+      "word": "listens",
+      "lemma": "listen",
+      "pos": "VERB",
+      "translation": "слухати",
+      "translations": [
+        "слухати",
+        "слухають"
+      ]
+    },
+    {
+      "word": "small",
+      "lemma": "small",
+      "pos": "ADJ",
+      "translation": "малий",
+      "translations": [
+        "малий",
+        "маленькі"
+      ]
+    },
+    {
+      "word": "carefully",
+      "lemma": "carefully",
+      "pos": "ADV",
+      "translation": "уважно",
+      "translations": [
+        "уважно"
+      ]
+    },
+    {
+      "word": "children",
+      "lemma": "child",
+      "pos": "NOUN",
+      "translation": "дитина",
+      "translations": [
+        "дитина"
+      ]
+    },
+    {
+      "word": "vegetables",
+      "lemma": "vegetable",
+      "pos": "NOUN",
+      "translation": "овоч",
+      "translations": [
+        "овоч",
+        "овочі"
+      ]
+    },
+    {
+      "word": "food",
+      "lemma": "food",
+      "pos": "NOUN",
+      "translation": "їжа",
+      "translations": [
+        "їжа"
+      ]
+    },
+    {
+      "word": "smells",
+      "lemma": "smell",
+      "pos": "VERB",
+      "translation": "пахнути",
+      "translations": [
+        "пахнути",
+        "пахне"
+      ]
+    },
+    {
+      "word": "good",
+      "lemma": "good",
+      "pos": "ADJ",
+      "translation": "добрий",
+      "translations": [
+        "добрий"
+      ]
+    }
+  ]
+}

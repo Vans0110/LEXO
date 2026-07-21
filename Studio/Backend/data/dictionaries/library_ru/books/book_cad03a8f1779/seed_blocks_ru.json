@@ -1,0 +1,136 @@
+[
+  {
+    "source": "sit down",
+    "translation": "садится",
+    "type": "phrasal_verb",
+    "components": [
+      {
+        "source": "sit",
+        "lemma": "sit",
+        "pos": "VERB",
+        "translation": "садится"
+      },
+      {
+        "source": "down",
+        "lemma": "down",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "particle is absorbed by the Russian verb"
+      }
+    ],
+    "source_forms": [
+      "sits down"
+    ],
+    "explanation": "Означает перейти из положения стоя в положение сидя."
+  },
+  {
+    "source": "there are",
+    "translation": "находятся",
+    "type": "grammar_construction",
+    "components": [
+      {
+        "source": "there",
+        "lemma": "there",
+        "pos": "PRON",
+        "translation": "",
+        "empty_reason": "existential marker is absorbed by the construction"
+      },
+      {
+        "source": "are",
+        "lemma": "be",
+        "pos": "VERB",
+        "translation": "",
+        "empty_reason": "the Russian predicate belongs to the existential construction, not to be as a standalone dictionary word"
+      }
+    ],
+    "source_forms": [
+      "There are"
+    ],
+    "explanation": "Сообщает, что несколько людей или предметов существуют либо находятся где-то."
+  },
+  {
+    "source": "i am sorry",
+    "translation": "мне очень жаль",
+    "type": "fixed_expression",
+    "components": [
+      {
+        "source": "I",
+        "lemma": "i",
+        "pos": "PRON",
+        "translation": "мне"
+      },
+      {
+        "source": "am",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "copula is absent in the Russian expression"
+      },
+      {
+        "source": "sorry",
+        "lemma": "sorry",
+        "pos": "ADJ",
+        "translation": "очень жаль"
+      }
+    ],
+    "source_forms": [
+      "I am sorry"
+    ],
+    "explanation": "Устойчивое выражение для извинения или сожаления."
+  },
+  {
+    "source": "next to",
+    "translation": "рядом с",
+    "type": "prepositional_group",
+    "components": [
+      {
+        "source": "next",
+        "lemma": "next",
+        "pos": "ADV",
+        "translation": "рядом"
+      },
+      {
+        "source": "to",
+        "lemma": "to",
+        "pos": "ADP",
+        "translation": "с"
+      }
+    ],
+    "source_forms": [
+      "next to"
+    ],
+    "explanation": "Указывает на положение непосредственно рядом с человеком, местом или предметом."
+  },
+  {
+    "source": "the rest of",
+    "translation": "конца",
+    "dictionary_translation": "оставшаяся часть чего-либо",
+    "type": "grammar_construction",
+    "explanation": "Указывает на часть времени, количества или предмета, которая ещё осталась.",
+    "components": [
+      {
+        "source": "the",
+        "lemma": "the",
+        "pos": "DET",
+        "translation": "",
+        "empty_reason": "article is absent in Russian"
+      },
+      {
+        "source": "rest",
+        "lemma": "rest",
+        "pos": "NOUN",
+        "translation": "конца"
+      },
+      {
+        "source": "of",
+        "lemma": "of",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "relation to the following noun is expressed by the target-language construction"
+      }
+    ],
+    "source_forms": [
+      "the rest of"
+    ]
+  }
+]

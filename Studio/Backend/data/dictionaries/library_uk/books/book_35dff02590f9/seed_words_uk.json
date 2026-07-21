@@ -1,0 +1,266 @@
+{
+  "and|CCONJ": {
+    "translation": "і"
+  },
+  "arrive|VERB": {
+    "translation": "прибувати"
+  },
+  "at|ADP": {
+    "translation": "біля"
+  },
+  "a|DET": {
+    "translation": "один"
+  },
+  "because|SCONJ": {
+    "translation": "тому що"
+  },
+  "be|AUX": {
+    "translation": "бути"
+  },
+  "black|ADJ": {
+    "translation": "чорний"
+  },
+  "bread|NOUN": {
+    "translation": "хліб"
+  },
+  "but|CCONJ": {
+    "translation": "але"
+  },
+  "buy|VERB": {
+    "translation": "купувати"
+  },
+  "can|AUX": {
+    "translation": "могти"
+  },
+  "cheese|NOUN": {
+    "translation": "сир"
+  },
+  "cooking|NOUN": {
+    "translation": "готування"
+  },
+  "cooking|PROPN": {
+    "translation": "Готування"
+  },
+  "cook|VERB": {
+    "translation": "готувати"
+  },
+  "correctly|ADV": {
+    "translation": "правильно"
+  },
+  "cut|VERB": {
+    "translation": "різати"
+  },
+  "dinner|NOUN": {
+    "translation": "вечеря"
+  },
+  "easy|ADJ": {
+    "translation": "легкий"
+  },
+  "eat|VERB": {
+    "translation": "їсти"
+  },
+  "embarrassed|ADJ": {
+    "translation": "зніяковілий"
+  },
+  "feel|VERB": {
+    "translation": "відчувати"
+  },
+  "food|NOUN": {
+    "translation": "їжа"
+  },
+  "for|ADP": {
+    "translation": "для"
+  },
+  "friend|NOUN": {
+    "translation": "друг"
+  },
+  "good|ADJ": {
+    "translation": "добрий"
+  },
+  "happily|ADV": {
+    "translation": "щасливо"
+  },
+  "he|PRON": {
+    "translation": "він"
+  },
+  "his|PRON": {
+    "translation": "його"
+  },
+  "home|NOUN": {
+    "translation": "дім"
+  },
+  "house|NOUN": {
+    "translation": "дім"
+  },
+  "how|SCONJ": {
+    "translation": "як"
+  },
+  "into|ADP": {
+    "translation": "всередину"
+  },
+  "in|ADP": {
+    "translation": "у"
+  },
+  "it|PRON": {
+    "translation": "це"
+  },
+  "juice|NOUN": {
+    "translation": "сік"
+  },
+  "kindly|ADV": {
+    "translation": "доброзичливо"
+  },
+  "later|ADV": {
+    "translation": "пізніше"
+  },
+  "laugh|VERB": {
+    "translation": "сміятися"
+  },
+  "liam|PROPN": {
+    "translation": "Ліам"
+  },
+  "long|ADJ": {
+    "translation": "довгий"
+  },
+  "make|VERB": {
+    "translation": "робити"
+  },
+  "much|ADV": {
+    "translation": "багато"
+  },
+  "near|ADP": {
+    "translation": "біля"
+  },
+  "new|ADJ": {
+    "translation": "новий"
+  },
+  "no|INTJ": {
+    "translation": "ні"
+  },
+  "oh|INTJ": {
+    "translation": "ой"
+  },
+  "okay|ADJ": {
+    "translation": "гаразд"
+  },
+  "oven|ADJ": {
+    "translation": "духовий"
+  },
+  "pan|NOUN": {
+    "translation": "сковорода"
+  },
+  "pasta|NOUN": {
+    "translation": "паста"
+  },
+  "people|NOUN": {
+    "translation": "люди"
+  },
+  "problem|PROPN": {
+    "translation": "Проблема"
+  },
+  "put|VERB": {
+    "translation": "класти"
+  },
+  "salad|NOUN": {
+    "translation": "салат"
+  },
+  "sauce|NOUN": {
+    "translation": "соус"
+  },
+  "say|VERB": {
+    "translation": "казати"
+  },
+  "she|PRON": {
+    "translation": "вона"
+  },
+  "shop|NOUN": {
+    "translation": "магазин"
+  },
+  "show|VERB": {
+    "translation": "показувати"
+  },
+  "sit|VERB": {
+    "translation": "сидіти"
+  },
+  "small|ADJ": {
+    "translation": "малий"
+  },
+  "smell|VERB": {
+    "translation": "пахнути"
+  },
+  "smile|VERB": {
+    "translation": "усміхатися"
+  },
+  "something|PRON": {
+    "translation": "щось"
+  },
+  "sophie|NOUN": {
+    "translation": "Софі"
+  },
+  "sophie|PROPN": {
+    "translation": "Софі"
+  },
+  "start|VERB": {
+    "translation": "починати"
+  },
+  "stay|VERB": {
+    "translation": "залишатися"
+  },
+  "strange|ADJ": {
+    "translation": "дивний"
+  },
+  "suddenly|ADV": {
+    "translation": "раптом"
+  },
+  "s|": {
+    "translation": "належність"
+  },
+  "table|NOUN": {
+    "translation": "стіл"
+  },
+  "they|PRON": {
+    "translation": "вони"
+  },
+  "the|DET": {
+    "translation": "цей"
+  },
+  "this|PRON": {
+    "translation": "це"
+  },
+  "together|ADV": {
+    "translation": "разом"
+  },
+  "tomato|NOUN": {
+    "translation": "помідор"
+  },
+  "too|ADV": {
+    "translation": "занадто"
+  },
+  "to|PART": {
+    "translation": "щоб"
+  },
+  "two|NUM": {
+    "translation": "два"
+  },
+  "vegetable|NOUN": {
+    "translation": "овоч"
+  },
+  "very|ADV": {
+    "translation": "дуже"
+  },
+  "want|VERB": {
+    "translation": "хотіти"
+  },
+  "well|ADJ": {
+    "translation": "добре"
+  },
+  "we|PRON": {
+    "translation": "ми"
+  },
+  "when|SCONJ": {
+    "translation": "коли"
+  },
+  "with|ADP": {
+    "translation": "з"
+  }
+}

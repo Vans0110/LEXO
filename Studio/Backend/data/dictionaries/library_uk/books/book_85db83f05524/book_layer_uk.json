@@ -1,0 +1,907 @@
+{
+  "version": 1,
+  "book_id": "book_85db83f05524",
+  "title": "Late for Class",
+  "source_lang": "en",
+  "target_lang": "uk",
+  "parallel": [
+    {
+      "source": "In the evening, Mia goes home tired but calm.",
+      "translation": "Ввечері Міа йде додому втомлена, але спокійна."
+    },
+    {
+      "source": "When she finally arrives at the university, the lesson already starts.",
+      "translation": "Коли вона, нарешті, прибуває до університету, урок вже починається."
+    },
+    {
+      "source": "Mia quietly opens the classroom door.",
+      "translation": "Мія тихо відчиняє двері класу."
+    },
+    {
+      "source": "Today, Mia wakes up late.",
+      "translation": "Сьогодні Міа прокидається пізно."
+    },
+    {
+      "source": "She looks at the clock and quickly gets out of bed.",
+      "translation": "Вона дивиться на годинник і швидко встає з ліжка."
+    },
+    {
+      "source": "She puts on her clothes, takes her bag, and runs outside.",
+      "translation": "Вона одягається, бере сумку і біжить на вулицю."
+    },
+    {
+      "source": "But the bus leaves before she arrives.",
+      "translation": "Але автобус відправляється, перш ніж вона приїде."
+    },
+    {
+      "source": "“Good morning, Mia,” he says.",
+      "translation": "Доброго ранку, Міа, він каже."
+    },
+    {
+      "source": "“Oh no!",
+      "translation": "О, ні."
+    },
+    {
+      "source": "I am late!",
+      "translation": "Я запізнилася."
+    },
+    {
+      "source": "” she says.",
+      "translation": "вона каже."
+    },
+    {
+      "source": "Late for Class",
+      "translation": "Пізно на заняття"
+    },
+    {
+      "source": "“Sorry I am late,” Mia answers.",
+      "translation": "Вибачте, я запізнився, Мія відповідає."
+    },
+    {
+      "source": "The teacher looks at her but smiles.",
+      "translation": "Учитель дивиться на неї, але посміхається."
+    },
+    {
+      "source": "After class, Mia studies with her friends in the library.",
+      "translation": "Після уроків Мія займається з друзями в бібліотеці."
+    },
+    {
+      "source": "They prepare for an important exam next week.",
+      "translation": "Вони готуються до важливих іспитів наступного тижня."
+    },
+    {
+      "source": "Mia is a university student.",
+      "translation": "Міа - студентка університету."
+    },
+    {
+      "source": "Every morning, she takes the bus to class.",
+      "translation": "Кожного ранку вона їздить на автобусі на заняття."
+    },
+    {
+      "source": "Mia feels stressed.",
+      "translation": "Мія відчуває стрес."
+    },
+    {
+      "source": "She waits for the next bus and checks her phone many times.",
+      "translation": "Вона чекає на наступний автобус і багато разів перевіряє свій телефон."
+    }
+  ],
+  "blocks": [
+    {
+      "source": "after class",
+      "translation": "після заняття"
+    },
+    {
+      "source": "gets out of bed",
+      "translation": "встає з ліжка"
+    },
+    {
+      "source": "good morning",
+      "translation": "доброго ранку"
+    },
+    {
+      "source": "looks at",
+      "translation": "дивиться на"
+    },
+    {
+      "source": "many times",
+      "translation": "багато разів"
+    },
+    {
+      "source": "next bus",
+      "translation": "наступний автобус"
+    },
+    {
+      "source": "next week",
+      "translation": "наступний тиждень"
+    },
+    {
+      "source": "puts on",
+      "translation": "одягає"
+    },
+    {
+      "source": "runs outside",
+      "translation": "вибігає надвір"
+    },
+    {
+      "source": "wakes up",
+      "translation": "прокидається"
+    }
+  ],
+  "words": [
+    {
+      "word": "Late",
+      "lemma": "late",
+      "pos": "ADV",
+      "translation": "пізно",
+      "translations": [
+        "пізно"
+      ]
+    },
+    {
+      "word": "Mia",
+      "lemma": "mia",
+      "pos": "PROPN",
+      "translation": "Мія",
+      "translations": [
+        "Мія"
+      ]
+    },
+    {
+      "word": "Today",
+      "lemma": "today",
+      "pos": "NOUN",
+      "translation": "сьогодні",
+      "translations": [
+        "сьогодні"
+      ]
+    },
+    {
+      "word": "Oh",
+      "lemma": "oh",
+      "pos": "INTJ",
+      "translation": "ой",
+      "translations": [
+        "ой"
+      ]
+    },
+    {
+      "word": "She",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "вона",
+      "translations": [
+        "вона"
+      ]
+    },
+    {
+      "word": "When",
+      "lemma": "when",
+      "pos": "SCONJ",
+      "translation": "коли",
+      "translations": [
+        "коли"
+      ]
+    },
+    {
+      "word": "The",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "цей",
+      "translations": [
+        "цей"
+      ]
+    },
+    {
+      "word": "Good",
+      "lemma": "good",
+      "pos": "ADJ",
+      "translation": "добрий",
+      "translations": [
+        "добрий",
+        "Доброго"
+      ]
+    },
+    {
+      "word": "Sorry",
+      "lemma": "sorry",
+      "pos": "INTJ",
+      "translation": "вибачте",
+      "translations": [
+        "вибачте"
+      ]
+    },
+    {
+      "word": "After",
+      "lemma": "after",
+      "pos": "ADP",
+      "translation": "після",
+      "translations": [
+        "після"
+      ]
+    },
+    {
+      "word": "In",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "у",
+      "translations": [
+        "у"
+      ]
+    },
+    {
+      "word": "for",
+      "lemma": "for",
+      "pos": "ADP",
+      "translation": "для",
+      "translations": [
+        "для"
+      ]
+    },
+    {
+      "word": "is",
+      "lemma": "be",
+      "pos": "AUX",
+      "translation": "бути",
+      "translations": [
+        "бути"
+      ]
+    },
+    {
+      "word": "no",
+      "lemma": "no",
+      "pos": "INTJ",
+      "translation": "ні",
+      "translations": [
+        "ні"
+      ]
+    },
+    {
+      "word": "puts",
+      "lemma": "put",
+      "pos": "VERB",
+      "translation": "класти",
+      "translations": [
+        "класти"
+      ]
+    },
+    {
+      "word": "feels",
+      "lemma": "feel",
+      "pos": "VERB",
+      "translation": "відчувати",
+      "translations": [
+        "відчувати",
+        "відчуває"
+      ]
+    },
+    {
+      "word": "teacher",
+      "lemma": "teacher",
+      "pos": "NOUN",
+      "translation": "учитель",
+      "translations": [
+        "учитель"
+      ]
+    },
+    {
+      "word": "morning",
+      "lemma": "morning",
+      "pos": "NOUN",
+      "translation": "ранок",
+      "translations": [
+        "ранок",
+        "ранку"
+      ]
+    },
+    {
+      "word": "I",
+      "lemma": "i",
+      "pos": "PRON",
+      "translation": "я",
+      "translations": [
+        "я"
+      ]
+    },
+    {
+      "word": "class",
+      "lemma": "class",
+      "pos": "NOUN",
+      "translation": "заняття",
+      "translations": [
+        "заняття"
+      ]
+    },
+    {
+      "word": "a",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "один",
+      "translations": [
+        "один"
+      ]
+    },
+    {
+      "word": "wakes",
+      "lemma": "wake",
+      "pos": "VERB",
+      "translation": "прокидатися",
+      "translations": [
+        "прокидатися",
+        "прокидається"
+      ]
+    },
+    {
+      "word": "on",
+      "lemma": "on",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на"
+      ]
+    },
+    {
+      "word": "stressed",
+      "lemma": "stress",
+      "pos": "VERB",
+      "translation": "хвилюватися",
+      "translations": [
+        "хвилюватися"
+      ]
+    },
+    {
+      "word": "finally",
+      "lemma": "finally",
+      "pos": "ADV",
+      "translation": "нарешті",
+      "translations": [
+        "нарешті"
+      ]
+    },
+    {
+      "word": "looks",
+      "lemma": "look",
+      "pos": "VERB",
+      "translation": "дивитися",
+      "translations": [
+        "дивитися",
+        "дивиться"
+      ]
+    },
+    {
+      "word": "evening",
+      "lemma": "evening",
+      "pos": "NOUN",
+      "translation": "вечір",
+      "translations": [
+        "вечір"
+      ]
+    },
+    {
+      "word": "university",
+      "lemma": "university",
+      "pos": "NOUN",
+      "translation": "університет",
+      "translations": [
+        "університет",
+        "університету"
+      ]
+    },
+    {
+      "word": "up",
+      "lemma": "up",
+      "pos": "ADP",
+      "translation": "вгору",
+      "translations": [
+        "вгору"
+      ]
+    },
+    {
+      "word": "her",
+      "lemma": "her",
+      "pos": "PRON",
+      "translation": "її",
+      "translations": [
+        "її"
+      ]
+    },
+    {
+      "word": "arrives",
+      "lemma": "arrive",
+      "pos": "VERB",
+      "translation": "прибувати",
+      "translations": [
+        "прибувати",
+        "прибуває"
+      ]
+    },
+    {
+      "word": "at",
+      "lemma": "at",
+      "pos": "ADP",
+      "translation": "біля",
+      "translations": [
+        "біля"
+      ]
+    },
+    {
+      "word": "he",
+      "lemma": "he",
+      "pos": "PRON",
+      "translation": "він",
+      "translations": [
+        "він"
+      ]
+    },
+    {
+      "word": "late",
+      "lemma": "late",
+      "pos": "ADJ",
+      "translation": "пізній",
+      "translations": [
+        "пізній",
+        "пізно"
+      ]
+    },
+    {
+      "word": "studies",
+      "lemma": "study",
+      "pos": "NOUN",
+      "translation": "навчання",
+      "translations": [
+        "навчання"
+      ]
+    },
+    {
+      "word": "student",
+      "lemma": "student",
+      "pos": "NOUN",
+      "translation": "учень",
+      "translations": [
+        "учень"
+      ]
+    },
+    {
+      "word": "clothes",
+      "lemma": "clothe",
+      "pos": "NOUN",
+      "translation": "одяг",
+      "translations": [
+        "одяг",
+        "одягається"
+      ]
+    },
+    {
+      "word": "waits",
+      "lemma": "wait",
+      "pos": "VERB",
+      "translation": "чекати",
+      "translations": [
+        "чекати",
+        "чекає"
+      ]
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "казати",
+      "translations": [
+        "казати"
+      ]
+    },
+    {
+      "word": "with",
+      "lemma": "with",
+      "pos": "ADP",
+      "translation": "з",
+      "translations": [
+        "з"
+      ]
+    },
+    {
+      "word": "goes",
+      "lemma": "go",
+      "pos": "VERB",
+      "translation": "йти",
+      "translations": [
+        "йти"
+      ]
+    },
+    {
+      "word": "Every",
+      "lemma": "every",
+      "pos": "DET",
+      "translation": "кожний",
+      "translations": [
+        "кожний",
+        "Кожного"
+      ]
+    },
+    {
+      "word": "takes",
+      "lemma": "take",
+      "pos": "VERB",
+      "translation": "брати",
+      "translations": [
+        "брати"
+      ]
+    },
+    {
+      "word": "but",
+      "lemma": "but",
+      "pos": "CCONJ",
+      "translation": "але",
+      "translations": [
+        "але"
+      ]
+    },
+    {
+      "word": "answers",
+      "lemma": "answer",
+      "pos": "VERB",
+      "translation": "відповідати",
+      "translations": [
+        "відповідати",
+        "відповідає"
+      ]
+    },
+    {
+      "word": "home",
+      "lemma": "home",
+      "pos": "ADV",
+      "translation": "додому",
+      "translations": [
+        "додому"
+      ]
+    },
+    {
+      "word": "smiles",
+      "lemma": "smile",
+      "pos": "VERB",
+      "translation": "усміхатися",
+      "translations": [
+        "усміхатися"
+      ]
+    },
+    {
+      "word": "friends",
+      "lemma": "friend",
+      "pos": "NOUN",
+      "translation": "друг",
+      "translations": [
+        "друг",
+        "друзями"
+      ]
+    },
+    {
+      "word": "tired",
+      "lemma": "tired",
+      "pos": "ADJ",
+      "translation": "втомлений",
+      "translations": [
+        "втомлений",
+        "втомлена"
+      ]
+    },
+    {
+      "word": "bag",
+      "lemma": "bag",
+      "pos": "NOUN",
+      "translation": "сумка",
+      "translations": [
+        "сумка",
+        "сумку"
+      ]
+    },
+    {
+      "word": "next",
+      "lemma": "next",
+      "pos": "ADJ",
+      "translation": "наступний",
+      "translations": [
+        "наступний",
+        "наступного"
+      ]
+    },
+    {
+      "word": "and",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "і",
+      "translations": [
+        "і"
+      ]
+    },
+    {
+      "word": "bus",
+      "lemma": "bus",
+      "pos": "NOUN",
+      "translation": "автобус",
+      "translations": [
+        "автобус",
+        "автобусі"
+      ]
+    },
+    {
+      "word": "lesson",
+      "lemma": "lesson",
+      "pos": "NOUN",
+      "translation": "урок",
+      "translations": [
+        "урок"
+      ]
+    },
+    {
+      "word": "calm",
+      "lemma": "calm",
+      "pos": "ADJ",
+      "translation": "спокійний",
+      "translations": [
+        "спокійний",
+        "спокійна"
+      ]
+    },
+    {
+      "word": "clock",
+      "lemma": "clock",
+      "pos": "NOUN",
+      "translation": "годинник",
+      "translations": [
+        "годинник"
+      ]
+    },
+    {
+      "word": "runs",
+      "lemma": "run",
+      "pos": "VERB",
+      "translation": "бігти",
+      "translations": [
+        "бігти"
+      ]
+    },
+    {
+      "word": "already",
+      "lemma": "already",
+      "pos": "ADV",
+      "translation": "вже",
+      "translations": [
+        "вже"
+      ]
+    },
+    {
+      "word": "library",
+      "lemma": "library",
+      "pos": "NOUN",
+      "translation": "бібліотека",
+      "translations": [
+        "бібліотека",
+        "бібліотеці"
+      ]
+    },
+    {
+      "word": "outside",
+      "lemma": "outside",
+      "pos": "ADV",
+      "translation": "надворі",
+      "translations": [
+        "надворі"
+      ]
+    },
+    {
+      "word": "checks",
+      "lemma": "check",
+      "pos": "VERB",
+      "translation": "перевіряти",
+      "translations": [
+        "перевіряти",
+        "перевіряє"
+      ]
+    },
+    {
+      "word": "starts",
+      "lemma": "start",
+      "pos": "VERB",
+      "translation": "починати",
+      "translations": [
+        "починати",
+        "починається"
+      ]
+    },
+    {
+      "word": "They",
+      "lemma": "they",
+      "pos": "PRON",
+      "translation": "вони",
+      "translations": [
+        "вони"
+      ]
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "ADP",
+      "translation": "до",
+      "translations": [
+        "до"
+      ]
+    },
+    {
+      "word": "quickly",
+      "lemma": "quickly",
+      "pos": "ADV",
+      "translation": "швидко",
+      "translations": [
+        "швидко"
+      ]
+    },
+    {
+      "word": "prepare",
+      "lemma": "prepare",
+      "pos": "VERB",
+      "translation": "готувати",
+      "translations": [
+        "готувати"
+      ]
+    },
+    {
+      "word": "gets",
+      "lemma": "get",
+      "pos": "VERB",
+      "translation": "вставати",
+      "translations": [
+        "вставати",
+        "встає"
+      ]
+    },
+    {
+      "word": "phone",
+      "lemma": "phone",
+      "pos": "NOUN",
+      "translation": "телефон",
+      "translations": [
+        "телефон"
+      ]
+    },
+    {
+      "word": "quietly",
+      "lemma": "quietly",
+      "pos": "ADV",
+      "translation": "тихо",
+      "translations": [
+        "тихо"
+      ]
+    },
+    {
+      "word": "out",
+      "lemma": "out",
+      "pos": "ADP",
+      "translation": "назовні",
+      "translations": [
+        "назовні"
+      ]
+    },
+    {
+      "word": "many",
+      "lemma": "many",
+      "pos": "ADJ",
+      "translation": "багато",
+      "translations": [
+        "багато"
+      ]
+    },
+    {
+      "word": "opens",
+      "lemma": "open",
+      "pos": "VERB",
+      "translation": "відкривати",
+      "translations": [
+        "відкривати"
+      ]
+    },
+    {
+      "word": "an",
+      "lemma": "an",
+      "pos": "DET",
+      "translation": "один",
+      "translations": [
+        "один"
+      ]
+    },
+    {
+      "word": "of",
+      "lemma": "of",
+      "pos": "ADP",
+      "translation": "з",
+      "translations": [
+        "з"
+      ]
+    },
+    {
+      "word": "leaves",
+      "lemma": "leave",
+      "pos": "VERB",
+      "translation": "йти",
+      "translations": [
+        "йти"
+      ]
+    },
+    {
+      "word": "times",
+      "lemma": "time",
+      "pos": "NOUN",
+      "translation": "час",
+      "translations": [
+        "час"
+      ]
+    },
+    {
+      "word": "important",
+      "lemma": "important",
+      "pos": "ADJ",
+      "translation": "важливий",
+      "translations": [
+        "важливий",
+        "важливих"
+      ]
+    },
+    {
+      "word": "bed",
+      "lemma": "bed",
+      "pos": "NOUN",
+      "translation": "ліжко",
+      "translations": [
+        "ліжко",
+        "ліжка"
+      ]
+    },
+    {
+      "word": "before",
+      "lemma": "before",
+      "pos": "SCONJ",
+      "translation": "до",
+      "translations": [
+        "до"
+      ]
+    },
+    {
+      "word": "classroom",
+      "lemma": "classroom",
+      "pos": "NOUN",
+      "translation": "клас",
+      "translations": [
+        "клас",
+        "класу"
+      ]
+    },
+    {
+      "word": "exam",
+      "lemma": "exam",
+      "pos": "NOUN",
+      "translation": "іспит",
+      "translations": [
+        "іспит",
+        "іспитів"
+      ]
+    },
+    {
+      "word": "door",
+      "lemma": "door",
+      "pos": "NOUN",
+      "translation": "двері",
+      "translations": [
+        "двері"
+      ]
+    },
+    {
+      "word": "week",
+      "lemma": "week",
+      "pos": "NOUN",
+      "translation": "тиждень",
+      "translations": [
+        "тиждень",
+        "тижня"
+      ]
+    }
+  ]
+}

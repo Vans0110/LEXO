@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Virgil Core Dictionary",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "required": ["word", "pos", "translations"],
+    "additionalProperties": false,
+    "properties": {
+      "word": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[a-z0-9][a-z0-9' -]*$"
+      },
+      "pos": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[A-Z]+$"
+      },
+      "translations": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

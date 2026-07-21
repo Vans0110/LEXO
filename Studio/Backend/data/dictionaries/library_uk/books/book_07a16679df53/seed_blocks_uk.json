@@ -1,0 +1,178 @@
+[
+  {
+    "source": "nice to meet you",
+    "type": "fixed_expression",
+    "source_forms": [
+      "Nice to meet you"
+    ],
+    "translation": "Приємно познайомитися",
+    "explanation": "Ввічлива формула під час знайомства.",
+    "components": [
+      {
+        "source": "nice",
+        "lemma": "nice",
+        "pos": "ADJ",
+        "translation": "Приємно"
+      },
+      {
+        "source": "to",
+        "lemma": "to",
+        "pos": "PART",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "meet",
+        "lemma": "meet",
+        "pos": "VERB",
+        "translation": "познайомитися"
+      },
+      {
+        "source": "you",
+        "lemma": "you",
+        "pos": "PRON",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "can you repeat",
+    "type": "grammar_construction",
+    "source_forms": [
+      "Can you repeat"
+    ],
+    "translation": "Чи можете ви повторити",
+    "explanation": "Ввічливе прохання повторити сказане.",
+    "components": [
+      {
+        "source": "Can",
+        "lemma": "can",
+        "pos": "AUX",
+        "translation": "Чи можете"
+      },
+      {
+        "source": "you",
+        "lemma": "you",
+        "pos": "PRON",
+        "translation": "ви"
+      },
+      {
+        "source": "repeat",
+        "lemma": "repeat",
+        "pos": "VERB",
+        "translation": "повторити"
+      }
+    ]
+  },
+  {
+    "source": "first name",
+    "type": "fixed_expression",
+    "source_forms": [
+      "first name"
+    ],
+    "translation": "ім’я",
+    "explanation": "Позначає особове ім’я людини.",
+    "components": [
+      {
+        "source": "first",
+        "lemma": "first",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "ім’я"
+      }
+    ]
+  },
+  {
+    "source": "last name",
+    "type": "fixed_expression",
+    "source_forms": [
+      "last name"
+    ],
+    "translation": "прізвище",
+    "explanation": "Позначає прізвище людини.",
+    "components": [
+      {
+        "source": "last",
+        "lemma": "last",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "write it down",
+    "type": "phrasal_verb",
+    "source_forms": [
+      "writes it down"
+    ],
+    "translation": "записує це",
+    "explanation": "Означає занотувати інформацію.",
+    "components": [
+      {
+        "source": "write",
+        "lemma": "write",
+        "pos": "VERB",
+        "translation": "записує"
+      },
+      {
+        "source": "it",
+        "lemma": "it",
+        "pos": "PRON",
+        "translation": "це"
+      },
+      {
+        "source": "down",
+        "lemma": "down",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "read it back",
+    "type": "phrasal_verb",
+    "source_forms": [
+      "reads it back"
+    ],
+    "translation": "перечитує",
+    "explanation": "Означає прочитати записане ще раз для перевірки.",
+    "components": [
+      {
+        "source": "read",
+        "lemma": "read",
+        "pos": "VERB",
+        "translation": "перечитує"
+      },
+      {
+        "source": "it",
+        "lemma": "it",
+        "pos": "PRON",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "back",
+        "lemma": "back",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  }
+]

@@ -1,0 +1,266 @@
+{
+  "and|CCONJ": {
+    "translation": "и"
+  },
+  "arrive|VERB": {
+    "translation": "прибывать"
+  },
+  "at|ADP": {
+    "translation": "у"
+  },
+  "a|DET": {
+    "translation": "один"
+  },
+  "because|SCONJ": {
+    "translation": "потому что"
+  },
+  "be|AUX": {
+    "translation": "быть"
+  },
+  "black|ADJ": {
+    "translation": "чёрный"
+  },
+  "bread|NOUN": {
+    "translation": "хлеб"
+  },
+  "but|CCONJ": {
+    "translation": "но"
+  },
+  "buy|VERB": {
+    "translation": "покупать"
+  },
+  "can|AUX": {
+    "translation": "мочь"
+  },
+  "cheese|NOUN": {
+    "translation": "сыр"
+  },
+  "cooking|NOUN": {
+    "translation": "готовка"
+  },
+  "cooking|PROPN": {
+    "translation": "Готовка"
+  },
+  "cook|VERB": {
+    "translation": "готовить"
+  },
+  "correctly|ADV": {
+    "translation": "правильно"
+  },
+  "cut|VERB": {
+    "translation": "резать"
+  },
+  "dinner|NOUN": {
+    "translation": "ужин"
+  },
+  "easy|ADJ": {
+    "translation": "лёгкий"
+  },
+  "eat|VERB": {
+    "translation": "есть"
+  },
+  "embarrassed|ADJ": {
+    "translation": "смущённый"
+  },
+  "feel|VERB": {
+    "translation": "чувствовать"
+  },
+  "food|NOUN": {
+    "translation": "еда"
+  },
+  "for|ADP": {
+    "translation": "для"
+  },
+  "friend|NOUN": {
+    "translation": "друг"
+  },
+  "good|ADJ": {
+    "translation": "хороший"
+  },
+  "happily|ADV": {
+    "translation": "счастливо"
+  },
+  "he|PRON": {
+    "translation": "он"
+  },
+  "his|PRON": {
+    "translation": "его"
+  },
+  "home|NOUN": {
+    "translation": "дом"
+  },
+  "house|NOUN": {
+    "translation": "дом"
+  },
+  "how|SCONJ": {
+    "translation": "как"
+  },
+  "into|ADP": {
+    "translation": "внутрь"
+  },
+  "in|ADP": {
+    "translation": "в"
+  },
+  "it|PRON": {
+    "translation": "это"
+  },
+  "juice|NOUN": {
+    "translation": "сок"
+  },
+  "kindly|ADV": {
+    "translation": "добро"
+  },
+  "later|ADV": {
+    "translation": "позже"
+  },
+  "laugh|VERB": {
+    "translation": "смеяться"
+  },
+  "liam|PROPN": {
+    "translation": "Лиам"
+  },
+  "long|ADJ": {
+    "translation": "длинный"
+  },
+  "make|VERB": {
+    "translation": "делать"
+  },
+  "much|ADV": {
+    "translation": "много"
+  },
+  "near|ADP": {
+    "translation": "рядом"
+  },
+  "new|ADJ": {
+    "translation": "новый"
+  },
+  "no|INTJ": {
+    "translation": "нет"
+  },
+  "oh|INTJ": {
+    "translation": "ох"
+  },
+  "okay|ADJ": {
+    "translation": "хорошо"
+  },
+  "oven|ADJ": {
+    "translation": "духовой"
+  },
+  "pan|NOUN": {
+    "translation": "сковорода"
+  },
+  "pasta|NOUN": {
+    "translation": "паста"
+  },
+  "people|NOUN": {
+    "translation": "люди"
+  },
+  "problem|PROPN": {
+    "translation": "Проблема"
+  },
+  "put|VERB": {
+    "translation": "класть"
+  },
+  "salad|NOUN": {
+    "translation": "салат"
+  },
+  "sauce|NOUN": {
+    "translation": "соус"
+  },
+  "say|VERB": {
+    "translation": "говорить"
+  },
+  "she|PRON": {
+    "translation": "она"
+  },
+  "shop|NOUN": {
+    "translation": "магазин"
+  },
+  "show|VERB": {
+    "translation": "показывать"
+  },
+  "sit|VERB": {
+    "translation": "сидеть"
+  },
+  "small|ADJ": {
+    "translation": "маленький"
+  },
+  "smell|VERB": {
+    "translation": "пахнуть"
+  },
+  "smile|VERB": {
+    "translation": "улыбаться"
+  },
+  "something|PRON": {
+    "translation": "что-то"
+  },
+  "sophie|NOUN": {
+    "translation": "Софи"
+  },
+  "sophie|PROPN": {
+    "translation": "Софи"
+  },
+  "start|VERB": {
+    "translation": "начинать"
+  },
+  "stay|VERB": {
+    "translation": "оставаться"
+  },
+  "strange|ADJ": {
+    "translation": "странный"
+  },
+  "suddenly|ADV": {
+    "translation": "вдруг"
+  },
+  "s|": {
+    "translation": "принадлежность"
+  },
+  "table|NOUN": {
+    "translation": "стол"
+  },
+  "they|PRON": {
+    "translation": "они"
+  },
+  "the|DET": {
+    "translation": "этот"
+  },
+  "this|PRON": {
+    "translation": "это"
+  },
+  "together|ADV": {
+    "translation": "вместе"
+  },
+  "tomato|NOUN": {
+    "translation": "помидор"
+  },
+  "too|ADV": {
+    "translation": "слишком"
+  },
+  "to|PART": {
+    "translation": "чтобы"
+  },
+  "two|NUM": {
+    "translation": "два"
+  },
+  "vegetable|NOUN": {
+    "translation": "овощ"
+  },
+  "very|ADV": {
+    "translation": "очень"
+  },
+  "want|VERB": {
+    "translation": "хотеть"
+  },
+  "well|ADJ": {
+    "translation": "хорошо"
+  },
+  "we|PRON": {
+    "translation": "мы"
+  },
+  "when|SCONJ": {
+    "translation": "когда"
+  },
+  "with|ADP": {
+    "translation": "с"
+  }
+}

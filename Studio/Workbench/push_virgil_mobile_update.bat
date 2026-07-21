@@ -5,7 +5,7 @@ chcp 65001 >nul
 cd /d "%~dp0\..\.."
 
 echo [VIRGIL] Repo: %CD%
-echo [VIRGIL] Scope: Virgil + Studio/Workbench + Docs/History
+echo [VIRGIL] Scope: Virgil + Studio (Workbench, Backend, Books) + Skills + Docs + Scripts
 echo.
 
 where git >nul 2>nul
@@ -18,17 +18,17 @@ if errorlevel 1 (
 git remote set-url origin https://github.com/Vans0110/LEXO.git >nul 2>nul
 
 for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HHmmss"') do set "STAMP=%%i"
-set "COMMIT_MSG=Virgil mobile update %STAMP%"
+set "COMMIT_MSG=LEXO update %STAMP%"
 
 echo.
 echo [VIRGIL] Auto commit message: %COMMIT_MSG%
 echo.
 echo [VIRGIL] Tracked changes before staging:
-git --no-pager diff --name-only -- .github Virgil Studio/Workbench Docs/History
+git --no-pager diff --name-only
 echo.
 
-echo [VIRGIL] Staging tracked changes only...
-git add -u -- .github Virgil Studio/Workbench Docs/History
+echo [VIRGIL] Staging tracked changes...
+git add -u
 if errorlevel 1 (
   echo [VIRGIL] git add failed.
   pause
@@ -36,11 +36,16 @@ if errorlevel 1 (
 )
 
 echo.
-echo [VIRGIL] Staging safe new Virgil project files...
-if exist "Docs\History" git add "Docs\History"
+echo [VIRGIL] Staging project files...
+if exist "Skills" git add "Skills"
+if exist "Studio" git add "Studio"
 if exist "Virgil" git add "Virgil"
-if exist "Studio\Workbench" git add "Studio\Workbench"
-if exist ".github\workflows\build-virgil-ios.yml" git add ".github\workflows\build-virgil-ios.yml"
+if exist "Docs" git add "Docs"
+if exist "Scripts" git add "Scripts"
+if exist ".github" git add ".github"
+if exist "README.md" git add "README.md"
+if exist "AGENTS.md" git add "AGENTS.md"
+if exist "GEMINI.md" git add "GEMINI.md"
 
 echo.
 echo [VIRGIL] Verifying there is something to commit...

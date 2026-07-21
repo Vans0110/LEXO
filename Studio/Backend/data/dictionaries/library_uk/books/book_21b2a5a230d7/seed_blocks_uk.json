@@ -1,0 +1,26 @@
+[
+  {
+    "source": "years old",
+    "type": "grammar_construction",
+    "source_forms": [
+      "years old"
+    ],
+    "translation": "років",
+    "explanation": "Конструкція для повідомлення віку.",
+    "components": [
+      {
+        "source": "years",
+        "lemma": "year",
+        "pos": "NOUN",
+        "translation": "років"
+      },
+      {
+        "source": "old",
+        "lemma": "old",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  }
+]

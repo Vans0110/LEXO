@@ -1,0 +1,2591 @@
+{
+  "version": 1,
+  "book_id": "book_21b2a5a230d7",
+  "title": "Two People, One City",
+  "source_lang": "en",
+  "target_lang": "uk",
+  "parallel": [
+    {
+      "source": "Two People, One City",
+      "translation": "Двоє людей, одне місто"
+    },
+    {
+      "source": "Mina is at a bus stop.",
+      "translation": "Міна стоїть на автобусній зупинці."
+    },
+    {
+      "source": "A young man looks at the street numbers.",
+      "translation": "Молодий чоловік дивиться на номери вулиць."
+    },
+    {
+      "source": "Excuse me,\" he says.",
+      "translation": "Вибачте, каже він."
+    },
+    {
+      "source": "Is this Pine Street?",
+      "translation": "Це Пайн-стріт?"
+    },
+    {
+      "source": "Yes, it is,\" Mina answers.",
+      "translation": "Так, це так, відповідає Міна."
+    },
+    {
+      "source": "Thank you.",
+      "translation": "Дякую."
+    },
+    {
+      "source": "I am Leo.",
+      "translation": "Я Лев."
+    },
+    {
+      "source": "I am new in this city.",
+      "translation": "Я новачок у цьому місті."
+    },
+    {
+      "source": "I am Mina.",
+      "translation": "Я Міна."
+    },
+    {
+      "source": "What is your home country?",
+      "translation": "Яка твоя рідна країна?"
+    },
+    {
+      "source": "Italy.",
+      "translation": "Італія."
+    },
+    {
+      "source": "My new address is twenty-four Pine Street.",
+      "translation": "Моя нова адреса — Пайн-стріт, двадцять чотири."
+    },
+    {
+      "source": "Mina laughs.",
+      "translation": "Міна сміється."
+    },
+    {
+      "source": "Really?",
+      "translation": "Справді?"
+    },
+    {
+      "source": "I live at number twenty, near your building.",
+      "translation": "Я живу під номером двадцять, біля вашого будинку."
+    },
+    {
+      "source": "We are neighbours.",
+      "translation": "Ми сусіди."
+    },
+    {
+      "source": "Leo is twenty years old.",
+      "translation": "Лео двадцять років."
+    },
+    {
+      "source": "Mina is nineteen.",
+      "translation": "Міні дев'ятнадцять."
+    },
+    {
+      "source": "They both study at City College.",
+      "translation": "Вони обидва навчаються в Міському коледжі."
+    },
+    {
+      "source": "Leo studies art, and Mina studies English.",
+      "translation": "Лео вивчає мистецтво, а Міна — англійську мову."
+    },
+    {
+      "source": "Their bus is number eight, but it is late.",
+      "translation": "Їхній автобус номер вісім, але він запізнюється."
+    },
+    {
+      "source": "They talk while they wait.",
+      "translation": "Вони розмовляють, поки чекають."
+    },
+    {
+      "source": "Mina gives Leo her phone number.",
+      "translation": "Міна дає Лео свій номер телефону."
+    },
+    {
+      "source": "He reads the digits back to her, and Mina says they are correct.",
+      "translation": "Він читає їй цифри, і Міна каже, що вони правильні."
+    },
+    {
+      "source": "When the bus arrives, they sit together.",
+      "translation": "Коли приїжджає автобус, вони сідають разом."
+    },
+    {
+      "source": "Leo came to the stop as a stranger.",
+      "translation": "Лео зупинився, ніби незнайомець."
+    },
+    {
+      "source": "Ten minutes later, he has a new neighbour and a new friend.",
+      "translation": "Через десять хвилин у нього з'являється новий сусід і новий друг."
+    }
+  ],
+  "words": [
+    {
+      "word": "a",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "один",
+      "translations": [
+        "один"
+      ],
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "address",
+      "lemma": "address",
+      "pos": "NOUN",
+      "translation": "адреса",
+      "translations": [
+        "адреса",
+        "адресу"
+      ],
+      "dictionary_translation": "адреса",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "and",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "а",
+      "translations": [
+        "а",
+        "і"
+      ],
+      "dictionary_translation": "а",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "answers",
+      "lemma": "answer",
+      "pos": "VERB",
+      "translation": "відповідати",
+      "translations": [
+        "відповідати",
+        "відповідає"
+      ],
+      "dictionary_translation": "відповідати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "arrives",
+      "lemma": "arrive",
+      "pos": "VERB",
+      "translation": "приїжджати",
+      "translations": [
+        "приїжджати",
+        "приїжджає",
+        "прибувати",
+        "прибуває"
+      ],
+      "dictionary_translation": "приїжджати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "art",
+      "lemma": "art",
+      "pos": "NOUN",
+      "translation": "мистецтво",
+      "translations": [
+        "мистецтво"
+      ],
+      "dictionary_translation": "мистецтво",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "as",
+      "lemma": "as",
+      "pos": "ADP",
+      "translation": "як",
+      "translations": [
+        "як"
+      ],
+      "dictionary_translation": "як",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "at",
+      "lemma": "at",
+      "pos": "ADP",
+      "translation": "о",
+      "translations": [
+        "о",
+        "біля",
+        "під"
+      ],
+      "dictionary_translation": "о",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "back",
+      "lemma": "back",
+      "pos": "ADV",
+      "translation": "назад",
+      "translations": [
+        "назад"
+      ],
+      "dictionary_translation": "назад",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "is",
+      "lemma": "be",
+      "pos": "AUX",
+      "translation": "бути",
+      "translations": [
+        "бути"
+      ],
+      "dictionary_translation": "бути",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "both",
+      "lemma": "both",
+      "pos": "PRON",
+      "translation": "обидва",
+      "translations": [
+        "обидва",
+        "обидві"
+      ],
+      "dictionary_translation": "обидва",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "building",
+      "lemma": "building",
+      "pos": "NOUN",
+      "translation": "будівля",
+      "translations": [
+        "будівля",
+        "будівлею"
+      ],
+      "dictionary_translation": "будівля",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "bus",
+      "lemma": "bus",
+      "pos": "NOUN",
+      "translation": "автобус",
+      "translations": [
+        "автобус",
+        "автобусной",
+        "автобусі",
+        "автобусом"
+      ],
+      "dictionary_translation": "автобус",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "but",
+      "lemma": "but",
+      "pos": "CCONJ",
+      "translation": "але",
+      "translations": [
+        "але"
+      ],
+      "dictionary_translation": "але",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "City",
+      "lemma": "city",
+      "pos": "NOUN",
+      "translation": "місто",
+      "translations": [
+        "місто",
+        "міському",
+        "місті",
+        "міста"
+      ],
+      "dictionary_translation": "місто",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "City",
+      "lemma": "city",
+      "pos": "PROPN",
+      "translation": "місто",
+      "translations": [
+        "місто",
+        "міському",
+        "місті"
+      ],
+      "dictionary_translation": "місто",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "College",
+      "lemma": "college",
+      "pos": "PROPN",
+      "translation": "коледж",
+      "translations": [
+        "коледж",
+        "коледжі"
+      ],
+      "dictionary_translation": "коледж",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "came",
+      "lemma": "come",
+      "pos": "VERB",
+      "translation": "приходити",
+      "translations": [
+        "приходити"
+      ],
+      "dictionary_translation": "приходити",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "correct",
+      "lemma": "correct",
+      "pos": "ADJ",
+      "translation": "правильний",
+      "translations": [
+        "правильний",
+        "правильні"
+      ],
+      "dictionary_translation": "правильний",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "country",
+      "lemma": "country",
+      "pos": "NOUN",
+      "translation": "країна",
+      "translations": [
+        "країна",
+        "країні"
+      ],
+      "dictionary_translation": "країна",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "digits",
+      "lemma": "digit",
+      "pos": "NOUN",
+      "translation": "цифра",
+      "translations": [
+        "цифра",
+        "цифри"
+      ],
+      "dictionary_translation": "цифра",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "eight",
+      "lemma": "eight",
+      "pos": "NUM",
+      "translation": "вісім",
+      "translations": [
+        "вісім"
+      ],
+      "dictionary_translation": "вісім",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "English",
+      "lemma": "english",
+      "pos": "PROPN",
+      "translation": "англійська мова",
+      "translations": [
+        "англійська мова"
+      ]
+    },
+    {
+      "word": "Excuse",
+      "lemma": "excuse",
+      "pos": "VERB",
+      "translation": "вибачати",
+      "translations": [
+        "вибачати",
+        "Вибачте"
+      ],
+      "dictionary_translation": "вибачати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "friend",
+      "lemma": "friend",
+      "pos": "NOUN",
+      "translation": "друг",
+      "translations": [
+        "друг",
+        "друзями"
+      ],
+      "dictionary_translation": "друг",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "gives",
+      "lemma": "give",
+      "pos": "VERB",
+      "translation": "давати",
+      "translations": [
+        "давати"
+      ],
+      "dictionary_translation": "давати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "has",
+      "lemma": "have",
+      "pos": "VERB",
+      "translation": "у/в мене",
+      "translations": [
+        "у/в мене",
+        "мати"
+      ]
+    },
+    {
+      "word": "he",
+      "lemma": "he",
+      "pos": "PRON",
+      "translation": "він",
+      "translations": [
+        "він"
+      ],
+      "dictionary_translation": "він",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "her",
+      "lemma": "her",
+      "pos": "PRON",
+      "translation": "її",
+      "translations": [
+        "її"
+      ],
+      "dictionary_translation": "її",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "home",
+      "lemma": "home",
+      "pos": "NOUN",
+      "translation": "дім",
+      "translations": [
+        "дім"
+      ],
+      "dictionary_translation": "дім",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "me",
+      "lemma": "i",
+      "pos": "PRON",
+      "translation": "я",
+      "translations": [
+        "я"
+      ],
+      "dictionary_translation": "я",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "in",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "в",
+      "translations": [
+        "в",
+        "у"
+      ],
+      "dictionary_translation": "в",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "it",
+      "lemma": "it",
+      "pos": "PRON",
+      "translation": "воно",
+      "translations": [
+        "воно",
+        "це"
+      ],
+      "dictionary_translation": "воно",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Italy",
+      "lemma": "italy",
+      "pos": "PROPN",
+      "translation": "Італія",
+      "translations": [
+        "Італія"
+      ],
+      "dictionary_translation": "Італія",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "late",
+      "lemma": "late",
+      "pos": "ADJ",
+      "translation": "пізній",
+      "translations": [
+        "пізній",
+        "пізно"
+      ],
+      "dictionary_translation": "пізній",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "later",
+      "lemma": "later",
+      "pos": "ADV",
+      "translation": "пізніше",
+      "translations": [
+        "пізніше"
+      ],
+      "dictionary_translation": "пізніше",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "laughs",
+      "lemma": "laugh",
+      "pos": "NOUN",
+      "translation": "сміх",
+      "translations": [
+        "сміх",
+        "сміється"
+      ],
+      "dictionary_translation": "сміх",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Leo",
+      "lemma": "leo",
+      "pos": "PROPN",
+      "translation": "Лео",
+      "translations": [
+        "Лео"
+      ],
+      "dictionary_translation": "Лео",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "live",
+      "lemma": "live",
+      "pos": "VERB",
+      "translation": "жити",
+      "translations": [
+        "жити"
+      ],
+      "dictionary_translation": "жити",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "looks",
+      "lemma": "look",
+      "pos": "VERB",
+      "translation": "дивитися",
+      "translations": [
+        "дивитися",
+        "дивиться"
+      ],
+      "dictionary_translation": "дивитися",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "man",
+      "lemma": "man",
+      "pos": "NOUN",
+      "translation": "чоловік",
+      "translations": [
+        "чоловік"
+      ],
+      "dictionary_translation": "чоловік",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Mina",
+      "lemma": "mina",
+      "pos": "PROPN",
+      "translation": "Міна",
+      "translations": [
+        "Міна"
+      ],
+      "dictionary_translation": "Міна",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "minutes",
+      "lemma": "minute",
+      "pos": "NOUN",
+      "translation": "хвилина",
+      "translations": [
+        "хвилина",
+        "хвилин"
+      ],
+      "dictionary_translation": "хвилина",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "My",
+      "lemma": "my",
+      "pos": "PRON",
+      "translation": "мій",
+      "translations": [
+        "мій"
+      ],
+      "dictionary_translation": "мій",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "near",
+      "lemma": "near",
+      "pos": "ADP",
+      "translation": "біля",
+      "translations": [
+        "біля"
+      ],
+      "dictionary_translation": "біля",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "neighbours",
+      "lemma": "neighbour",
+      "pos": "NOUN",
+      "translation": "сусід",
+      "translations": [
+        "сусід",
+        "сусідів",
+        "сусіди"
+      ],
+      "dictionary_translation": "сусід",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "new",
+      "lemma": "new",
+      "pos": "ADJ",
+      "translation": "новий",
+      "translations": [
+        "новий",
+        "нових",
+        "нова",
+        "нову",
+        "новій",
+        "новою"
+      ],
+      "dictionary_translation": "новий",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "nineteen",
+      "lemma": "nineteen",
+      "pos": "NUM",
+      "translation": "дев’ятнадцять",
+      "translations": [
+        "дев’ятнадцять"
+      ]
+    },
+    {
+      "word": "numbers",
+      "lemma": "number",
+      "pos": "NOUN",
+      "translation": "номер",
+      "translations": [
+        "номер",
+        "номери"
+      ],
+      "dictionary_translation": "номер",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "old",
+      "lemma": "old",
+      "pos": "ADJ",
+      "translation": "старий",
+      "translations": [
+        "старий",
+        "старший",
+        "старі"
+      ],
+      "dictionary_translation": "старий",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "One",
+      "lemma": "one",
+      "pos": "NUM",
+      "translation": "один",
+      "translations": [
+        "один"
+      ],
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "People",
+      "lemma": "people",
+      "pos": "PROPN",
+      "translation": "люди",
+      "translations": [
+        "люди",
+        "людей"
+      ],
+      "dictionary_translation": "люди",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "phone",
+      "lemma": "phone",
+      "pos": "NOUN",
+      "translation": "телефон",
+      "translations": [
+        "телефон",
+        "телефону",
+        "телефонів"
+      ],
+      "dictionary_translation": "телефон",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Pine",
+      "lemma": "pine",
+      "pos": "PROPN",
+      "translation": "Пайн",
+      "translations": [
+        "Пайн"
+      ],
+      "dictionary_translation": "Пайн",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "reads",
+      "lemma": "read",
+      "pos": "VERB",
+      "translation": "читати",
+      "translations": [
+        "читати",
+        "читає"
+      ],
+      "dictionary_translation": "читати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Really",
+      "lemma": "really",
+      "pos": "ADV",
+      "translation": "дійсно",
+      "translations": [
+        "дійсно",
+        "справді"
+      ],
+      "dictionary_translation": "дійсно",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "казати",
+      "translations": [
+        "казати"
+      ],
+      "dictionary_translation": "казати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "her",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "вона",
+      "translations": [
+        "вона",
+        "вони",
+        "їй"
+      ],
+      "dictionary_translation": "вона",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "sit",
+      "lemma": "sit",
+      "pos": "VERB",
+      "translation": "сидіти",
+      "translations": [
+        "сидіти"
+      ],
+      "dictionary_translation": "сидіти",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "stop",
+      "lemma": "stop",
+      "pos": "NOUN",
+      "translation": "зупинка",
+      "translations": [
+        "зупинка",
+        "зупинці",
+        "зупинку"
+      ],
+      "dictionary_translation": "зупинка",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "stranger",
+      "lemma": "stranger",
+      "pos": "NOUN",
+      "translation": "незнайомець",
+      "translations": [
+        "незнайомець",
+        "незнайомце"
+      ],
+      "dictionary_translation": "незнайомець",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "street",
+      "lemma": "street",
+      "pos": "NOUN",
+      "translation": "вулиця",
+      "translations": [
+        "вулиця",
+        "вулиць"
+      ],
+      "dictionary_translation": "вулиця",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Street",
+      "lemma": "street",
+      "pos": "PROPN",
+      "translation": "вулиця",
+      "translations": [
+        "вулиця",
+        "вулиць"
+      ],
+      "dictionary_translation": "вулиця",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "studies",
+      "lemma": "studies",
+      "pos": "PROPN",
+      "translation": "дослідження",
+      "translations": [
+        "дослідження"
+      ],
+      "dictionary_translation": "дослідження",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "study",
+      "lemma": "study",
+      "pos": "VERB",
+      "translation": "навчатися",
+      "translations": [
+        "навчатися"
+      ],
+      "dictionary_translation": "навчатися",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "talk",
+      "lemma": "talk",
+      "pos": "VERB",
+      "translation": "говорити",
+      "translations": [
+        "говорити",
+        "говорять"
+      ],
+      "dictionary_translation": "говорити",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Ten",
+      "lemma": "ten",
+      "pos": "NUM",
+      "translation": "десять",
+      "translations": [
+        "десять"
+      ],
+      "dictionary_translation": "десять",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Thank",
+      "lemma": "thank",
+      "pos": "VERB",
+      "translation": "дякувати",
+      "translations": [
+        "дякувати",
+        "Дякую"
+      ],
+      "dictionary_translation": "дякувати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "the",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "цей",
+      "translations": [
+        "цей"
+      ],
+      "dictionary_translation": "цей",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Their",
+      "lemma": "their",
+      "pos": "PRON",
+      "translation": "їхній",
+      "translations": [
+        "їхній"
+      ],
+      "dictionary_translation": "їхній",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "They",
+      "lemma": "they",
+      "pos": "PRON",
+      "translation": "вони",
+      "translations": [
+        "вони"
+      ],
+      "dictionary_translation": "вони",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "this",
+      "lemma": "this",
+      "pos": "DET",
+      "translation": "це",
+      "translations": [
+        "це"
+      ],
+      "dictionary_translation": "це",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "ADP",
+      "translation": "до",
+      "translations": [
+        "до",
+        "на"
+      ],
+      "dictionary_translation": "до",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "together",
+      "lemma": "together",
+      "pos": "ADV",
+      "translation": "разом",
+      "translations": [
+        "разом"
+      ],
+      "dictionary_translation": "разом",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "twenty",
+      "lemma": "twenty",
+      "pos": "NUM",
+      "translation": "двадцять",
+      "translations": [
+        "двадцять",
+        "двадцятому"
+      ],
+      "dictionary_translation": "двадцять",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "twenty-four",
+      "lemma": "twenty-four",
+      "pos": "NUM",
+      "translation": "двадцять чотири",
+      "translations": [
+        "двадцять чотири"
+      ]
+    },
+    {
+      "word": "Two",
+      "lemma": "two",
+      "pos": "NUM",
+      "translation": "два",
+      "translations": [
+        "два"
+      ],
+      "dictionary_translation": "два",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "wait",
+      "lemma": "wait",
+      "pos": "VERB",
+      "translation": "чекати",
+      "translations": [
+        "чекати",
+        "чекають",
+        "чекає"
+      ],
+      "dictionary_translation": "чекати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "We",
+      "lemma": "we",
+      "pos": "PRON",
+      "translation": "ми",
+      "translations": [
+        "ми"
+      ],
+      "dictionary_translation": "ми",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "What",
+      "lemma": "what",
+      "pos": "PRON",
+      "translation": "що",
+      "translations": [
+        "що"
+      ],
+      "dictionary_translation": "що",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "When",
+      "lemma": "when",
+      "pos": "SCONJ",
+      "translation": "коли",
+      "translations": [
+        "коли"
+      ],
+      "dictionary_translation": "коли",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "while",
+      "lemma": "while",
+      "pos": "SCONJ",
+      "translation": "поки",
+      "translations": [
+        "поки"
+      ],
+      "dictionary_translation": "поки",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "years",
+      "lemma": "year",
+      "pos": "NOUN",
+      "translation": "рік",
+      "translations": [
+        "рік",
+        "років"
+      ],
+      "dictionary_translation": "рік",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Yes",
+      "lemma": "yes",
+      "pos": "INTJ",
+      "translation": "так",
+      "translations": [
+        "так"
+      ],
+      "dictionary_translation": "так",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "you",
+      "lemma": "you",
+      "pos": "PRON",
+      "translation": "ти",
+      "translations": [
+        "ти"
+      ],
+      "dictionary_translation": "ти",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "young",
+      "lemma": "young",
+      "pos": "ADJ",
+      "translation": "молодий",
+      "translations": [
+        "молодий",
+        "молодший",
+        "молода"
+      ],
+      "dictionary_translation": "молодий",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "your",
+      "lemma": "your",
+      "pos": "PRON",
+      "translation": "твій",
+      "translations": [
+        "твій"
+      ],
+      "dictionary_translation": "твій",
+      "dictionary_translation_source": "skill_fallback"
+    }
+  ],
+  "blocks": [
+    {
+      "source": "years old",
+      "type": "grammar_construction",
+      "source_forms": [
+        "years old"
+      ],
+      "translation": "років",
+      "explanation": "Конструкція для повідомлення віку.",
+      "components": [
+        {
+          "source": "years",
+          "lemma": "year",
+          "pos": "NOUN",
+          "translation": "років"
+        },
+        {
+          "source": "old",
+          "lemma": "old",
+          "pos": "ADJ",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        }
+      ]
+    }
+  ],
+  "book_layer_audit": {
+    "version": 4,
+    "method": "codex_verified_occurrence_word_to_word",
+    "reviewed_segments": [
+      {
+        "source_text": "Two People, One City",
+        "target_text": "Двоє людей, одне місто",
+        "status": "covered",
+        "word_keys": [
+          "city|NOUN",
+          "one|NUM",
+          "people|PROPN",
+          "two|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Mina is at a bus stop.",
+        "target_text": "Міна стоїть на автобусній зупинці.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "a|DET",
+          "be|AUX",
+          "bus|NOUN",
+          "mina|PROPN",
+          "stop|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "A young man looks at the street numbers.",
+        "target_text": "Молодий чоловік дивиться на номери вулиць.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "a|DET",
+          "look|VERB",
+          "man|NOUN",
+          "number|NOUN",
+          "street|NOUN",
+          "the|DET",
+          "young|ADJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Excuse me,\" he says.",
+        "target_text": "Вибачте, каже він.",
+        "status": "covered",
+        "word_keys": [
+          "excuse|VERB",
+          "he|PRON",
+          "i|PRON",
+          "say|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Is this Pine Street?",
+        "target_text": "Це Пайн-стріт?",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "pine|PROPN",
+          "street|PROPN",
+          "this|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Yes, it is,\" Mina answers.",
+        "target_text": "Так, це так, відповідає Міна.",
+        "status": "covered",
+        "word_keys": [
+          "answer|VERB",
+          "be|AUX",
+          "it|PRON",
+          "mina|PROPN",
+          "yes|INTJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Thank you.",
+        "target_text": "Дякую.",
+        "status": "covered",
+        "word_keys": [
+          "thank|VERB",
+          "you|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am Leo.",
+        "target_text": "Я Лев.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "i|PRON",
+          "leo|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am new in this city.",
+        "target_text": "Я новачок у цьому місті.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "city|NOUN",
+          "in|ADP",
+          "i|PRON",
+          "new|ADJ",
+          "this|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am Mina.",
+        "target_text": "Я Міна.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "i|PRON",
+          "mina|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "What is your home country?",
+        "target_text": "Яка твоя рідна країна?",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "country|NOUN",
+          "home|NOUN",
+          "what|PRON",
+          "your|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Italy.",
+        "target_text": "Італія.",
+        "status": "covered",
+        "word_keys": [
+          "italy|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "My new address is twenty-four Pine Street.",
+        "target_text": "Моя нова адреса — Пайн-стріт, двадцять чотири.",
+        "status": "covered",
+        "word_keys": [
+          "address|NOUN",
+          "be|AUX",
+          "my|PRON",
+          "new|ADJ",
+          "pine|PROPN",
+          "street|PROPN",
+          "twenty-four|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Mina laughs.",
+        "target_text": "Міна сміється.",
+        "status": "covered",
+        "word_keys": [
+          "laugh|NOUN",
+          "mina|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Really?",
+        "target_text": "Справді?",
+        "status": "covered",
+        "word_keys": [
+          "really|ADV"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I live at number twenty, near your building.",
+        "target_text": "Я живу під номером двадцять, біля вашого будинку.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "building|NOUN",
+          "i|PRON",
+          "live|VERB",
+          "near|ADP",
+          "number|NOUN",
+          "twenty|NUM",
+          "your|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "We are neighbours.",
+        "target_text": "Ми сусіди.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "neighbour|NOUN",
+          "we|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Leo is twenty years old.",
+        "target_text": "Лео двадцять років.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "leo|PROPN",
+          "old|ADJ",
+          "twenty|NUM",
+          "year|NOUN"
+        ],
+        "block_sources": [
+          "years old"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "Mina is nineteen.",
+        "target_text": "Міні дев'ятнадцять.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "mina|PROPN",
+          "nineteen|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "They both study at City College.",
+        "target_text": "Вони обидва навчаються в Міському коледжі.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "both|PRON",
+          "city|PROPN",
+          "college|PROPN",
+          "study|VERB",
+          "they|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Leo studies art, and Mina studies English.",
+        "target_text": "Лео вивчає мистецтво, а Міна — англійську мову.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "art|NOUN",
+          "english|PROPN",
+          "leo|PROPN",
+          "mina|PROPN",
+          "studies|PROPN",
+          "study|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Their bus is number eight, but it is late.",
+        "target_text": "Їхній автобус номер вісім, але він запізнюється.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "bus|NOUN",
+          "but|CCONJ",
+          "eight|NUM",
+          "it|PRON",
+          "late|ADJ",
+          "number|NOUN",
+          "their|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "They talk while they wait.",
+        "target_text": "Вони розмовляють, поки чекають.",
+        "status": "covered",
+        "word_keys": [
+          "talk|VERB",
+          "they|PRON",
+          "wait|VERB",
+          "while|SCONJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Mina gives Leo her phone number.",
+        "target_text": "Міна дає Лео свій номер телефону.",
+        "status": "covered",
+        "word_keys": [
+          "give|VERB",
+          "her|PRON",
+          "leo|PROPN",
+          "mina|PROPN",
+          "number|NOUN",
+          "phone|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "He reads the digits back to her, and Mina says they are correct.",
+        "target_text": "Він читає їй цифри, і Міна каже, що вони правильні.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "back|ADV",
+          "be|AUX",
+          "correct|ADJ",
+          "digit|NOUN",
+          "he|PRON",
+          "mina|PROPN",
+          "read|VERB",
+          "say|VERB",
+          "she|PRON",
+          "they|PRON",
+          "the|DET",
+          "to|ADP"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "When the bus arrives, they sit together.",
+        "target_text": "Коли приїжджає автобус, вони сідають разом.",
+        "status": "covered",
+        "word_keys": [
+          "arrive|VERB",
+          "bus|NOUN",
+          "sit|VERB",
+          "they|PRON",
+          "the|DET",
+          "together|ADV",
+          "when|SCONJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Leo came to the stop as a stranger.",
+        "target_text": "Лео зупинився, ніби незнайомець.",
+        "status": "covered",
+        "word_keys": [
+          "as|ADP",
+          "a|DET",
+          "come|VERB",
+          "leo|PROPN",
+          "stop|NOUN",
+          "stranger|NOUN",
+          "the|DET",
+          "to|ADP"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Ten minutes later, he has a new neighbour and a new friend.",
+        "target_text": "Через десять хвилин у нього з'являється новий сусід і новий друг.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "a|DET",
+          "friend|NOUN",
+          "have|VERB",
+          "he|PRON",
+          "later|ADV",
+          "minute|NOUN",
+          "neighbour|NOUN",
+          "new|ADJ",
+          "ten|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      }
+    ],
+    "second_pass": {
+      "status": "passed",
+      "corrections": [],
+      "unresolved": []
+    },
+    "third_pass": {
+      "status": "passed",
+      "word_decisions": [
+        {
+          "key": "a|DET",
+          "ownership": "mixed",
+          "translations": [
+            "один"
+          ],
+          "evidence": [
+            "Mina is at a bus stop. → Міна стоїть на автобусній зупинці.",
+            "A young man looks at the street numbers. → Молодий чоловік дивиться на номери вулиць.",
+            "Leo came to the stop as a stranger. → Лео зупинився, ніби незнайомець.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "address|NOUN",
+          "ownership": "word",
+          "translations": [
+            "адреса",
+            "адресу"
+          ],
+          "evidence": [
+            "My new address is twenty-four Pine Street. → Моя нова адреса — Пайн-стріт, двадцять чотири."
+          ]
+        },
+        {
+          "key": "and|CCONJ",
+          "ownership": "word",
+          "translations": [
+            "а",
+            "і"
+          ],
+          "evidence": [
+            "Leo studies art, and Mina studies English. → Лео вивчає мистецтво, а Міна — англійську мову.",
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "answer|VERB",
+          "ownership": "word",
+          "translations": [
+            "відповідати",
+            "відповідає"
+          ],
+          "evidence": [
+            "Yes, it is,\" Mina answers. → Так, це так, відповідає Міна."
+          ]
+        },
+        {
+          "key": "arrive|VERB",
+          "ownership": "word",
+          "translations": [
+            "приїжджати",
+            "приїжджає",
+            "прибувати",
+            "прибуває"
+          ],
+          "evidence": [
+            "When the bus arrives, they sit together. → Коли приїжджає автобус, вони сідають разом."
+          ]
+        },
+        {
+          "key": "art|NOUN",
+          "ownership": "word",
+          "translations": [
+            "мистецтво"
+          ],
+          "evidence": [
+            "Leo studies art, and Mina studies English. → Лео вивчає мистецтво, а Міна — англійську мову."
+          ]
+        },
+        {
+          "key": "as|ADP",
+          "ownership": "mixed",
+          "translations": [
+            "як"
+          ],
+          "evidence": [
+            "Leo came to the stop as a stranger. → Лео зупинився, ніби незнайомець."
+          ]
+        },
+        {
+          "key": "at|ADP",
+          "ownership": "mixed",
+          "translations": [
+            "о",
+            "біля",
+            "під"
+          ],
+          "evidence": [
+            "Mina is at a bus stop. → Міна стоїть на автобусній зупинці.",
+            "A young man looks at the street numbers. → Молодий чоловік дивиться на номери вулиць.",
+            "I live at number twenty, near your building. → Я живу під номером двадцять, біля вашого будинку.",
+            "They both study at City College. → Вони обидва навчаються в Міському коледжі."
+          ]
+        },
+        {
+          "key": "back|ADV",
+          "ownership": "mixed",
+          "translations": [
+            "назад"
+          ],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні."
+          ]
+        },
+        {
+          "key": "be|AUX",
+          "ownership": "mixed",
+          "translations": [
+            "бути"
+          ],
+          "evidence": [
+            "Mina is at a bus stop. → Міна стоїть на автобусній зупинці.",
+            "Is this Pine Street? → Це Пайн-стріт?",
+            "Yes, it is,\" Mina answers. → Так, це так, відповідає Міна.",
+            "I am Leo. → Я Лев.",
+            "I am new in this city. → Я новачок у цьому місті.",
+            "I am Mina. → Я Міна.",
+            "What is your home country? → Яка твоя рідна країна?",
+            "My new address is twenty-four Pine Street. → Моя нова адреса — Пайн-стріт, двадцять чотири.",
+            "We are neighbours. → Ми сусіди.",
+            "Leo is twenty years old. → Лео двадцять років.",
+            "Mina is nineteen. → Міні дев'ятнадцять.",
+            "Their bus is number eight, but it is late. → Їхній автобус номер вісім, але він запізнюється.",
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні."
+          ]
+        },
+        {
+          "key": "both|PRON",
+          "ownership": "word",
+          "translations": [
+            "обидва",
+            "обидві"
+          ],
+          "evidence": [
+            "They both study at City College. → Вони обидва навчаються в Міському коледжі."
+          ]
+        },
+        {
+          "key": "building|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "будівля",
+            "будівлею"
+          ],
+          "evidence": [
+            "I live at number twenty, near your building. → Я живу під номером двадцять, біля вашого будинку."
+          ]
+        },
+        {
+          "key": "bus|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "автобус",
+            "автобусной",
+            "автобусі",
+            "автобусом"
+          ],
+          "evidence": [
+            "Mina is at a bus stop. → Міна стоїть на автобусній зупинці.",
+            "Their bus is number eight, but it is late. → Їхній автобус номер вісім, але він запізнюється.",
+            "When the bus arrives, they sit together. → Коли приїжджає автобус, вони сідають разом."
+          ]
+        },
+        {
+          "key": "but|CCONJ",
+          "ownership": "word",
+          "translations": [
+            "але"
+          ],
+          "evidence": [
+            "Their bus is number eight, but it is late. → Їхній автобус номер вісім, але він запізнюється."
+          ]
+        },
+        {
+          "key": "city|NOUN",
+          "ownership": "word",
+          "translations": [
+            "місто",
+            "міському",
+            "місті",
+            "міста"
+          ],
+          "evidence": [
+            "Two People, One City → Двоє людей, одне місто",
+            "I am new in this city. → Я новачок у цьому місті."
+          ]
+        },
+        {
+          "key": "city|PROPN",
+          "ownership": "word",
+          "translations": [
+            "місто",
+            "міському",
+            "місті"
+          ],
+          "evidence": [
+            "They both study at City College. → Вони обидва навчаються в Міському коледжі."
+          ]
+        },
+        {
+          "key": "college|PROPN",
+          "ownership": "word",
+          "translations": [
+            "коледж",
+            "коледжі"
+          ],
+          "evidence": [
+            "They both study at City College. → Вони обидва навчаються в Міському коледжі."
+          ]
+        },
+        {
+          "key": "come|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "приходити"
+          ],
+          "evidence": [
+            "Leo came to the stop as a stranger. → Лео зупинився, ніби незнайомець."
+          ]
+        },
+        {
+          "key": "correct|ADJ",
+          "ownership": "word",
+          "translations": [
+            "правильний",
+            "правильні"
+          ],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні."
+          ]
+        },
+        {
+          "key": "country|NOUN",
+          "ownership": "word",
+          "translations": [
+            "країна",
+            "країні"
+          ],
+          "evidence": [
+            "What is your home country? → Яка твоя рідна країна?"
+          ]
+        },
+        {
+          "key": "digit|NOUN",
+          "ownership": "word",
+          "translations": [
+            "цифра",
+            "цифри"
+          ],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні."
+          ]
+        },
+        {
+          "key": "eight|NUM",
+          "ownership": "word",
+          "translations": [
+            "вісім"
+          ],
+          "evidence": [
+            "Their bus is number eight, but it is late. → Їхній автобус номер вісім, але він запізнюється."
+          ]
+        },
+        {
+          "key": "english|PROPN",
+          "ownership": "word",
+          "translations": [
+            "англійська мова"
+          ],
+          "evidence": [
+            "Leo studies art, and Mina studies English. → Лео вивчає мистецтво, а Міна — англійську мову."
+          ]
+        },
+        {
+          "key": "excuse|VERB",
+          "ownership": "word",
+          "translations": [
+            "вибачати",
+            "Вибачте"
+          ],
+          "evidence": [
+            "Excuse me,\" he says. → Вибачте, каже він."
+          ]
+        },
+        {
+          "key": "friend|NOUN",
+          "ownership": "word",
+          "translations": [
+            "друг",
+            "друзями"
+          ],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "give|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "давати"
+          ],
+          "evidence": [
+            "Mina gives Leo her phone number. → Міна дає Лео свій номер телефону."
+          ]
+        },
+        {
+          "key": "have|VERB",
+          "ownership": "word",
+          "translations": [
+            "у/в мене",
+            "мати"
+          ],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "he|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "він"
+          ],
+          "evidence": [
+            "Excuse me,\" he says. → Вибачте, каже він.",
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "her|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "її"
+          ],
+          "evidence": [
+            "Mina gives Leo her phone number. → Міна дає Лео свій номер телефону."
+          ]
+        },
+        {
+          "key": "home|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "дім"
+          ],
+          "evidence": [
+            "What is your home country? → Яка твоя рідна країна?"
+          ]
+        },
+        {
+          "key": "i|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "я"
+          ],
+          "evidence": [
+            "Excuse me,\" he says. → Вибачте, каже він.",
+            "I am Leo. → Я Лев.",
+            "I am new in this city. → Я новачок у цьому місті.",
+            "I am Mina. → Я Міна.",
+            "I live at number twenty, near your building. → Я живу під номером двадцять, біля вашого будинку."
+          ]
+        },
+        {
+          "key": "in|ADP",
+          "ownership": "word",
+          "translations": [
+            "в",
+            "у"
+          ],
+          "evidence": [
+            "I am new in this city. → Я новачок у цьому місті."
+          ]
+        },
+        {
+          "key": "it|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "воно",
+            "це"
+          ],
+          "evidence": [
+            "Yes, it is,\" Mina answers. → Так, це так, відповідає Міна.",
+            "Their bus is number eight, but it is late. → Їхній автобус номер вісім, але він запізнюється."
+          ]
+        },
+        {
+          "key": "italy|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Італія"
+          ],
+          "evidence": [
+            "Italy. → Італія."
+          ]
+        },
+        {
+          "key": "late|ADJ",
+          "ownership": "mixed",
+          "translations": [
+            "пізній",
+            "пізно"
+          ],
+          "evidence": [
+            "Their bus is number eight, but it is late. → Їхній автобус номер вісім, але він запізнюється."
+          ]
+        },
+        {
+          "key": "later|ADV",
+          "ownership": "mixed",
+          "translations": [
+            "пізніше"
+          ],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "laugh|NOUN",
+          "ownership": "word",
+          "translations": [
+            "сміх",
+            "сміється"
+          ],
+          "evidence": [
+            "Mina laughs. → Міна сміється."
+          ]
+        },
+        {
+          "key": "leo|PROPN",
+          "ownership": "mixed",
+          "translations": [
+            "Лео"
+          ],
+          "evidence": [
+            "I am Leo. → Я Лев.",
+            "Leo is twenty years old. → Лео двадцять років.",
+            "Leo studies art, and Mina studies English. → Лео вивчає мистецтво, а Міна — англійську мову.",
+            "Mina gives Leo her phone number. → Міна дає Лео свій номер телефону.",
+            "Leo came to the stop as a stranger. → Лео зупинився, ніби незнайомець."
+          ]
+        },
+        {
+          "key": "live|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "жити"
+          ],
+          "evidence": [
+            "I live at number twenty, near your building. → Я живу під номером двадцять, біля вашого будинку."
+          ]
+        },
+        {
+          "key": "look|VERB",
+          "ownership": "word",
+          "translations": [
+            "дивитися",
+            "дивиться"
+          ],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодий чоловік дивиться на номери вулиць."
+          ]
+        },
+        {
+          "key": "man|NOUN",
+          "ownership": "word",
+          "translations": [
+            "чоловік"
+          ],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодий чоловік дивиться на номери вулиць."
+          ]
+        },
+        {
+          "key": "mina|PROPN",
+          "ownership": "mixed",
+          "translations": [
+            "Міна"
+          ],
+          "evidence": [
+            "Mina is at a bus stop. → Міна стоїть на автобусній зупинці.",
+            "Yes, it is,\" Mina answers. → Так, це так, відповідає Міна.",
+            "I am Mina. → Я Міна.",
+            "Mina laughs. → Міна сміється.",
+            "Mina is nineteen. → Міні дев'ятнадцять.",
+            "Leo studies art, and Mina studies English. → Лео вивчає мистецтво, а Міна — англійську мову.",
+            "Mina gives Leo her phone number. → Міна дає Лео свій номер телефону.",
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні."
+          ]
+        },
+        {
+          "key": "minute|NOUN",
+          "ownership": "word",
+          "translations": [
+            "хвилина",
+            "хвилин"
+          ],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "my|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "мій"
+          ],
+          "evidence": [
+            "My new address is twenty-four Pine Street. → Моя нова адреса — Пайн-стріт, двадцять чотири."
+          ]
+        },
+        {
+          "key": "near|ADP",
+          "ownership": "word",
+          "translations": [
+            "біля"
+          ],
+          "evidence": [
+            "I live at number twenty, near your building. → Я живу під номером двадцять, біля вашого будинку."
+          ]
+        },
+        {
+          "key": "neighbour|NOUN",
+          "ownership": "word",
+          "translations": [
+            "сусід",
+            "сусідів",
+            "сусіди"
+          ],
+          "evidence": [
+            "We are neighbours. → Ми сусіди.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "new|ADJ",
+          "ownership": "mixed",
+          "translations": [
+            "новий",
+            "нових",
+            "нова",
+            "нову",
+            "новій",
+            "новою"
+          ],
+          "evidence": [
+            "I am new in this city. → Я новачок у цьому місті.",
+            "My new address is twenty-four Pine Street. → Моя нова адреса — Пайн-стріт, двадцять чотири.",
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "nineteen|NUM",
+          "ownership": "word",
+          "translations": [
+            "дев’ятнадцять"
+          ],
+          "evidence": [
+            "Mina is nineteen. → Міні дев'ятнадцять."
+          ]
+        },
+        {
+          "key": "number|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "номер",
+            "номери"
+          ],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодий чоловік дивиться на номери вулиць.",
+            "I live at number twenty, near your building. → Я живу під номером двадцять, біля вашого будинку.",
+            "Their bus is number eight, but it is late. → Їхній автобус номер вісім, але він запізнюється.",
+            "Mina gives Leo her phone number. → Міна дає Лео свій номер телефону."
+          ]
+        },
+        {
+          "key": "old|ADJ",
+          "ownership": "word",
+          "translations": [
+            "старий",
+            "старший",
+            "старі"
+          ],
+          "evidence": [
+            "Leo is twenty years old. → Лео двадцять років."
+          ]
+        },
+        {
+          "key": "one|NUM",
+          "ownership": "mixed",
+          "translations": [
+            "один"
+          ],
+          "evidence": [
+            "Two People, One City → Двоє людей, одне місто"
+          ]
+        },
+        {
+          "key": "people|PROPN",
+          "ownership": "word",
+          "translations": [
+            "люди",
+            "людей"
+          ],
+          "evidence": [
+            "Two People, One City → Двоє людей, одне місто"
+          ]
+        },
+        {
+          "key": "phone|NOUN",
+          "ownership": "word",
+          "translations": [
+            "телефон",
+            "телефону",
+            "телефонів"
+          ],
+          "evidence": [
+            "Mina gives Leo her phone number. → Міна дає Лео свій номер телефону."
+          ]
+        },
+        {
+          "key": "pine|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Пайн"
+          ],
+          "evidence": [
+            "Is this Pine Street? → Це Пайн-стріт?",
+            "My new address is twenty-four Pine Street. → Моя нова адреса — Пайн-стріт, двадцять чотири."
+          ]
+        },
+        {
+          "key": "read|VERB",
+          "ownership": "word",
+          "translations": [
+            "читати",
+            "читає"
+          ],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні."
+          ]
+        },
+        {
+          "key": "really|ADV",
+          "ownership": "word",
+          "translations": [
+            "дійсно",
+            "справді"
+          ],
+          "evidence": [
+            "Really? → Справді?"
+          ]
+        },
+        {
+          "key": "say|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "казати"
+          ],
+          "evidence": [
+            "Excuse me,\" he says. → Вибачте, каже він.",
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні."
+          ]
+        },
+        {
+          "key": "she|PRON",
+          "ownership": "word",
+          "translations": [
+            "вона",
+            "вони",
+            "їй"
+          ],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні."
+          ]
+        },
+        {
+          "key": "sit|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "сидіти"
+          ],
+          "evidence": [
+            "When the bus arrives, they sit together. → Коли приїжджає автобус, вони сідають разом."
+          ]
+        },
+        {
+          "key": "stop|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "зупинка",
+            "зупинці",
+            "зупинку"
+          ],
+          "evidence": [
+            "Mina is at a bus stop. → Міна стоїть на автобусній зупинці.",
+            "Leo came to the stop as a stranger. → Лео зупинився, ніби незнайомець."
+          ]
+        },
+        {
+          "key": "stranger|NOUN",
+          "ownership": "word",
+          "translations": [
+            "незнайомець",
+            "незнайомце"
+          ],
+          "evidence": [
+            "Leo came to the stop as a stranger. → Лео зупинився, ніби незнайомець."
+          ]
+        },
+        {
+          "key": "street|NOUN",
+          "ownership": "word",
+          "translations": [
+            "вулиця",
+            "вулиць"
+          ],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодий чоловік дивиться на номери вулиць."
+          ]
+        },
+        {
+          "key": "street|PROPN",
+          "ownership": "mixed",
+          "translations": [
+            "вулиця",
+            "вулиць"
+          ],
+          "evidence": [
+            "Is this Pine Street? → Це Пайн-стріт?",
+            "My new address is twenty-four Pine Street. → Моя нова адреса — Пайн-стріт, двадцять чотири."
+          ]
+        },
+        {
+          "key": "studies|PROPN",
+          "ownership": "mixed",
+          "translations": [
+            "дослідження"
+          ],
+          "evidence": [
+            "Leo studies art, and Mina studies English. → Лео вивчає мистецтво, а Міна — англійську мову."
+          ]
+        },
+        {
+          "key": "study|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "навчатися"
+          ],
+          "evidence": [
+            "They both study at City College. → Вони обидва навчаються в Міському коледжі.",
+            "Leo studies art, and Mina studies English. → Лео вивчає мистецтво, а Міна — англійську мову."
+          ]
+        },
+        {
+          "key": "talk|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "говорити",
+            "говорять"
+          ],
+          "evidence": [
+            "They talk while they wait. → Вони розмовляють, поки чекають."
+          ]
+        },
+        {
+          "key": "ten|NUM",
+          "ownership": "word",
+          "translations": [
+            "десять"
+          ],
+          "evidence": [
+            "Ten minutes later, he has a new neighbour and a new friend. → Через десять хвилин у нього з'являється новий сусід і новий друг."
+          ]
+        },
+        {
+          "key": "thank|VERB",
+          "ownership": "word",
+          "translations": [
+            "дякувати",
+            "Дякую"
+          ],
+          "evidence": [
+            "Thank you. → Дякую."
+          ]
+        },
+        {
+          "key": "the|DET",
+          "ownership": "mixed",
+          "translations": [
+            "цей"
+          ],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодий чоловік дивиться на номери вулиць.",
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні.",
+            "When the bus arrives, they sit together. → Коли приїжджає автобус, вони сідають разом.",
+            "Leo came to the stop as a stranger. → Лео зупинився, ніби незнайомець."
+          ]
+        },
+        {
+          "key": "their|PRON",
+          "ownership": "word",
+          "translations": [
+            "їхній"
+          ],
+          "evidence": [
+            "Their bus is number eight, but it is late. → Їхній автобус номер вісім, але він запізнюється."
+          ]
+        },
+        {
+          "key": "they|PRON",
+          "ownership": "word",
+          "translations": [
+            "вони"
+          ],
+          "evidence": [
+            "They both study at City College. → Вони обидва навчаються в Міському коледжі.",
+            "They talk while they wait. → Вони розмовляють, поки чекають.",
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні.",
+            "When the bus arrives, they sit together. → Коли приїжджає автобус, вони сідають разом."
+          ]
+        },
+        {
+          "key": "this|DET",
+          "ownership": "mixed",
+          "translations": [
+            "це"
+          ],
+          "evidence": [
+            "Is this Pine Street? → Це Пайн-стріт?",
+            "I am new in this city. → Я новачок у цьому місті."
+          ]
+        },
+        {
+          "key": "to|ADP",
+          "ownership": "mixed",
+          "translations": [
+            "до",
+            "на"
+          ],
+          "evidence": [
+            "He reads the digits back to her, and Mina says they are correct. → Він читає їй цифри, і Міна каже, що вони правильні.",
+            "Leo came to the stop as a stranger. → Лео зупинився, ніби незнайомець."
+          ]
+        },
+        {
+          "key": "together|ADV",
+          "ownership": "word",
+          "translations": [
+            "разом"
+          ],
+          "evidence": [
+            "When the bus arrives, they sit together. → Коли приїжджає автобус, вони сідають разом."
+          ]
+        },
+        {
+          "key": "twenty|NUM",
+          "ownership": "word",
+          "translations": [
+            "двадцять",
+            "двадцятому"
+          ],
+          "evidence": [
+            "I live at number twenty, near your building. → Я живу під номером двадцять, біля вашого будинку.",
+            "Leo is twenty years old. → Лео двадцять років."
+          ]
+        },
+        {
+          "key": "twenty-four|NUM",
+          "ownership": "word",
+          "translations": [
+            "двадцять чотири"
+          ],
+          "evidence": [
+            "My new address is twenty-four Pine Street. → Моя нова адреса — Пайн-стріт, двадцять чотири."
+          ]
+        },
+        {
+          "key": "two|NUM",
+          "ownership": "mixed",
+          "translations": [
+            "два"
+          ],
+          "evidence": [
+            "Two People, One City → Двоє людей, одне місто"
+          ]
+        },
+        {
+          "key": "wait|VERB",
+          "ownership": "word",
+          "translations": [
+            "чекати",
+            "чекають",
+            "чекає"
+          ],
+          "evidence": [
+            "They talk while they wait. → Вони розмовляють, поки чекають."
+          ]
+        },
+        {
+          "key": "we|PRON",
+          "ownership": "word",
+          "translations": [
+            "ми"
+          ],
+          "evidence": [
+            "We are neighbours. → Ми сусіди."
+          ]
+        },
+        {
+          "key": "what|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "що"
+          ],
+          "evidence": [
+            "What is your home country? → Яка твоя рідна країна?"
+          ]
+        },
+        {
+          "key": "when|SCONJ",
+          "ownership": "word",
+          "translations": [
+            "коли"
+          ],
+          "evidence": [
+            "When the bus arrives, they sit together. → Коли приїжджає автобус, вони сідають разом."
+          ]
+        },
+        {
+          "key": "while|SCONJ",
+          "ownership": "word",
+          "translations": [
+            "поки"
+          ],
+          "evidence": [
+            "They talk while they wait. → Вони розмовляють, поки чекають."
+          ]
+        },
+        {
+          "key": "year|NOUN",
+          "ownership": "word",
+          "translations": [
+            "рік",
+            "років"
+          ],
+          "evidence": [
+            "Leo is twenty years old. → Лео двадцять років."
+          ]
+        },
+        {
+          "key": "yes|INTJ",
+          "ownership": "word",
+          "translations": [
+            "так"
+          ],
+          "evidence": [
+            "Yes, it is,\" Mina answers. → Так, це так, відповідає Міна."
+          ]
+        },
+        {
+          "key": "you|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "ти"
+          ],
+          "evidence": [
+            "Thank you. → Дякую."
+          ]
+        },
+        {
+          "key": "young|ADJ",
+          "ownership": "word",
+          "translations": [
+            "молодий",
+            "молодший",
+            "молода"
+          ],
+          "evidence": [
+            "A young man looks at the street numbers. → Молодий чоловік дивиться на номери вулиць."
+          ]
+        },
+        {
+          "key": "your|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "твій"
+          ],
+          "evidence": [
+            "What is your home country? → Яка твоя рідна країна?",
+            "I live at number twenty, near your building. → Я живу під номером двадцять, біля вашого будинку."
+          ]
+        }
+      ],
+      "corrections": [],
+      "unresolved": []
+    },
+    "fourth_pass": {
+      "status": "passed",
+      "block_decisions": [
+        {
+          "source": "years old",
+          "decision": "accepted",
+          "word_by_word_result": "років + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            17
+          ]
+        }
+      ],
+      "unresolved": []
+    },
+    "absorbed_word_keys": []
+  }
+}

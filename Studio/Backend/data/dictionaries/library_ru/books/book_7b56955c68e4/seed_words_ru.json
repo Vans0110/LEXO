@@ -1,0 +1,239 @@
+{
+  "about|ADP": {
+    "translation": "о"
+  },
+  "and|CCONJ": {
+    "translation": "и"
+  },
+  "at|ADP": {
+    "translation": "у"
+  },
+  "a|DET": {
+    "translation": "один"
+  },
+  "be|AUX": {
+    "translation": "быть"
+  },
+  "book|NOUN": {
+    "translation": "книга"
+  },
+  "bus|NOUN": {
+    "translation": "автобус"
+  },
+  "by|ADP": {
+    "translation": "на"
+  },
+  "city|NOUN": {
+    "translation": "город"
+  },
+  "classroom|NOUN": {
+    "translation": "класс"
+  },
+  "david|PROPN": {
+    "translation": "Дэвид"
+  },
+  "day|NOUN": {
+    "translation": "день"
+  },
+  "do|AUX": {
+    "translation": "делать"
+  },
+  "eighteen|NUM": {
+    "translation": "восемнадцать"
+  },
+  "emma|PROPN": {
+    "translation": "Эмма"
+  },
+  "evening|NOUN": {
+    "translation": "вечер"
+  },
+  "every|DET": {
+    "translation": "каждый"
+  },
+  "father|NOUN": {
+    "translation": "отец"
+  },
+  "feel|VERB": {
+    "translation": "чувствовать"
+  },
+  "find|VERB": {
+    "translation": "находить"
+  },
+  "first|ADJ": {
+    "translation": "первый"
+  },
+  "friendly|ADJ": {
+    "translation": "дружелюбный"
+  },
+  "friend|NOUN": {
+    "translation": "друг"
+  },
+  "game|NOUN": {
+    "translation": "игра"
+  },
+  "good|ADJ": {
+    "translation": "хороший"
+  },
+  "go|VERB": {
+    "translation": "идти"
+  },
+  "great|ADJ": {
+    "translation": "отличный"
+  },
+  "happily|ADV": {
+    "translation": "счастливо"
+  },
+  "hello|INTJ": {
+    "translation": "привет"
+  },
+  "help|VERB": {
+    "translation": "помогать"
+  },
+  "her|PRON": {
+    "translation": "её"
+  },
+  "he|PRON": {
+    "translation": "он"
+  },
+  "his|PRON": {
+    "translation": "его"
+  },
+  "hi|INTJ": {
+    "translation": "привет"
+  },
+  "home|NOUN": {
+    "translation": "дом"
+  },
+  "in|ADP": {
+    "translation": "в"
+  },
+  "i|PRON": {
+    "translation": "я"
+  },
+  "kind|ADJ": {
+    "translation": "добрый"
+  },
+  "know|VERB": {
+    "translation": "знать"
+  },
+  "like|VERB": {
+    "translation": "нравиться"
+  },
+  "live|VERB": {
+    "translation": "жить"
+  },
+  "lunch|NOUN": {
+    "translation": "обед"
+  },
+  "morning|NOUN": {
+    "translation": "утро"
+  },
+  "mother|NOUN": {
+    "translation": "мать"
+  },
+  "movie|NOUN": {
+    "translation": "фильм"
+  },
+  "music|NOUN": {
+    "translation": "музыка"
+  },
+  "my|PRON": {
+    "translation": "мой"
+  },
+  "name|NOUN": {
+    "translation": "имя"
+  },
+  "nervous|ADJ": {
+    "translation": "нервный"
+  },
+  "new|ADJ": {
+    "translation": "новый"
+  },
+  "new|PROPN": {
+    "translation": "Новый"
+  },
+  "not|PART": {
+    "translation": "не"
+  },
+  "now|ADV": {
+    "translation": "сейчас"
+  },
+  "old|ADJ": {
+    "translation": "старый"
+  },
+  "or|CCONJ": {
+    "translation": "или"
+  },
+  "parent|NOUN": {
+    "translation": "родитель"
+  },
+  "say|VERB": {
+    "translation": "говорить"
+  },
+  "school|NOUN": {
+    "translation": "школа"
+  },
+  "she|PRON": {
+    "translation": "она"
+  },
+  "show|VERB": {
+    "translation": "показывать"
+  },
+  "sit|VERB": {
+    "translation": "сидеть"
+  },
+  "small|ADJ": {
+    "translation": "маленький"
+  },
+  "smile|VERB": {
+    "translation": "улыбаться"
+  },
+  "student|NOUN": {
+    "translation": "ученик"
+  },
+  "student|PROPN": {
+    "translation": "Студент"
+  },
+  "talk|NOUN": {
+    "translation": "разговор"
+  },
+  "talk|VERB": {
+    "translation": "говорить"
+  },
+  "teacher|NOUN": {
+    "translation": "учитель"
+  },
+  "they|PRON": {
+    "translation": "они"
+  },
+  "the|DET": {
+    "translation": "этот"
+  },
+  "time|NOUN": {
+    "translation": "время"
+  },
+  "today|NOUN": {
+    "translation": "сегодня"
+  },
+  "to|ADP": {
+    "translation": "к"
+  },
+  "very|ADV": {
+    "translation": "очень"
+  },
+  "walk|VERB": {
+    "translation": "ходить"
+  },
+  "with|ADP": {
+    "translation": "с"
+  },
+  "woman|NOUN": {
+    "translation": "женщина"
+  },
+  "year|NOUN": {
+    "translation": "год"
+  },
+  "young|ADJ": {
+    "translation": "молодой"
+  }
+}

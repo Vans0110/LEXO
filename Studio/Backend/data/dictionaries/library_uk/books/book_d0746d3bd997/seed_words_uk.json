@@ -1,0 +1,248 @@
+{
+  "after|ADP": {
+    "translation": "після"
+  },
+  "and|CCONJ": {
+    "translation": "і"
+  },
+  "apartment|NOUN": {
+    "translation": "квартира"
+  },
+  "apartment|PROPN": {
+    "translation": "Квартира"
+  },
+  "a|DET": {
+    "translation": "один"
+  },
+  "because|SCONJ": {
+    "translation": "тому що"
+  },
+  "bedroom|NOUN": {
+    "translation": "спальня"
+  },
+  "bed|NOUN": {
+    "translation": "ліжко"
+  },
+  "before|ADP": {
+    "translation": "до"
+  },
+  "be|AUX": {
+    "translation": "бути"
+  },
+  "be|VERB": {
+    "translation": "бути"
+  },
+  "book|NOUN": {
+    "translation": "книга"
+  },
+  "but|CCONJ": {
+    "translation": "але"
+  },
+  "buy|VERB": {
+    "translation": "купувати"
+  },
+  "chair|NOUN": {
+    "translation": "стілець"
+  },
+  "city|NOUN": {
+    "translation": "місто"
+  },
+  "clean|ADJ": {
+    "translation": "чистий"
+  },
+  "clothe|NOUN": {
+    "translation": "одяг"
+  },
+  "comfortable|ADJ": {
+    "translation": "зручний"
+  },
+  "drink|VERB": {
+    "translation": "пити"
+  },
+  "evening|NOUN": {
+    "translation": "вечір"
+  },
+  "everything|PRON": {
+    "translation": "усе"
+  },
+  "feel|VERB": {
+    "translation": "відчувати"
+  },
+  "for|ADP": {
+    "translation": "для"
+  },
+  "friend|NOUN": {
+    "translation": "друг"
+  },
+  "furniture|NOUN": {
+    "translation": "меблі"
+  },
+  "go|VERB": {
+    "translation": "йти"
+  },
+  "happy|ADJ": {
+    "translation": "щасливий"
+  },
+  "he|PRON": {
+    "translation": "він"
+  },
+  "his|PRON": {
+    "translation": "його"
+  },
+  "home|NOUN": {
+    "translation": "дім"
+  },
+  "into|ADP": {
+    "translation": "всередину"
+  },
+  "in|ADP": {
+    "translation": "у"
+  },
+  "it|PRON": {
+    "translation": "це"
+  },
+  "i|PRON": {
+    "translation": "я"
+  },
+  "kitchen|NOUN": {
+    "translation": "кухня"
+  },
+  "lamp|NOUN": {
+    "translation": "лампа"
+  },
+  "like|ADP": {
+    "translation": "подобатися"
+  },
+  "like|VERB": {
+    "translation": "подобатися"
+  },
+  "long|ADJ": {
+    "translation": "довгий"
+  },
+  "make|VERB": {
+    "translation": "робити"
+  },
+  "mia|PROPN": {
+    "translation": "Мія"
+  },
+  "move|VERB": {
+    "translation": "переїжджати"
+  },
+  "near|ADP": {
+    "translation": "біля"
+  },
+  "new|ADJ": {
+    "translation": "новий"
+  },
+  "new|PROPN": {
+    "translation": "Новий"
+  },
+  "nice|ADJ": {
+    "translation": "приємний"
+  },
+  "now|ADV": {
+    "translation": "зараз"
+  },
+  "oliver|PROPN": {
+    "translation": "Олівер"
+  },
+  "on|ADP": {
+    "translation": "на"
+  },
+  "put|VERB": {
+    "translation": "класти"
+  },
+  "quiet|ADJ": {
+    "translation": "тихий"
+  },
+  "read|VERB": {
+    "translation": "читати"
+  },
+  "really|ADV": {
+    "translation": "справді"
+  },
+  "room|NOUN": {
+    "translation": "кімната"
+  },
+  "say|VERB": {
+    "translation": "казати"
+  },
+  "shelf|NOUN": {
+    "translation": "полиця"
+  },
+  "she|PRON": {
+    "translation": "вона"
+  },
+  "shop|NOUN": {
+    "translation": "магазин"
+  },
+  "simple|ADJ": {
+    "translation": "простий"
+  },
+  "sit|VERB": {
+    "translation": "сидіти"
+  },
+  "sleep|NOUN": {
+    "translation": "сон"
+  },
+  "small|ADJ": {
+    "translation": "малий"
+  },
+  "smile|VERB": {
+    "translation": "усміхатися"
+  },
+  "sofa|NOUN": {
+    "translation": "диван"
+  },
+  "table|NOUN": {
+    "translation": "стіл"
+  },
+  "talk|VERB": {
+    "translation": "говорити"
+  },
+  "tea|NOUN": {
+    "translation": "чай"
+  },
+  "there|PRON": {
+    "translation": "там"
+  },
+  "they|PRON": {
+    "translation": "вони"
+  },
+  "the|DET": {
+    "translation": "цей"
+  },
+  "time|NOUN": {
+    "translation": "час"
+  },
+  "to|ADP": {
+    "translation": "до"
+  },
+  "two|NUM": {
+    "translation": "два"
+  },
+  "visit|VERB": {
+    "translation": "відвідувати"
+  },
+  "wall|NOUN": {
+    "translation": "стіна"
+  },
+  "wardrobe|NOUN": {
+    "translation": "шафа"
+  },
+  "warm|ADJ": {
+    "translation": "теплий"
+  },
+  "window|NOUN": {
+    "translation": "вікно"
+  },
+  "work|NOUN": {
+    "translation": "робота"
+  },
+  "yellow|ADJ": {
+    "translation": "жовтий"
+  },
+  "your|PRON": {
+    "translation": "твій"
+  }
+}

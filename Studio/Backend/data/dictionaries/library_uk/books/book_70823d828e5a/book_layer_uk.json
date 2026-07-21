@@ -1,0 +1,2843 @@
+{
+  "version": 1,
+  "book_id": "book_70823d828e5a",
+  "title": "First Day",
+  "source_lang": "en",
+  "target_lang": "uk",
+  "parallel": [
+    {
+      "source": "First Day",
+      "translation": "Перший день"
+    },
+    {
+      "source": "Daniel is eighteen years old.",
+      "translation": "Даніелю вісімнадцять років."
+    },
+    {
+      "source": "He is from a small city called Westbridge.",
+      "translation": "Він з маленького містечка під назвою Вестбрідж."
+    },
+    {
+      "source": "Today is his first day at a new language school.",
+      "translation": "Сьогодні його перший день у новій мовній школі."
+    },
+    {
+      "source": "Daniel walks into Room twelve.",
+      "translation": "Даніель заходить до дванадцятої кімнати."
+    },
+    {
+      "source": "A teacher stands near the door.",
+      "translation": "Біля дверей стоїть учитель."
+    },
+    {
+      "source": "Hello.",
+      "translation": "Привіт."
+    },
+    {
+      "source": "I am Ms Green,\" she says.",
+      "translation": "Я пані Грін, — каже вона."
+    },
+    {
+      "source": "What is your name?",
+      "translation": "Як тебе звати?"
+    },
+    {
+      "source": "My name is Daniel Ortiz,\" he answers.",
+      "translation": "Мене звати Даніель Ортіс, відповідає він."
+    },
+    {
+      "source": "And what is your age?",
+      "translation": "А скільки тобі років?"
+    },
+    {
+      "source": "I am eighteen.",
+      "translation": "Мені вісімнадцять."
+    },
+    {
+      "source": "The teacher gives him a name tag.",
+      "translation": "Вчитель дає йому бейдж з іменем."
+    },
+    {
+      "source": "Daniel writes his first name and last name on it.",
+      "translation": "Даніель пише на ньому своє ім'я та прізвище."
+    },
+    {
+      "source": "Then he sits next to a girl.",
+      "translation": "Потім він сідає поруч із дівчиною."
+    },
+    {
+      "source": "Hi, I am Kate,\" the girl says.",
+      "translation": "Привіт, я Кейт, каже дівчина."
+    },
+    {
+      "source": "I am from Canada.",
+      "translation": "Я з Канади."
+    },
+    {
+      "source": "Nice to meet you,\" Daniel says.",
+      "translation": "— Приємно познайомитися, — каже Даніель."
+    },
+    {
+      "source": "I am from Spain, but I live in Westbridge now.",
+      "translation": "Я з Іспанії, але зараз живу у Вестбриджі."
+    },
+    {
+      "source": "Kate is nineteen.",
+      "translation": "Кейт дев'ятнадцять."
+    },
+    {
+      "source": "She speaks English and Spanish.",
+      "translation": "Вона розмовляє англійською та іспанською мовами."
+    },
+    {
+      "source": "Daniel speaks Spanish and a little English.",
+      "translation": "Даніель розмовляє іспанською та трохи англійською."
+    },
+    {
+      "source": "At lunch, Kate introduces Daniel to two friends.",
+      "translation": "За обідом Кейт знайомить Деніела з двома друзями."
+    },
+    {
+      "source": "Daniel is nervous at first, but the students are kind.",
+      "translation": "Спочатку Даніель нервує, але студенти добрі."
+    },
+    {
+      "source": "At the end of the day, the school does not feel new anymore.",
+      "translation": "Зрештою, школа вже не здається новою."
+    }
+  ],
+  "words": [
+    {
+      "word": "a",
+      "lemma": "a",
+      "pos": "DET",
+      "translation": "один",
+      "translations": [
+        "один"
+      ],
+      "dictionary_translation": "один",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "age",
+      "lemma": "age",
+      "pos": "NOUN",
+      "translation": "вік",
+      "translations": [
+        "вік",
+        "років"
+      ],
+      "dictionary_translation": "вік",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "And",
+      "lemma": "and",
+      "pos": "CCONJ",
+      "translation": "а",
+      "translations": [
+        "а",
+        "і"
+      ],
+      "dictionary_translation": "а",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "answers",
+      "lemma": "answer",
+      "pos": "VERB",
+      "translation": "відповідати",
+      "translations": [
+        "відповідати",
+        "відповідає"
+      ],
+      "dictionary_translation": "відповідати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "anymore",
+      "lemma": "anymore",
+      "pos": "ADV",
+      "translation": "більше",
+      "translations": [
+        "більше"
+      ],
+      "dictionary_translation": "більше",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "at",
+      "lemma": "at",
+      "pos": "ADP",
+      "translation": "о",
+      "translations": [
+        "о",
+        "біля"
+      ],
+      "dictionary_translation": "о",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "is",
+      "lemma": "be",
+      "pos": "AUX",
+      "translation": "бути",
+      "translations": [
+        "бути"
+      ],
+      "dictionary_translation": "бути",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "but",
+      "lemma": "but",
+      "pos": "CCONJ",
+      "translation": "але",
+      "translations": [
+        "але"
+      ],
+      "dictionary_translation": "але",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "called",
+      "lemma": "call",
+      "pos": "VERB",
+      "translation": "зателефонувати",
+      "translations": [
+        "зателефонувати"
+      ],
+      "dictionary_translation": "зателефонувати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Canada",
+      "lemma": "canada",
+      "pos": "PROPN",
+      "translation": "Канада",
+      "translations": [
+        "Канада",
+        "Канади"
+      ],
+      "dictionary_translation": "Канада",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "city",
+      "lemma": "city",
+      "pos": "NOUN",
+      "translation": "місто",
+      "translations": [
+        "місто",
+        "міському",
+        "місті",
+        "міста"
+      ],
+      "dictionary_translation": "місто",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Daniel",
+      "lemma": "daniel",
+      "pos": "PROPN",
+      "translation": "Данило",
+      "translations": [
+        "Данило"
+      ],
+      "dictionary_translation": "Данило",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "day",
+      "lemma": "day",
+      "pos": "NOUN",
+      "translation": "день",
+      "translations": [
+        "день"
+      ],
+      "dictionary_translation": "день",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Day",
+      "lemma": "day",
+      "pos": "PROPN",
+      "translation": "день",
+      "translations": [
+        "день"
+      ],
+      "dictionary_translation": "день",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "does",
+      "lemma": "do",
+      "pos": "AUX",
+      "translation": "допоміжне дієслово",
+      "translations": [
+        "допоміжне дієслово",
+        "робити"
+      ]
+    },
+    {
+      "word": "door",
+      "lemma": "door",
+      "pos": "NOUN",
+      "translation": "двері",
+      "translations": [
+        "двері",
+        "дверей"
+      ],
+      "dictionary_translation": "двері",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "eighteen",
+      "lemma": "eighteen",
+      "pos": "NUM",
+      "translation": "вісімнадцять",
+      "translations": [
+        "вісімнадцять"
+      ],
+      "dictionary_translation": "вісімнадцять",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "end",
+      "lemma": "end",
+      "pos": "NOUN",
+      "translation": "кінець",
+      "translations": [
+        "кінець",
+        "кінці"
+      ],
+      "dictionary_translation": "кінець",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "English",
+      "lemma": "english",
+      "pos": "PROPN",
+      "translation": "англійська мова",
+      "translations": [
+        "англійська мова"
+      ]
+    },
+    {
+      "word": "feel",
+      "lemma": "feel",
+      "pos": "VERB",
+      "translation": "відчувати",
+      "translations": [
+        "відчувати",
+        "відчуває",
+        "Відчуваю"
+      ],
+      "dictionary_translation": "відчувати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "first",
+      "lemma": "first",
+      "pos": "ADJ",
+      "translation": "перший",
+      "translations": [
+        "перший"
+      ],
+      "dictionary_translation": "перший",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "first",
+      "lemma": "first",
+      "pos": "ADV",
+      "translation": "спочатку",
+      "translations": [
+        "спочатку"
+      ],
+      "dictionary_translation": "спочатку",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "First",
+      "lemma": "first",
+      "pos": "PROPN",
+      "translation": "перший",
+      "translations": [
+        "перший"
+      ],
+      "dictionary_translation": "перший",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "friends",
+      "lemma": "friend",
+      "pos": "NOUN",
+      "translation": "друг",
+      "translations": [
+        "друг",
+        "друзями"
+      ],
+      "dictionary_translation": "друг",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "from",
+      "lemma": "from",
+      "pos": "ADP",
+      "translation": "з",
+      "translations": [
+        "з"
+      ],
+      "dictionary_translation": "з",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "girl",
+      "lemma": "girl",
+      "pos": "NOUN",
+      "translation": "дівчинка",
+      "translations": [
+        "дівчинка",
+        "дівчина",
+        "дівчиною"
+      ],
+      "dictionary_translation": "дівчинка",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "gives",
+      "lemma": "give",
+      "pos": "VERB",
+      "translation": "давати",
+      "translations": [
+        "давати"
+      ],
+      "dictionary_translation": "давати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Green",
+      "lemma": "green",
+      "pos": "PROPN",
+      "translation": "зелений",
+      "translations": [
+        "зелений"
+      ],
+      "dictionary_translation": "зелений",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "He",
+      "lemma": "he",
+      "pos": "PRON",
+      "translation": "він",
+      "translations": [
+        "він"
+      ],
+      "dictionary_translation": "він",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Hello",
+      "lemma": "hello",
+      "pos": "INTJ",
+      "translation": "привіт",
+      "translations": [
+        "привіт"
+      ],
+      "dictionary_translation": "привіт",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Hi",
+      "lemma": "hi",
+      "pos": "INTJ",
+      "translation": "привіт",
+      "translations": [
+        "привіт"
+      ],
+      "dictionary_translation": "привіт",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "his",
+      "lemma": "his",
+      "pos": "PRON",
+      "translation": "його",
+      "translations": [
+        "його"
+      ],
+      "dictionary_translation": "його",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "I",
+      "lemma": "i",
+      "pos": "PRON",
+      "translation": "я",
+      "translations": [
+        "я"
+      ],
+      "dictionary_translation": "я",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "in",
+      "lemma": "in",
+      "pos": "ADP",
+      "translation": "в",
+      "translations": [
+        "в",
+        "у"
+      ],
+      "dictionary_translation": "в",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "into",
+      "lemma": "into",
+      "pos": "ADP",
+      "translation": "у",
+      "translations": [
+        "у",
+        "всередину"
+      ],
+      "dictionary_translation": "у",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "introduces",
+      "lemma": "introduce",
+      "pos": "VERB",
+      "translation": "познайомити",
+      "translations": [
+        "познайомити",
+        "познайомила"
+      ],
+      "dictionary_translation": "познайомити",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "it",
+      "lemma": "it",
+      "pos": "PRON",
+      "translation": "воно",
+      "translations": [
+        "воно",
+        "це"
+      ],
+      "dictionary_translation": "воно",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Kate",
+      "lemma": "kate",
+      "pos": "PROPN",
+      "translation": "Кейт",
+      "translations": [
+        "Кейт"
+      ],
+      "dictionary_translation": "Кейт",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "kind",
+      "lemma": "kind",
+      "pos": "ADJ",
+      "translation": "добрий",
+      "translations": [
+        "добрий",
+        "добрі"
+      ],
+      "dictionary_translation": "добрий",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "language",
+      "lemma": "language",
+      "pos": "NOUN",
+      "translation": "мова",
+      "translations": [
+        "мова",
+        "мовами",
+        "мовій"
+      ],
+      "dictionary_translation": "мова",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "last",
+      "lemma": "last",
+      "pos": "ADJ",
+      "translation": "останній",
+      "translations": [
+        "останній"
+      ],
+      "dictionary_translation": "останній",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "little",
+      "lemma": "little",
+      "pos": "ADJ",
+      "translation": "маленький",
+      "translations": [
+        "маленький"
+      ],
+      "dictionary_translation": "маленький",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "live",
+      "lemma": "live",
+      "pos": "VERB",
+      "translation": "жити",
+      "translations": [
+        "жити"
+      ],
+      "dictionary_translation": "жити",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "lunch",
+      "lemma": "lunch",
+      "pos": "NOUN",
+      "translation": "обід",
+      "translations": [
+        "обід",
+        "обіду"
+      ],
+      "dictionary_translation": "обід",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "meet",
+      "lemma": "meet",
+      "pos": "VERB",
+      "translation": "зустрічати",
+      "translations": [
+        "зустрічати",
+        "познайомитися"
+      ],
+      "dictionary_translation": "зустрічати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Ms",
+      "lemma": "ms",
+      "pos": "PROPN",
+      "translation": "мс",
+      "translations": [
+        "мс"
+      ],
+      "dictionary_translation": "мс",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "My",
+      "lemma": "my",
+      "pos": "PRON",
+      "translation": "мій",
+      "translations": [
+        "мій",
+        "Мене"
+      ],
+      "dictionary_translation": "мій",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "name",
+      "lemma": "name",
+      "pos": "NOUN",
+      "translation": "ім'я",
+      "translations": [
+        "ім'я",
+        "ім’я",
+        "звати"
+      ]
+    },
+    {
+      "word": "near",
+      "lemma": "near",
+      "pos": "ADP",
+      "translation": "біля",
+      "translations": [
+        "біля"
+      ],
+      "dictionary_translation": "біля",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "nervous",
+      "lemma": "nervous",
+      "pos": "ADJ",
+      "translation": "нервовий",
+      "translations": [
+        "нервовий",
+        "нервує"
+      ],
+      "dictionary_translation": "нервовий",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "new",
+      "lemma": "new",
+      "pos": "ADJ",
+      "translation": "новий",
+      "translations": [
+        "новий",
+        "нових",
+        "нова",
+        "нову",
+        "новій",
+        "новою"
+      ],
+      "dictionary_translation": "новий",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "next",
+      "lemma": "next",
+      "pos": "ADV",
+      "translation": "наступний",
+      "translations": [
+        "наступний",
+        "поруч"
+      ],
+      "dictionary_translation": "наступний",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Nice",
+      "lemma": "nice",
+      "pos": "ADJ",
+      "translation": "приємний",
+      "translations": [
+        "приємний",
+        "Приємно"
+      ],
+      "dictionary_translation": "приємний",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "nineteen",
+      "lemma": "nineteen",
+      "pos": "NUM",
+      "translation": "дев’ятнадцять",
+      "translations": [
+        "дев’ятнадцять"
+      ]
+    },
+    {
+      "word": "not",
+      "lemma": "not",
+      "pos": "PART",
+      "translation": "не",
+      "translations": [
+        "не"
+      ],
+      "dictionary_translation": "не",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "now",
+      "lemma": "now",
+      "pos": "ADV",
+      "translation": "зараз",
+      "translations": [
+        "зараз"
+      ],
+      "dictionary_translation": "зараз",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "of",
+      "lemma": "of",
+      "pos": "ADP",
+      "translation": "з",
+      "translations": [
+        "з"
+      ],
+      "dictionary_translation": "з",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "old",
+      "lemma": "old",
+      "pos": "ADJ",
+      "translation": "старий",
+      "translations": [
+        "старий",
+        "старший",
+        "старі"
+      ],
+      "dictionary_translation": "старий",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "on",
+      "lemma": "on",
+      "pos": "ADP",
+      "translation": "на",
+      "translations": [
+        "на"
+      ],
+      "dictionary_translation": "на",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Ortiz",
+      "lemma": "ortiz",
+      "pos": "PROPN",
+      "translation": "Ортіс",
+      "translations": [
+        "Ортіс"
+      ],
+      "dictionary_translation": "Ортіс",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Room",
+      "lemma": "room",
+      "pos": "PROPN",
+      "translation": "кімната",
+      "translations": [
+        "кімната",
+        "кімнати"
+      ],
+      "dictionary_translation": "кімната",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "says",
+      "lemma": "say",
+      "pos": "VERB",
+      "translation": "казати",
+      "translations": [
+        "казати"
+      ],
+      "dictionary_translation": "казати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "school",
+      "lemma": "school",
+      "pos": "NOUN",
+      "translation": "школа",
+      "translations": [
+        "школа",
+        "школі",
+        "школи"
+      ],
+      "dictionary_translation": "школа",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "she",
+      "lemma": "she",
+      "pos": "PRON",
+      "translation": "вона",
+      "translations": [
+        "вона",
+        "вони"
+      ],
+      "dictionary_translation": "вона",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "sits",
+      "lemma": "sit",
+      "pos": "VERB",
+      "translation": "сидіти",
+      "translations": [
+        "сидіти"
+      ],
+      "dictionary_translation": "сидіти",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "small",
+      "lemma": "small",
+      "pos": "ADJ",
+      "translation": "маленький",
+      "translations": [
+        "маленький",
+        "малий",
+        "маленькому",
+        "маленького",
+        "маленькі",
+        "маленька"
+      ],
+      "dictionary_translation": "маленький",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Spain",
+      "lemma": "spain",
+      "pos": "PROPN",
+      "translation": "Іспанія",
+      "translations": [
+        "Іспанія",
+        "Іспанії"
+      ],
+      "dictionary_translation": "Іспанія",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Spanish",
+      "lemma": "spanish",
+      "pos": "PROPN",
+      "translation": "іспанська мова",
+      "translations": [
+        "іспанська мова"
+      ]
+    },
+    {
+      "word": "speaks",
+      "lemma": "speak",
+      "pos": "VERB",
+      "translation": "говорити",
+      "translations": [
+        "говорити",
+        "говорите",
+        "говорить"
+      ],
+      "dictionary_translation": "говорити",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "stands",
+      "lemma": "stand",
+      "pos": "VERB",
+      "translation": "стояти",
+      "translations": [
+        "стояти"
+      ],
+      "dictionary_translation": "стояти",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "students",
+      "lemma": "student",
+      "pos": "NOUN",
+      "translation": "студент",
+      "translations": [
+        "студент",
+        "учень"
+      ],
+      "dictionary_translation": "студент",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "tag",
+      "lemma": "tag",
+      "pos": "NOUN",
+      "translation": "бірка",
+      "translations": [
+        "бірка"
+      ],
+      "dictionary_translation": "бірка",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "teacher",
+      "lemma": "teacher",
+      "pos": "NOUN",
+      "translation": "учитель",
+      "translations": [
+        "учитель"
+      ],
+      "dictionary_translation": "учитель",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "the",
+      "lemma": "the",
+      "pos": "DET",
+      "translation": "цей",
+      "translations": [
+        "цей"
+      ],
+      "dictionary_translation": "цей",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Then",
+      "lemma": "then",
+      "pos": "ADV",
+      "translation": "потім",
+      "translations": [
+        "потім"
+      ],
+      "dictionary_translation": "потім",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "ADP",
+      "translation": "до",
+      "translations": [
+        "до",
+        "на",
+        "із"
+      ],
+      "dictionary_translation": "до",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "to",
+      "lemma": "to",
+      "pos": "PART",
+      "translation": "частка інфінітива",
+      "translations": [
+        "частка інфінітива",
+        "щоб"
+      ]
+    },
+    {
+      "word": "Today",
+      "lemma": "today",
+      "pos": "NOUN",
+      "translation": "сьогодні",
+      "translations": [
+        "сьогодні"
+      ],
+      "dictionary_translation": "сьогодні",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "twelve",
+      "lemma": "twelve",
+      "pos": "NUM",
+      "translation": "дванадцять",
+      "translations": [
+        "дванадцять"
+      ],
+      "dictionary_translation": "дванадцять",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "two",
+      "lemma": "two",
+      "pos": "NUM",
+      "translation": "два",
+      "translations": [
+        "два"
+      ],
+      "dictionary_translation": "два",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "walks",
+      "lemma": "walk",
+      "pos": "VERB",
+      "translation": "ходити",
+      "translations": [
+        "ходити"
+      ],
+      "dictionary_translation": "ходити",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "Westbridge",
+      "lemma": "westbridge",
+      "pos": "PROPN",
+      "translation": "Вестбридж",
+      "translations": [
+        "Вестбридж",
+        "Вестбрідж",
+        "Вестбриджі"
+      ],
+      "dictionary_translation": "Вестбридж",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "What",
+      "lemma": "what",
+      "pos": "PRON",
+      "translation": "що",
+      "translations": [
+        "що",
+        "Як",
+        "скільки"
+      ],
+      "dictionary_translation": "що",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "writes",
+      "lemma": "write",
+      "pos": "VERB",
+      "translation": "писати",
+      "translations": [
+        "писати"
+      ],
+      "dictionary_translation": "писати",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "years",
+      "lemma": "year",
+      "pos": "NOUN",
+      "translation": "рік",
+      "translations": [
+        "рік",
+        "років"
+      ],
+      "dictionary_translation": "рік",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "you",
+      "lemma": "you",
+      "pos": "PRON",
+      "translation": "ти",
+      "translations": [
+        "ти"
+      ],
+      "dictionary_translation": "ти",
+      "dictionary_translation_source": "skill_fallback"
+    },
+    {
+      "word": "your",
+      "lemma": "your",
+      "pos": "PRON",
+      "translation": "твій",
+      "translations": [
+        "твій",
+        "тебе",
+        "тобі"
+      ],
+      "dictionary_translation": "твій",
+      "dictionary_translation_source": "skill_fallback"
+    }
+  ],
+  "blocks": [
+    {
+      "source": "years old",
+      "type": "grammar_construction",
+      "source_forms": [
+        "years old"
+      ],
+      "translation": "років",
+      "explanation": "Конструкція для повідомлення віку.",
+      "components": [
+        {
+          "source": "years",
+          "lemma": "year",
+          "pos": "NOUN",
+          "translation": "років"
+        },
+        {
+          "source": "old",
+          "lemma": "old",
+          "pos": "ADJ",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        }
+      ]
+    },
+    {
+      "source": "what is your name",
+      "type": "fixed_expression",
+      "source_forms": [
+        "What is your name"
+      ],
+      "translation": "Як тебе звати",
+      "explanation": "Усталене запитання про ім’я.",
+      "components": [
+        {
+          "source": "what",
+          "lemma": "what",
+          "pos": "PRON",
+          "translation": "Як"
+        },
+        {
+          "source": "is",
+          "lemma": "be",
+          "pos": "AUX",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        },
+        {
+          "source": "your",
+          "lemma": "your",
+          "pos": "PRON",
+          "translation": "тебе"
+        },
+        {
+          "source": "name",
+          "lemma": "name",
+          "pos": "NOUN",
+          "translation": "звати"
+        }
+      ]
+    },
+    {
+      "source": "my name is",
+      "type": "fixed_expression",
+      "source_forms": [
+        "My name is"
+      ],
+      "translation": "Мене звати",
+      "explanation": "Усталена конструкція для повідомлення свого імені.",
+      "components": [
+        {
+          "source": "my",
+          "lemma": "my",
+          "pos": "PRON",
+          "translation": "Мене"
+        },
+        {
+          "source": "name",
+          "lemma": "name",
+          "pos": "NOUN",
+          "translation": "звати"
+        },
+        {
+          "source": "is",
+          "lemma": "be",
+          "pos": "AUX",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        }
+      ]
+    },
+    {
+      "source": "what is your age",
+      "type": "fixed_expression",
+      "source_forms": [
+        "what is your age"
+      ],
+      "translation": "скільки тобі років",
+      "explanation": "Усталене запитання про вік.",
+      "components": [
+        {
+          "source": "what",
+          "lemma": "what",
+          "pos": "PRON",
+          "translation": "скільки"
+        },
+        {
+          "source": "is",
+          "lemma": "be",
+          "pos": "AUX",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        },
+        {
+          "source": "your",
+          "lemma": "your",
+          "pos": "PRON",
+          "translation": "тобі"
+        },
+        {
+          "source": "age",
+          "lemma": "age",
+          "pos": "NOUN",
+          "translation": "років"
+        }
+      ]
+    },
+    {
+      "source": "first name",
+      "type": "fixed_expression",
+      "source_forms": [
+        "first name"
+      ],
+      "translation": "ім’я",
+      "explanation": "Позначає особове ім’я людини.",
+      "components": [
+        {
+          "source": "first",
+          "lemma": "first",
+          "pos": "ADJ",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        },
+        {
+          "source": "name",
+          "lemma": "name",
+          "pos": "NOUN",
+          "translation": "ім’я"
+        }
+      ]
+    },
+    {
+      "source": "last name",
+      "type": "fixed_expression",
+      "source_forms": [
+        "last name"
+      ],
+      "translation": "прізвище",
+      "explanation": "Позначає прізвище людини.",
+      "components": [
+        {
+          "source": "last",
+          "lemma": "last",
+          "pos": "ADJ",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        },
+        {
+          "source": "name",
+          "lemma": "name",
+          "pos": "NOUN",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        }
+      ]
+    },
+    {
+      "source": "next to",
+      "type": "prepositional_group",
+      "source_forms": [
+        "next to"
+      ],
+      "translation": "поруч із",
+      "explanation": "Указує на розташування безпосередньо біля когось.",
+      "components": [
+        {
+          "source": "next",
+          "lemma": "next",
+          "pos": "ADV",
+          "translation": "поруч"
+        },
+        {
+          "source": "to",
+          "lemma": "to",
+          "pos": "ADP",
+          "translation": "із"
+        }
+      ]
+    },
+    {
+      "source": "nice to meet you",
+      "type": "fixed_expression",
+      "source_forms": [
+        "Nice to meet you"
+      ],
+      "translation": "Приємно познайомитися",
+      "explanation": "Ввічлива формула під час знайомства.",
+      "components": [
+        {
+          "source": "nice",
+          "lemma": "nice",
+          "pos": "ADJ",
+          "translation": "Приємно"
+        },
+        {
+          "source": "to",
+          "lemma": "to",
+          "pos": "PART",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        },
+        {
+          "source": "meet",
+          "lemma": "meet",
+          "pos": "VERB",
+          "translation": "познайомитися"
+        },
+        {
+          "source": "you",
+          "lemma": "you",
+          "pos": "PRON",
+          "translation": "",
+          "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+        }
+      ]
+    }
+  ],
+  "book_layer_audit": {
+    "version": 4,
+    "method": "codex_verified_occurrence_word_to_word",
+    "reviewed_segments": [
+      {
+        "source_text": "First Day",
+        "target_text": "Перший день",
+        "status": "covered",
+        "word_keys": [
+          "day|PROPN",
+          "first|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Daniel is eighteen years old.",
+        "target_text": "Даніелю вісімнадцять років.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "daniel|PROPN",
+          "eighteen|NUM",
+          "old|ADJ",
+          "year|NOUN"
+        ],
+        "block_sources": [
+          "years old"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "He is from a small city called Westbridge.",
+        "target_text": "Він з маленького містечка під назвою Вестбрідж.",
+        "status": "covered",
+        "word_keys": [
+          "a|DET",
+          "be|AUX",
+          "call|VERB",
+          "city|NOUN",
+          "from|ADP",
+          "he|PRON",
+          "small|ADJ",
+          "westbridge|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Today is his first day at a new language school.",
+        "target_text": "Сьогодні його перший день у новій мовній школі.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "a|DET",
+          "be|AUX",
+          "day|NOUN",
+          "first|ADJ",
+          "his|PRON",
+          "language|NOUN",
+          "new|ADJ",
+          "school|NOUN",
+          "today|NOUN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Daniel walks into Room twelve.",
+        "target_text": "Даніель заходить до дванадцятої кімнати.",
+        "status": "covered",
+        "word_keys": [
+          "daniel|PROPN",
+          "into|ADP",
+          "room|PROPN",
+          "twelve|NUM",
+          "walk|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "A teacher stands near the door.",
+        "target_text": "Біля дверей стоїть учитель.",
+        "status": "covered",
+        "word_keys": [
+          "a|DET",
+          "door|NOUN",
+          "near|ADP",
+          "stand|VERB",
+          "teacher|NOUN",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Hello.",
+        "target_text": "Привіт.",
+        "status": "covered",
+        "word_keys": [
+          "hello|INTJ"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am Ms Green,\" she says.",
+        "target_text": "Я пані Грін, — каже вона.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "green|PROPN",
+          "i|PRON",
+          "ms|PROPN",
+          "say|VERB",
+          "she|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "What is your name?",
+        "target_text": "Як тебе звати?",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "name|NOUN",
+          "what|PRON",
+          "your|PRON"
+        ],
+        "block_sources": [
+          "what is your name"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "My name is Daniel Ortiz,\" he answers.",
+        "target_text": "Мене звати Даніель Ортіс, відповідає він.",
+        "status": "covered",
+        "word_keys": [
+          "answer|VERB",
+          "be|AUX",
+          "daniel|PROPN",
+          "he|PRON",
+          "my|PRON",
+          "name|NOUN",
+          "ortiz|PROPN"
+        ],
+        "block_sources": [
+          "my name is"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "And what is your age?",
+        "target_text": "А скільки тобі років?",
+        "status": "covered",
+        "word_keys": [
+          "age|NOUN",
+          "and|CCONJ",
+          "be|AUX",
+          "what|PRON",
+          "your|PRON"
+        ],
+        "block_sources": [
+          "what is your age"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "I am eighteen.",
+        "target_text": "Мені вісімнадцять.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "eighteen|NUM",
+          "i|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "The teacher gives him a name tag.",
+        "target_text": "Вчитель дає йому бейдж з іменем.",
+        "status": "covered",
+        "word_keys": [
+          "a|DET",
+          "give|VERB",
+          "he|PRON",
+          "name|NOUN",
+          "tag|NOUN",
+          "teacher|NOUN",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Daniel writes his first name and last name on it.",
+        "target_text": "Даніель пише на ньому своє ім'я та прізвище.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "daniel|PROPN",
+          "first|ADJ",
+          "his|PRON",
+          "it|PRON",
+          "last|ADJ",
+          "name|NOUN",
+          "on|ADP",
+          "write|VERB"
+        ],
+        "block_sources": [
+          "first name",
+          "last name"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "Then he sits next to a girl.",
+        "target_text": "Потім він сідає поруч із дівчиною.",
+        "status": "covered",
+        "word_keys": [
+          "a|DET",
+          "girl|NOUN",
+          "he|PRON",
+          "next|ADV",
+          "sit|VERB",
+          "then|ADV",
+          "to|ADP"
+        ],
+        "block_sources": [
+          "next to"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "Hi, I am Kate,\" the girl says.",
+        "target_text": "Привіт, я Кейт, каже дівчина.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "girl|NOUN",
+          "hi|INTJ",
+          "i|PRON",
+          "kate|PROPN",
+          "say|VERB",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "I am from Canada.",
+        "target_text": "Я з Канади.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "canada|PROPN",
+          "from|ADP",
+          "i|PRON"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Nice to meet you,\" Daniel says.",
+        "target_text": "— Приємно познайомитися, — каже Даніель.",
+        "status": "covered",
+        "word_keys": [
+          "daniel|PROPN",
+          "meet|VERB",
+          "nice|ADJ",
+          "say|VERB",
+          "to|PART",
+          "you|PRON"
+        ],
+        "block_sources": [
+          "nice to meet you"
+        ],
+        "notes": ""
+      },
+      {
+        "source_text": "I am from Spain, but I live in Westbridge now.",
+        "target_text": "Я з Іспанії, але зараз живу у Вестбриджі.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "but|CCONJ",
+          "from|ADP",
+          "in|ADP",
+          "i|PRON",
+          "live|VERB",
+          "now|ADV",
+          "spain|PROPN",
+          "westbridge|PROPN"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Kate is nineteen.",
+        "target_text": "Кейт дев'ятнадцять.",
+        "status": "covered",
+        "word_keys": [
+          "be|AUX",
+          "kate|PROPN",
+          "nineteen|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "She speaks English and Spanish.",
+        "target_text": "Вона розмовляє англійською та іспанською мовами.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "english|PROPN",
+          "she|PRON",
+          "spanish|PROPN",
+          "speak|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Daniel speaks Spanish and a little English.",
+        "target_text": "Даніель розмовляє іспанською та трохи англійською.",
+        "status": "covered",
+        "word_keys": [
+          "and|CCONJ",
+          "a|DET",
+          "daniel|PROPN",
+          "english|PROPN",
+          "little|ADJ",
+          "spanish|PROPN",
+          "speak|VERB"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "At lunch, Kate introduces Daniel to two friends.",
+        "target_text": "За обідом Кейт знайомить Деніела з двома друзями.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "daniel|PROPN",
+          "friend|NOUN",
+          "introduce|VERB",
+          "kate|PROPN",
+          "lunch|NOUN",
+          "to|ADP",
+          "two|NUM"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "Daniel is nervous at first, but the students are kind.",
+        "target_text": "Спочатку Даніель нервує, але студенти добрі.",
+        "status": "covered",
+        "word_keys": [
+          "at|ADP",
+          "be|AUX",
+          "but|CCONJ",
+          "daniel|PROPN",
+          "first|ADV",
+          "kind|ADJ",
+          "nervous|ADJ",
+          "student|NOUN",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      },
+      {
+        "source_text": "At the end of the day, the school does not feel new anymore.",
+        "target_text": "Зрештою, школа вже не здається новою.",
+        "status": "covered",
+        "word_keys": [
+          "anymore|ADV",
+          "at|ADP",
+          "day|NOUN",
+          "do|AUX",
+          "end|NOUN",
+          "feel|VERB",
+          "new|ADJ",
+          "not|PART",
+          "of|ADP",
+          "school|NOUN",
+          "the|DET"
+        ],
+        "block_sources": [],
+        "notes": ""
+      }
+    ],
+    "second_pass": {
+      "status": "passed",
+      "corrections": [],
+      "unresolved": []
+    },
+    "third_pass": {
+      "status": "passed",
+      "word_decisions": [
+        {
+          "key": "a|DET",
+          "ownership": "mixed",
+          "translations": [
+            "один"
+          ],
+          "evidence": [
+            "He is from a small city called Westbridge. → Він з маленького містечка під назвою Вестбрідж.",
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі.",
+            "A teacher stands near the door. → Біля дверей стоїть учитель.",
+            "The teacher gives him a name tag. → Вчитель дає йому бейдж з іменем.",
+            "Then he sits next to a girl. → Потім він сідає поруч із дівчиною.",
+            "Daniel speaks Spanish and a little English. → Даніель розмовляє іспанською та трохи англійською."
+          ]
+        },
+        {
+          "key": "age|NOUN",
+          "ownership": "word",
+          "translations": [
+            "вік",
+            "років"
+          ],
+          "evidence": [
+            "And what is your age? → А скільки тобі років?"
+          ]
+        },
+        {
+          "key": "and|CCONJ",
+          "ownership": "mixed",
+          "translations": [
+            "а",
+            "і"
+          ],
+          "evidence": [
+            "And what is your age? → А скільки тобі років?",
+            "Daniel writes his first name and last name on it. → Даніель пише на ньому своє ім'я та прізвище.",
+            "She speaks English and Spanish. → Вона розмовляє англійською та іспанською мовами.",
+            "Daniel speaks Spanish and a little English. → Даніель розмовляє іспанською та трохи англійською."
+          ]
+        },
+        {
+          "key": "answer|VERB",
+          "ownership": "word",
+          "translations": [
+            "відповідати",
+            "відповідає"
+          ],
+          "evidence": [
+            "My name is Daniel Ortiz,\" he answers. → Мене звати Даніель Ортіс, відповідає він."
+          ]
+        },
+        {
+          "key": "anymore|ADV",
+          "ownership": "mixed",
+          "translations": [
+            "більше"
+          ],
+          "evidence": [
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "at|ADP",
+          "ownership": "mixed",
+          "translations": [
+            "о",
+            "біля"
+          ],
+          "evidence": [
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі.",
+            "At lunch, Kate introduces Daniel to two friends. → За обідом Кейт знайомить Деніела з двома друзями.",
+            "Daniel is nervous at first, but the students are kind. → Спочатку Даніель нервує, але студенти добрі.",
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "be|AUX",
+          "ownership": "mixed",
+          "translations": [
+            "бути"
+          ],
+          "evidence": [
+            "Daniel is eighteen years old. → Даніелю вісімнадцять років.",
+            "He is from a small city called Westbridge. → Він з маленького містечка під назвою Вестбрідж.",
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі.",
+            "I am Ms Green,\" she says. → Я пані Грін, — каже вона.",
+            "What is your name? → Як тебе звати?",
+            "My name is Daniel Ortiz,\" he answers. → Мене звати Даніель Ортіс, відповідає він.",
+            "And what is your age? → А скільки тобі років?",
+            "I am eighteen. → Мені вісімнадцять.",
+            "Hi, I am Kate,\" the girl says. → Привіт, я Кейт, каже дівчина.",
+            "I am from Canada. → Я з Канади.",
+            "I am from Spain, but I live in Westbridge now. → Я з Іспанії, але зараз живу у Вестбриджі.",
+            "Kate is nineteen. → Кейт дев'ятнадцять.",
+            "Daniel is nervous at first, but the students are kind. → Спочатку Даніель нервує, але студенти добрі."
+          ]
+        },
+        {
+          "key": "but|CCONJ",
+          "ownership": "word",
+          "translations": [
+            "але"
+          ],
+          "evidence": [
+            "I am from Spain, but I live in Westbridge now. → Я з Іспанії, але зараз живу у Вестбриджі.",
+            "Daniel is nervous at first, but the students are kind. → Спочатку Даніель нервує, але студенти добрі."
+          ]
+        },
+        {
+          "key": "call|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "зателефонувати"
+          ],
+          "evidence": [
+            "He is from a small city called Westbridge. → Він з маленького містечка під назвою Вестбрідж."
+          ]
+        },
+        {
+          "key": "canada|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Канада",
+            "Канади"
+          ],
+          "evidence": [
+            "I am from Canada. → Я з Канади."
+          ]
+        },
+        {
+          "key": "city|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "місто",
+            "міському",
+            "місті",
+            "міста"
+          ],
+          "evidence": [
+            "He is from a small city called Westbridge. → Він з маленького містечка під назвою Вестбрідж."
+          ]
+        },
+        {
+          "key": "daniel|PROPN",
+          "ownership": "mixed",
+          "translations": [
+            "Данило"
+          ],
+          "evidence": [
+            "Daniel is eighteen years old. → Даніелю вісімнадцять років.",
+            "Daniel walks into Room twelve. → Даніель заходить до дванадцятої кімнати.",
+            "My name is Daniel Ortiz,\" he answers. → Мене звати Даніель Ортіс, відповідає він.",
+            "Daniel writes his first name and last name on it. → Даніель пише на ньому своє ім'я та прізвище.",
+            "Nice to meet you,\" Daniel says. → — Приємно познайомитися, — каже Даніель.",
+            "Daniel speaks Spanish and a little English. → Даніель розмовляє іспанською та трохи англійською.",
+            "At lunch, Kate introduces Daniel to two friends. → За обідом Кейт знайомить Деніела з двома друзями.",
+            "Daniel is nervous at first, but the students are kind. → Спочатку Даніель нервує, але студенти добрі."
+          ]
+        },
+        {
+          "key": "day|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "день"
+          ],
+          "evidence": [
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі.",
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "day|PROPN",
+          "ownership": "word",
+          "translations": [
+            "день"
+          ],
+          "evidence": [
+            "First Day → Перший день"
+          ]
+        },
+        {
+          "key": "do|AUX",
+          "ownership": "word",
+          "translations": [
+            "допоміжне дієслово",
+            "робити"
+          ],
+          "evidence": [
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "door|NOUN",
+          "ownership": "word",
+          "translations": [
+            "двері",
+            "дверей"
+          ],
+          "evidence": [
+            "A teacher stands near the door. → Біля дверей стоїть учитель."
+          ]
+        },
+        {
+          "key": "eighteen|NUM",
+          "ownership": "word",
+          "translations": [
+            "вісімнадцять"
+          ],
+          "evidence": [
+            "Daniel is eighteen years old. → Даніелю вісімнадцять років.",
+            "I am eighteen. → Мені вісімнадцять."
+          ]
+        },
+        {
+          "key": "end|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "кінець",
+            "кінці"
+          ],
+          "evidence": [
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "english|PROPN",
+          "ownership": "word",
+          "translations": [
+            "англійська мова"
+          ],
+          "evidence": [
+            "She speaks English and Spanish. → Вона розмовляє англійською та іспанською мовами.",
+            "Daniel speaks Spanish and a little English. → Даніель розмовляє іспанською та трохи англійською."
+          ]
+        },
+        {
+          "key": "feel|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "відчувати",
+            "відчуває",
+            "Відчуваю"
+          ],
+          "evidence": [
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "first|ADJ",
+          "ownership": "word",
+          "translations": [
+            "перший"
+          ],
+          "evidence": [
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі.",
+            "Daniel writes his first name and last name on it. → Даніель пише на ньому своє ім'я та прізвище."
+          ]
+        },
+        {
+          "key": "first|ADV",
+          "ownership": "word",
+          "translations": [
+            "спочатку"
+          ],
+          "evidence": [
+            "Daniel is nervous at first, but the students are kind. → Спочатку Даніель нервує, але студенти добрі."
+          ]
+        },
+        {
+          "key": "first|PROPN",
+          "ownership": "word",
+          "translations": [
+            "перший"
+          ],
+          "evidence": [
+            "First Day → Перший день"
+          ]
+        },
+        {
+          "key": "friend|NOUN",
+          "ownership": "word",
+          "translations": [
+            "друг",
+            "друзями"
+          ],
+          "evidence": [
+            "At lunch, Kate introduces Daniel to two friends. → За обідом Кейт знайомить Деніела з двома друзями."
+          ]
+        },
+        {
+          "key": "from|ADP",
+          "ownership": "word",
+          "translations": [
+            "з"
+          ],
+          "evidence": [
+            "He is from a small city called Westbridge. → Він з маленького містечка під назвою Вестбрідж.",
+            "I am from Canada. → Я з Канади.",
+            "I am from Spain, but I live in Westbridge now. → Я з Іспанії, але зараз живу у Вестбриджі."
+          ]
+        },
+        {
+          "key": "girl|NOUN",
+          "ownership": "word",
+          "translations": [
+            "дівчинка",
+            "дівчина",
+            "дівчиною"
+          ],
+          "evidence": [
+            "Then he sits next to a girl. → Потім він сідає поруч із дівчиною.",
+            "Hi, I am Kate,\" the girl says. → Привіт, я Кейт, каже дівчина."
+          ]
+        },
+        {
+          "key": "give|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "давати"
+          ],
+          "evidence": [
+            "The teacher gives him a name tag. → Вчитель дає йому бейдж з іменем."
+          ]
+        },
+        {
+          "key": "green|PROPN",
+          "ownership": "mixed",
+          "translations": [
+            "зелений"
+          ],
+          "evidence": [
+            "I am Ms Green,\" she says. → Я пані Грін, — каже вона."
+          ]
+        },
+        {
+          "key": "he|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "він"
+          ],
+          "evidence": [
+            "He is from a small city called Westbridge. → Він з маленького містечка під назвою Вестбрідж.",
+            "My name is Daniel Ortiz,\" he answers. → Мене звати Даніель Ортіс, відповідає він.",
+            "The teacher gives him a name tag. → Вчитель дає йому бейдж з іменем.",
+            "Then he sits next to a girl. → Потім він сідає поруч із дівчиною."
+          ]
+        },
+        {
+          "key": "hello|INTJ",
+          "ownership": "word",
+          "translations": [
+            "привіт"
+          ],
+          "evidence": [
+            "Hello. → Привіт."
+          ]
+        },
+        {
+          "key": "hi|INTJ",
+          "ownership": "word",
+          "translations": [
+            "привіт"
+          ],
+          "evidence": [
+            "Hi, I am Kate,\" the girl says. → Привіт, я Кейт, каже дівчина."
+          ]
+        },
+        {
+          "key": "his|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "його"
+          ],
+          "evidence": [
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі.",
+            "Daniel writes his first name and last name on it. → Даніель пише на ньому своє ім'я та прізвище."
+          ]
+        },
+        {
+          "key": "i|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "я"
+          ],
+          "evidence": [
+            "I am Ms Green,\" she says. → Я пані Грін, — каже вона.",
+            "I am eighteen. → Мені вісімнадцять.",
+            "Hi, I am Kate,\" the girl says. → Привіт, я Кейт, каже дівчина.",
+            "I am from Canada. → Я з Канади.",
+            "I am from Spain, but I live in Westbridge now. → Я з Іспанії, але зараз живу у Вестбриджі."
+          ]
+        },
+        {
+          "key": "in|ADP",
+          "ownership": "word",
+          "translations": [
+            "в",
+            "у"
+          ],
+          "evidence": [
+            "I am from Spain, but I live in Westbridge now. → Я з Іспанії, але зараз живу у Вестбриджі."
+          ]
+        },
+        {
+          "key": "into|ADP",
+          "ownership": "mixed",
+          "translations": [
+            "у",
+            "всередину"
+          ],
+          "evidence": [
+            "Daniel walks into Room twelve. → Даніель заходить до дванадцятої кімнати."
+          ]
+        },
+        {
+          "key": "introduce|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "познайомити",
+            "познайомила"
+          ],
+          "evidence": [
+            "At lunch, Kate introduces Daniel to two friends. → За обідом Кейт знайомить Деніела з двома друзями."
+          ]
+        },
+        {
+          "key": "it|PRON",
+          "ownership": "mixed",
+          "translations": [
+            "воно",
+            "це"
+          ],
+          "evidence": [
+            "Daniel writes his first name and last name on it. → Даніель пише на ньому своє ім'я та прізвище."
+          ]
+        },
+        {
+          "key": "kate|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Кейт"
+          ],
+          "evidence": [
+            "Hi, I am Kate,\" the girl says. → Привіт, я Кейт, каже дівчина.",
+            "Kate is nineteen. → Кейт дев'ятнадцять.",
+            "At lunch, Kate introduces Daniel to two friends. → За обідом Кейт знайомить Деніела з двома друзями."
+          ]
+        },
+        {
+          "key": "kind|ADJ",
+          "ownership": "word",
+          "translations": [
+            "добрий",
+            "добрі"
+          ],
+          "evidence": [
+            "Daniel is nervous at first, but the students are kind. → Спочатку Даніель нервує, але студенти добрі."
+          ]
+        },
+        {
+          "key": "language|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "мова",
+            "мовами",
+            "мовій"
+          ],
+          "evidence": [
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі."
+          ]
+        },
+        {
+          "key": "last|ADJ",
+          "ownership": "word",
+          "translations": [
+            "останній"
+          ],
+          "evidence": [
+            "Daniel writes his first name and last name on it. → Даніель пише на ньому своє ім'я та прізвище."
+          ]
+        },
+        {
+          "key": "little|ADJ",
+          "ownership": "mixed",
+          "translations": [
+            "маленький"
+          ],
+          "evidence": [
+            "Daniel speaks Spanish and a little English. → Даніель розмовляє іспанською та трохи англійською."
+          ]
+        },
+        {
+          "key": "live|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "жити"
+          ],
+          "evidence": [
+            "I am from Spain, but I live in Westbridge now. → Я з Іспанії, але зараз живу у Вестбриджі."
+          ]
+        },
+        {
+          "key": "lunch|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "обід",
+            "обіду"
+          ],
+          "evidence": [
+            "At lunch, Kate introduces Daniel to two friends. → За обідом Кейт знайомить Деніела з двома друзями."
+          ]
+        },
+        {
+          "key": "meet|VERB",
+          "ownership": "word",
+          "translations": [
+            "зустрічати",
+            "познайомитися"
+          ],
+          "evidence": [
+            "Nice to meet you,\" Daniel says. → — Приємно познайомитися, — каже Даніель."
+          ]
+        },
+        {
+          "key": "ms|PROPN",
+          "ownership": "mixed",
+          "translations": [
+            "мс"
+          ],
+          "evidence": [
+            "I am Ms Green,\" she says. → Я пані Грін, — каже вона."
+          ]
+        },
+        {
+          "key": "my|PRON",
+          "ownership": "word",
+          "translations": [
+            "мій",
+            "Мене"
+          ],
+          "evidence": [
+            "My name is Daniel Ortiz,\" he answers. → Мене звати Даніель Ортіс, відповідає він."
+          ]
+        },
+        {
+          "key": "name|NOUN",
+          "ownership": "word",
+          "translations": [
+            "ім'я",
+            "ім’я",
+            "звати"
+          ],
+          "evidence": [
+            "What is your name? → Як тебе звати?",
+            "My name is Daniel Ortiz,\" he answers. → Мене звати Даніель Ортіс, відповідає він.",
+            "The teacher gives him a name tag. → Вчитель дає йому бейдж з іменем.",
+            "Daniel writes his first name and last name on it. → Даніель пише на ньому своє ім'я та прізвище."
+          ]
+        },
+        {
+          "key": "near|ADP",
+          "ownership": "word",
+          "translations": [
+            "біля"
+          ],
+          "evidence": [
+            "A teacher stands near the door. → Біля дверей стоїть учитель."
+          ]
+        },
+        {
+          "key": "nervous|ADJ",
+          "ownership": "word",
+          "translations": [
+            "нервовий",
+            "нервує"
+          ],
+          "evidence": [
+            "Daniel is nervous at first, but the students are kind. → Спочатку Даніель нервує, але студенти добрі."
+          ]
+        },
+        {
+          "key": "new|ADJ",
+          "ownership": "word",
+          "translations": [
+            "новий",
+            "нових",
+            "нова",
+            "нову",
+            "новій",
+            "новою"
+          ],
+          "evidence": [
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі.",
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "next|ADV",
+          "ownership": "word",
+          "translations": [
+            "наступний",
+            "поруч"
+          ],
+          "evidence": [
+            "Then he sits next to a girl. → Потім він сідає поруч із дівчиною."
+          ]
+        },
+        {
+          "key": "nice|ADJ",
+          "ownership": "word",
+          "translations": [
+            "приємний",
+            "Приємно"
+          ],
+          "evidence": [
+            "Nice to meet you,\" Daniel says. → — Приємно познайомитися, — каже Даніель."
+          ]
+        },
+        {
+          "key": "nineteen|NUM",
+          "ownership": "word",
+          "translations": [
+            "дев’ятнадцять"
+          ],
+          "evidence": [
+            "Kate is nineteen. → Кейт дев'ятнадцять."
+          ]
+        },
+        {
+          "key": "not|PART",
+          "ownership": "word",
+          "translations": [
+            "не"
+          ],
+          "evidence": [
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "now|ADV",
+          "ownership": "word",
+          "translations": [
+            "зараз"
+          ],
+          "evidence": [
+            "I am from Spain, but I live in Westbridge now. → Я з Іспанії, але зараз живу у Вестбриджі."
+          ]
+        },
+        {
+          "key": "of|ADP",
+          "ownership": "mixed",
+          "translations": [
+            "з"
+          ],
+          "evidence": [
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "old|ADJ",
+          "ownership": "word",
+          "translations": [
+            "старий",
+            "старший",
+            "старі"
+          ],
+          "evidence": [
+            "Daniel is eighteen years old. → Даніелю вісімнадцять років."
+          ]
+        },
+        {
+          "key": "on|ADP",
+          "ownership": "word",
+          "translations": [
+            "на"
+          ],
+          "evidence": [
+            "Daniel writes his first name and last name on it. → Даніель пише на ньому своє ім'я та прізвище."
+          ]
+        },
+        {
+          "key": "ortiz|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Ортіс"
+          ],
+          "evidence": [
+            "My name is Daniel Ortiz,\" he answers. → Мене звати Даніель Ортіс, відповідає він."
+          ]
+        },
+        {
+          "key": "room|PROPN",
+          "ownership": "word",
+          "translations": [
+            "кімната",
+            "кімнати"
+          ],
+          "evidence": [
+            "Daniel walks into Room twelve. → Даніель заходить до дванадцятої кімнати."
+          ]
+        },
+        {
+          "key": "say|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "казати"
+          ],
+          "evidence": [
+            "I am Ms Green,\" she says. → Я пані Грін, — каже вона.",
+            "Hi, I am Kate,\" the girl says. → Привіт, я Кейт, каже дівчина.",
+            "Nice to meet you,\" Daniel says. → — Приємно познайомитися, — каже Даніель."
+          ]
+        },
+        {
+          "key": "school|NOUN",
+          "ownership": "word",
+          "translations": [
+            "школа",
+            "школі",
+            "школи"
+          ],
+          "evidence": [
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі.",
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "she|PRON",
+          "ownership": "word",
+          "translations": [
+            "вона",
+            "вони"
+          ],
+          "evidence": [
+            "I am Ms Green,\" she says. → Я пані Грін, — каже вона.",
+            "She speaks English and Spanish. → Вона розмовляє англійською та іспанською мовами."
+          ]
+        },
+        {
+          "key": "sit|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "сидіти"
+          ],
+          "evidence": [
+            "Then he sits next to a girl. → Потім він сідає поруч із дівчиною."
+          ]
+        },
+        {
+          "key": "small|ADJ",
+          "ownership": "word",
+          "translations": [
+            "маленький",
+            "малий",
+            "маленькому",
+            "маленького",
+            "маленькі",
+            "маленька"
+          ],
+          "evidence": [
+            "He is from a small city called Westbridge. → Він з маленького містечка під назвою Вестбрідж."
+          ]
+        },
+        {
+          "key": "spain|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Іспанія",
+            "Іспанії"
+          ],
+          "evidence": [
+            "I am from Spain, but I live in Westbridge now. → Я з Іспанії, але зараз живу у Вестбриджі."
+          ]
+        },
+        {
+          "key": "spanish|PROPN",
+          "ownership": "word",
+          "translations": [
+            "іспанська мова"
+          ],
+          "evidence": [
+            "She speaks English and Spanish. → Вона розмовляє англійською та іспанською мовами.",
+            "Daniel speaks Spanish and a little English. → Даніель розмовляє іспанською та трохи англійською."
+          ]
+        },
+        {
+          "key": "speak|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "говорити",
+            "говорите",
+            "говорить"
+          ],
+          "evidence": [
+            "She speaks English and Spanish. → Вона розмовляє англійською та іспанською мовами.",
+            "Daniel speaks Spanish and a little English. → Даніель розмовляє іспанською та трохи англійською."
+          ]
+        },
+        {
+          "key": "stand|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "стояти"
+          ],
+          "evidence": [
+            "A teacher stands near the door. → Біля дверей стоїть учитель."
+          ]
+        },
+        {
+          "key": "student|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "студент",
+            "учень"
+          ],
+          "evidence": [
+            "Daniel is nervous at first, but the students are kind. → Спочатку Даніель нервує, але студенти добрі."
+          ]
+        },
+        {
+          "key": "tag|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "бірка"
+          ],
+          "evidence": [
+            "The teacher gives him a name tag. → Вчитель дає йому бейдж з іменем."
+          ]
+        },
+        {
+          "key": "teacher|NOUN",
+          "ownership": "mixed",
+          "translations": [
+            "учитель"
+          ],
+          "evidence": [
+            "A teacher stands near the door. → Біля дверей стоїть учитель.",
+            "The teacher gives him a name tag. → Вчитель дає йому бейдж з іменем."
+          ]
+        },
+        {
+          "key": "the|DET",
+          "ownership": "mixed",
+          "translations": [
+            "цей"
+          ],
+          "evidence": [
+            "A teacher stands near the door. → Біля дверей стоїть учитель.",
+            "The teacher gives him a name tag. → Вчитель дає йому бейдж з іменем.",
+            "Hi, I am Kate,\" the girl says. → Привіт, я Кейт, каже дівчина.",
+            "Daniel is nervous at first, but the students are kind. → Спочатку Даніель нервує, але студенти добрі.",
+            "At the end of the day, the school does not feel new anymore. → Зрештою, школа вже не здається новою."
+          ]
+        },
+        {
+          "key": "then|ADV",
+          "ownership": "word",
+          "translations": [
+            "потім"
+          ],
+          "evidence": [
+            "Then he sits next to a girl. → Потім він сідає поруч із дівчиною."
+          ]
+        },
+        {
+          "key": "to|ADP",
+          "ownership": "mixed",
+          "translations": [
+            "до",
+            "на",
+            "із"
+          ],
+          "evidence": [
+            "Then he sits next to a girl. → Потім він сідає поруч із дівчиною.",
+            "At lunch, Kate introduces Daniel to two friends. → За обідом Кейт знайомить Деніела з двома друзями."
+          ]
+        },
+        {
+          "key": "to|PART",
+          "ownership": "word",
+          "translations": [
+            "частка інфінітива",
+            "щоб"
+          ],
+          "evidence": [
+            "Nice to meet you,\" Daniel says. → — Приємно познайомитися, — каже Даніель."
+          ]
+        },
+        {
+          "key": "today|NOUN",
+          "ownership": "word",
+          "translations": [
+            "сьогодні"
+          ],
+          "evidence": [
+            "Today is his first day at a new language school. → Сьогодні його перший день у новій мовній школі."
+          ]
+        },
+        {
+          "key": "twelve|NUM",
+          "ownership": "mixed",
+          "translations": [
+            "дванадцять"
+          ],
+          "evidence": [
+            "Daniel walks into Room twelve. → Даніель заходить до дванадцятої кімнати."
+          ]
+        },
+        {
+          "key": "two|NUM",
+          "ownership": "mixed",
+          "translations": [
+            "два"
+          ],
+          "evidence": [
+            "At lunch, Kate introduces Daniel to two friends. → За обідом Кейт знайомить Деніела з двома друзями."
+          ]
+        },
+        {
+          "key": "walk|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "ходити"
+          ],
+          "evidence": [
+            "Daniel walks into Room twelve. → Даніель заходить до дванадцятої кімнати."
+          ]
+        },
+        {
+          "key": "westbridge|PROPN",
+          "ownership": "word",
+          "translations": [
+            "Вестбридж",
+            "Вестбрідж",
+            "Вестбриджі"
+          ],
+          "evidence": [
+            "He is from a small city called Westbridge. → Він з маленького містечка під назвою Вестбрідж.",
+            "I am from Spain, but I live in Westbridge now. → Я з Іспанії, але зараз живу у Вестбриджі."
+          ]
+        },
+        {
+          "key": "what|PRON",
+          "ownership": "word",
+          "translations": [
+            "що",
+            "Як",
+            "скільки"
+          ],
+          "evidence": [
+            "What is your name? → Як тебе звати?",
+            "And what is your age? → А скільки тобі років?"
+          ]
+        },
+        {
+          "key": "write|VERB",
+          "ownership": "mixed",
+          "translations": [
+            "писати"
+          ],
+          "evidence": [
+            "Daniel writes his first name and last name on it. → Даніель пише на ньому своє ім'я та прізвище."
+          ]
+        },
+        {
+          "key": "year|NOUN",
+          "ownership": "word",
+          "translations": [
+            "рік",
+            "років"
+          ],
+          "evidence": [
+            "Daniel is eighteen years old. → Даніелю вісімнадцять років."
+          ]
+        },
+        {
+          "key": "you|PRON",
+          "ownership": "word",
+          "translations": [
+            "ти"
+          ],
+          "evidence": [
+            "Nice to meet you,\" Daniel says. → — Приємно познайомитися, — каже Даніель."
+          ]
+        },
+        {
+          "key": "your|PRON",
+          "ownership": "word",
+          "translations": [
+            "твій",
+            "тебе",
+            "тобі"
+          ],
+          "evidence": [
+            "What is your name? → Як тебе звати?",
+            "And what is your age? → А скільки тобі років?"
+          ]
+        }
+      ],
+      "corrections": [],
+      "unresolved": []
+    },
+    "fourth_pass": {
+      "status": "passed",
+      "block_decisions": [
+        {
+          "source": "years old",
+          "decision": "accepted",
+          "word_by_word_result": "років + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            1
+          ]
+        },
+        {
+          "source": "what is your name",
+          "decision": "accepted",
+          "word_by_word_result": "Як + ∅ + тебе + звати",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            8
+          ]
+        },
+        {
+          "source": "my name is",
+          "decision": "accepted",
+          "word_by_word_result": "Мене + звати + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            9
+          ]
+        },
+        {
+          "source": "what is your age",
+          "decision": "accepted",
+          "word_by_word_result": "скільки + ∅ + тобі + років",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            10
+          ]
+        },
+        {
+          "source": "first name",
+          "decision": "accepted",
+          "word_by_word_result": "∅ + ім’я",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            13
+          ]
+        },
+        {
+          "source": "last name",
+          "decision": "accepted",
+          "word_by_word_result": "∅ + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            13
+          ]
+        },
+        {
+          "source": "next to",
+          "decision": "accepted",
+          "word_by_word_result": "поруч + із",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            14
+          ]
+        },
+        {
+          "source": "nice to meet you",
+          "decision": "accepted",
+          "word_by_word_result": "Приємно + ∅ + познайомитися + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
+          "segment_indexes": [
+            17
+          ]
+        }
+      ],
+      "unresolved": []
+    },
+    "absorbed_word_keys": []
+  }
+}

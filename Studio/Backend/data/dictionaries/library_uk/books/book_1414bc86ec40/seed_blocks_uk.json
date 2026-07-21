@@ -1,0 +1,112 @@
+[
+  {
+    "source": "ask for",
+    "type": "phrasal_verb",
+    "source_forms": [
+      "asks for"
+    ],
+    "translation": "запитується",
+    "explanation": "Означає запит або вимогу надати інформацію.",
+    "components": [
+      {
+        "source": "ask",
+        "lemma": "ask",
+        "pos": "VERB",
+        "translation": "запитується"
+      },
+      {
+        "source": "for",
+        "lemma": "for",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "first name",
+    "type": "fixed_expression",
+    "source_forms": [
+      "first name"
+    ],
+    "translation": "ім’я",
+    "explanation": "Позначає особове ім’я людини.",
+    "components": [
+      {
+        "source": "first",
+        "lemma": "first",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "ім’я"
+      }
+    ]
+  },
+  {
+    "source": "last name",
+    "type": "fixed_expression",
+    "source_forms": [
+      "last name"
+    ],
+    "translation": "прізвище",
+    "explanation": "Позначає прізвище людини.",
+    "components": [
+      {
+        "source": "last",
+        "lemma": "last",
+        "pos": "ADJ",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "name",
+        "lemma": "name",
+        "pos": "NOUN",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  },
+  {
+    "source": "where are you from",
+    "type": "grammar_construction",
+    "source_forms": [
+      "Where are you from"
+    ],
+    "translation": "Звідки ви",
+    "explanation": "Запитання про місце походження людини.",
+    "components": [
+      {
+        "source": "where",
+        "lemma": "where",
+        "pos": "SCONJ",
+        "translation": "Звідки"
+      },
+      {
+        "source": "are",
+        "lemma": "be",
+        "pos": "AUX",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      },
+      {
+        "source": "you",
+        "lemma": "you",
+        "pos": "PRON",
+        "translation": "ви"
+      },
+      {
+        "source": "from",
+        "lemma": "from",
+        "pos": "ADP",
+        "translation": "",
+        "empty_reason": "значення поглинуте перевіреною українською конструкцією"
+      }
+    ]
+  }
+]

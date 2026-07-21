@@ -1,0 +1,515 @@
+{
+  "sara|PROPN": {
+    "translation": "Сара",
+    "translations": [
+      "Сара",
+      "Саре"
+    ]
+  },
+  "she|PRON": {
+    "translation": "она",
+    "translations": [
+      "она"
+    ]
+  },
+  "good|ADJ": {
+    "translation": "доброе",
+    "translations": [
+      "доброе"
+    ]
+  },
+  "i|PRON": {
+    "translation": "я",
+    "translations": [
+      "я",
+      "мне"
+    ]
+  },
+  "yes|INTJ": {
+    "translation": "да",
+    "translations": [
+      "да"
+    ]
+  },
+  "welcome|INTJ": {
+    "translation": "добро пожаловать",
+    "translations": [
+      "добро пожаловать"
+    ]
+  },
+  "wrong|PROPN": {
+    "translation": "неправильный",
+    "translations": [
+      "неправильный"
+    ]
+  },
+  "walk|VERB": {
+    "translation": "входит",
+    "translations": [
+      "входит"
+    ]
+  },
+  "morning|NOUN": {
+    "translation": "утро",
+    "translations": [
+      "утро"
+    ]
+  },
+  "look|VERB": {
+    "translation": "смотрит",
+    "translations": [
+      "смотрит"
+    ]
+  },
+  "teacher|NOUN": {
+    "translation": "учитель",
+    "translations": [
+      "учитель"
+    ]
+  },
+  "student|NOUN": {
+    "translation": "ученица",
+    "translations": [
+      "ученица",
+      "учеников",
+      "студент"
+    ]
+  },
+  "you|PRON": {
+    "translation": "вы",
+    "translations": [
+      "вы"
+    ]
+  },
+  "classroom|PROPN": {
+    "translation": "класс",
+    "translations": [
+      "класс"
+    ]
+  },
+  "into|ADP": {
+    "translation": "в",
+    "translations": [
+      "в"
+    ]
+  },
+  "he|PRON": {
+    "translation": "он",
+    "translations": [
+      "он"
+    ]
+  },
+  "sorry|ADJ": {
+    "translation": "жаль",
+    "translations": [
+      "жаль"
+    ]
+  },
+  "smile|VERB": {
+    "translation": "улыбается",
+    "translations": [
+      "улыбается"
+    ]
+  },
+  "show|VERB": {
+    "translation": "показывает",
+    "translations": [
+      "показывает"
+    ]
+  },
+  "please|INTJ": {
+    "translation": "пожалуйста",
+    "translations": [
+      "пожалуйста"
+    ]
+  },
+  "five|NUM": {
+    "translation": "пять",
+    "translations": [
+      "пять"
+    ]
+  },
+  "new|ADJ": {
+    "translation": "новая",
+    "translations": [
+      "новая"
+    ]
+  },
+  "room|PROPN": {
+    "translation": "комната",
+    "translations": [
+      "комната",
+      "комнате",
+      "комнату"
+    ]
+  },
+  "say|VERB": {
+    "translation": "говорит",
+    "translations": [
+      "говорит",
+      "написано"
+    ]
+  },
+  "her|PRON": {
+    "translation": "свою",
+    "translations": [
+      "свою",
+      "её"
+    ]
+  },
+  "room|NOUN": {
+    "translation": "комната",
+    "translations": [
+      "комната",
+      "комнате",
+      "комнату",
+      "комнат"
+    ]
+  },
+  "sit|VERB": {
+    "translation": "садится",
+    "translations": [
+      "садится",
+      "сядьте"
+    ]
+  },
+  "minute|NOUN": {
+    "translation": "минут",
+    "translations": [
+      "минут"
+    ]
+  },
+  "forty-one|NUM": {
+    "translation": "сорок один",
+    "translations": [
+      "сорок один"
+    ]
+  },
+  "card|NOUN": {
+    "translation": "карточку",
+    "translations": [
+      "карточку"
+    ]
+  },
+  "fourteen|NUM": {
+    "translation": "четырнадцать",
+    "translations": [
+      "четырнадцать"
+    ]
+  },
+  "english|ADJ": {
+    "translation": "английского языка",
+    "translations": [
+      "английского языка"
+    ]
+  },
+  "next|ADV": {
+    "translation": "рядом",
+    "translations": [
+      "рядом"
+    ]
+  },
+  "late|ADV": {
+    "translation": "опоздала",
+    "translations": [
+      "опоздала"
+    ]
+  },
+  "and|CCONJ": {
+    "translation": "и",
+    "translations": [
+      "и"
+    ]
+  },
+  "it|PRON": {
+    "translation": "там",
+    "translations": [
+      "там"
+    ]
+  },
+  "stair|NOUN": {
+    "translation": "лестницу",
+    "translations": [
+      "лестницу"
+    ]
+  },
+  "but|CCONJ": {
+    "translation": "но",
+    "translations": [
+      "но"
+    ]
+  },
+  "hill|PROPN": {
+    "translation": "Хилл",
+    "translations": [
+      "Хилл"
+    ]
+  },
+  "downstairs|ADJ": {
+    "translation": "внизу",
+    "translations": [
+      "внизу"
+    ]
+  },
+  "downstair|NOUN": {
+    "translation": "внизу",
+    "translations": [
+      "внизу"
+    ]
+  },
+  "ask|VERB": {
+    "translation": "спрашивает",
+    "translations": [
+      "спрашивает"
+    ]
+  },
+  "amir|PROPN": {
+    "translation": "Амиром",
+    "translations": [
+      "Амиром"
+    ]
+  },
+  "school|PROPN": {
+    "translation": "школы",
+    "translations": [
+      "школы"
+    ]
+  },
+  "math|NOUN": {
+    "translation": "математики",
+    "translations": [
+      "математики"
+    ]
+  },
+  "in|ADP": {
+    "translation": "в",
+    "translations": [
+      "в"
+    ]
+  },
+  "this|PRON": {
+    "translation": "это",
+    "translations": [
+      "это"
+    ]
+  },
+  "class|NOUN": {
+    "translation": "урок",
+    "translations": [
+      "урок",
+      "классе"
+    ]
+  },
+  "course|NOUN": {
+    "translation": "курс",
+    "translations": [
+      "курс"
+    ]
+  },
+  "find|VERB": {
+    "translation": "находит",
+    "translations": [
+      "находит"
+    ]
+  },
+  "now|ADV": {
+    "translation": "теперь",
+    "translations": [
+      "теперь"
+    ]
+  },
+  "wrong|ADJ": {
+    "translation": "не в той",
+    "translations": [
+      "не в той",
+      "той"
+    ]
+  },
+  "book|NOUN": {
+    "translation": "книги",
+    "translations": [
+      "книги"
+    ]
+  },
+  "right|ADJ": {
+    "translation": "нужный",
+    "translations": [
+      "нужный",
+      "нужном"
+    ]
+  },
+  "map|NOUN": {
+    "translation": "карты",
+    "translations": [
+      "карты"
+    ]
+  },
+  "first|ADJ": {
+    "translation": "первый",
+    "translations": [
+      "первый"
+    ]
+  },
+  "classroom|NOUN": {
+    "translation": "класс",
+    "translations": [
+      "класс"
+    ]
+  },
+  "floor|NOUN": {
+    "translation": "этаж",
+    "translations": [
+      "этаж",
+      "этаже"
+    ]
+  },
+  "on|ADP": {
+    "translation": "на",
+    "translations": [
+      "на"
+    ]
+  },
+  "twelve|NUM": {
+    "translation": "двенадцать",
+    "translations": [
+      "двенадцать"
+    ]
+  },
+  "fourth|ADJ": {
+    "translation": "четвёртом",
+    "translations": [
+      "четвёртом"
+    ]
+  },
+  "check|VERB": {
+    "translation": "проверяет",
+    "translations": [
+      "проверяет"
+    ]
+  },
+  "every|DET": {
+    "translation": "всех",
+    "translations": [
+      "всех"
+    ]
+  },
+  "number|NOUN": {
+    "translation": "номер",
+    "translations": [
+      "номер",
+      "номера",
+      "цифры"
+    ]
+  },
+  "carefully|ADV": {
+    "translation": "внимательно",
+    "translations": [
+      "внимательно"
+    ]
+  },
+  "man|NOUN": {
+    "translation": "мужчина",
+    "translations": [
+      "мужчина"
+    ]
+  },
+  "write|VERB": {
+    "translation": "пишет",
+    "translations": [
+      "пишет"
+    ]
+  },
+  "rest|NOUN": {
+    "translation": "конца",
+    "translations": [
+      "конца"
+    ]
+  },
+  "board|NOUN": {
+    "translation": "доске",
+    "translations": [
+      "доске"
+    ]
+  },
+  "day|NOUN": {
+    "translation": "дня",
+    "translations": [
+      "дня"
+    ]
+  },
+  "at|ADP": {
+    "translation": "на",
+    "translations": [
+      "на"
+    ]
+  },
+  "a|DET": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "meaning is absorbed by a verified block or grammar block",
+    "dictionary_translation": "один",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "be|AUX": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "meaning is absorbed by a verified block or grammar block",
+    "dictionary_translation": "быть",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "be|VERB": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "meaning is absorbed by a verified block or grammar block",
+    "dictionary_translation": "быть",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "down|ADP": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "meaning is absorbed by a verified block or grammar block",
+    "dictionary_translation": "вниз",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "for|ADP": {
+    "translation": "до",
+    "translations": [
+      "до"
+    ]
+  },
+  "of|ADP": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "meaning is absorbed by a verified block or grammar block",
+    "dictionary_translation": "из",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "there|PRON": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "meaning is absorbed by a verified block or grammar block",
+    "dictionary_translation": "там",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "the|DET": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "meaning is absorbed by a verified block or grammar block",
+    "dictionary_translation": "этот",
+    "dictionary_translation_source": "skill_fallback"
+  },
+  "to|ADP": {
+    "translation": "на",
+    "translations": [
+      "на",
+      "с"
+    ]
+  },
+  "upstairs|ADV": {
+    "translation": "",
+    "translations": [],
+    "empty_reason": "meaning is absorbed by a verified block or grammar block",
+    "dictionary_translation": "наверху",
+    "dictionary_translation_source": "skill_fallback"
+  }
+}

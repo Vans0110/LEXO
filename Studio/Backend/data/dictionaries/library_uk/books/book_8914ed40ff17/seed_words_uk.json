@@ -1,0 +1,248 @@
+{
+  "about|ADP": {
+    "translation": "про"
+  },
+  "afternoon|NOUN": {
+    "translation": "день"
+  },
+  "after|ADP": {
+    "translation": "після"
+  },
+  "and|CCONJ": {
+    "translation": "і"
+  },
+  "at|ADP": {
+    "translation": "біля"
+  },
+  "a|DET": {
+    "translation": "один"
+  },
+  "be|VERB": {
+    "translation": "бути"
+  },
+  "big|ADJ": {
+    "translation": "великий"
+  },
+  "birthday|NOUN": {
+    "translation": "день народження"
+  },
+  "bread|NOUN": {
+    "translation": "хліб"
+  },
+  "bring|VERB": {
+    "translation": "приносити"
+  },
+  "brother|NOUN": {
+    "translation": "брат"
+  },
+  "carefully|ADV": {
+    "translation": "уважно"
+  },
+  "chicken|NOUN": {
+    "translation": "курка"
+  },
+  "child|NOUN": {
+    "translation": "дитина"
+  },
+  "cook|VERB": {
+    "translation": "готувати"
+  },
+  "dinner|NOUN": {
+    "translation": "вечеря"
+  },
+  "dinner|PROPN": {
+    "translation": "Вечеря"
+  },
+  "during|ADP": {
+    "translation": "під час"
+  },
+  "emma|PROPN": {
+    "translation": "Емма"
+  },
+  "evening|NOUN": {
+    "translation": "вечір"
+  },
+  "everyone|PRON": {
+    "translation": "усі"
+  },
+  "every|DET": {
+    "translation": "кожний"
+  },
+  "family|NOUN": {
+    "translation": "сім’я"
+  },
+  "feel|VERB": {
+    "translation": "відчувати"
+  },
+  "food|NOUN": {
+    "translation": "їжа"
+  },
+  "funny|ADJ": {
+    "translation": "смішний"
+  },
+  "goodbye|NOUN": {
+    "translation": "прощання"
+  },
+  "good|ADJ": {
+    "translation": "добрий"
+  },
+  "go|VERB": {
+    "translation": "йти"
+  },
+  "grandfather|NOUN": {
+    "translation": "дідусь"
+  },
+  "grandma|PROPN": {
+    "translation": "бабуся"
+  },
+  "grandmother|NOUN": {
+    "translation": "бабуся"
+  },
+  "grandparent|NOUN": {
+    "translation": "дідусь і бабуся"
+  },
+  "happy|ADJ": {
+    "translation": "щасливий"
+  },
+  "have|VERB": {
+    "translation": "мати"
+  },
+  "help|VERB": {
+    "translation": "допомагати"
+  },
+  "her|PRON": {
+    "translation": "її"
+  },
+  "his|PRON": {
+    "translation": "його"
+  },
+  "holiday|NOUN": {
+    "translation": "свято"
+  },
+  "house|NOUN": {
+    "translation": "дім"
+  },
+  "hug|VERB": {
+    "translation": "обіймати"
+  },
+  "in|ADP": {
+    "translation": "у"
+  },
+  "job|NOUN": {
+    "translation": "робота"
+  },
+  "juice|NOUN": {
+    "translation": "сік"
+  },
+  "laugh|NOUN": {
+    "translation": "сміх"
+  },
+  "like|VERB": {
+    "translation": "подобатися"
+  },
+  "listen|VERB": {
+    "translation": "слухати"
+  },
+  "look|VERB": {
+    "translation": "дивитися"
+  },
+  "much|ADV": {
+    "translation": "багато"
+  },
+  "next|ADJ": {
+    "translation": "наступний"
+  },
+  "night|NOUN": {
+    "translation": "ніч"
+  },
+  "of|ADP": {
+    "translation": "з"
+  },
+  "old|ADJ": {
+    "translation": "старий"
+  },
+  "parent|NOUN": {
+    "translation": "батько"
+  },
+  "photo|NOUN": {
+    "translation": "фото"
+  },
+  "picture|NOUN": {
+    "translation": "картинка"
+  },
+  "rice|NOUN": {
+    "translation": "рис"
+  },
+  "say|VERB": {
+    "translation": "казати"
+  },
+  "see|VERB": {
+    "translation": "бачити"
+  },
+  "set|VERB": {
+    "translation": "накривати"
+  },
+  "she|PRON": {
+    "translation": "вона"
+  },
+  "small|ADJ": {
+    "translation": "малий"
+  },
+  "smell|VERB": {
+    "translation": "пахнути"
+  },
+  "story|NOUN": {
+    "translation": "історія"
+  },
+  "sunday|PROPN": {
+    "translation": "неділя"
+  },
+  "s|": {
+    "translation": "належність"
+  },
+  "table|NOUN": {
+    "translation": "стіл"
+  },
+  "talk|NOUN": {
+    "translation": "розмова"
+  },
+  "tell|VERB": {
+    "translation": "розповідати"
+  },
+  "there|PRON": {
+    "translation": "там"
+  },
+  "these|DET": {
+    "translation": "ці"
+  },
+  "the|DET": {
+    "translation": "цей"
+  },
+  "today|NOUN": {
+    "translation": "сьогодні"
+  },
+  "to|ADP": {
+    "translation": "до"
+  },
+  "vegetable|NOUN": {
+    "translation": "овоч"
+  },
+  "very|ADV": {
+    "translation": "дуже"
+  },
+  "visit|VERB": {
+    "translation": "відвідувати"
+  },
+  "warm|ADJ": {
+    "translation": "теплий"
+  },
+  "with|ADP": {
+    "translation": "з"
+  },
+  "young|ADJ": {
+    "translation": "молодий"
+  },
+  "you|PRON": {
+    "translation": "ти"
+  }
+}

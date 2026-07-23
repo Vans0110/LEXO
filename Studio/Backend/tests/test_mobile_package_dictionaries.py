@@ -103,7 +103,11 @@ class MobilePackageDictionaryManifestTests(unittest.TestCase):
     def test_package_includes_ru_and_uk_dictionary_manifests_for_ru_book(self) -> None:
         storage = LexoStorage.__new__(LexoStorage)
 
-        storage.get_paragraphs = lambda book_id: {"book_id": book_id, "paragraphs": []}
+        storage.get_paragraphs = lambda book_id, target_lang=None: {
+            "book_id": book_id,
+            "target_lang": target_lang,
+            "paragraphs": [],
+        }
         storage.get_book_status = lambda book_id: {
             "id": book_id,
             "title": "A Voice from Online",

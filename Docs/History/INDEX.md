@@ -4,6 +4,27 @@
 
 ## Записи
 
+### 2026-07-23
+- Alignment-группы получили общий detail sheet: полный перевод группы в заголовке и отдельные карточки всех слов; `wrong` показывает `не той`. Проверено тестом и на запущенном Android-эмуляторе.
+- Backend/Workbench/Mobile Reader получили сквозную поддержку книжных `alignment_groups[]`; ZIP `The Wrong Classroom` пересобран и опубликован в R2, удалённые размер/SHA-256 и содержимое RU/UK lexicon v4 проверены.
+- RU/UK Globals повторно очищены и собраны только из `The Wrong Classroom`; выбранная книга `fully_applied`, а первоначальная публикация была остановлена до добавления поддержки `alignment_groups[]`.
+- Восемь RU/UK книжных файлов `The Wrong Classroom` пересозданы и проверены с локальными alignment-группами: `wrong|ADJ` имеет только карточку `не той`, ложных `той/тому` нет, unresolved = 0; Globals и публикация не изменялись.
+- Для `group_only_word_ids[]` разрешён честный многословный карточный fallback без hardcode lemma; вне alignment-групп однословный контракт сохранён.
+- RU/UK book-audit получили schema/materializer/validator/test поддержку книжных `alignment_groups[]`; группы отделены от Blocks и Globals, публикация ждёт поддержки Backend/Reader.
+- Fail-closed прогон `The Wrong Classroom` после удаления восьми RU/UK книжных словарных файлов остановился на ложных `wrong → той/тому`; до реализации alignment-group Globals и публикация не запускались.
+- RU/UK book-audit получили дополнительное fail-closed правило локальных alignment-групп для перестроенных переводов без ложных word-to-word значений и без загрязнения Globals.
+- RU и UK Globals очищены и пересозданы только из `The Wrong Classroom`; RU/UK reader-lexicon, ZIP, CloudLibrary-индекс и R2 обновлены и проверены по SHA-256.
+- RU/UK book-audit разделили видимые anchored insertions и coverage-only restructures; восемь артефактов `The Wrong Classroom` пересозданы с нуля и прошли проверки.
+- UK book-audit полностью заменён минимальной языковой адаптацией актуального RU block-audit, UK Globals удалены, новый скилл проверен на `The Wrong Classroom`.
+- UK Globals повторно созданы только из `The Wrong Classroom`; ZIP этой книги и R2-индекс обновлены и проверены по SHA-256.
+- Три UK Global-словаря полностью удалены; книжные словари и опубликованные пакеты не изменялись.
+- UK book audit получил translation-first и двусторонний ownership-контракт; `The Wrong Classroom` повторно размечен с target coverage, три UK Globals пересобраны, ZIP опубликован и проверен в R2.
+- Файл: [2026-07-23.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-23.md)
+
+### 2026-07-22
+- Backend/Workbench переведены на единый канонический EN source-граф с языковыми segment translations; пять RU/UK книг главы 1 мигрированы на общие source-ID, исправлены UK occurrence-spans, пересобраны ZIP и добавлен блокирующий package contract.
+- Файл: [2026-07-22.md](/mnt/d/Programs/LEXO/Docs/History/2026-07-22.md)
+
 ### 2026-07-21
 - Обновлена область выгрузки проекта в GitHub: добавлены `Skills/`, `Studio/Backend/`, `Studio/Workbench/Books/`, `Scripts/` и корневые конфигурации; все MT/ML модели (`data/models/`), Kokoro TTS кэш (`data/tts/`) и Python venvs строго исключены из пуша.
 - Построен и зафиксирован полный карту-документ репозитория `REPOSITORY.md` с детальным деревом всех подсистем, сервисов, библиотек, Codex Skills и документации.

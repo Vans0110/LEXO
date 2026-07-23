@@ -8,6 +8,68 @@ from refresh_dictionary_artifacts import _refresh_language
 
 
 class RefreshDictionaryArtifactsTest(unittest.TestCase):
+    def test_preserves_alignment_groups_with_runtime_segment_id(self) -> None:
+        reader = {
+            "book_id": "book-test",
+            "paragraphs": [
+                {
+                    "words": [
+                        {
+                            "id": f"word-{index}",
+                            "segment_id": "segment-1",
+                            "order_index_in_segment": index,
+                            "text": surface,
+                            "lemma": surface.lower(),
+                            "pos": "ADP" if surface == "in" else "NOUN",
+                        }
+                        for index, surface in enumerate(
+                            ["in", "the", "wrong", "room"]
+                        )
+                    ],
+                    "segments_v2": [
+                        {
+                            "id": "segment-1",
+                            "source_text": "I am in the wrong room.",
+                            "target_text": "Я не в той комнате.",
+                        }
+                    ],
+                }
+            ],
+        }
+        verification = {
+            "entries": [],
+            "alignment_groups": [
+                {
+                    "unit_id": "alignment_group:0:wrong_room",
+                    "segment_index": 0,
+                    "source_word_ids": [
+                        "word-0",
+                        "word-1",
+                        "word-2",
+                        "word-3",
+                    ],
+                    "source_text": "in the wrong room",
+                    "target_start_index": 1,
+                    "target_end_index": 4,
+                    "target_text": "не в той комнате",
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            lexicon = _refresh_language(
+                Path(temp_dir),
+                lang="ru",
+                reader=reader,
+                words={},
+                blocks={},
+                verified_alignment=verification,
+            )
+        self.assertEqual(4, lexicon["version"])
+        self.assertEqual(
+            "segment-1",
+            lexicon["alignment_groups"][0]["segment_id"],
+        )
+
     def test_block_selects_contextual_variant_without_losing_dictionary_meaning(self) -> None:
         reader = {
             "book_id": "book-test",

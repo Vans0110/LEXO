@@ -1,5 +1,4 @@
-﻿from __future__ import annotations
-
+from __future__ import annotations
 import argparse
 import json
 import re
@@ -8,6 +7,7 @@ from pathlib import Path
 from typing import Any
 from validate_seed_consistency import normalized_block_map, normalized_word_map, block_components_cover_source
 from validate_verification_word_to_word import validate as validate_word_to_word
+from validate_alignment_groups import multiword_fallback_keys
 
 BLOCK_TYPES = {
     "phrasal_verb",
@@ -21,11 +21,12 @@ BLOCK_TYPES = {
 TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
 FUNCTION_POS = {"DET", "AUX", "ADP", "PART", "CCONJ", "SCONJ"}
 OWNERSHIP_TYPES = {"word", "absorbed", "mixed", "noncontextual"}
-
 def clean(value: object) -> str:
     return " ".join(str(value or "").split())
+
 def tokens(value: object) -> list[str]:
     return [match.group(0).casefold() for match in TOKEN_RE.finditer(str(value or ""))]
+
 def contains_sequence(text: object, span: object) -> bool:
     haystack = tokens(text)
     wanted = tokens(span)
@@ -34,13 +35,11 @@ def contains_sequence(text: object, span: object) -> bool:
         for index in range(len(haystack) - len(wanted) + 1)
     )
 
-
 def load(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("book layer must be a JSON object")
     return payload
-
 
 def corruption_paths(value: object, path: str = "$") -> list[str]:
     found: list[str] = []
@@ -54,9 +53,12 @@ def corruption_paths(value: object, path: str = "$") -> list[str]:
             found.extend(corruption_paths(item, f"{path}[{index}]"))
     return found
 
-
-def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
+def validate(
+    payload: dict[str, Any],
+    multiword_fallback_keys: set[str] | None = None,
+) -> tuple[list[str], dict[str, int]]:
     errors: list[str] = []
+    allowed_multiword_fallbacks = multiword_fallback_keys or set()
     for path in corruption_paths(payload):
         errors.append(f"encoding corruption at {path}")
     for field in ("book_id", "title"):
@@ -116,8 +118,10 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
                 f"{label}.dictionary_translation requires "
                 "dictionary_translation_source='skill_fallback'"
             )
-        if fallback and len(tokens(fallback)) != 1:
-            errors.append(f"{label}.dictionary_translation must be one word")
+        if fallback and len(tokens(fallback)) != 1 and key not in allowed_multiword_fallbacks:
+            errors.append(
+                f"{label}.multiword dictionary_translation requires a group-only occurrence"
+            )
         if fallback_source and not fallback:
             errors.append(f"{label} has fallback source without fallback value")
         if key in seen_word_keys:
@@ -353,8 +357,6 @@ def validate(payload: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
         "blocks": len(blocks),
         "reviewed": len(reviewed),
     }
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate a four-pass Ukrainian LEXO book layer")
     parser.add_argument("book_layer", type=Path)
@@ -362,7 +364,10 @@ def main() -> int:
     try:
         layer_path = args.book_layer.resolve()
         payload = load(layer_path)
-        errors, counts = validate(payload)
+        proof_path = layer_path.with_name("word_to_word_uk.json")
+        proof = load(proof_path) if proof_path.exists() else None
+        fallback_keys = multiword_fallback_keys(proof or {}, clean)
+        errors, counts = validate(payload, fallback_keys)
         seed_words_path = layer_path.with_name("seed_words_uk.json")
         seed_blocks_path = layer_path.with_name("seed_blocks_uk.json")
         if seed_words_path.exists():
@@ -373,11 +378,9 @@ def main() -> int:
             seed_blocks = json.loads(seed_blocks_path.read_text(encoding="utf-8"))
             if normalized_block_map(seed_blocks) != normalized_block_map(payload.get("blocks")):
                 errors.append("seed_blocks_uk.json disagrees with book_layer_uk.json blocks[]")
-        proof_path = layer_path.with_name("word_to_word_uk.json")
-        if not proof_path.exists():
+        if proof is None:
             errors.append("word_to_word_uk.json verification artifact is required")
         else:
-            proof = load(proof_path)
             proof_errors, proof_counts = validate_word_to_word(payload, proof)
             errors.extend(f"word_to_word: {error}" for error in proof_errors)
             counts.update({f"word_to_word_{key}": value for key, value in proof_counts.items()})
@@ -393,7 +396,5 @@ def main() -> int:
     print("OK: 0 errors")
     return 0
 
-
 if __name__ == "__main__":
     sys.exit(main())
-

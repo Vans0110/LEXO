@@ -8,6 +8,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
+from validate_alignment_groups import group_only_word_ids, validate_alignment_groups
+
 
 TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
 STATUSES = {
@@ -22,21 +24,17 @@ STATUSES = {
 COMPONENT_STATUSES = {"block_component", "grammar_component"}
 TARGET_COVERAGE_OWNERSHIPS = {"block", "insertion", "restructure"}
 
-
 def clean(value: object) -> str:
     return " ".join(str(value or "").split())
 
-
 def tokens(value: object) -> list[str]:
     return [match.group(0).casefold() for match in TOKEN_RE.finditer(str(value or ""))]
-
 
 def load_object(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError(f"expected JSON object: {path}")
     return payload
-
 
 def sequence_count(source: str, form: str) -> int:
     haystack = tokens(source)
@@ -47,7 +45,6 @@ def sequence_count(source: str, form: str) -> int:
         haystack[index : index + len(wanted)] == wanted
         for index in range(len(haystack) - len(wanted) + 1)
     )
-
 
 def validate(
     layer: dict[str, Any],
@@ -64,6 +61,10 @@ def validate(
     blocks = [
         item for item in proof.get("block_occurrences") or [] if isinstance(item, dict)
     ]
+    alignment_groups = [
+        item for item in proof.get("alignment_groups") or [] if isinstance(item, dict)
+    ]
+    group_only_ids = group_only_word_ids(alignment_groups, clean)
     target_coverage = [
         item for item in proof.get("target_coverage") or [] if isinstance(item, dict)
     ]
@@ -130,8 +131,10 @@ def validate(
                 )
             if isinstance(start, int) or isinstance(end, int):
                 errors.append(f"{label} dictionary fallback must not claim target span")
-            if len(tokens(fallback)) != 1:
-                errors.append(f"{label} dictionary fallback must be one word")
+            if len(tokens(fallback)) != 1 and word_id not in group_only_ids:
+                errors.append(
+                    f"{label} multiword dictionary fallback requires group_only_word_ids membership"
+                )
         if status in {"zero_correspondence", "source_translation_omission"} and contextual:
             errors.append(f"{label} {status} must not have contextual translation")
         if status in COMPONENT_STATUSES and (not owner or not tap):
@@ -148,7 +151,16 @@ def validate(
     for span, owners in token_owners.items():
         if len(owners) > 1:
             errors.append(f"independent target token {span} has owners {owners}")
-
+    group_errors, group_members_by_owner, group_unit_ids = validate_alignment_groups(
+        layer,
+        parallel,
+        alignment_groups,
+        entries_by_id,
+        token_owners,
+        clean,
+        tokens,
+    )
+    errors.extend(group_errors)
     coverage_counts: Counter[str] = Counter()
     for index, coverage in enumerate(target_coverage):
         label = f"target_coverage[{index}]"
@@ -194,7 +206,16 @@ def validate(
             errors.append(f"{label}.display_anchor_word_id must belong to source_word_ids")
         highlight_start = coverage.get("highlight_target_start_index")
         highlight_end = coverage.get("highlight_target_end_index")
+        if ownership == "insertion" and not anchor:
+            errors.append(f"{label} insertion requires an honest display anchor")
+        if ownership == "restructure" and anchor:
+            errors.append(f"{label} coverage-only restructure must not have a display anchor")
         if anchor:
+            anchor_entry = entries_by_id.get(anchor)
+            if anchor_entry is None or anchor_entry.get("status") != "independent_translation":
+                errors.append(f"{label} display anchor must be independently translated")
+            anchor_start = anchor_entry.get("target_start_index") if anchor_entry else None
+            anchor_end = anchor_entry.get("target_end_index") if anchor_entry else None
             if (
                 not isinstance(highlight_start, int)
                 or not isinstance(highlight_end, int)
@@ -204,6 +225,13 @@ def validate(
                 or highlight_end >= len(target_tokens)
             ):
                 errors.append(f"{label} has invalid display highlight span")
+            elif (
+                not isinstance(anchor_start, int)
+                or not isinstance(anchor_end, int)
+                or highlight_start > anchor_start
+                or highlight_end < anchor_end
+            ):
+                errors.append(f"{label} display highlight must contain the anchor target span")
         elif isinstance(highlight_start, int) or isinstance(highlight_end, int):
             errors.append(f"{label} display highlight requires an anchor")
         if not reason:
@@ -212,11 +240,22 @@ def validate(
             token_owners[(segment_index, target_index)].append(
                 f"target_coverage:{index}"
             )
-
     for span, owners in token_owners.items():
-        if len(owners) > 1:
-            errors.append(f"target token {span} has multiple owners {owners}")
-
+        group_owners = [owner for owner in owners if owner.startswith("alignment_group:")]
+        ordinary_owners = [owner for owner in owners if not owner.startswith("alignment_group:")]
+        if len(group_owners) > 1:
+            errors.append(f"target token {span} belongs to multiple alignment groups {group_owners}")
+        elif group_owners:
+            allowed_members = group_members_by_owner.get(group_owners[0], set())
+            invalid_owners = [
+                owner for owner in ordinary_owners if owner not in allowed_members
+            ]
+            if invalid_owners:
+                errors.append(
+                    f"target token {span} alignment group overlaps unrelated owners {invalid_owners}"
+                )
+        elif len(ordinary_owners) > 1:
+            errors.append(f"target token {span} has multiple owners {ordinary_owners}")
     for segment_index, pair in enumerate(parallel):
         for target_index, target_token in enumerate(tokens(pair.get("translation"))):
             if not token_owners.get((segment_index, target_index)):
@@ -224,7 +263,6 @@ def validate(
                     f"uncovered target token: segment={segment_index}, "
                     f"index={target_index}, token={target_token!r}"
                 )
-
     for segment_index, pair in enumerate(parallel):
         ordered = sorted(
             entries_by_segment.get(segment_index, []),
@@ -240,7 +278,6 @@ def validate(
                 f"segment {segment_index} occurrence tokens disagree: "
                 f"expected={expected}, actual={actual}"
             )
-
     blocks_by_source: dict[str, list[dict[str, Any]]] = defaultdict(list)
     seen_unit_ids: set[str] = set()
     for index, block in enumerate(blocks):
@@ -252,6 +289,8 @@ def validate(
         word_ids = block.get("word_ids")
         if not unit_id or unit_id in seen_unit_ids:
             errors.append(f"{label}.unit_id is missing or duplicated")
+        if unit_id in group_unit_ids:
+            errors.append(f"{label}.unit_id collides with an alignment group")
         seen_unit_ids.add(unit_id)
         if not tap_id or tap_id != unit_id:
             errors.append(f"{label}.tap_unit_id must equal unit_id")
@@ -321,6 +360,7 @@ def validate(
     return errors, {
         "parallel": len(parallel),
         "entries": len(entries),
+        "alignment_groups": len(alignment_groups),
         "block_occurrences": len(blocks),
         "target_coverage": len(target_coverage),
         "target_insertions": coverage_counts["insertion"],
@@ -330,7 +370,6 @@ def validate(
         "zero_correspondences": status_counts["zero_correspondence"],
         "source_translation_omissions": status_counts["source_translation_omission"],
     }
-
 
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -356,7 +395,6 @@ def main() -> int:
         return 1
     print("OK: 0 errors")
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

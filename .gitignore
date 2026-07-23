@@ -8,6 +8,7 @@ Studio/Backend/.venv_kokoro/
 Studio/Backend/data/models/
 Studio/Backend/data/tts/
 Studio/Backend/data/logs/
+Studio/Backend/data/migration_backups/
 *.bin
 *.safetensors
 *.pt

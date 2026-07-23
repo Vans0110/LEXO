@@ -10,6 +10,7 @@ import zipfile
 from pathlib import Path
 
 from engine.library_dictionary import LibraryDictionaryStore, library_dictionary_source
+from engine.storage import LexoStorage
 
 TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
 
@@ -145,6 +146,31 @@ def _segments(reader: dict) -> dict[str, dict]:
     return result
 
 
+def _verified_units_with_segment_ids(reader: dict, items: list) -> list[dict]:
+    ordered_segment_ids = [
+        str(segment.get("id") or "")
+        for paragraph in reader.get("paragraphs") or []
+        if isinstance(paragraph, dict)
+        for segment in paragraph.get("segments_v2") or []
+        if isinstance(segment, dict)
+        and str(segment.get("source_text") or "").strip().strip('"“”')
+        and str(segment.get("target_text") or "").strip()
+    ]
+    result = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        next_item = dict(item)
+        segment_index = next_item.get("segment_index")
+        if (
+            isinstance(segment_index, int)
+            and 0 <= segment_index < len(ordered_segment_ids)
+        ):
+            next_item["segment_id"] = ordered_segment_ids[segment_index]
+        result.append(next_item)
+    return result
+
+
 def _canonical_dictionary_key(value: object) -> str:
     lemma, separator, pos = str(value or "").strip().partition("|")
     if not separator:
@@ -212,6 +238,7 @@ def _refresh_language(
     blocks: dict,
     function_words: dict | None = None,
     absorbed_word_keys: set[str] | None = None,
+    verified_alignment: dict | None = None,
 ) -> dict:
     function_words = function_words or {}
     absorbed_word_keys = {
@@ -223,6 +250,24 @@ def _refresh_language(
     reader_words: list[dict] = []
     reader_keys: set[str] = set()
     segments = _segments(reader)
+    verified_by_word_id = {
+        str(item.get("word_id") or ""): item
+        for item in (verified_alignment or {}).get("entries") or []
+        if isinstance(item, dict) and str(item.get("word_id") or "")
+    }
+    alignment_groups = _verified_units_with_segment_ids(
+        reader,
+        (verified_alignment or {}).get("alignment_groups") or [],
+    )
+    target_coverage = _verified_units_with_segment_ids(
+        reader,
+        (verified_alignment or {}).get("target_coverage") or [],
+    )
+    coverage_by_anchor = {
+        str(item.get("display_anchor_word_id") or ""): item
+        for item in target_coverage
+        if str(item.get("display_anchor_word_id") or "")
+    }
     for paragraph in reader.get("paragraphs") or []:
         if not isinstance(paragraph, dict):
             continue
@@ -273,13 +318,22 @@ def _refresh_language(
             key = f"{lemma}|{pos}"
             record = {} if key in absorbed_word_keys else words.get(key) or {}
             translations = [str(value) for value in record.get("translations") or []]
-            selected, target_start, target_end = _select_translation(
-                translations,
-                target_text,
-                source_index=source_index,
-                source_count=len(ordered_words),
-                claimed_spans=claimed_spans,
-            )
+            verified = verified_by_word_id.get(str(word.get("id") or ""))
+            coverage = coverage_by_anchor.get(str(word.get("id") or ""))
+            if verified is None:
+                selected, target_start, target_end = _select_translation(
+                    translations,
+                    target_text,
+                    source_index=source_index,
+                    source_count=len(ordered_words),
+                    claimed_spans=claimed_spans,
+                )
+            else:
+                selected = str(verified.get("contextual_translation") or "")
+                raw_start = verified.get("target_start_index")
+                raw_end = verified.get("target_end_index")
+                target_start = int(raw_start) if isinstance(raw_start, int) else -1
+                target_end = int(raw_end) if isinstance(raw_end, int) else -1
             if target_start >= 0:
                 claimed_spans.update(range(target_start, target_end + 1))
             word_entries.append(
@@ -294,6 +348,31 @@ def _refresh_language(
                     "dictionary_key": key,
                     "target_start_index": target_start,
                     "target_end_index": target_end,
+                    **(
+                        {
+                            "verified_occurrence": True,
+                            "owner_unit_id": str(verified.get("owner_unit_id") or ""),
+                            "tap_unit_id": str(verified.get("tap_unit_id") or ""),
+                            "verification_status": str(verified.get("status") or ""),
+                        }
+                        if verified is not None
+                        else {}
+                    ),
+                    **(
+                        {
+                            "highlight_target_start_index": coverage.get(
+                                "highlight_target_start_index"
+                            ),
+                            "highlight_target_end_index": coverage.get(
+                                "highlight_target_end_index"
+                            ),
+                            "target_coverage_kind": str(
+                                coverage.get("ownership") or ""
+                            ),
+                        }
+                        if coverage is not None
+                        else {}
+                    ),
                     "source": library_dictionary_source(lang),
                     "note": "" if selected else "no_contextual_target_match",
                 }
@@ -374,7 +453,7 @@ def _refresh_language(
             record["source_key"] = matched_key
             book_function_words[actual_key] = record
     return {
-        "version": 3,
+        "version": 4,
         "book_id": word_to_word["book_id"],
         "source_lang": "en",
         "target_lang": lang,
@@ -384,6 +463,8 @@ def _refresh_language(
         "function_words": book_function_words,
         "word_alignments": word_alignments,
         "block_alignments": block_alignments,
+        "alignment_groups": alignment_groups,
+        "target_coverage": target_coverage,
     }
 
 
@@ -402,8 +483,15 @@ def _rebuild_zip(output_dir: Path, zip_path: Path) -> None:
     os.replace(temporary, zip_path)
 
 
-def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
+def refresh(
+    root: Path,
+    *,
+    write: bool,
+    rebuild_zips: bool,
+    selected_book_ids: set[str] | None = None,
+) -> dict:
     store = LibraryDictionaryStore(root / "Studio" / "Backend")
+    storage = LexoStorage(root / "Studio" / "Backend")
     output_root = root / "Studio" / "Runtime" / "workbench_output" / "a1" / "chapters"
     cloud_root = root / "Studio" / "CloudLibrary" / "a1" / "chapters" / "books_zip"
     mobile_root = root / "production_mobile" / "assets" / "library" / "a1" / "chapters" / "books_zip"
@@ -433,13 +521,24 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
         if not manifest_path.exists():
             continue
         manifest = _load(manifest_path)
+        package_book_id = str(manifest.get("book_id") or "")
+        if selected_book_ids and package_book_id not in selected_book_ids:
+            continue
         title = str(manifest.get("title") or "").strip()
         changed_langs = []
         for lang in ("ru", "uk"):
             reader_path = output_dir / f"reader_{lang}.json"
             if title not in layer_titles[lang] or not reader_path.exists():
                 continue
-            reader = _load(reader_path)
+            reader = storage.get_paragraphs(package_book_id, lang)
+            verification_path = (
+                store.books_dir(lang)
+                / package_book_id
+                / f"word_to_word_{lang}.json"
+            )
+            verification = (
+                _load(verification_path) if verification_path.exists() else {}
+            )
             audit = layers_by_title[lang][title].get("book_layer_audit") or {}
             absorbed_word_keys = {
                 _canonical_dictionary_key(item)
@@ -454,15 +553,22 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
                 blocks=globals_by_lang[lang][1],
                 function_words=globals_by_lang[lang][2],
                 absorbed_word_keys=absorbed_word_keys,
+                verified_alignment=verification,
             )
             changed_langs.append(lang)
             if write:
+                _write(reader_path, reader)
                 _write(output_dir / f"reader_lexicon_{lang}.json", lexicon)
                 (output_dir / f"dictionary_{lang}.json").unlink(missing_ok=True)
                 (output_dir / f"word_to_word_{lang}.json").unlink(missing_ok=True)
         if not changed_langs:
             continue
         if write:
+            default_lang = "ru" if "ru" in changed_langs else changed_langs[0]
+            shutil.copyfile(
+                output_dir / f"reader_{default_lang}.json",
+                output_dir / "reader.json",
+            )
             (output_dir / "word_to_word.json").unlink(missing_ok=True)
             _write(
                 manifest_path,
@@ -485,6 +591,9 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
                 continue
             manifest = json.loads(archive.read("load_manifest.json").decode("utf-8"))
             title = str(manifest.get("title") or "").strip()
+            package_book_id = str(manifest.get("book_id") or "")
+            if selected_book_ids and package_book_id not in selected_book_ids:
+                continue
             if title in processed_titles or title not in wanted_titles:
                 continue
             names = set(archive.namelist())
@@ -501,7 +610,17 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
                     archive.extractall(package_dir)
                     archive.close()
                     for lang in changed_langs:
-                        reader = _load(package_dir / f"reader_{lang}.json")
+                        reader = storage.get_paragraphs(package_book_id, lang)
+                        verification_path = (
+                            store.books_dir(lang)
+                            / package_book_id
+                            / f"word_to_word_{lang}.json"
+                        )
+                        verification = (
+                            _load(verification_path)
+                            if verification_path.exists()
+                            else {}
+                        )
                         audit = layers_by_title[lang][title].get("book_layer_audit") or {}
                         absorbed_word_keys = {
                             _canonical_dictionary_key(item)
@@ -516,11 +635,18 @@ def refresh(root: Path, *, write: bool, rebuild_zips: bool) -> dict:
                             blocks=globals_by_lang[lang][1],
                             function_words=globals_by_lang[lang][2],
                             absorbed_word_keys=absorbed_word_keys,
+                            verified_alignment=verification,
                         )
+                        _write(package_dir / f"reader_{lang}.json", reader)
                         _write(package_dir / f"reader_lexicon_{lang}.json", lexicon)
                         (package_dir / f"dictionary_{lang}.json").unlink(missing_ok=True)
                         (package_dir / f"word_to_word_{lang}.json").unlink(missing_ok=True)
                     (package_dir / "word_to_word.json").unlink(missing_ok=True)
+                    default_lang = "ru" if "ru" in changed_langs else changed_langs[0]
+                    shutil.copyfile(
+                        package_dir / f"reader_{default_lang}.json",
+                        package_dir / "reader.json",
+                    )
                     package_manifest_path = package_dir / "load_manifest.json"
                     package_manifest = _load(package_manifest_path)
                     _write(
@@ -546,8 +672,14 @@ def main() -> None:
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--rebuild-zips", action="store_true")
+    parser.add_argument("--book-id", action="append", default=[])
     args = parser.parse_args()
-    result = refresh(args.root.resolve(), write=args.write, rebuild_zips=args.rebuild_zips)
+    result = refresh(
+        args.root.resolve(),
+        write=args.write,
+        rebuild_zips=args.rebuild_zips,
+        selected_book_ids=set(args.book_id) or None,
+    )
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 

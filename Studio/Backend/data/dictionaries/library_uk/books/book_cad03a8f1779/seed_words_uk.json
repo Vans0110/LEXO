@@ -10,7 +10,8 @@
   "amir|PROPN": {
     "translation": "Амір",
     "translations": [
-      "Амір"
+      "Амір",
+      "Аміром"
     ],
     "dictionary_translation": "Амір",
     "dictionary_translation_source": "skill_fallback"
@@ -19,7 +20,8 @@
     "translation": "а",
     "translations": [
       "а",
-      "і"
+      "і",
+      "й"
     ],
     "dictionary_translation": "а",
     "dictionary_translation_source": "skill_fallback"
@@ -27,7 +29,8 @@
   "ask|VERB": {
     "translation": "питати",
     "translations": [
-      "питати"
+      "питати",
+      "запитує"
     ],
     "dictionary_translation": "питати",
     "dictionary_translation_source": "skill_fallback"
@@ -36,7 +39,9 @@
     "translation": "о",
     "translations": [
       "о",
-      "біля"
+      "біля",
+      "у",
+      "на"
     ],
     "dictionary_translation": "о",
     "dictionary_translation_source": "skill_fallback"
@@ -60,7 +65,8 @@
   "board|NOUN": {
     "translation": "дошка",
     "translations": [
-      "дошка"
+      "дошка",
+      "дошці"
     ],
     "dictionary_translation": "дошка",
     "dictionary_translation_source": "skill_fallback"
@@ -114,7 +120,9 @@
     "translation": "клас",
     "translations": [
       "клас",
-      "заняття"
+      "заняття",
+      "урок",
+      "класі"
     ],
     "dictionary_translation": "клас",
     "dictionary_translation_source": "skill_fallback"
@@ -149,7 +157,8 @@
   "day|NOUN": {
     "translation": "день",
     "translations": [
-      "день"
+      "день",
+      "дня"
     ],
     "dictionary_translation": "день",
     "dictionary_translation_source": "skill_fallback"
@@ -165,7 +174,8 @@
   "downstair|NOUN": {
     "translation": "внизу",
     "translations": [
-      "внизу"
+      "внизу",
+      "Унизу"
     ],
     "dictionary_translation": "внизу",
     "dictionary_translation_source": "skill_fallback"
@@ -173,7 +183,8 @@
   "downstairs|ADJ": {
     "translation": "внизу",
     "translations": [
-      "внизу"
+      "внизу",
+      "унизу"
     ],
     "dictionary_translation": "внизу",
     "dictionary_translation_source": "skill_fallback"
@@ -181,7 +192,8 @@
   "english|ADJ": {
     "translation": "англійський",
     "translations": [
-      "англійський"
+      "англійський",
+      "англійської мови"
     ],
     "dictionary_translation": "англійський",
     "dictionary_translation_source": "skill_fallback"
@@ -199,7 +211,8 @@
   "find|VERB": {
     "translation": "знаходити",
     "translations": [
-      "знаходити"
+      "знаходити",
+      "знаходить"
     ],
     "dictionary_translation": "знаходити",
     "dictionary_translation_source": "skill_fallback"
@@ -215,13 +228,15 @@
   "five|NUM": {
     "translation": "п'ять",
     "translations": [
-      "п'ять"
+      "п'ять",
+      "п’ять"
     ]
   },
   "floor|NOUN": {
     "translation": "поверх",
     "translations": [
-      "поверх"
+      "поверх",
+      "поверсі"
     ],
     "dictionary_translation": "поверх",
     "dictionary_translation_source": "skill_fallback"
@@ -230,7 +245,8 @@
     "translation": "на",
     "translations": [
       "на",
-      "для"
+      "для",
+      "До"
     ],
     "dictionary_translation": "на",
     "dictionary_translation_source": "skill_fallback"
@@ -252,7 +268,8 @@
   "fourth|ADJ": {
     "translation": "четвертий",
     "translations": [
-      "четвертий"
+      "четвертий",
+      "четвертому"
     ],
     "dictionary_translation": "четвертий",
     "dictionary_translation_source": "skill_fallback"
@@ -279,7 +296,8 @@
   "her|PRON": {
     "translation": "її",
     "translations": [
-      "її"
+      "її",
+      "свою"
     ],
     "dictionary_translation": "її",
     "dictionary_translation_source": "skill_fallback"
@@ -313,7 +331,8 @@
     "translation": "у",
     "translations": [
       "у",
-      "всередину"
+      "всередину",
+      "до"
     ],
     "dictionary_translation": "у",
     "dictionary_translation_source": "skill_fallback"
@@ -322,7 +341,8 @@
     "translation": "воно",
     "translations": [
       "воно",
-      "це"
+      "це",
+      "На ній"
     ],
     "dictionary_translation": "воно",
     "dictionary_translation_source": "skill_fallback"
@@ -330,7 +350,8 @@
   "late|ADV": {
     "translation": "пізно",
     "translations": [
-      "пізно"
+      "пізно",
+      "запізнилася"
     ],
     "dictionary_translation": "пізно",
     "dictionary_translation_source": "skill_fallback"
@@ -355,7 +376,8 @@
   "map|NOUN": {
     "translation": "карта",
     "translations": [
-      "карта"
+      "карта",
+      "карти"
     ],
     "dictionary_translation": "карта",
     "dictionary_translation_source": "skill_fallback"
@@ -363,7 +385,8 @@
   "math|NOUN": {
     "translation": "математика",
     "translations": [
-      "математика"
+      "математика",
+      "математики"
     ],
     "dictionary_translation": "математика",
     "dictionary_translation_source": "skill_fallback"
@@ -411,7 +434,8 @@
   "now|ADV": {
     "translation": "зараз",
     "translations": [
-      "зараз"
+      "зараз",
+      "тепер"
     ],
     "dictionary_translation": "зараз",
     "dictionary_translation_source": "skill_fallback"
@@ -420,7 +444,8 @@
     "translation": "номер",
     "translations": [
       "номер",
-      "номери"
+      "номери",
+      "числа"
     ],
     "dictionary_translation": "номер",
     "dictionary_translation_source": "skill_fallback"
@@ -459,7 +484,9 @@
   "right|ADJ": {
     "translation": "правильний",
     "translations": [
-      "правильний"
+      "правильний",
+      "потрібний",
+      "потрібному"
     ],
     "dictionary_translation": "правильний",
     "dictionary_translation_source": "skill_fallback"
@@ -468,7 +495,10 @@
     "translation": "кімната",
     "translations": [
       "кімната",
-      "кімнату"
+      "кімнату",
+      "класі",
+      "Клас",
+      "класу"
     ],
     "dictionary_translation": "кімната",
     "dictionary_translation_source": "skill_fallback"
@@ -477,7 +507,10 @@
     "translation": "кімната",
     "translations": [
       "кімната",
-      "кімнати"
+      "кімнати",
+      "класі",
+      "класу",
+      "клас"
     ],
     "dictionary_translation": "кімната",
     "dictionary_translation_source": "skill_fallback"
@@ -485,7 +518,9 @@
   "sara|PROPN": {
     "translation": "Сара",
     "translations": [
-      "Сара"
+      "Сара",
+      "Сарі",
+      "Саро"
     ],
     "dictionary_translation": "Сара",
     "dictionary_translation_source": "skill_fallback"
@@ -493,7 +528,9 @@
   "say|VERB": {
     "translation": "казати",
     "translations": [
-      "казати"
+      "казати",
+      "каже",
+      "написано"
     ],
     "dictionary_translation": "казати",
     "dictionary_translation_source": "skill_fallback"
@@ -501,7 +538,8 @@
   "school|PROPN": {
     "translation": "школа",
     "translations": [
-      "школа"
+      "школа",
+      "школі"
     ],
     "dictionary_translation": "школа",
     "dictionary_translation_source": "skill_fallback"
@@ -528,7 +566,8 @@
     "translation": "сидіти",
     "translations": [
       "сидіти",
-      "сідає"
+      "сідає",
+      "сідай"
     ],
     "dictionary_translation": "сидіти",
     "dictionary_translation_source": "skill_fallback"
@@ -537,7 +576,8 @@
     "translation": "посміхатися",
     "translations": [
       "посміхатися",
-      "усміхатися"
+      "усміхатися",
+      "усміхається"
     ],
     "dictionary_translation": "посміхатися",
     "dictionary_translation_source": "skill_fallback"
@@ -554,7 +594,8 @@
   "stair|NOUN": {
     "translation": "сходинка",
     "translations": [
-      "сходинка"
+      "сходинка",
+      "сходи"
     ],
     "dictionary_translation": "сходинка",
     "dictionary_translation_source": "skill_fallback"
@@ -563,7 +604,9 @@
     "translation": "студент",
     "translations": [
       "студент",
-      "учень"
+      "учень",
+      "учениця",
+      "учнів"
     ],
     "dictionary_translation": "студент",
     "dictionary_translation_source": "skill_fallback"
@@ -571,7 +614,8 @@
   "teacher|NOUN": {
     "translation": "учитель",
     "translations": [
-      "учитель"
+      "учитель",
+      "вчитель"
     ],
     "dictionary_translation": "учитель",
     "dictionary_translation_source": "skill_fallback"
@@ -630,7 +674,8 @@
   "walk|VERB": {
     "translation": "ходити",
     "translations": [
-      "ходити"
+      "ходити",
+      "заходить"
     ],
     "dictionary_translation": "ходити",
     "dictionary_translation_source": "skill_fallback"
@@ -644,23 +689,24 @@
   "write|VERB": {
     "translation": "писати",
     "translations": [
-      "писати"
+      "писати",
+      "пише"
     ],
     "dictionary_translation": "писати",
     "dictionary_translation_source": "skill_fallback"
   },
   "wrong|ADJ": {
-    "translation": "неправильний",
-    "translations": [
-      "неправильний"
-    ],
-    "dictionary_translation": "неправильний",
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "не той",
     "dictionary_translation_source": "skill_fallback"
   },
   "wrong|PROPN": {
     "translation": "неправильний",
     "translations": [
-      "неправильний"
+      "неправильний",
+      "Не той"
     ],
     "dictionary_translation": "неправильний",
     "dictionary_translation_source": "skill_fallback"

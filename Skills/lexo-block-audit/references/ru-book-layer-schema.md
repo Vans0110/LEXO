@@ -181,9 +181,13 @@ may be stored only as:
 }
 ```
 
-The fallback must be one target-language word. It is never evidence, never claims target indexes, and never replaces
-`empty_reason`. Rules must describe structural categories and POS/ownership
-conditions; they must not contain a closed list of particular English words.
+The fallback is normally one target-language word. A short multiword fallback is
+allowed only when the occurrence is explicitly listed in an alignment group's
+`group_only_word_ids[]`, has no contextual target span, and the complete fallback
+passes the isolation test by itself. It is never occurrence evidence, never claims
+target indexes, and never replaces `empty_reason`. Rules must describe structural
+categories and POS/ownership conditions; they must not contain a closed list of
+particular English words.
 
 ## Verification word-to-word
 
@@ -228,6 +232,48 @@ against every source occurrence but is not a Workbench, package, or ZIP artifact
 }
 ```
 
+### Occurrence-local alignment groups
+
+Use `alignment_groups[]` only when at least one word fails the isolation test,
+no minimal reusable semantic Block exists, and one minimal contiguous source
+span corresponds honestly to one contiguous target span:
+
+```json
+{
+  "alignment_groups": [
+    {
+      "unit_id": "alignment_group:1:0",
+      "kind": "structural_recast",
+      "segment_index": 1,
+      "source_word_ids": ["in_id", "the_id", "wrong_id", "room_id"],
+      "group_only_word_ids": ["the_id", "wrong_id"],
+      "source_text": "in the wrong room",
+      "target_start_index": 1,
+      "target_end_index": 4,
+      "target_text": "не в той комнате",
+      "reason": "Перестроенный перевод не допускает честной отдельной связи для каждого слова."
+    }
+  ]
+}
+```
+
+`source_word_ids[]` must be ordered, contiguous occurrences from one segment.
+`group_only_word_ids[]` is the subset with no honest independent target span;
+those entries keep no contextual target indexes and may retain only an honest
+dictionary fallback or zero-correspondence status. A dictionary fallback may be
+multiword here only when the whole value is an independently meaningful card;
+a grammatical remnant from the target span remains invalid. Other group members
+may keep independent exact spans. The group covers its complete target span for
+parallel display, including structural target additions not represented by one
+source word.
+
+An alignment group is not a Block. Its source must not appear as a book Block or
+Block source form; never copy the group to seeds, `book_layer.blocks`,
+`block_occurrences`, Globals, function-word records, or learner-facing meanings.
+The validator permits overlap only between the group and exact spans owned by
+its own source members. Overlap with another group, target coverage, or an
+unrelated word is invalid.
+
 Allowed entry statuses:
 
 - `independent_translation`;
@@ -253,6 +299,16 @@ Every retained block occurrence attested by `source_forms[]` must have exactly
 one block block. Missing words, duplicate ids, unclassified entries,
 unmaterialized blocks, duplicated independent target spans, and `unresolved`
 statuses are blocking errors.
+
+An `insertion` is learner-visible and therefore requires an honest
+`display_anchor_word_id`. The anchor must be an independently translated occurrence,
+and the display highlight must contain both its exact target span and the insertion.
+The insertion must not be copied into the anchor's contextual translation.
+
+A `restructure` without an honest one-word anchor is coverage-only. It requires every
+contributing `source_word_ids` value and must omit `display_anchor_word_id` and both
+highlight fields. Its target span must not be promoted into word translations, seeds,
+fallbacks, blocks, Globals, or learner-facing dictionary cards.
 
 ### Target-side coverage and display highlighting
 

@@ -77,11 +77,21 @@ def main() -> None:
         if isinstance(item, dict) and clean(item.get("word_id"))
     }
     additions = review.get("word_translation_additions") or {}
+    removals = review.get("word_translation_removals") or {}
     fallbacks = review.get("dictionary_fallbacks") or {}
     absorbed = {clean(item).casefold() for item in review.get("absorbed_word_keys") or []}
     target_coverage = [
         item for item in review.get("target_coverage") or [] if isinstance(item, dict)
     ]
+    alignment_groups = [
+        item for item in review.get("alignment_groups") or [] if isinstance(item, dict)
+    ]
+    group_only_by_word_id = {
+        clean(word_id): clean(group.get("unit_id"))
+        for group in alignment_groups
+        for word_id in group.get("group_only_word_ids") or []
+        if clean(word_id)
+    }
 
     segments: list[dict[str, Any]] = []
     for paragraph in reader.get("paragraphs") or []:
@@ -113,7 +123,14 @@ def main() -> None:
                 forms_by_key[key].append(form)
     for key, raw in old_seed_words.items():
         value = dict(raw) if isinstance(raw, dict) else {}
-        values = [clean(item) for item in value.get("translations") or [] if clean(item)]
+        removed_values = {
+            clean(item).casefold() for item in removals.get(key, []) if clean(item)
+        }
+        values = [
+            clean(item)
+            for item in value.get("translations") or []
+            if clean(item) and clean(item).casefold() not in removed_values
+        ]
         for item in additions.get(key, []):
             item = clean(item)
             if item and item.casefold() not in {entry.casefold() for entry in values}:
@@ -199,17 +216,21 @@ def main() -> None:
                 owner = tap = clean(component.get("unit_id"))
                 start, end = target_span(segment["translation"], contextual)
             else:
-                selected = clean(aligned_by_id.get(word_id, {}).get("translation"))
-                candidates = [selected, *(additions.get(key) or []), *(seed_words[key].get("translations") or [])]
-                for candidate in candidates:
-                    candidate = clean(candidate)
-                    candidate_start, candidate_end = target_span(segment["translation"], candidate)
-                    if candidate and candidate_start >= 0:
-                        contextual = candidate
-                        start, end = candidate_start, candidate_end
-                        status = "independent_translation"
-                        reason = ""
-                        break
+                group_id = group_only_by_word_id.get(word_id)
+                if group_id:
+                    reason = f"meaning is realized only by alignment group {group_id}"
+                else:
+                    selected = clean(aligned_by_id.get(word_id, {}).get("translation"))
+                    candidates = [selected, *(additions.get(key) or []), *(seed_words[key].get("translations") or [])]
+                    for candidate in candidates:
+                        candidate = clean(candidate)
+                        candidate_start, candidate_end = target_span(segment["translation"], candidate)
+                        if candidate and candidate_start >= 0:
+                            contextual = candidate
+                            start, end = candidate_start, candidate_end
+                            status = "independent_translation"
+                            reason = ""
+                            break
                 if not contextual and not clean(seed_words[key].get("dictionary_translation")):
                     status = "zero_correspondence"
             occurrence_statuses[key].append(status)
@@ -305,7 +326,7 @@ def main() -> None:
             }
         )
     layer = {
-        "version": 1,
+        "version": 2,
         "book_id": clean(reader.get("book_id")),
         "title": clean(reader.get("title")),
         "source_lang": "en",
@@ -329,6 +350,7 @@ def main() -> None:
         "source_lang": "en",
         "target_lang": "ru",
         "entries": entries,
+        "alignment_groups": alignment_groups,
         "target_coverage": target_coverage,
         "block_occurrences": block_occurrences,
     }
@@ -344,6 +366,7 @@ def main() -> None:
                 "occurrences": len(entries),
                 "blocks": len(blocks),
                 "block_occurrences": len(block_occurrences),
+                "alignment_groups": len(alignment_groups),
                 "target_coverage": len(target_coverage),
             },
             ensure_ascii=False,

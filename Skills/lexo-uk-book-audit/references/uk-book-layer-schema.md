@@ -1,4 +1,4 @@
-﻿# UK book-layer schema
+# UK book-layer schema
 
 ## Primary layer
 
@@ -21,7 +21,7 @@
 ```json
 {
   "source": "The exact English segment.",
-  "translation": "Точний затверджений український сегмент."
+  "translation": "Точный утверждённый украинский сегмент."
 }
 ```
 
@@ -34,8 +34,8 @@ Every input pair must appear exactly once and in reading order.
   "word": "walks",
   "lemma": "walk",
   "pos": "VERB",
-  "translation": "заходить",
-  "translations": ["заходить", "іде"]
+  "translation": "входит",
+  "translations": ["входит", "идёт"]
 }
 ```
 
@@ -46,7 +46,7 @@ Every input pair must appear exactly once and in reading order.
 - Keep contextually different confirmed values; do not add generic dictionary senses absent from the book.
 - `seed_words_uk.json` and `words[]` contain every source word, including function words.
 - Keep a function word with no independent Ukrainian equivalent, but use `translation: ""`, `translations: []`, and `empty_reason`. Record the same absorption in its block component.
-- Never give an article or other function word the translation of an adjacent lexical word. Invalid examples include `the → кімната`, `a → студент`, `down → сідає`, and `there → є` when those target spans belong to `room`, `student`, `sit`, and the whole construction respectively.
+- Never give an article or other function word the translation of an adjacent lexical word. Invalid examples include `the → кімната`, `a → студент`, `down → сідає`, and `there → є` when those target spans belong to `room`, `student`, `sit`, and `be` respectively.
 
 ```json
 {
@@ -55,7 +55,7 @@ Every input pair must appear exactly once and in reading order.
   "pos": "DET",
   "translation": "",
   "translations": [],
-  "empty_reason": "артикль не має окремого українського відповідника"
+  "empty_reason": "article has no independent Ukrainian target"
 }
 ```
 
@@ -64,20 +64,20 @@ Every input pair must appear exactly once and in reading order.
 ```json
 {
   "source": "walk into",
-  "translation": "заходить до",
+  "translation": "входит в",
   "type": "phrasal_verb",
   "components": [
     {
       "source": "walk",
       "lemma": "walk",
       "pos": "VERB",
-      "translation": "заходить"
+      "translation": "входит"
     },
     {
       "source": "into",
       "lemma": "into",
       "pos": "ADP",
-      "translation": "до"
+      "translation": "в"
     }
   ],
   "source_forms": ["walks into"]
@@ -106,7 +106,7 @@ Every block requires a concise target-language `explanation` that describes the 
     "reviewed_segments": [
       {
         "source_text": "She walks into the room.",
-        "target_text": "Вона заходить до кімнати.",
+        "target_text": "Вона входить до кімнати.",
         "status": "covered",
         "word_keys": ["walk|VERB", "room|NOUN"],
         "block_sources": ["walk into"],
@@ -124,8 +124,8 @@ Every block requires a concise target-language `explanation` that describes the 
         {
           "key": "walk|VERB",
           "ownership": "word",
-          "translations": ["заходить"],
-          "evidence": ["She walks into the room. → Вона заходить до кімнати."]
+          "translations": ["входит"],
+          "evidence": ["She walks into the room. → Вона входить до кімнати."]
         }
       ],
       "corrections": [],
@@ -137,14 +137,14 @@ Every block requires a concise target-language `explanation` that describes the 
         {
           "source": "sit down",
           "decision": "accepted",
-          "word_by_word_result": "сидить + униз",
-          "reason": "сполука означає сісти",
+          "word_by_word_result": "сидит + вниз",
+          "reason": "the combination means to take a seat",
           "segment_indexes": [17]
         },
         {
           "source": "first floor",
           "decision": "rejected",
-          "word_by_word_result": "перший поверх",
+          "word_by_word_result": "первый этаж",
           "reason": "independent words preserve the complete meaning",
           "segment_indexes": [13]
         }
@@ -176,14 +176,18 @@ may be stored only as:
 
 ```json
 {
-  "dictionary_translation": "значення",
+  "dictionary_translation": "значение",
   "dictionary_translation_source": "skill_fallback"
 }
 ```
 
-The fallback must be one target-language word. It is never evidence, never claims target indexes, and never replaces
-`empty_reason`. Rules must describe structural categories and POS/ownership
-conditions; they must not contain a closed list of particular English words.
+The fallback is normally one target-language word. A short multiword fallback is
+allowed only when the occurrence is explicitly listed in an alignment group's
+`group_only_word_ids[]`, has no contextual target span, and the complete fallback
+passes the isolation test by itself. It is never occurrence evidence, never claims
+target indexes, and never replaces `empty_reason`. Rules must describe structural
+categories and POS/ownership conditions; they must not contain a closed list of
+particular English words.
 
 ## Verification word-to-word
 
@@ -220,13 +224,55 @@ against every source occurrence but is not a Workbench, package, or ZIP artifact
       "tap_unit_id": "block:0:0",
       "block_source": "canonical block",
       "source_form": "attested source form",
-      "translation": "переклад усієї конструкції",
+      "translation": "перевод всей конструкции",
       "segment_index": 0,
       "word_ids": ["first_word_id", "second_word_id"]
     }
   ]
 }
 ```
+
+### Occurrence-local alignment groups
+
+Use `alignment_groups[]` only when at least one word fails the isolation test,
+no minimal reusable semantic Block exists, and one minimal contiguous source
+span corresponds honestly to one contiguous target span:
+
+```json
+{
+  "alignment_groups": [
+    {
+      "unit_id": "alignment_group:1:0",
+      "kind": "structural_recast",
+      "segment_index": 1,
+      "source_word_ids": ["in_id", "the_id", "wrong_id", "room_id"],
+      "group_only_word_ids": ["the_id", "wrong_id"],
+      "source_text": "in the wrong room",
+      "target_start_index": 1,
+      "target_end_index": 4,
+      "target_text": "не в тому класі",
+      "reason": "Перебудований переклад не допускає чесного окремого зв’язку для кожного слова."
+    }
+  ]
+}
+```
+
+`source_word_ids[]` must be ordered, contiguous occurrences from one segment.
+`group_only_word_ids[]` is the subset with no honest independent target span;
+those entries keep no contextual target indexes and may retain only an honest
+dictionary fallback or zero-correspondence status. A dictionary fallback may be
+multiword here only when the whole value is an independently meaningful card;
+a grammatical remnant from the target span remains invalid. Other group members
+may keep independent exact spans. The group covers its complete target span for
+parallel display, including structural target additions not represented by one
+source word.
+
+An alignment group is not a Block. Its source must not appear as a book Block or
+Block source form; never copy the group to seeds, `book_layer.blocks`,
+`block_occurrences`, Globals, function-word records, or learner-facing meanings.
+The validator permits overlap only between the group and exact spans owned by
+its own source members. Overlap with another group, target coverage, or an
+unrelated word is invalid.
 
 Allowed entry statuses:
 
@@ -254,9 +300,46 @@ one block block. Missing words, duplicate ids, unclassified entries,
 unmaterialized blocks, duplicated independent target spans, and `unresolved`
 statuses are blocking errors.
 
+An `insertion` is learner-visible and therefore requires an honest
+`display_anchor_word_id`. The anchor must be an independently translated occurrence,
+and the display highlight must contain both its exact target span and the insertion.
+The insertion must not be copied into the anchor's contextual translation.
+
+A `restructure` without an honest one-word anchor is coverage-only. It requires every
+contributing `source_word_ids` value and must omit `display_anchor_word_id` and both
+highlight fields. Its target span must not be promoted into word translations, seeds,
+fallbacks, blocks, Globals, or learner-facing dictionary cards.
+
+### Target-side coverage and display highlighting
+
+Every target-language token must be covered either by an independent word span or
+by one explicit `target_coverage[]` record. This layer represents structural target
+additions and sentence restructures without falsifying dictionary translations:
+
+```json
+{
+  "segment_index": 2,
+  "target_start_index": 7,
+  "target_end_index": 7,
+  "target_text": "добавочный элемент",
+  "ownership": "insertion",
+  "source_word_ids": ["source_word_1", "source_word_2"],
+  "display_anchor_word_id": "source_word_2",
+  "highlight_target_start_index": 7,
+  "highlight_target_end_index": 8,
+  "reason": "Структурный элемент целевой конструкции; не самостоятельный перевод исходного слова."
+}
+```
+
+Allowed ownership values are `block`, `insertion`, and `restructure`. The display
+anchor is optional and must belong to `source_word_ids[]`. Its highlight span is a
+presentation span only: the anchored word retains its exact contextual translation,
+dictionary key, and semantic target span. Materializers and validators must remain
+lexeme-agnostic; semantic decisions come from the exhaustive book audit, not from a
+closed list of words or nearest-token guessing.
+
 ## Scope boundary
 
 The skill stops after writing and validating the two seeds, book layer, and
 verification word-to-word file. It does not rebuild globals, Workbench data,
 application assets, CloudLibrary files, packages, or ZIP files.
-

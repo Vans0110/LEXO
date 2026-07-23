@@ -193,12 +193,14 @@
       "surface": "city",
       "lemma": "city",
       "pos": "NOUN",
-      "contextual_translation": "",
+      "contextual_translation": "містечка",
       "dictionary_translation": "місто",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:731aae6c-c46c-45cf-b8eb-2d992895d9ac_w_10",
       "tap_unit_id": "word:731aae6c-c46c-45cf-b8eb-2d992895d9ac_w_10",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 3,
+      "target_end_index": 3
     },
     {
       "word_id": "731aae6c-c46c-45cf-b8eb-2d992895d9ac_w_11",
@@ -359,12 +361,14 @@
       "surface": "language",
       "lemma": "language",
       "pos": "NOUN",
-      "contextual_translation": "",
+      "contextual_translation": "мовній",
       "dictionary_translation": "мова",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:731aae6c-c46c-45cf-b8eb-2d992895d9ac_w_21",
       "tap_unit_id": "word:731aae6c-c46c-45cf-b8eb-2d992895d9ac_w_21",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 6,
+      "target_end_index": 6
     },
     {
       "word_id": "731aae6c-c46c-45cf-b8eb-2d992895d9ac_w_22",
@@ -447,12 +451,14 @@
       "surface": "twelve",
       "lemma": "twelve",
       "pos": "NUM",
-      "contextual_translation": "",
+      "contextual_translation": "дванадцятої",
       "dictionary_translation": "дванадцять",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:7de04662-3f79-4403-aa0a-aa9f81e41866_w_4",
       "tap_unit_id": "word:7de04662-3f79-4403-aa0a-aa9f81e41866_w_4",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 3,
+      "target_end_index": 3
     },
     {
       "word_id": "7de04662-3f79-4403-aa0a-aa9f81e41866_w_5",
@@ -1937,12 +1943,14 @@
       "surface": "lunch",
       "lemma": "lunch",
       "pos": "NOUN",
-      "contextual_translation": "",
+      "contextual_translation": "обідом",
       "dictionary_translation": "обід",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:d4fd0ac0-41a1-49b9-a1a1-887a2df73fa5_w_1",
       "tap_unit_id": "word:d4fd0ac0-41a1-49b9-a1a1-887a2df73fa5_w_1",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 1,
+      "target_end_index": 1
     },
     {
       "word_id": "d4fd0ac0-41a1-49b9-a1a1-887a2df73fa5_w_2",
@@ -2143,12 +2151,14 @@
       "surface": "students",
       "lemma": "student",
       "pos": "NOUN",
-      "contextual_translation": "",
+      "contextual_translation": "студенти",
       "dictionary_translation": "студент",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:d4fd0ac0-41a1-49b9-a1a1-887a2df73fa5_w_15",
       "tap_unit_id": "word:d4fd0ac0-41a1-49b9-a1a1-887a2df73fa5_w_15",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 4,
+      "target_end_index": 4
     },
     {
       "word_id": "d4fd0ac0-41a1-49b9-a1a1-887a2df73fa5_w_16",

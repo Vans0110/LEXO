@@ -92,6 +92,17 @@ List<Map<String, dynamic>> _blockAlignments(Map<String, dynamic> package) {
       .toList();
 }
 
+List<Map<String, dynamic>> _alignmentGroups(Map<String, dynamic> package) {
+  final wordToWord = package['word_to_word'] as Map<String, dynamic>? ??
+      const <String, dynamic>{};
+  return (wordToWord['alignment_groups'] as List<dynamic>? ?? const <dynamic>[])
+      .whereType<Map<String, dynamic>>()
+      .where((group) =>
+          (group['unit_id'] ?? '').toString().trim().isNotEmpty &&
+          (group['segment_id'] ?? '').toString().trim().isNotEmpty)
+      .toList();
+}
+
 List<String> _sourceTokens(String text) {
   return RegExp(r'[a-zA-Z0-9]+')
       .allMatches(text.toLowerCase())
@@ -347,6 +358,7 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
   Map<String, dynamic> paragraph,
   Map<String, Map<String, dynamic>> alignmentByWordId,
   List<Map<String, dynamic>> blockAlignments,
+  List<Map<String, dynamic>> alignmentGroups,
   Map<String, dynamic> dictionaryEntries,
   Map<String, dynamic> dictionaryBlocks,
   Map<String, dynamic> functionWords,
@@ -558,6 +570,44 @@ Map<String, dynamic> _applyDictionaryAlignmentToParagraph(
     }
   }
 
+  final wordsById = <String, Map<String, dynamic>>{
+    for (final word in words)
+      if ((word['id'] ?? '').toString().isNotEmpty)
+        (word['id'] ?? '').toString(): word,
+  };
+  for (final group in alignmentGroups) {
+    final segmentId = (group['segment_id'] ?? '').toString();
+    final members = (group['source_word_ids'] as List<dynamic>? ?? const [])
+        .map((wordId) => wordsById[wordId.toString()])
+        .whereType<Map<String, dynamic>>()
+        .where((word) => (word['segment_id'] ?? '').toString() == segmentId)
+        .toList();
+    if (members.length < 2) {
+      continue;
+    }
+    final unitId = (group['unit_id'] ?? '').toString();
+    final sourceText = (group['source_text'] ?? '').toString();
+    final targetText = (group['target_text'] ?? '').toString();
+    final targetStart = (group['target_start_index'] as int?) ?? -1;
+    final targetEnd = (group['target_end_index'] as int?) ?? -1;
+    for (final word in members) {
+      word['tap_unit_id'] = unitId;
+      word['source_unit_text'] = sourceText;
+      word['alignment_group_id'] = unitId;
+      word['alignment_group_target_text'] = targetText;
+      word['effective_translation_text'] = targetText;
+      word['effective_focus_text'] = targetText;
+      word['effective_matched_by'] = 'alignment_group';
+      word['effective_alignment_kind'] = 'alignment_group';
+      word['effective_coverage_status'] = 'dictionary';
+      if (targetStart >= 0 && targetEnd >= targetStart) {
+        word['highlight_target_start_index'] = targetStart;
+        word['highlight_target_end_index'] = targetEnd;
+        word['target_coverage_kind'] = 'structural_recast';
+      }
+    }
+  }
+
   _applyVerifiedTapUnits(words);
   _applyPosGrammarGroups(words, tokensBySegmentId);
 
@@ -686,6 +736,7 @@ Map<String, dynamic> _normalizePackageJson(Map<String, dynamic> rawPackage) {
   };
   final alignmentByWordId = _wordAlignmentById(package);
   final blockAlignments = _blockAlignments(package);
+  final alignmentGroups = _alignmentGroups(package);
   final dictionaryManifest =
       package['dictionary_manifest'] as Map<String, dynamic>? ??
           const <String, dynamic>{};
@@ -705,6 +756,7 @@ Map<String, dynamic> _normalizePackageJson(Map<String, dynamic> rawPackage) {
       paragraph,
       alignmentByWordId,
       blockAlignments,
+      alignmentGroups,
       dictionaryEntries,
       dictionaryBlocks,
       functionWords,

@@ -268,25 +268,34 @@ class LexoApiClient {
             'Word audio download failed after $_audioDownloadMaxAttempts attempts');
   }
 
-  Future<Map<String, dynamic>> getMobileBookPackage(String bookId) async {
-    return _get('/mobile/books/package?book_id=$bookId');
+  Future<Map<String, dynamic>> getMobileBookPackage(String bookId,
+      {String? targetLang}) async {
+    final langQuery = targetLang == null ? '' : '&target_lang=$targetLang';
+    return _get('/mobile/books/package?book_id=$bookId$langQuery');
   }
 
-  Future<Map<String, dynamic>> getMobileBookPackageManifest(
-      String bookId) async {
-    return _get('/mobile/books/package-manifest?book_id=$bookId');
+  Future<Map<String, dynamic>> getMobileBookPackageManifest(String bookId,
+      {String? targetLang}) async {
+    final langQuery = targetLang == null ? '' : '&target_lang=$targetLang';
+    return _get('/mobile/books/package-manifest?book_id=$bookId$langQuery');
   }
 
   Future<Map<String, dynamic>> getMobileBookPackagePart({
     required String bookId,
     required String partId,
+    String? targetLang,
   }) async {
-    return _get('/mobile/books/package-part?book_id=$bookId&part_id=$partId');
+    final langQuery = targetLang == null ? '' : '&target_lang=$targetLang';
+    return _get(
+        '/mobile/books/package-part?book_id=$bookId&part_id=$partId$langQuery');
   }
 
-  Future<Map<String, dynamic>> downloadMobileBookPackageChunked(
-      String bookId) async {
-    final manifest = await getMobileBookPackageManifest(bookId);
+  Future<Map<String, dynamic>> downloadMobileBookPackageChunked(String bookId,
+      {String? targetLang}) async {
+    final manifest = await getMobileBookPackageManifest(
+      bookId,
+      targetLang: targetLang,
+    );
     final meta =
         manifest['meta'] as Map<String, dynamic>? ?? <String, dynamic>{};
     final partItems = (manifest['parts'] as List<dynamic>? ?? const [])
@@ -316,8 +325,11 @@ class LexoApiClient {
       if (partId.isEmpty) {
         continue;
       }
-      final partResponse =
-          await getMobileBookPackagePart(bookId: bookId, partId: partId);
+      final partResponse = await getMobileBookPackagePart(
+        bookId: bookId,
+        partId: partId,
+        targetLang: targetLang,
+      );
       final kind = partResponse['kind'] as String? ?? '';
       final payload = partResponse['payload'] as Map<String, dynamic>? ??
           <String, dynamic>{};

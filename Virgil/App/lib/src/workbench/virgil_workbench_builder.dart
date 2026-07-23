@@ -66,9 +66,10 @@ class VirgilWorkbenchBuilder {
       languagePackages[lang] = packagesByTargetLang[lang] ??
           (textOnly
               ? _initialPackageFor(langBookId)
-              : langBookId == bookId
-                  ? package
-                  : await api.downloadMobileBookPackageChunked(langBookId));
+              : await api.downloadMobileBookPackageChunked(
+                  langBookId,
+                  targetLang: lang,
+                ));
     }
     await _writeJson(
       outputDir,
@@ -95,12 +96,14 @@ class VirgilWorkbenchBuilder {
       ),
     );
     for (final entry in languagePackages.entries) {
-      await _writeJson(
-          outputDir, 'reader_${entry.key}.json', _readerPayload(entry.value));
+      final readerPayload = _readerPayload(entry.value);
+      final readerLexicon = _buildReaderLexicon(bookId, entry.key, entry.value);
+      _validateReaderLexicon(entry.key, readerPayload, readerLexicon);
+      await _writeJson(outputDir, 'reader_${entry.key}.json', readerPayload);
       await _writeJson(
         outputDir,
         'reader_lexicon_${entry.key}.json',
-        _buildReaderLexicon(bookId, entry.key, entry.value),
+        readerLexicon,
       );
       await _deleteIfExists(
           File('${outputDir.path}/dictionary_${entry.key}.json'));
@@ -205,14 +208,19 @@ class VirgilWorkbenchBuilder {
           );
         }
       }
-      packageByLang[lang] =
-          await api.downloadMobileBookPackageChunked(langBookId);
+      packageByLang[lang] = await api.downloadMobileBookPackageChunked(
+        langBookId,
+        targetLang: lang,
+      );
     }
     for (final entry in packageByLang.entries) {
+      final readerPayload = _readerPayload(entry.value);
+      final readerLexicon = _buildReaderLexicon(bookId, entry.key, entry.value);
+      _validateReaderLexicon(entry.key, readerPayload, readerLexicon);
       await _writeJson(
         outputDir,
         'reader_lexicon_${entry.key}.json',
-        _buildReaderLexicon(bookId, entry.key, entry.value),
+        readerLexicon,
       );
       await _deleteIfExists(
           File('${outputDir.path}/dictionary_${entry.key}.json'));
@@ -1135,9 +1143,82 @@ class VirgilWorkbenchBuilder {
       'function_words': functionWords,
       'word_alignments': wordAlignments,
       'block_alignments': blockAlignments,
+      'alignment_groups':
+          alignment['alignment_groups'] as List<dynamic>? ?? const <dynamic>[],
       'target_coverage':
           alignment['target_coverage'] as List<dynamic>? ?? const <dynamic>[],
     };
+  }
+
+  void _validateReaderLexicon(
+    String targetLang,
+    Map<String, dynamic> reader,
+    Map<String, dynamic> lexicon,
+  ) {
+    final wordIds = <String>{};
+    final segmentTargets = <String, List<String>>{};
+    for (final paragraph
+        in (reader['paragraphs'] as List<dynamic>? ?? const [])) {
+      if (paragraph is! Map<String, dynamic>) continue;
+      for (final word in (paragraph['words'] as List<dynamic>? ?? const [])) {
+        if (word is Map<String, dynamic>) {
+          final id = (word['id'] ?? '').toString();
+          if (id.isNotEmpty) wordIds.add(id);
+        }
+      }
+      for (final segment
+          in (paragraph['segments_v2'] as List<dynamic>? ?? const [])) {
+        if (segment is! Map<String, dynamic>) continue;
+        final id = (segment['id'] ?? '').toString();
+        if (id.isNotEmpty) {
+          segmentTargets[id] =
+              _translationTokens((segment['target_text'] ?? '').toString());
+        }
+      }
+    }
+    final errors = <String>[];
+    for (final alignment
+        in (lexicon['word_alignments'] as List<dynamic>? ?? const [])) {
+      if (alignment is! Map<String, dynamic>) continue;
+      final wordId = (alignment['word_id'] ?? '').toString();
+      final segmentId = (alignment['segment_id'] ?? '').toString();
+      if (!wordIds.contains(wordId)) {
+        errors.add('unknown word_id $wordId');
+        continue;
+      }
+      final targetTokens = segmentTargets[segmentId];
+      if (targetTokens == null) {
+        errors.add('unknown segment_id $segmentId for $wordId');
+        continue;
+      }
+      final start = alignment['target_start_index'] as int? ?? -1;
+      final end = alignment['target_end_index'] as int? ?? -1;
+      final translation = (alignment['translation'] ?? '').toString();
+      if (start < 0 && end < 0 && translation.trim().isEmpty) continue;
+      if (start < 0 || end < start || end >= targetTokens.length) {
+        errors.add('invalid target span $start..$end for $wordId');
+        continue;
+      }
+      final span = targetTokens.sublist(start, end + 1);
+      final expected = _translationTokens(translation);
+      if (expected.isNotEmpty && !_sameTokens(span, expected)) {
+        errors.add(
+            'contextual translation mismatch for $wordId: "$translation" != "${span.join(' ')}"');
+      }
+    }
+    if (errors.isNotEmpty) {
+      final preview = errors.take(12).join('; ');
+      throw Exception(
+          'Reader lexicon contract failed for $targetLang: $preview');
+    }
+  }
+
+  bool _sameTokens(List<String> left, List<String> right) {
+    if (left.length != right.length) return false;
+    for (var index = 0; index < left.length; index++) {
+      if (left[index] != right[index]) return false;
+    }
+    return true;
   }
 
   Map<String, dynamic> _loadManifestWithDictionaries(

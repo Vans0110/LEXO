@@ -25,7 +25,7 @@
       "surface": "Wrong",
       "lemma": "wrong",
       "pos": "PROPN",
-      "contextual_translation": "неправильный",
+      "contextual_translation": "Неправильный",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:02930019-e925-4896-818f-6e9445cf3b6b_w_1",
@@ -179,7 +179,7 @@
       "surface": "Her",
       "lemma": "her",
       "pos": "PRON",
-      "contextual_translation": "её",
+      "contextual_translation": "Её",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:fbe36516-27d2-498e-84a9-59b525a08565_w_8",
@@ -289,7 +289,7 @@
       "surface": "She",
       "lemma": "she",
       "pos": "PRON",
-      "contextual_translation": "она",
+      "contextual_translation": "Она",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:e6d50837-bfc9-440d-b3d5-82accab31058_w_0",
@@ -523,7 +523,7 @@
       "surface": "in",
       "lemma": "in",
       "pos": "ADP",
-      "contextual_translation": "в",
+      "contextual_translation": "В",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:e6d50837-bfc9-440d-b3d5-82accab31058_w_15",
@@ -583,7 +583,7 @@
       "surface": "man",
       "lemma": "man",
       "pos": "NOUN",
-      "contextual_translation": "мужчина",
+      "contextual_translation": "Мужчина",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:e6d50837-bfc9-440d-b3d5-82accab31058_w_19",
@@ -677,7 +677,7 @@
       "surface": "Good",
       "lemma": "good",
       "pos": "ADJ",
-      "contextual_translation": "доброе",
+      "contextual_translation": "Доброе",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:6464118f-d405-4d7d-9606-3f99b01fd550_w_0",
@@ -741,7 +741,7 @@
       "surface": "Welcome",
       "lemma": "welcome",
       "pos": "INTJ",
-      "contextual_translation": "добро пожаловать",
+      "contextual_translation": "Добро пожаловать",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:6464118f-d405-4d7d-9606-3f99b01fd550_w_4",
@@ -899,7 +899,7 @@
       "surface": "It",
       "lemma": "it",
       "pos": "PRON",
-      "contextual_translation": "там",
+      "contextual_translation": "Там",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:a8098009-5419-4a1f-b2eb-cb799d0da1d5_w_5",
@@ -1105,7 +1105,7 @@
       "surface": "I",
       "lemma": "i",
       "pos": "PRON",
-      "contextual_translation": "я",
+      "contextual_translation": "Я",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_5",
@@ -1156,7 +1156,7 @@
       "status": "dictionary_fallback",
       "owner_unit_id": "word:567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_8",
       "tap_unit_id": "word:567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_8",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "meaning is realized only by alignment group alignment_group:11:wrong_room"
     },
     {
       "word_id": "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_9",
@@ -1165,14 +1165,12 @@
       "surface": "wrong",
       "lemma": "wrong",
       "pos": "ADJ",
-      "contextual_translation": "той",
-      "dictionary_translation": "",
-      "status": "independent_translation",
+      "contextual_translation": "",
+      "dictionary_translation": "не той",
+      "status": "dictionary_fallback",
       "owner_unit_id": "word:567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_9",
       "tap_unit_id": "word:567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_9",
-      "empty_reason": "",
-      "target_start_index": 3,
-      "target_end_index": 3
+      "empty_reason": "meaning is realized only by alignment group alignment_group:11:wrong_room"
     },
     {
       "word_id": "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_10",
@@ -1211,7 +1209,7 @@
       "surface": "teacher",
       "lemma": "teacher",
       "pos": "NOUN",
-      "contextual_translation": "учитель",
+      "contextual_translation": "Учитель",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_1",
@@ -1243,7 +1241,7 @@
       "surface": "Room",
       "lemma": "room",
       "pos": "NOUN",
-      "contextual_translation": "комната",
+      "contextual_translation": "Комната",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_3",
@@ -1305,7 +1303,7 @@
       "surface": "This",
       "lemma": "this",
       "pos": "PRON",
-      "contextual_translation": "это",
+      "contextual_translation": "Это",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_7",
@@ -1457,7 +1455,7 @@
       "surface": "student",
       "lemma": "student",
       "pos": "NOUN",
-      "contextual_translation": "студент",
+      "contextual_translation": "Студент",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:99488ff5-68d5-4b87-81f2-60126fa4e42a_w_1",
@@ -1535,7 +1533,7 @@
       "surface": "Downstairs",
       "lemma": "downstair",
       "pos": "NOUN",
-      "contextual_translation": "внизу",
+      "contextual_translation": "Внизу",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:99488ff5-68d5-4b87-81f2-60126fa4e42a_w_6",
@@ -1643,7 +1641,7 @@
       "surface": "you",
       "lemma": "you",
       "pos": "PRON",
-      "contextual_translation": "вы",
+      "contextual_translation": "Вы",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:52d6ff91-c29e-4ffc-baf4-02b000b66711_w_1",
@@ -1737,7 +1735,7 @@
       "surface": "Yes",
       "lemma": "yes",
       "pos": "INTJ",
-      "contextual_translation": "да",
+      "contextual_translation": "Да",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:ba26b408-e319-4f0b-99f3-95ee0fbaeda6_w_0",
@@ -1783,7 +1781,7 @@
       "surface": "Welcome",
       "lemma": "welcome",
       "pos": "INTJ",
-      "contextual_translation": "добро пожаловать",
+      "contextual_translation": "Добро пожаловать",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:be54d4a1-427c-42d3-bba0-b3ed78ea6d5b_w_0",
@@ -1815,7 +1813,7 @@
       "surface": "Please",
       "lemma": "please",
       "pos": "INTJ",
-      "contextual_translation": "пожалуйста",
+      "contextual_translation": "Пожалуйста",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:be54d4a1-427c-42d3-bba0-b3ed78ea6d5b_w_2",
@@ -2097,7 +2095,7 @@
       "surface": "She",
       "lemma": "she",
       "pos": "PRON",
-      "contextual_translation": "она",
+      "contextual_translation": "Она",
       "dictionary_translation": "",
       "status": "independent_translation",
       "owner_unit_id": "word:ea02b48f-829d-4860-97bb-baadc3a7b5ac_w_13",
@@ -2211,7 +2209,7 @@
       "pos": "DET",
       "contextual_translation": "",
       "dictionary_translation": "этот",
-      "status": "block_component",
+      "status": "grammar_component",
       "owner_unit_id": "block:23:4",
       "tap_unit_id": "block:23:4",
       "empty_reason": "article is absent in Russian"
@@ -2225,7 +2223,7 @@
       "pos": "NOUN",
       "contextual_translation": "конца",
       "dictionary_translation": "",
-      "status": "block_component",
+      "status": "grammar_component",
       "owner_unit_id": "block:23:4",
       "tap_unit_id": "block:23:4",
       "empty_reason": "",
@@ -2241,10 +2239,10 @@
       "pos": "ADP",
       "contextual_translation": "",
       "dictionary_translation": "из",
-      "status": "block_component",
+      "status": "grammar_component",
       "owner_unit_id": "block:23:4",
       "tap_unit_id": "block:23:4",
-      "empty_reason": "the relation is expressed by the Russian genitive form дня"
+      "empty_reason": "relation to the following noun is expressed by the target-language construction"
     },
     {
       "word_id": "ea02b48f-829d-4860-97bb-baadc3a7b5ac_w_23",
@@ -2255,10 +2253,10 @@
       "pos": "DET",
       "contextual_translation": "",
       "dictionary_translation": "этот",
-      "status": "zero_correspondence",
+      "status": "dictionary_fallback",
       "owner_unit_id": "word:ea02b48f-829d-4860-97bb-baadc3a7b5ac_w_23",
       "tap_unit_id": "word:ea02b48f-829d-4860-97bb-baadc3a7b5ac_w_23",
-      "empty_reason": "article has no independent Russian equivalent in this occurrence"
+      "empty_reason": "no independent target span in this occurrence"
     },
     {
       "word_id": "ea02b48f-829d-4860-97bb-baadc3a7b5ac_w_24",
@@ -2277,6 +2275,88 @@
       "target_end_index": 8
     }
   ],
+  "alignment_groups": [
+    {
+      "unit_id": "alignment_group:2:room_number",
+      "kind": "structural_recast",
+      "segment_index": 2,
+      "source_word_ids": [
+        "fbe36516-27d2-498e-84a9-59b525a08565_w_13",
+        "fbe36516-27d2-498e-84a9-59b525a08565_w_14"
+      ],
+      "group_only_word_ids": [],
+      "source_text": "Room fourteen",
+      "target_start_index": 6,
+      "target_end_index": 8,
+      "target_text": "комнате номер четырнадцать",
+      "reason": "Структурное слово «номер» принадлежит всей группе Room + number и не является переводом отдельного английского слова."
+    },
+    {
+      "unit_id": "alignment_group:3:room_number",
+      "kind": "structural_recast",
+      "segment_index": 3,
+      "source_word_ids": [
+        "e6d50837-bfc9-440d-b3d5-82accab31058_w_3",
+        "e6d50837-bfc9-440d-b3d5-82accab31058_w_4"
+      ],
+      "group_only_word_ids": [],
+      "source_text": "Room forty-one",
+      "target_start_index": 3,
+      "target_end_index": 6,
+      "target_text": "комнату номер сорок один",
+      "reason": "Структурное слово «номер» принадлежит всей группе Room + number и не является переводом отдельного английского слова."
+    },
+    {
+      "unit_id": "alignment_group:13:room_number",
+      "kind": "structural_recast",
+      "segment_index": 13,
+      "source_word_ids": [
+        "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_3",
+        "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_4"
+      ],
+      "group_only_word_ids": [],
+      "source_text": "Room fourteen",
+      "target_start_index": 0,
+      "target_end_index": 2,
+      "target_text": "комната номер четырнадцать",
+      "reason": "Структурное слово «номер» принадлежит всей группе Room + number и не является переводом отдельного английского слова."
+    },
+    {
+      "unit_id": "alignment_group:14:room_number",
+      "kind": "structural_recast",
+      "segment_index": 14,
+      "source_word_ids": [
+        "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_9",
+        "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_10"
+      ],
+      "group_only_word_ids": [],
+      "source_text": "Room forty-one",
+      "target_start_index": 1,
+      "target_end_index": 4,
+      "target_text": "комната номер сорок один",
+      "reason": "Структурное слово «номер» принадлежит всей группе Room + number и не является переводом отдельного английского слова."
+    },
+    {
+      "unit_id": "alignment_group:11:wrong_room",
+      "kind": "structural_recast",
+      "segment_index": 11,
+      "source_word_ids": [
+        "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_7",
+        "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_8",
+        "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_9",
+        "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_10"
+      ],
+      "group_only_word_ids": [
+        "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_8",
+        "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_9"
+      ],
+      "source_text": "in the wrong room",
+      "target_start_index": 1,
+      "target_end_index": 4,
+      "target_text": "не в той комнате",
+      "reason": "Перестроенный перевод выражает значение всей группы; отдельная связь wrong с «той» была бы ложной."
+    }
+  ],
   "target_coverage": [
     {
       "segment_index": 2,
@@ -2292,36 +2372,6 @@
       "reason": "Русский сказуемый реализует всю конструкцию class is in, а не отдельное английское слово."
     },
     {
-      "segment_index": 2,
-      "target_start_index": 7,
-      "target_end_index": 7,
-      "target_text": "номер",
-      "ownership": "insertion",
-      "source_word_ids": [
-        "fbe36516-27d2-498e-84a9-59b525a08565_w_13",
-        "fbe36516-27d2-498e-84a9-59b525a08565_w_14"
-      ],
-      "display_anchor_word_id": "fbe36516-27d2-498e-84a9-59b525a08565_w_14",
-      "highlight_target_start_index": 7,
-      "highlight_target_end_index": 8,
-      "reason": "Русское структурное слово принадлежит сочетанию Room fourteen; карточка сохраняется за числительным."
-    },
-    {
-      "segment_index": 3,
-      "target_start_index": 4,
-      "target_end_index": 4,
-      "target_text": "номер",
-      "ownership": "insertion",
-      "source_word_ids": [
-        "e6d50837-bfc9-440d-b3d5-82accab31058_w_3",
-        "e6d50837-bfc9-440d-b3d5-82accab31058_w_4"
-      ],
-      "display_anchor_word_id": "e6d50837-bfc9-440d-b3d5-82accab31058_w_4",
-      "highlight_target_start_index": 4,
-      "highlight_target_end_index": 6,
-      "reason": "Русское структурное слово принадлежит сочетанию Room forty-one; карточка сохраняется за числительным."
-    },
-    {
       "segment_index": 4,
       "target_start_index": 2,
       "target_end_index": 2,
@@ -2334,37 +2384,6 @@
       "reason": "Токен принадлежит подтверждённому грамматическому блоку there are."
     },
     {
-      "segment_index": 11,
-      "target_start_index": 1,
-      "target_end_index": 1,
-      "target_text": "не",
-      "ownership": "restructure",
-      "source_word_ids": [
-        "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_7",
-        "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_8",
-        "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_9"
-      ],
-      "display_anchor_word_id": "567a1ed3-af5b-4855-af82-0e9bf17d46a3_w_9",
-      "highlight_target_start_index": 1,
-      "highlight_target_end_index": 3,
-      "reason": "Отрицание возникает при русской перестройке конструкции in the wrong, а не переводит одно слово."
-    },
-    {
-      "segment_index": 13,
-      "target_start_index": 1,
-      "target_end_index": 1,
-      "target_text": "номер",
-      "ownership": "insertion",
-      "source_word_ids": [
-        "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_3",
-        "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_4"
-      ],
-      "display_anchor_word_id": "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_4",
-      "highlight_target_start_index": 1,
-      "highlight_target_end_index": 2,
-      "reason": "Русское структурное слово принадлежит сочетанию Room fourteen; карточка сохраняется за числительным."
-    },
-    {
       "segment_index": 13,
       "target_start_index": 3,
       "target_end_index": 3,
@@ -2374,25 +2393,7 @@
         "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_5",
         "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_6"
       ],
-      "display_anchor_word_id": "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_6",
-      "highlight_target_start_index": 3,
-      "highlight_target_end_index": 4,
       "reason": "Русское сказуемое реализует конструкцию is downstairs, а не отдельное is."
-    },
-    {
-      "segment_index": 14,
-      "target_start_index": 2,
-      "target_end_index": 2,
-      "target_text": "номер",
-      "ownership": "insertion",
-      "source_word_ids": [
-        "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_9",
-        "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_10"
-      ],
-      "display_anchor_word_id": "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_10",
-      "highlight_target_start_index": 2,
-      "highlight_target_end_index": 4,
-      "reason": "Русское структурное слово принадлежит сочетанию Room forty-one; карточка сохраняется за числительным."
     },
     {
       "segment_index": 14,
@@ -2407,9 +2408,6 @@
         "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_14",
         "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_15"
       ],
-      "display_anchor_word_id": "0c653fbc-4f89-418a-b87c-d2124e8bccbb_w_12",
-      "highlight_target_start_index": 5,
-      "highlight_target_end_index": 8,
       "reason": "Русское причастие связывает перестроенную конструкцию местоположения и не переводит отдельное слово."
     },
     {
@@ -2422,9 +2420,6 @@
         "ba26b408-e319-4f0b-99f3-95ee0fbaeda6_w_1",
         "ba26b408-e319-4f0b-99f3-95ee0fbaeda6_w_2"
       ],
-      "display_anchor_word_id": "ba26b408-e319-4f0b-99f3-95ee0fbaeda6_w_1",
-      "highlight_target_start_index": 1,
-      "highlight_target_end_index": 2,
       "reason": "Указательное слово появляется при русской реализации краткого ответа I am."
     },
     {
@@ -2438,9 +2433,6 @@
         "ea02b48f-829d-4860-97bb-baadc3a7b5ac_w_3",
         "ea02b48f-829d-4860-97bb-baadc3a7b5ac_w_4"
       ],
-      "display_anchor_word_id": "ea02b48f-829d-4860-97bb-baadc3a7b5ac_w_4",
-      "highlight_target_start_index": 1,
-      "highlight_target_end_index": 2,
       "reason": "Предлог появляется при русской перестройке конструкции duration + late."
     }
   ],

@@ -109,6 +109,18 @@ class LexoStorage:
                     last_opened_at TEXT,
                     content_hash TEXT NOT NULL DEFAULT ''
                 );
+                CREATE TABLE IF NOT EXISTS book_translations (
+                    book_id TEXT NOT NULL,
+                    target_lang TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'ready',
+                    model_name TEXT NOT NULL DEFAULT '',
+                    error_message TEXT,
+                    source_content_hash TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY(book_id, target_lang),
+                    FOREIGN KEY(book_id) REFERENCES books(id) ON DELETE CASCADE
+                );
                 CREATE TABLE IF NOT EXISTS paragraphs (
                     id TEXT PRIMARY KEY,
                     book_id TEXT NOT NULL,
@@ -159,6 +171,21 @@ class LexoStorage:
                     source_coverage_json TEXT NOT NULL DEFAULT '{}',
                     FOREIGN KEY(book_id) REFERENCES books(id) ON DELETE CASCADE,
                     FOREIGN KEY(paragraph_id) REFERENCES paragraphs(id) ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS segment_translations (
+                    segment_id TEXT NOT NULL,
+                    book_id TEXT NOT NULL,
+                    target_lang TEXT NOT NULL,
+                    target_text TEXT NOT NULL DEFAULT '',
+                    translation_kind TEXT NOT NULL DEFAULT 'none',
+                    provider_used TEXT NOT NULL DEFAULT '',
+                    analysis_version TEXT NOT NULL DEFAULT 'source_only_v1',
+                    segment_meta_json TEXT NOT NULL DEFAULT '{}',
+                    candidate_count INTEGER NOT NULL DEFAULT 0,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY(segment_id, target_lang),
+                    FOREIGN KEY(segment_id) REFERENCES segments(id) ON DELETE CASCADE,
+                    FOREIGN KEY(book_id) REFERENCES books(id) ON DELETE CASCADE
                 );
                 CREATE TABLE IF NOT EXISTS source_words (
                     id TEXT PRIMARY KEY,
@@ -314,6 +341,7 @@ class LexoStorage:
                 );
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_paragraphs_book_order ON paragraphs(book_id, order_index);
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_segments_paragraph_order ON segments(paragraph_id, order_index);
+                CREATE INDEX IF NOT EXISTS idx_segment_translations_book_lang ON segment_translations(book_id, target_lang);
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_source_words_segment_order ON source_words(segment_id, order_index_in_segment);
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_source_words_paragraph_order ON source_words(paragraph_id, order_index_in_paragraph);
                 CREATE INDEX IF NOT EXISTS idx_book_dictionary_entries_book ON book_dictionary_entries(book_id);
@@ -474,6 +502,10 @@ class LexoStorage:
                 "SELECT content_hash FROM books WHERE id = ?",
                 (book_id,),
             ).fetchone()
+            source_changed = (
+                existing is None
+                or str(existing["content_hash"] or "") != content_hash
+            )
             preserve_audio = (
                 existing is not None
                 and str(existing["content_hash"] or "") == content_hash
@@ -512,11 +544,24 @@ class LexoStorage:
                     content_hash,
                 ),
             )
-            self._replace_book_content(
+            if source_changed:
+                self._replace_book_content(
+                    conn,
+                    book_id,
+                    payloads,
+                    preserve_audio=preserve_audio,
+                )
+            else:
+                self._apply_existing_source_ids(conn, book_id, payloads)
+                self._assert_source_payload_matches(conn, book_id, payloads)
+            self._upsert_book_translation(
                 conn,
-                book_id,
-                payloads,
-                preserve_audio=preserve_audio,
+                book_id=book_id,
+                target_lang=target_lang,
+                model_name=model_name,
+                source_content_hash=content_hash,
+                paragraph_payloads=payloads,
+                timestamp=created_at,
             )
             conn.execute(
                 """
@@ -548,7 +593,9 @@ class LexoStorage:
         candidate_count = segment_qa_candidate_count()
         dictionary_cache: dict[tuple[str, str], tuple[str, ...]] = {}
         for paragraph_index, paragraph_text in enumerate(paragraphs):
-            paragraph_id = str(uuid.uuid4())
+            paragraph_id = self._stable_source_id(
+                "paragraph", book_id, paragraph_index, normalize_text(paragraph_text)
+            )
             segments = self._split_segments(paragraph_text)
             translated_segments = (
                 []
@@ -559,7 +606,12 @@ class LexoStorage:
             paragraph_word_index = 0
             segment_payloads: list[dict] = []
             for segment_index, segment_text in enumerate(segments):
-                segment_id = str(uuid.uuid4())
+                segment_id = self._stable_source_id(
+                    "segment",
+                    paragraph_id,
+                    segment_index,
+                    normalize_text(segment_text),
+                )
                 segment_words = list(WORD_RE.finditer(segment_text))
                 word_analyses = self.source_pos_lemma.analyze_words(
                     segment_text,
@@ -591,7 +643,12 @@ class LexoStorage:
                     analysis = word_analyses[local_index]
                     paragraph_words.append(
                         {
-                            "id": f"{paragraph_id}_w_{paragraph_word_index}",
+                            "id": self._stable_source_id(
+                                "word",
+                                segment_id,
+                                local_index,
+                                normalized,
+                            ),
                             "book_id": book_id,
                             "paragraph_id": paragraph_id,
                             "segment_id": segment_id,
@@ -888,6 +945,194 @@ class LexoStorage:
         self._rebuild_book_dictionary_entries(conn, book_id)
         shutil.rmtree(self.tts_dir / book_id, ignore_errors=True)
 
+    def _assert_source_payload_matches(
+        self,
+        conn: sqlite3.Connection,
+        book_id: str,
+        paragraph_payloads: list[dict],
+    ) -> None:
+        stored_segments = {
+            str(row["id"]): str(row["source_text"] or "")
+            for row in conn.execute(
+                "SELECT id, source_text FROM segments WHERE book_id = ?",
+                (book_id,),
+            ).fetchall()
+        }
+        incoming_segments = {
+            str(segment["id"]): str(segment["source_text"] or "")
+            for paragraph in paragraph_payloads
+            for segment in paragraph["segments"]
+        }
+        stored_words = {
+            str(row["id"]): (
+                str(row["segment_id"]),
+                int(row["order_index_in_segment"]),
+                str(row["normalized_text"] or ""),
+            )
+            for row in conn.execute(
+                """
+                SELECT id, segment_id, order_index_in_segment, normalized_text
+                FROM source_words WHERE book_id = ?
+                """,
+                (book_id,),
+            ).fetchall()
+        }
+        incoming_words = {
+            str(word["id"]): (
+                str(word["segment_id"]),
+                int(word["order_index_in_segment"]),
+                str(word["normalized_text"] or ""),
+            )
+            for paragraph in paragraph_payloads
+            for word in paragraph["words"]
+        }
+        if stored_segments != incoming_segments or stored_words != incoming_words:
+            raise ValueError(
+                "Canonical source graph mismatch for unchanged source text"
+            )
+
+    def _apply_existing_source_ids(
+        self,
+        conn: sqlite3.Connection,
+        book_id: str,
+        paragraph_payloads: list[dict],
+    ) -> None:
+        paragraph_rows = conn.execute(
+            "SELECT id, order_index FROM paragraphs WHERE book_id = ?",
+            (book_id,),
+        ).fetchall()
+        paragraph_ids = {int(row["order_index"]): str(row["id"]) for row in paragraph_rows}
+        segment_rows = conn.execute(
+            """
+            SELECT segments.id, paragraphs.order_index AS paragraph_order,
+                   segments.order_index AS segment_order
+            FROM segments
+            JOIN paragraphs ON paragraphs.id = segments.paragraph_id
+            WHERE segments.book_id = ?
+            """,
+            (book_id,),
+        ).fetchall()
+        segment_ids = {
+            (int(row["paragraph_order"]), int(row["segment_order"])): str(row["id"])
+            for row in segment_rows
+        }
+        word_rows = conn.execute(
+            """
+            SELECT source_words.id, paragraphs.order_index AS paragraph_order,
+                   segments.order_index AS segment_order,
+                   source_words.order_index_in_segment AS word_order
+            FROM source_words
+            JOIN paragraphs ON paragraphs.id = source_words.paragraph_id
+            JOIN segments ON segments.id = source_words.segment_id
+            WHERE source_words.book_id = ?
+            """,
+            (book_id,),
+        ).fetchall()
+        word_ids = {
+            (
+                int(row["paragraph_order"]),
+                int(row["segment_order"]),
+                int(row["word_order"]),
+            ): str(row["id"])
+            for row in word_rows
+        }
+        for paragraph in paragraph_payloads:
+            paragraph_order = int(paragraph["order_index"])
+            paragraph_id = paragraph_ids.get(paragraph_order)
+            if paragraph_id is None:
+                return
+            paragraph["id"] = paragraph_id
+            incoming_segment_orders = {
+                str(segment["id"]): int(segment["order_index"])
+                for segment in paragraph["segments"]
+            }
+            for segment in paragraph["segments"]:
+                segment_order = int(segment["order_index"])
+                segment_id = segment_ids.get((paragraph_order, segment_order))
+                if segment_id is None:
+                    return
+                segment["id"] = segment_id
+                segment["paragraph_id"] = paragraph_id
+            for word in paragraph["words"]:
+                segment_order = incoming_segment_orders[str(word["segment_id"])]
+                canonical_segment_id = segment_ids[(paragraph_order, segment_order)]
+                word["id"] = word_ids[
+                    (
+                        paragraph_order,
+                        segment_order,
+                        int(word["order_index_in_segment"]),
+                    )
+                ]
+                word["paragraph_id"] = paragraph_id
+                word["segment_id"] = canonical_segment_id
+
+    def _upsert_book_translation(
+        self,
+        conn: sqlite3.Connection,
+        *,
+        book_id: str,
+        target_lang: str,
+        model_name: str,
+        source_content_hash: str,
+        paragraph_payloads: list[dict],
+        timestamp: str,
+    ) -> None:
+        lang = str(target_lang or "").strip().lower()
+        if not lang:
+            raise ValueError("target_lang is required")
+        conn.execute(
+            """
+            INSERT INTO book_translations(
+                book_id, target_lang, status, model_name, error_message,
+                source_content_hash, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, NULL, ?, ?, ?)
+            ON CONFLICT(book_id, target_lang) DO UPDATE SET
+                status = excluded.status,
+                model_name = excluded.model_name,
+                error_message = NULL,
+                source_content_hash = excluded.source_content_hash,
+                updated_at = excluded.updated_at
+            """,
+            (
+                book_id,
+                lang,
+                BOOK_STATUS_READY,
+                model_name,
+                source_content_hash,
+                timestamp,
+                timestamp,
+            ),
+        )
+        conn.execute(
+            "DELETE FROM segment_translations WHERE book_id = ? AND target_lang = ?",
+            (book_id, lang),
+        )
+        conn.executemany(
+            """
+            INSERT INTO segment_translations(
+                segment_id, book_id, target_lang, target_text,
+                translation_kind, provider_used, analysis_version,
+                segment_meta_json, candidate_count, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                (
+                    str(segment["id"]),
+                    book_id,
+                    lang,
+                    str(segment.get("target_text") or ""),
+                    str(segment.get("translation_kind") or "none"),
+                    str(segment.get("provider_used") or ""),
+                    str(segment.get("analysis_version") or "source_only_v1"),
+                    str(segment.get("segment_meta_json") or "{}"),
+                    int(segment.get("candidate_count") or 0),
+                    timestamp,
+                )
+                for paragraph in paragraph_payloads
+                for segment in paragraph["segments"]
+            ],
+        )
+
     def rebuild_book_library_dictionary(self, book_id: str | None = None, target_lang: str = "ru") -> dict:
         resolved = self._resolve_required_book_id(book_id)
         normalized_lang = str(target_lang or "ru").strip().lower() or "ru"
@@ -1177,7 +1422,11 @@ class LexoStorage:
             count = self._rebuild_book_dictionary_entries(conn, resolved)
         return {"ok": True, "book_id": resolved, "dictionary_entry_count": count}
 
-    def get_paragraphs(self, book_id: str | None = None) -> dict:
+    def get_paragraphs(
+        self,
+        book_id: str | None = None,
+        target_lang: str | None = None,
+    ) -> dict:
         with self._connect() as conn:
             resolved_book_id = self._resolve_book_id(conn, book_id)
             if resolved_book_id is None:
@@ -1191,6 +1440,10 @@ class LexoStorage:
                     "paragraphs": [],
                 }
             book = conn.execute("SELECT * FROM books WHERE id = ?", (resolved_book_id,)).fetchone()
+            selected_target_lang = (
+                str(target_lang or "").strip().lower()
+                or (str(book["target_lang"] or "ru") if book else "ru")
+            )
             paragraphs = conn.execute(
                 "SELECT * FROM paragraphs WHERE book_id = ? ORDER BY order_index",
                 (resolved_book_id,),
@@ -1203,6 +1456,16 @@ class LexoStorage:
                 "SELECT * FROM source_words WHERE book_id = ? ORDER BY paragraph_id, order_index_in_paragraph",
                 (resolved_book_id,),
             ).fetchall()
+            translation_rows = conn.execute(
+                """
+                SELECT * FROM segment_translations
+                WHERE book_id = ? AND target_lang = ?
+                """,
+                (resolved_book_id, selected_target_lang),
+            ).fetchall()
+        translations_by_segment = {
+            str(row["segment_id"]): row for row in translation_rows
+        }
         segments_by_paragraph: dict[str, list[sqlite3.Row]] = {}
         for row in segments:
             segments_by_paragraph.setdefault(str(row["paragraph_id"]), []).append(row)
@@ -1214,35 +1477,81 @@ class LexoStorage:
             "title": str(book["title"] or "") if book else "",
             "status": str(book["status"] or BOOK_STATUS_READY) if book else BOOK_STATUS_READY,
             "source_lang": str(book["source_lang"] or "en") if book else "en",
-            "target_lang": str(book["target_lang"] or "ru") if book else "ru",
+            "target_lang": selected_target_lang,
             "current_paragraph_index": int(book["current_paragraph_index"] or 0) if book else 0,
             "paragraphs": [
-                self._reader_paragraph_payload(row, segments_by_paragraph.get(str(row["id"]), []), words_by_paragraph.get(str(row["id"]), []))
+                self._reader_paragraph_payload(
+                    row,
+                    segments_by_paragraph.get(str(row["id"]), []),
+                    words_by_paragraph.get(str(row["id"]), []),
+                    translations_by_segment,
+                )
                 for row in paragraphs
             ],
         }
 
-    def _reader_paragraph_payload(self, paragraph: sqlite3.Row, segments: list[sqlite3.Row], words: list[sqlite3.Row]) -> dict:
+    def _reader_paragraph_payload(
+        self,
+        paragraph: sqlite3.Row,
+        segments: list[sqlite3.Row],
+        words: list[sqlite3.Row],
+        translations_by_segment: dict[str, sqlite3.Row] | None = None,
+    ) -> dict:
+        translations_by_segment = translations_by_segment or {}
         segments_by_id = {str(row["id"]): row for row in segments}
-        word_payloads = [self._reader_word_payload(row, segments_by_id.get(str(row["segment_id"]))) for row in words]
+        word_payloads = [
+            self._reader_word_payload(
+                row,
+                segments_by_id.get(str(row["segment_id"])),
+                translations_by_segment.get(str(row["segment_id"])),
+            )
+            for row in words
+        ]
+        segment_payloads = [
+            self._reader_segment_payload(
+                row, translations_by_segment.get(str(row["id"]))
+            )
+            for row in segments
+        ]
         return {
             "index": int(paragraph["order_index"]),
             "source_text": str(paragraph["source_text"] or ""),
-            "target_text": str(paragraph["target_text"] or ""),
-            "segments_v2": [self._reader_segment_payload(row) for row in segments],
+            "target_text": " ".join(
+                str(item["target_text"] or "")
+                for item in segment_payloads
+                if str(item["target_text"] or "").strip()
+            ),
+            "segments_v2": segment_payloads,
             "tokens": self._build_reader_tokens(str(paragraph["source_text"] or ""), word_payloads),
             "words": word_payloads,
         }
 
-    def _reader_segment_payload(self, row: sqlite3.Row) -> dict:
+    def _reader_segment_payload(
+        self,
+        row: sqlite3.Row,
+        translation: sqlite3.Row | None = None,
+    ) -> dict:
+        target_text = (
+            str(translation["target_text"] or "")
+            if translation is not None
+            else str(row["target_text"] or "")
+        )
         return {
             "id": str(row["id"]),
             "order_index": int(row["order_index"]),
             "source_text": str(row["source_text"] or ""),
-            "target_text": str(row["target_text"] or ""),
+            "target_text": target_text,
             "segment_type": "source_segment",
-            "translation_kind": str(row["translation_kind"] or "none"),
-            "analysis_version": str(row["analysis_version"] or "source_only_v1"),
+            "translation_kind": str(
+                translation["translation_kind"]
+                if translation is not None
+                else row["translation_kind"] or "none"
+            ),
+            "analysis_version": str(
+                translation["analysis_version"]
+                if translation is not None
+                else row["analysis_version"] or "source_only_v1"
+            ),
             "segment_meta": {},
             "source_analysis": {},
             "source_lookup": {},
@@ -1251,11 +1560,22 @@ class LexoStorage:
             "segment_alignment": {},
         }
 
-    def _reader_word_payload(self, row: sqlite3.Row, segment: sqlite3.Row | None = None) -> dict:
+    def _reader_word_payload(
+        self,
+        row: sqlite3.Row,
+        segment: sqlite3.Row | None = None,
+        translation: sqlite3.Row | None = None,
+    ) -> dict:
         text = str(row["surface_text"] or "")
         word_id = str(row["id"])
         segment_source_text = str(segment["source_text"] or "") if segment is not None else ""
-        segment_target_text = str(segment["target_text"] or "") if segment is not None else ""
+        segment_target_text = (
+            str(translation["target_text"] or "")
+            if translation is not None
+            else str(segment["target_text"] or "")
+            if segment is not None
+            else ""
+        )
         return {
             "id": word_id,
             "text": text,
@@ -1719,10 +2039,17 @@ class LexoStorage:
             ],
         }
 
-    def build_mobile_book_package(self, book_id: str) -> dict:
-        reader_payload = self.get_paragraphs(book_id)
+    def build_mobile_book_package(
+        self,
+        book_id: str,
+        target_lang: str | None = None,
+    ) -> dict:
         book_status = self.get_book_status(book_id)
-        target_lang = str(book_status.get("target_lang") or "ru").strip().lower()
+        target_lang = (
+            str(target_lang or "").strip().lower()
+            or str(book_status.get("target_lang") or "ru").strip().lower()
+        )
+        reader_payload = self.get_paragraphs(book_id, target_lang)
         dictionary_manifests = {
             "ru": self._book_dictionary_manifest(book_id, "ru"),
             "uk": self._book_dictionary_manifest(book_id, "uk"),
@@ -1747,16 +2074,24 @@ class LexoStorage:
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
-    def build_mobile_book_reader_package(self, book_id: str) -> dict:
-        reader_payload = self.get_paragraphs(book_id)
+    def build_mobile_book_reader_package(
+        self,
+        book_id: str,
+        target_lang: str | None = None,
+    ) -> dict:
         book_status = self.get_book_status(book_id)
+        target_lang = (
+            str(target_lang or "").strip().lower()
+            or str(book_status.get("target_lang") or "ru").strip().lower()
+        )
+        reader_payload = self.get_paragraphs(book_id, target_lang)
         return {
             "meta": {
                 "local_book_id": str(book_status.get("id") or ""),
                 "desktop_book_id": str(book_status.get("id") or ""),
                 "title": str(book_status.get("title") or ""),
                 "source_lang": str(book_status.get("source_lang") or "en"),
-                "target_lang": str(book_status.get("target_lang") or "ru"),
+                "target_lang": target_lang,
                 "status": str(book_status.get("status") or BOOK_STATUS_READY),
                 "current_paragraph_index": int(book_status.get("current_paragraph_index") or 0),
             },
@@ -1766,8 +2101,12 @@ class LexoStorage:
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
-    def build_mobile_book_package_manifest(self, book_id: str) -> dict:
-        package = self.build_mobile_book_package(book_id)
+    def build_mobile_book_package_manifest(
+        self,
+        book_id: str,
+        target_lang: str | None = None,
+    ) -> dict:
+        package = self.build_mobile_book_package(book_id, target_lang)
         parts = self._build_mobile_book_package_parts(package)
         return {
             "meta": package["meta"],
@@ -1783,8 +2122,13 @@ class LexoStorage:
             ],
         }
 
-    def build_mobile_book_package_part(self, book_id: str, part_id: str) -> dict:
-        package = self.build_mobile_book_package(book_id)
+    def build_mobile_book_package_part(
+        self,
+        book_id: str,
+        part_id: str,
+        target_lang: str | None = None,
+    ) -> dict:
+        package = self.build_mobile_book_package(book_id, target_lang)
         for item in self._build_mobile_book_package_parts(package):
             if item["part_id"] == part_id:
                 return {
@@ -2754,6 +3098,11 @@ class LexoStorage:
 
     def _compute_content_hash(self, source_text: str) -> str:
         return hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+
+    def _stable_source_id(self, kind: str, *parts: object) -> str:
+        material = "\n".join([kind, *(str(part) for part in parts)])
+        digest = self._compute_content_hash(material)[:24]
+        return f"src_{kind}_{digest}"
 
     def _book_id_for_import(
         self,

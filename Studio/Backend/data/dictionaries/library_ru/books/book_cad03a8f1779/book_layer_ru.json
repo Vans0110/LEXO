@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "book_id": "book_cad03a8f1779",
   "title": "The Wrong Classroom",
   "source_lang": "en",
@@ -257,7 +257,8 @@
       "pos": "ADJ",
       "translation": "жаль",
       "translations": [
-        "жаль"
+        "жаль",
+        "Мне очень жаль"
       ]
     },
     {
@@ -579,11 +580,11 @@
       "word": "wrong",
       "lemma": "wrong",
       "pos": "ADJ",
-      "translation": "не в той",
-      "translations": [
-        "не в той",
-        "той"
-      ]
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "не той",
+      "dictionary_translation_source": "skill_fallback"
     },
     {
       "word": "books",
@@ -865,7 +866,6 @@
       "source": "sit down",
       "translation": "садится",
       "type": "phrasal_verb",
-      "explanation": "Означает перейти из положения стоя в положение сидя.",
       "components": [
         {
           "source": "sit",
@@ -883,13 +883,13 @@
       ],
       "source_forms": [
         "sits down"
-      ]
+      ],
+      "explanation": "Означает перейти из положения стоя в положение сидя."
     },
     {
       "source": "there are",
       "translation": "находятся",
       "type": "grammar_construction",
-      "explanation": "Сообщает, что несколько людей или предметов существуют либо находятся где-то.",
       "components": [
         {
           "source": "there",
@@ -908,13 +908,13 @@
       ],
       "source_forms": [
         "There are"
-      ]
+      ],
+      "explanation": "Сообщает, что несколько людей или предметов существуют либо находятся где-то."
     },
     {
       "source": "i am sorry",
       "translation": "мне очень жаль",
       "type": "fixed_expression",
-      "explanation": "Устойчивое выражение для извинения или сожаления.",
       "components": [
         {
           "source": "I",
@@ -938,13 +938,13 @@
       ],
       "source_forms": [
         "I am sorry"
-      ]
+      ],
+      "explanation": "Устойчивое выражение для извинения или сожаления."
     },
     {
       "source": "next to",
       "translation": "рядом с",
       "type": "prepositional_group",
-      "explanation": "Указывает на положение непосредственно рядом с человеком, местом или предметом.",
       "components": [
         {
           "source": "next",
@@ -961,7 +961,8 @@
       ],
       "source_forms": [
         "next to"
-      ]
+      ],
+      "explanation": "Указывает на положение непосредственно рядом с человеком, местом или предметом."
     },
     {
       "source": "the rest of",
@@ -1562,7 +1563,8 @@
           "key": "sorry|ADJ",
           "ownership": "word",
           "translations": [
-            "жаль"
+            "жаль",
+            "Мне очень жаль"
           ],
           "evidence": [
             "I am sorry,\" Sara says. → «Мне очень жаль», — говорит Сара."
@@ -1940,11 +1942,8 @@
         },
         {
           "key": "wrong|ADJ",
-          "ownership": "word",
-          "translations": [
-            "не в той",
-            "той"
-          ],
+          "ownership": "noncontextual",
+          "translations": [],
           "evidence": [
             "I am in the wrong room. → Я не в той комнате."
           ]
@@ -2176,7 +2175,7 @@
         },
         {
           "key": "be|VERB",
-          "ownership": "absorbed",
+          "ownership": "noncontextual",
           "translations": [],
           "evidence": [
             "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников."
@@ -2184,7 +2183,7 @@
         },
         {
           "key": "down|ADP",
-          "ownership": "absorbed",
+          "ownership": "noncontextual",
           "translations": [],
           "evidence": [
             "She walks into Room forty-one and sits down. → Она входит в комнату номер сорок один и садится."
@@ -2202,7 +2201,7 @@
         },
         {
           "key": "of|ADP",
-          "ownership": "absorbed",
+          "ownership": "noncontextual",
           "translations": [],
           "evidence": [
             "She checks every room number carefully for the rest of the day. → Она внимательно проверяет номера всех комнат до конца дня."
@@ -2210,7 +2209,7 @@
         },
         {
           "key": "there|PRON",
-          "ownership": "absorbed",
+          "ownership": "noncontextual",
           "translations": [],
           "evidence": [
             "There are books, maps, and twelve students in the room. → В комнате находятся книги, карты и двенадцать учеников."
@@ -2301,29 +2300,15 @@
         {
           "source": "the rest of",
           "decision": "accepted",
-          "word_by_word_result": "the + rest + of",
-          "reason": "the shorter reusable construction owns the non-compositional meaning",
+          "word_by_word_result": "∅ + конца + ∅",
+          "reason": "independent components do not preserve the complete contextual meaning",
           "segment_indexes": [
             23
-          ]
-        },
-        {
-          "source": "five minutes late",
-          "decision": "rejected",
-          "word_by_word_result": "пять + минут + опоздала",
-          "reason": "The independent word meanings preserve the complete target meaning; only target order changes.",
-          "segment_indexes": [
-            22
           ]
         }
       ],
       "unresolved": []
     },
-    "absorbed_word_keys": [
-      "be|verb",
-      "down|adp",
-      "of|adp",
-      "there|pron"
-    ]
+    "absorbed_word_keys": []
   }
 }

@@ -1,4 +1,4 @@
-﻿# Block layer schema
+# Block layer schema
 
 ## Book block
 
@@ -6,9 +6,9 @@
 {
   "source": "there are",
   "translation": "є",
-  "dictionary_translation": "існують або перебувають",
+  "dictionary_translation": "существуют или є",
   "type": "grammar_construction",
-  "explanation": "Повідомляє, що хтось або щось існує чи перебуває десь.",
+  "explanation": "Сообщает, что кто-то или что-то существует либо находится где-то.",
   "components": [
     {
       "source": "there",
@@ -22,7 +22,7 @@
       "lemma": "be",
       "pos": "AUX",
       "translation": "",
-      "empty_reason": "український присудок належить усій конструкції"
+      "empty_reason": "the Ukrainian predicate belongs to the existential construction"
     }
   ],
   "source_forms": ["There are"]
@@ -56,7 +56,7 @@ The source must be the shortest contiguous reusable span that still owns the non
 
 `translation` is occurrence evidence, not a dictionary gloss. Store the exact contiguous target span owned by the minimal source block, and require that span in every target segment referenced by the accepted audit decision. Keep a reusable paraphrase only in `explanation`. For `for the rest of the day → до кінця дня`, store `the rest of → кінця`; the excluded `for → до` and `day → дня` remain word-owned.
 
-Use optional `dictionary_translation` for the reusable dictionary meaning when it differs from the exact occurrence span. The future Global merge preserves that value and adds each distinct occurrence `translation` as another variant. For example, `the rest of` keeps dictionary meaning `решта чогось` and contextual variant `кінця`.
+Use optional `dictionary_translation` for the reusable dictionary meaning when it differs from the exact occurrence span. The Global merge preserves that value and adds each distinct occurrence `translation` as another variant. For example, `the rest of` keeps dictionary meaning `решта чогось` and contextual variant `кінця`.
 
 ## Audit metadata
 
@@ -103,12 +103,12 @@ The merge adds provenance without removing book evidence:
 
 ```json
 {
-  "translations": ["існують або перебувають", "є"],
+  "translations": ["существуют или є", "є"],
   "type": "grammar_construction",
-  "explanation": "Повідомляє про наявність або місцеперебування.",
+  "explanation": "Сообщает о наличии или местонахождении.",
   "variants": [
     {
-      "translation": "існують або перебувають",
+      "translation": "существуют или є",
       "translation_kind": "dictionary_fallback",
       "book_ids": ["book_id"],
       "source_forms": ["there are"]
@@ -144,4 +144,3 @@ Every attested retained block occurrence must appear as one verification block
 occurrence. All component `word_id` values share that block's `owner_unit_id` and
 `tap_unit_id`. A missing block, split tap units, an empty component without a
 reason, or a whole translation copied to multiple components is blocking.
-

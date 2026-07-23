@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "book_id": "book_cad03a8f1779",
   "title": "The Wrong Classroom",
   "source_lang": "en",
@@ -120,7 +120,8 @@
       "pos": "PROPN",
       "translation": "Амір",
       "translations": [
-        "Амір"
+        "Амір",
+        "Аміром"
       ],
       "dictionary_translation": "Амір",
       "dictionary_translation_source": "skill_fallback"
@@ -132,7 +133,8 @@
       "translation": "а",
       "translations": [
         "а",
-        "і"
+        "і",
+        "й"
       ],
       "dictionary_translation": "а",
       "dictionary_translation_source": "skill_fallback"
@@ -143,7 +145,8 @@
       "pos": "VERB",
       "translation": "питати",
       "translations": [
-        "питати"
+        "питати",
+        "запитує"
       ],
       "dictionary_translation": "питати",
       "dictionary_translation_source": "skill_fallback"
@@ -155,7 +158,9 @@
       "translation": "о",
       "translations": [
         "о",
-        "біля"
+        "біля",
+        "у",
+        "на"
       ],
       "dictionary_translation": "о",
       "dictionary_translation_source": "skill_fallback"
@@ -188,7 +193,8 @@
       "pos": "NOUN",
       "translation": "дошка",
       "translations": [
-        "дошка"
+        "дошка",
+        "дошці"
       ],
       "dictionary_translation": "дошка",
       "dictionary_translation_source": "skill_fallback"
@@ -260,7 +266,9 @@
       "translation": "клас",
       "translations": [
         "клас",
-        "заняття"
+        "заняття",
+        "урок",
+        "класі"
       ],
       "dictionary_translation": "клас",
       "dictionary_translation_source": "skill_fallback"
@@ -307,7 +315,8 @@
       "pos": "NOUN",
       "translation": "день",
       "translations": [
-        "день"
+        "день",
+        "дня"
       ],
       "dictionary_translation": "день",
       "dictionary_translation_source": "skill_fallback"
@@ -329,7 +338,8 @@
       "pos": "NOUN",
       "translation": "внизу",
       "translations": [
-        "внизу"
+        "внизу",
+        "Унизу"
       ],
       "dictionary_translation": "внизу",
       "dictionary_translation_source": "skill_fallback"
@@ -340,7 +350,8 @@
       "pos": "ADJ",
       "translation": "внизу",
       "translations": [
-        "внизу"
+        "внизу",
+        "унизу"
       ],
       "dictionary_translation": "внизу",
       "dictionary_translation_source": "skill_fallback"
@@ -351,7 +362,8 @@
       "pos": "ADJ",
       "translation": "англійський",
       "translations": [
-        "англійський"
+        "англійський",
+        "англійської мови"
       ],
       "dictionary_translation": "англійський",
       "dictionary_translation_source": "skill_fallback"
@@ -375,7 +387,8 @@
       "pos": "VERB",
       "translation": "знаходити",
       "translations": [
-        "знаходити"
+        "знаходити",
+        "знаходить"
       ],
       "dictionary_translation": "знаходити",
       "dictionary_translation_source": "skill_fallback"
@@ -397,7 +410,8 @@
       "pos": "NUM",
       "translation": "п'ять",
       "translations": [
-        "п'ять"
+        "п'ять",
+        "п’ять"
       ]
     },
     {
@@ -406,7 +420,8 @@
       "pos": "NOUN",
       "translation": "поверх",
       "translations": [
-        "поверх"
+        "поверх",
+        "поверсі"
       ],
       "dictionary_translation": "поверх",
       "dictionary_translation_source": "skill_fallback"
@@ -418,7 +433,8 @@
       "translation": "на",
       "translations": [
         "на",
-        "для"
+        "для",
+        "До"
       ],
       "dictionary_translation": "на",
       "dictionary_translation_source": "skill_fallback"
@@ -449,7 +465,8 @@
       "pos": "ADJ",
       "translation": "четвертий",
       "translations": [
-        "четвертий"
+        "четвертий",
+        "четвертому"
       ],
       "dictionary_translation": "четвертий",
       "dictionary_translation_source": "skill_fallback"
@@ -485,7 +502,8 @@
       "pos": "PRON",
       "translation": "її",
       "translations": [
-        "її"
+        "її",
+        "свою"
       ],
       "dictionary_translation": "її",
       "dictionary_translation_source": "skill_fallback"
@@ -531,7 +549,8 @@
       "translation": "у",
       "translations": [
         "у",
-        "всередину"
+        "всередину",
+        "до"
       ],
       "dictionary_translation": "у",
       "dictionary_translation_source": "skill_fallback"
@@ -543,7 +562,8 @@
       "translation": "воно",
       "translations": [
         "воно",
-        "це"
+        "це",
+        "На ній"
       ],
       "dictionary_translation": "воно",
       "dictionary_translation_source": "skill_fallback"
@@ -554,7 +574,8 @@
       "pos": "ADV",
       "translation": "пізно",
       "translations": [
-        "пізно"
+        "пізно",
+        "запізнилася"
       ],
       "dictionary_translation": "пізно",
       "dictionary_translation_source": "skill_fallback"
@@ -588,7 +609,8 @@
       "pos": "NOUN",
       "translation": "карта",
       "translations": [
-        "карта"
+        "карта",
+        "карти"
       ],
       "dictionary_translation": "карта",
       "dictionary_translation_source": "skill_fallback"
@@ -599,7 +621,8 @@
       "pos": "NOUN",
       "translation": "математика",
       "translations": [
-        "математика"
+        "математика",
+        "математики"
       ],
       "dictionary_translation": "математика",
       "dictionary_translation_source": "skill_fallback"
@@ -662,7 +685,8 @@
       "pos": "ADV",
       "translation": "зараз",
       "translations": [
-        "зараз"
+        "зараз",
+        "тепер"
       ],
       "dictionary_translation": "зараз",
       "dictionary_translation_source": "skill_fallback"
@@ -674,7 +698,8 @@
       "translation": "номер",
       "translations": [
         "номер",
-        "номери"
+        "номери",
+        "числа"
       ],
       "dictionary_translation": "номер",
       "dictionary_translation_source": "skill_fallback"
@@ -728,7 +753,9 @@
       "pos": "ADJ",
       "translation": "правильний",
       "translations": [
-        "правильний"
+        "правильний",
+        "потрібний",
+        "потрібному"
       ],
       "dictionary_translation": "правильний",
       "dictionary_translation_source": "skill_fallback"
@@ -740,7 +767,10 @@
       "translation": "кімната",
       "translations": [
         "кімната",
-        "кімнату"
+        "кімнату",
+        "класі",
+        "Клас",
+        "класу"
       ],
       "dictionary_translation": "кімната",
       "dictionary_translation_source": "skill_fallback"
@@ -752,7 +782,10 @@
       "translation": "кімната",
       "translations": [
         "кімната",
-        "кімнати"
+        "кімнати",
+        "класі",
+        "класу",
+        "клас"
       ],
       "dictionary_translation": "кімната",
       "dictionary_translation_source": "skill_fallback"
@@ -763,7 +796,9 @@
       "pos": "PROPN",
       "translation": "Сара",
       "translations": [
-        "Сара"
+        "Сара",
+        "Сарі",
+        "Саро"
       ],
       "dictionary_translation": "Сара",
       "dictionary_translation_source": "skill_fallback"
@@ -774,7 +809,9 @@
       "pos": "VERB",
       "translation": "казати",
       "translations": [
-        "казати"
+        "казати",
+        "каже",
+        "написано"
       ],
       "dictionary_translation": "казати",
       "dictionary_translation_source": "skill_fallback"
@@ -785,7 +822,8 @@
       "pos": "PROPN",
       "translation": "школа",
       "translations": [
-        "школа"
+        "школа",
+        "школі"
       ],
       "dictionary_translation": "школа",
       "dictionary_translation_source": "skill_fallback"
@@ -821,7 +859,8 @@
       "translation": "сидіти",
       "translations": [
         "сидіти",
-        "сідає"
+        "сідає",
+        "сідай"
       ],
       "dictionary_translation": "сидіти",
       "dictionary_translation_source": "skill_fallback"
@@ -833,7 +872,8 @@
       "translation": "посміхатися",
       "translations": [
         "посміхатися",
-        "усміхатися"
+        "усміхатися",
+        "усміхається"
       ],
       "dictionary_translation": "посміхатися",
       "dictionary_translation_source": "skill_fallback"
@@ -856,7 +896,8 @@
       "pos": "NOUN",
       "translation": "сходинка",
       "translations": [
-        "сходинка"
+        "сходинка",
+        "сходи"
       ],
       "dictionary_translation": "сходинка",
       "dictionary_translation_source": "skill_fallback"
@@ -868,7 +909,9 @@
       "translation": "студент",
       "translations": [
         "студент",
-        "учень"
+        "учень",
+        "учениця",
+        "учнів"
       ],
       "dictionary_translation": "студент",
       "dictionary_translation_source": "skill_fallback"
@@ -879,7 +922,8 @@
       "pos": "NOUN",
       "translation": "учитель",
       "translations": [
-        "учитель"
+        "учитель",
+        "вчитель"
       ],
       "dictionary_translation": "учитель",
       "dictionary_translation_source": "skill_fallback"
@@ -959,7 +1003,8 @@
       "pos": "VERB",
       "translation": "ходити",
       "translations": [
-        "ходити"
+        "ходити",
+        "заходить"
       ],
       "dictionary_translation": "ходити",
       "dictionary_translation_source": "skill_fallback"
@@ -979,7 +1024,8 @@
       "pos": "VERB",
       "translation": "писати",
       "translations": [
-        "писати"
+        "писати",
+        "пише"
       ],
       "dictionary_translation": "писати",
       "dictionary_translation_source": "skill_fallback"
@@ -988,11 +1034,10 @@
       "word": "wrong",
       "lemma": "wrong",
       "pos": "ADJ",
-      "translation": "неправильний",
-      "translations": [
-        "неправильний"
-      ],
-      "dictionary_translation": "неправильний",
+      "translation": "",
+      "translations": [],
+      "empty_reason": "no independent target span",
+      "dictionary_translation": "не той",
       "dictionary_translation_source": "skill_fallback"
     },
     {
@@ -1001,7 +1046,8 @@
       "pos": "PROPN",
       "translation": "неправильний",
       "translations": [
-        "неправильний"
+        "неправильний",
+        "Не той"
       ],
       "dictionary_translation": "неправильний",
       "dictionary_translation_source": "skill_fallback"
@@ -1562,9 +1608,10 @@
         },
         {
           "key": "amir|PROPN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "Амір"
+            "Амір",
+            "Аміром"
           ],
           "evidence": [
             "Please sit next to Amir. → Будь ласка, сідай поруч з Аміром»."
@@ -1572,10 +1619,11 @@
         },
         {
           "key": "and|CCONJ",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "а",
-            "і"
+            "і",
+            "й"
           ],
           "evidence": [
             "She walks into Room forty-one and sits down. → Вона заходить до класу номер сорок один і сідає.",
@@ -1584,9 +1632,10 @@
         },
         {
           "key": "ask|VERB",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "питати"
+            "питати",
+            "запитує"
           ],
           "evidence": [
             " the English teacher asks. → » — запитує вчитель англійської мови."
@@ -1594,10 +1643,12 @@
         },
         {
           "key": "at|ADP",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "о",
-            "біля"
+            "біля",
+            "у",
+            "на"
           ],
           "evidence": [
             "Sara is a new student at Hill School. → Сара — нова учениця у школі Гілл.",
@@ -1634,9 +1685,10 @@
         },
         {
           "key": "board|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "дошка"
+            "дошка",
+            "дошці"
           ],
           "evidence": [
             "A man writes numbers on the board. → Чоловік пише числа на дошці."
@@ -1699,10 +1751,12 @@
         },
         {
           "key": "class|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "клас",
-            "заняття"
+            "заняття",
+            "урок",
+            "класі"
           ],
           "evidence": [
             "Her English class is in Room fourteen. → Її урок англійської мови проходить у класі номер чотирнадцять.",
@@ -1745,9 +1799,10 @@
         },
         {
           "key": "day|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "день"
+            "день",
+            "дня"
           ],
           "evidence": [
             "She checks every room number carefully for the rest of the day. → До кінця дня вона уважно перевіряє номер кожного класу."
@@ -1765,9 +1820,10 @@
         },
         {
           "key": "downstair|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "внизу"
+            "внизу",
+            "Унизу"
           ],
           "evidence": [
             "Downstairs, Sara finds the right classroom. → Унизу Сара знаходить потрібний клас."
@@ -1775,9 +1831,10 @@
         },
         {
           "key": "downstairs|ADJ",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "внизу"
+            "внизу",
+            "унизу"
           ],
           "evidence": [
             "Room fourteen is downstairs. → «Клас номер чотирнадцять унизу."
@@ -1785,9 +1842,10 @@
         },
         {
           "key": "english|ADJ",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "англійський"
+            "англійський",
+            "англійської мови"
           ],
           "evidence": [
             "Her English class is in Room fourteen. → Її урок англійської мови проходить у класі номер чотирнадцять.",
@@ -1809,9 +1867,10 @@
         },
         {
           "key": "find|VERB",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "знаходити"
+            "знаходити",
+            "знаходить"
           ],
           "evidence": [
             "Downstairs, Sara finds the right classroom. → Унизу Сара знаходить потрібний клас."
@@ -1831,7 +1890,8 @@
           "key": "five|NUM",
           "ownership": "word",
           "translations": [
-            "п'ять"
+            "п'ять",
+            "п’ять"
           ],
           "evidence": [
             "Sara is five minutes late, but she is now in the right class. → Сара запізнилася на п’ять хвилин, але тепер вона у потрібному класі."
@@ -1839,9 +1899,10 @@
         },
         {
           "key": "floor|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "поверх"
+            "поверх",
+            "поверсі"
           ],
           "evidence": [
             "It says: English course, Room fourteen, first floor. → На ній написано: курс англійської мови, клас номер чотирнадцять, перший поверх.",
@@ -1850,10 +1911,11 @@
         },
         {
           "key": "for|ADP",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "на",
-            "для"
+            "для",
+            "До"
           ],
           "evidence": [
             "She checks every room number carefully for the rest of the day. → До кінця дня вона уважно перевіряє номер кожного класу."
@@ -1884,9 +1946,10 @@
         },
         {
           "key": "fourth|ADJ",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "четвертий"
+            "четвертий",
+            "четвертому"
           ],
           "evidence": [
             "This is Room forty-one upstairs, on the fourth floor. → А це клас номер сорок один нагорі, на четвертому поверсі»."
@@ -1917,9 +1980,10 @@
         },
         {
           "key": "her|PRON",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "її"
+            "її",
+            "свою"
           ],
           "evidence": [
             "Her English class is in Room fourteen. → Її урок англійської мови проходить у класі номер чотирнадцять.",
@@ -1964,10 +2028,11 @@
         },
         {
           "key": "into|ADP",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "у",
-            "всередину"
+            "всередину",
+            "до"
           ],
           "evidence": [
             "She walks into Room forty-one and sits down. → Вона заходить до класу номер сорок один і сідає."
@@ -1975,10 +2040,11 @@
         },
         {
           "key": "it|PRON",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "воно",
-            "це"
+            "це",
+            "На ній"
           ],
           "evidence": [
             "It says: English course, Room fourteen, first floor. → На ній написано: курс англійської мови, клас номер чотирнадцять, перший поверх."
@@ -1986,9 +2052,10 @@
         },
         {
           "key": "late|ADV",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "пізно"
+            "пізно",
+            "запізнилася"
           ],
           "evidence": [
             "Sara is five minutes late, but she is now in the right class. → Сара запізнилася на п’ять хвилин, але тепер вона у потрібному класі."
@@ -2017,9 +2084,10 @@
         },
         {
           "key": "map|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "карта"
+            "карта",
+            "карти"
           ],
           "evidence": [
             "There are books, maps, and twelve students in the room. → У класі є книжки, карти й дванадцять учнів."
@@ -2027,9 +2095,10 @@
         },
         {
           "key": "math|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "математика"
+            "математика",
+            "математики"
           ],
           "evidence": [
             "Welcome to the maths class. → «Ласкаво просимо на урок математики."
@@ -2085,9 +2154,10 @@
         },
         {
           "key": "now|ADV",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "зараз"
+            "зараз",
+            "тепер"
           ],
           "evidence": [
             "Sara is five minutes late, but she is now in the right class. → Сара запізнилася на п’ять хвилин, але тепер вона у потрібному класі."
@@ -2095,10 +2165,11 @@
         },
         {
           "key": "number|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "номер",
-            "номери"
+            "номери",
+            "числа"
           ],
           "evidence": [
             "A man writes numbers on the board. → Чоловік пише числа на дошці.",
@@ -2149,9 +2220,11 @@
         },
         {
           "key": "right|ADJ",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "правильний"
+            "правильний",
+            "потрібний",
+            "потрібному"
           ],
           "evidence": [
             "Downstairs, Sara finds the right classroom. → Унизу Сара знаходить потрібний клас.",
@@ -2160,10 +2233,13 @@
         },
         {
           "key": "room|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "кімната",
-            "кімнату"
+            "кімнату",
+            "класі",
+            "Клас",
+            "класу"
           ],
           "evidence": [
             "There are books, maps, and twelve students in the room. → У класі є книжки, карти й дванадцять учнів.",
@@ -2174,10 +2250,13 @@
         },
         {
           "key": "room|PROPN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "кімната",
-            "кімнати"
+            "кімнати",
+            "класі",
+            "класу",
+            "клас"
           ],
           "evidence": [
             "Her English class is in Room fourteen. → Її урок англійської мови проходить у класі номер чотирнадцять.",
@@ -2188,9 +2267,11 @@
         },
         {
           "key": "sara|PROPN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "Сара"
+            "Сара",
+            "Сарі",
+            "Саро"
           ],
           "evidence": [
             "Sara is a new student at Hill School. → Сара — нова учениця у школі Гілл.",
@@ -2205,9 +2286,11 @@
         },
         {
           "key": "say|VERB",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "казати"
+            "казати",
+            "каже",
+            "написано"
           ],
           "evidence": [
             "Good morning,\" he says. → «Доброго ранку», — каже він.",
@@ -2217,9 +2300,10 @@
         },
         {
           "key": "school|PROPN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "школа"
+            "школа",
+            "школі"
           ],
           "evidence": [
             "Sara is a new student at Hill School. → Сара — нова учениця у школі Гілл."
@@ -2251,10 +2335,11 @@
         },
         {
           "key": "sit|VERB",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "сидіти",
-            "сідає"
+            "сідає",
+            "сідай"
           ],
           "evidence": [
             "She walks into Room forty-one and sits down. → Вона заходить до класу номер сорок один і сідає.",
@@ -2263,10 +2348,11 @@
         },
         {
           "key": "smile|VERB",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "посміхатися",
-            "усміхатися"
+            "усміхатися",
+            "усміхається"
           ],
           "evidence": [
             "The teacher smiles. → Учитель усміхається."
@@ -2285,9 +2371,10 @@
         },
         {
           "key": "stair|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "сходинка"
+            "сходинка",
+            "сходи"
           ],
           "evidence": [
             "A student shows Sara the stairs. → Учень показує Сарі сходи."
@@ -2295,10 +2382,12 @@
         },
         {
           "key": "student|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
             "студент",
-            "учень"
+            "учень",
+            "учениця",
+            "учнів"
           ],
           "evidence": [
             "Sara is a new student at Hill School. → Сара — нова учениця у школі Гілл.",
@@ -2308,9 +2397,10 @@
         },
         {
           "key": "teacher|NOUN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "учитель"
+            "учитель",
+            "вчитель"
           ],
           "evidence": [
             "The teacher smiles. → Учитель усміхається.",
@@ -2394,9 +2484,10 @@
         },
         {
           "key": "walk|VERB",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "ходити"
+            "ходити",
+            "заходить"
           ],
           "evidence": [
             "She walks into Room forty-one and sits down. → Вона заходить до класу номер сорок один і сідає."
@@ -2415,9 +2506,10 @@
         },
         {
           "key": "write|VERB",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "писати"
+            "писати",
+            "пише"
           ],
           "evidence": [
             "A man writes numbers on the board. → Чоловік пише числа на дошці."
@@ -2425,19 +2517,18 @@
         },
         {
           "key": "wrong|ADJ",
-          "ownership": "mixed",
-          "translations": [
-            "неправильний"
-          ],
+          "ownership": "noncontextual",
+          "translations": [],
           "evidence": [
             "I am in the wrong room. → Я не в тому класі."
           ]
         },
         {
           "key": "wrong|PROPN",
-          "ownership": "mixed",
+          "ownership": "word",
           "translations": [
-            "неправильний"
+            "неправильний",
+            "Не той"
           ],
           "evidence": [
             "The Wrong Classroom → Не той клас"

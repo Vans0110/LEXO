@@ -87,12 +87,14 @@
       "surface": "moves",
       "lemma": "move",
       "pos": "VERB",
-      "contextual_translation": "",
+      "contextual_translation": "переїжджає",
       "dictionary_translation": "переїжджати",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:53026e81-2761-45fa-9075-cd31786fe83d_w_1",
       "tap_unit_id": "word:53026e81-2761-45fa-9075-cd31786fe83d_w_1",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 1,
+      "target_end_index": 1
     },
     {
       "word_id": "53026e81-2761-45fa-9075-cd31786fe83d_w_2",
@@ -279,12 +281,14 @@
       "surface": "finds",
       "lemma": "find",
       "pos": "VERB",
-      "contextual_translation": "",
+      "contextual_translation": "знаходить",
       "dictionary_translation": "знаходити",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:53026e81-2761-45fa-9075-cd31786fe83d_w_14",
       "tap_unit_id": "word:53026e81-2761-45fa-9075-cd31786fe83d_w_14",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 3,
+      "target_end_index": 3
     },
     {
       "word_id": "53026e81-2761-45fa-9075-cd31786fe83d_w_15",
@@ -615,12 +619,14 @@
       "surface": "contact",
       "lemma": "contact",
       "pos": "NOUN",
-      "contextual_translation": "",
+      "contextual_translation": "контактна",
       "dictionary_translation": "контакт",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:9b2afdf2-ff50-4e80-8469-0a1ba339a73d_w_9",
       "tap_unit_id": "word:9b2afdf2-ff50-4e80-8469-0a1ba339a73d_w_9",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 3,
+      "target_end_index": 3
     },
     {
       "word_id": "9b2afdf2-ff50-4e80-8469-0a1ba339a73d_w_10",
@@ -707,12 +713,14 @@
       "surface": "form",
       "lemma": "form",
       "pos": "NOUN",
-      "contextual_translation": "",
+      "contextual_translation": "формі",
       "dictionary_translation": "форма",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:7f15ff1f-7f99-4865-b009-632dc19ab56c_w_1",
       "tap_unit_id": "word:7f15ff1f-7f99-4865-b009-632dc19ab56c_w_1",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 1,
+      "target_end_index": 1
     },
     {
       "word_id": "7f15ff1f-7f99-4865-b009-632dc19ab56c_w_2",
@@ -751,12 +759,14 @@
       "surface": "basic",
       "lemma": "basic",
       "pos": "ADJ",
-      "contextual_translation": "",
+      "contextual_translation": "основна",
       "dictionary_translation": "основний",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:7f15ff1f-7f99-4865-b009-632dc19ab56c_w_4",
       "tap_unit_id": "word:7f15ff1f-7f99-4865-b009-632dc19ab56c_w_4",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 3,
+      "target_end_index": 3
     },
     {
       "word_id": "7f15ff1f-7f99-4865-b009-632dc19ab56c_w_5",
@@ -1097,12 +1107,14 @@
       "surface": "asks",
       "lemma": "ask",
       "pos": "VERB",
-      "contextual_translation": "",
+      "contextual_translation": "запитує",
       "dictionary_translation": "питати",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:4d5823e7-69dc-497e-a0af-ffb60b864f7e_w_6",
       "tap_unit_id": "word:4d5823e7-69dc-497e-a0af-ffb60b864f7e_w_6",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 0,
+      "target_end_index": 0
     },
     {
       "word_id": "84daf8cc-de1c-4296-b458-434c8a70bc1d_w_0",
@@ -1413,12 +1425,14 @@
       "surface": "Ukrainian",
       "lemma": "ukrainian",
       "pos": "ADJ",
-      "contextual_translation": "",
+      "contextual_translation": "Українська",
       "dictionary_translation": "український",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:cd47da60-da73-4356-a617-fbb6a2a42fcd_w_0",
       "tap_unit_id": "word:cd47da60-da73-4356-a617-fbb6a2a42fcd_w_0",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 0,
+      "target_end_index": 0
     },
     {
       "word_id": "cd47da60-da73-4356-a617-fbb6a2a42fcd_w_1",
@@ -1571,12 +1585,14 @@
       "surface": "hall",
       "lemma": "hall",
       "pos": "NOUN",
-      "contextual_translation": "",
+      "contextual_translation": "коридору",
       "dictionary_translation": "коридор",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:74ebe41d-6735-4e19-9cb5-9895c2c262d5_w_5",
       "tap_unit_id": "word:74ebe41d-6735-4e19-9cb5-9895c2c262d5_w_5",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 1,
+      "target_end_index": 1
     },
     {
       "word_id": "74ebe41d-6735-4e19-9cb5-9895c2c262d5_w_6",
@@ -1657,12 +1673,14 @@
       "surface": "Nora",
       "lemma": "nora",
       "pos": "PROPN",
-      "contextual_translation": "",
+      "contextual_translation": "Норою",
       "dictionary_translation": "Нора",
-      "status": "dictionary_fallback",
+      "status": "independent_translation",
       "owner_unit_id": "word:74ebe41d-6735-4e19-9cb5-9895c2c262d5_w_11",
       "tap_unit_id": "word:74ebe41d-6735-4e19-9cb5-9895c2c262d5_w_11",
-      "empty_reason": "no independent target span in this occurrence"
+      "empty_reason": "",
+      "target_start_index": 5,
+      "target_end_index": 5
     },
     {
       "word_id": "74ebe41d-6735-4e19-9cb5-9895c2c262d5_w_12",

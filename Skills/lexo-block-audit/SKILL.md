@@ -41,6 +41,62 @@ Do not infer a translation that is absent from the book target. Do not assign th
 Keep the reusable semantic description only in `explanation`. Example: in `for the rest of the day → до конца дня`, the minimal block `the rest of` owns `конца`; `for` independently owns `до`, and `day` owns `дня`.
 For that block, keep `dictionary_translation: "оставшаяся часть чего-либо"` and occurrence `translation: "конца"`; they are complementary values, not alternatives to overwrite.
 
+## Pass 1.5: independent translation integrity
+
+Audit every non-empty word translation, block-component translation, seed
+translation, and value that can reach a learner-facing card.
+
+- Apply the isolation test: read the target value by itself as the answer to
+  “what does this English word mean here?” It must preserve the source word's
+  lexical contribution without relying on an unowned negation, determiner,
+  preposition, or another target fragment.
+- Treat target position, token coverage, POS compatibility, proximity, and
+  alignment confidence only as candidate evidence. None proves semantic equality.
+- Reject a grammatical remnant as a word translation. For example,
+  `wrong → той` is invalid because `той` alone does not carry the meaning of
+  `wrong`; an honest reusable meaning is `не тот` or `неправильный`.
+- Never repair a failed isolation test by inventing a contextual translation,
+  widening the word span, creating an oversized or compositional block, or
+  storing a dictionary gloss as though it were the attested occurrence span.
+- Apply the occurrence-local alignment-group fallback only after an individual
+  translation fails the isolation test and no minimal reusable semantic block
+  exists. Create the smallest honest many-to-many source/target group for that
+  occurrence; give the group the complete contextual target span, while keeping
+  every source word's learner-facing translation independently correct.
+- Treat the group as alignment evidence, never as a phrase block or dictionary
+  meaning. Keep it book-local in `word_to_word_ru.json`; never copy it to block
+  seeds, book blocks, Global Words, Global Blocks, or function-word references.
+- Make the group own every target token required by its natural realization,
+  including structural additions with no separate English token, such as
+  `номер` in `Room fourteen → комнате номер четырнадцать`. Do not classify those
+  owned tokens as exceptions, ignored words, or uncovered target residue.
+- Do not invent per-word target equality inside the group. Preserve an exact
+  individual target span only when it independently passes the isolation test;
+  otherwise use the group for parallel highlighting and the honest dictionary
+  value for the tapped word's card.
+- Allow a multiword dictionary value only for an occurrence explicitly listed in
+  `group_only_word_ids[]`, with no contextual target span, when the complete value
+  passes the isolation test by itself. Keep the rule structural; never hardcode a
+  lemma or a closed word list. Outside this case, retain the one-word teaching
+  fallback contract.
+- If the verification schema or materializer cannot preserve the group
+  separately from word meanings, keep the occurrence unresolved and do not
+  emulate it with false word links, an artificial block, or excluded target
+  tokens. This skill's schema and materializer support `alignment_groups[]`;
+  treat missing downstream Backend/Reader support as a publication blocker, not
+  as a reason to corrupt or omit the verified book group. Target completeness
+  must never override lexical truth.
+- Before materialization, verify that aggregated `translations[]`, book words,
+  seeds, fallbacks, and future Global contributions contain only values that pass
+  this test. A target token may remain target coverage; it must not become a
+  learner-facing word meaning merely to make coverage complete.
+- Record every rejected legacy learner-facing value in the review's
+  `word_translation_removals` by `lemma|POS`; the materializer must remove it
+  before writing seeds and the book layer. Never rely on the alignment group
+  alone to hide a false seed translation.
+
+Completion requires zero failed or unresolved isolation tests.
+
 ## Pass 2: independent omission audit
 
 Re-read every `parallel[]` pair without relying on the Pass 1 list as the checklist.
@@ -101,6 +157,30 @@ lexemes in the materializer. If ownership is ambiguous, record the audit item as
 unresolved and do not publish the book. Completion requires every target token to be
 owned by a word span or `target_coverage[]`.
 
+Write every approved local many-to-many recast to
+`word_to_word_ru.json.alignment_groups[]` using the schema in
+`references/ru-book-layer-schema.md`. A group may cover target tokens already
+owned exactly by its own members, but it replaces neither those semantic spans
+nor their dictionary cards. Remove group-owned structural tokens from
+`target_coverage[]`; never represent the same target token with both mechanisms.
+
+Split target-only coverage into two strict presentation classes:
+
+- An anchored `insertion` is learner-visible only when one contributing source word
+  already owns an exact independent target span and the added target span honestly
+  extends that same teaching unit without changing the word's dictionary card. Require
+  `display_anchor_word_id` and a highlight span containing both the insertion and the
+  anchor's exact target span. Never copy the insertion into the anchor translation.
+- An unanchored `restructure` is coverage-only when natural target wording is produced
+  by several source words but has no honest one-word anchor or minimal reusable block.
+  Require all contributing `source_word_ids`, but forbid `display_anchor_word_id` and
+  highlight fields. Never copy this span into word translations, seeds, fallbacks,
+  blocks, Globals, or learner-facing dictionary cards.
+
+Never choose an anchor by proximity, source order, POS, or UI convenience. If attaching
+the span would imply a false word-to-word equality, keep it as an unanchored
+coverage-only `restructure`.
+
 Run:
 
 ```powershell
@@ -128,6 +208,8 @@ After approval and a clean audit:
    components of a retained block, one exact shared target span for that block,
    and one materialized block for every attested block occurrence. Reject an
    occurrence when its block translation cannot be found in the target segment.
+   Materialize every approved occurrence-local recast as `alignment_groups[]`;
+   never add it to block seeds or book blocks.
 5. Require complete target-side coverage. Preserve exact word translation spans and
    keep display highlight spans separate; never widen a word's semantic span merely
    to absorb a neighboring Russian token.

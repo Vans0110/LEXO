@@ -287,6 +287,17 @@ void main() {
           'translation': 'садится',
         },
       ],
+      'alignment_groups': [
+        {
+          'unit_id': 'alignment_group:0:wrong_room',
+          'segment_id': 'segment-1',
+          'source_word_ids': ['word-room', 'word-other'],
+          'source_text': 'wrong room',
+          'target_start_index': 0,
+          'target_end_index': 1,
+          'target_text': 'не та',
+        },
+      ],
     };
 
     final dictionary = dictionaryManifestFromReaderLexicon(lexicon);
@@ -298,6 +309,106 @@ void main() {
     expect(
         (alignment['entries'] as List).single, isNot(contains('translations')));
     expect((alignment['blocks'] as List).single['block_key'], 'sit down');
+    expect(
+      (alignment['alignment_groups'] as List).single['unit_id'],
+      'alignment_group:0:wrong_room',
+    );
+  });
+
+  test('alignment group shares source tap unit and target highlight', () {
+    final raw = _grammarPackage(
+      [
+        ('in', 'ADP', 'в'),
+        ('the', 'DET', ''),
+        ('wrong', 'ADJ', ''),
+        ('room', 'NOUN', 'комнате'),
+      ],
+      ['не', 'в', 'той', 'комнате'],
+    );
+    final paragraph =
+        ((raw['reader_payload'] as Map<String, dynamic>)['paragraphs'] as List)
+            .single as Map<String, dynamic>;
+    final words =
+        (paragraph['words'] as List).whereType<Map<String, dynamic>>().toList();
+    final wordIds = words.map((word) => word['id']).toList();
+    raw['dictionary_manifest'] = {
+      'entries': {
+        'wrong|ADJ': {
+          'translations': ['не той'],
+        },
+      },
+    };
+    raw['word_to_word'] = {
+      'entries': [
+        for (final word in words)
+          {
+            'word_id': word['id'],
+            'segment_id': word['segment_id'],
+            'translation': word['text'] == 'in'
+                ? 'в'
+                : word['text'] == 'room'
+                    ? 'комнате'
+                    : '',
+            'target_start_index': word['text'] == 'in'
+                ? 1
+                : word['text'] == 'room'
+                    ? 3
+                    : -1,
+            'target_end_index': word['text'] == 'in'
+                ? 1
+                : word['text'] == 'room'
+                    ? 3
+                    : -1,
+            'verified_occurrence': true,
+            'tap_unit_id': 'word:${word['id']}',
+          },
+      ],
+      'blocks': const [],
+      'alignment_groups': [
+        {
+          'unit_id': 'alignment_group:0:wrong_room',
+          'segment_id': words.first['segment_id'],
+          'source_word_ids': wordIds,
+          'source_text': 'in the wrong room',
+          'target_start_index': 0,
+          'target_end_index': 3,
+          'target_text': 'не в той комнате',
+        },
+      ],
+    };
+
+    final normalized = normalizeMobilePackageJsonForTest(raw);
+    final normalizedWords = (((normalized['reader_payload']
+            as Map<String, dynamic>)['paragraphs'] as List)
+        .single as Map<String, dynamic>)['words'] as List;
+    expect(
+      normalizedWords.every(
+        (word) =>
+            word['tap_unit_id'] == 'alignment_group:0:wrong_room' &&
+            word['highlight_target_start_index'] == 0 &&
+            word['highlight_target_end_index'] == 3,
+      ),
+      isTrue,
+    );
+    final wrong = normalizedWords
+        .whereType<Map<String, dynamic>>()
+        .singleWhere((word) => word['text'] == 'wrong');
+    expect(wrong['dictionary_translations'], ['не той']);
+    expect(wrong['target_start_index'], isNot(0));
+
+    final package = MobileBookPackage(normalized);
+    final item = package.readerPayload.paragraphs.single;
+    final wrongWord = item.words.singleWhere((word) => word.text == 'wrong');
+    final detail =
+        DetailSheetPayload.fromSelection(item: item, word: wrongWord);
+    expect(detail.sheetSourceText, 'in the wrong room');
+    expect(detail.sheetTranslationText, 'не в той комнате');
+    expect(detail.units.map((unit) => unit.text).toList(),
+        ['in', 'the', 'wrong', 'room']);
+    expect(
+      detail.units.singleWhere((unit) => unit.text == 'wrong').translation,
+      'не той',
+    );
   });
 
   test('block alignment owns one source block and builds a multi-word card',

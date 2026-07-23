@@ -33,6 +33,10 @@ Map<String, dynamic> alignmentFromReaderLexicon(Map<String, dynamic> lexicon) =>
       'source': lexicon['source'] ?? '',
       'entries': lexicon['word_alignments'] as List<dynamic>? ?? const [],
       'blocks': lexicon['block_alignments'] as List<dynamic>? ?? const [],
+      'alignment_groups':
+          lexicon['alignment_groups'] as List<dynamic>? ?? const [],
+      'target_coverage':
+          lexicon['target_coverage'] as List<dynamic>? ?? const [],
     };
 
 class VirgilBundledBookInfo {

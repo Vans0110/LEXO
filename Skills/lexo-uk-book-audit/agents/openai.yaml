@@ -1,4 +1,4 @@
 interface:
   display_name: "LEXO UK Book Audit"
-  short_description: "Build and verify Ukrainian book dictionaries"
-  default_prompt: "Use $lexo-uk-book-audit to create and verify all Ukrainian dictionary files for one LEXO book."
+  short_description: "Create and audit UK book dictionary files"
+  default_prompt: "Use $lexo-uk-book-audit to create and audit the complete UK dictionary files for one LEXO book, retain only minimal reusable semantic blocks, and verify every word occurrence."

@@ -102,7 +102,8 @@
   "sorry|ADJ": {
     "translation": "жаль",
     "translations": [
-      "жаль"
+      "жаль",
+      "Мне очень жаль"
     ]
   },
   "smile|VERB": {
@@ -319,11 +320,11 @@
     ]
   },
   "wrong|ADJ": {
-    "translation": "не в той",
-    "translations": [
-      "не в той",
-      "той"
-    ]
+    "translation": "",
+    "translations": [],
+    "empty_reason": "no independent target span",
+    "dictionary_translation": "не той",
+    "dictionary_translation_source": "skill_fallback"
   },
   "book|NOUN": {
     "translation": "книги",
